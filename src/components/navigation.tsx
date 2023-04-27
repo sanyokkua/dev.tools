@@ -7,7 +7,7 @@ export default function NavigationBar() {
     return (
         <Navbar bg="primary" variant="dark" expand="lg">
             <Container>
-                <Navbar.Brand href="/">Developer Tools</Navbar.Brand>
+                <Link href="/" passHref legacyBehavior><Navbar.Brand href="/">Developer Tools</Navbar.Brand></Link>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
