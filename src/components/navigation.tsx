@@ -15,6 +15,7 @@ export default function NavigationBar() {
                         <Link href="/string" passHref legacyBehavior><NavLink>String Utils</NavLink></Link>
                         <Link href="/json" passHref legacyBehavior><NavLink>Json Utils</NavLink></Link>
                         <Link href="/git" passHref legacyBehavior><NavLink>Git Utils</NavLink></Link>
+                        <Link href="/terminal" passHref legacyBehavior><NavLink>Terminal Utils</NavLink></Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

@@ -1,16 +1,18 @@
-import React from "react";
+import React, {ReactElement} from "react";
 import NavigationBar from "@/components/navigation";
 import CodeEditor from "@/components/editor/codeeditor";
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
-import {copyToClipboard} from "@/tools/common_tools";
-import {sortStrings} from "@/tools/string_tools";
-
-enum SortingTypes {
-    ASC = "ASC",
-    DSC = "DSC",
-    ASC_IGN_CASE = "ASC_IGN_CASE",
-    DSC_IGN_CASE = "DSC_IGN_CASE",
-}
+import {copyToClipboard, getFromClipboard} from "@/tools/common_tools";
+import {
+    decodeText,
+    encodeText,
+    getLinesFromString,
+    randomizeStringsOrder,
+    SortingTypes,
+    sortStrings,
+    splitStringBy,
+} from "@/tools/string_tools";
+import {Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS} from "@/tools/encoding_tools";
 
 type StringPageState = {
     text: string;
@@ -24,17 +26,20 @@ export default class StringPage extends React.Component<any, StringPageState> {
     }
 
     onCopyClicked() {
-        copyToClipboard(this.state.text);
+        const txt = this.state?.text;
+        copyToClipboard(txt && txt.length > 0 ? txt : "");
     }
 
     onPasteClicked() {
-        navigator.clipboard.readText()
+        getFromClipboard()
             .then((text) => this.setState({text: text}))
             .catch(err => console.error(err));
+
     }
 
     onCutClicked() {
-        copyToClipboard(this.state.text);
+        const txt = this.state?.text;
+        copyToClipboard(txt && txt.length > 0 ? txt : "");
         this.setState({text: ""});
     }
 
@@ -47,22 +52,33 @@ export default class StringPage extends React.Component<any, StringPageState> {
         if (txt === null || txt === undefined || txt.length === 0) {
             return;
         }
-        const regexp: RegExp = /[\r\n]+/;//TODO: symbols for split should be passed from ui
-        const result = txt.split(regexp).join("\n");
+
+        const strings = splitStringBy(txt, ".");
+        const result = strings.join("\n");
         this.setState({text: result});
     }
 
-    onSortClicked(sortType: SortingTypes) {
-        console.log(sortType);
-        const txt = this.state.text;
+    onShuffleClicked() {
+        const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
             return;
         }
-        const regexp: RegExp = /[\r\n]+/;
-        const lines = txt.split(regexp);
-        console.log(lines);
-        let sorted = sortStrings(lines, sortType);
-        console.log(sorted);
+
+        const linesFromString = getLinesFromString(txt);
+        const sorted = randomizeStringsOrder(linesFromString);
+
+        this.setState({text: sorted.join("\n")});
+    }
+
+    onSortClicked(sortType: SortingTypes) {
+        const txt = this.state?.text;
+        if (txt === null || txt === undefined || txt.length === 0) {
+            return;
+        }
+
+        const linesFromString = getLinesFromString(txt);
+        const sorted = sortStrings(linesFromString, sortType);
+
         this.setState({text: sorted.join("\n")});
     }
 
@@ -70,7 +86,73 @@ export default class StringPage extends React.Component<any, StringPageState> {
         this.setState({
             text: text,
         });
-        console.log(text);
+    }
+
+    onEncodeClicked(encoder: Encoder) {
+        const txt = this.state?.text;
+        if (txt === null || txt === undefined || txt.length === 0) {
+            return;
+        }
+
+        encodeText(txt, encoder)
+            .then((text: string) => this.setState({text: text}))
+            .catch(e => console.warn(e));
+    }
+
+    onDecodeClicked(decoder: Decoder) {
+        const txt = this.state?.text;
+        if (txt === null || txt === undefined || txt.length === 0) {
+            return;
+        }
+
+        decodeText(txt, decoder)
+            .then((text: string) => this.setState({text: text}))
+            .catch(e => console.warn(e));
+    }
+
+    buildSortingItems() {
+        const dropdownItems: ReactElement[] = [];
+        [SortingTypes.ASC, SortingTypes.DSC, SortingTypes.ASC_IGN_CASE, SortingTypes.DSC_IGN_CASE]
+            .forEach((value: SortingTypes) => {
+                dropdownItems.push(
+                    <NavDropdown.Item eventKey={value} onClick={(e) => this.onSortClicked(value)}>
+                        {value}
+                    </NavDropdown.Item>,
+                );
+            });
+        return <NavDropdown title="Sorting" id="basic-nav-dropdown-sort">
+            {dropdownItems}
+        </NavDropdown>;
+    }
+
+    buildEncodersItems() {
+        const dropdownItems: ReactElement[] = [];
+        ENCODERS.forEach((value: EncodeDecodeFunc, key: Encoder) => {
+            dropdownItems.push(
+                <NavDropdown.Item eventKey={key} onClick={(e) => this.onEncodeClicked(key)}>
+                    {key}
+                </NavDropdown.Item>,
+            );
+        });
+
+        return <NavDropdown title="Encoders" id="basic-nav-dropdown-encode">
+            {dropdownItems}
+        </NavDropdown>;
+    }
+
+    buildDecodersItems() {
+        const dropdownItems: ReactElement[] = [];
+        DECODERS.forEach((value: EncodeDecodeFunc, key: Decoder) => {
+            dropdownItems.push(
+                <NavDropdown.Item eventKey={key} onClick={(e) => this.onDecodeClicked(key)}>
+                    {key}
+                </NavDropdown.Item>,
+            );
+        });
+
+        return <NavDropdown title="Decoders" id="basic-nav-dropdown-decode">
+            {dropdownItems}
+        </NavDropdown>;
     }
 
     render() {
@@ -78,9 +160,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
         return (
             <>
                 <NavigationBar/>
-                <br/>
-
-                <Navbar bg="light" variant="light">
+                <Navbar bg="light" variant="light" expand="lg">
                     <Container>
                         <Nav>
                             <Nav.Link onClick={(e) => this.onCopyClicked()}>Copy</Nav.Link>
@@ -88,28 +168,10 @@ export default class StringPage extends React.Component<any, StringPageState> {
                             <Nav.Link onClick={(e) => this.onCutClicked()}>Cut</Nav.Link>
                             <Nav.Link onClick={(e) => this.onClearClicked()}>Clear</Nav.Link>
                             <Nav.Link onClick={(e) => this.onSplitClicked()}>Split</Nav.Link>
-
-                            <NavDropdown title="Sort" id="basic-nav-dropdown">
-                                <NavDropdown.Item eventKey={SortingTypes.ASC}
-                                                  onClick={(e) => this.onSortClicked(SortingTypes.ASC)}>
-                                    Ascending
-                                </NavDropdown.Item>
-
-                                <NavDropdown.Item eventKey={SortingTypes.DSC}
-                                                  onClick={(e) => this.onSortClicked(SortingTypes.DSC)}>
-                                    Descending
-                                </NavDropdown.Item>
-
-                                <NavDropdown.Item eventKey={SortingTypes.ASC_IGN_CASE}
-                                                  onClick={(e) => this.onSortClicked(SortingTypes.ASC_IGN_CASE)}>
-                                    Ascending Ignore Case
-                                </NavDropdown.Item>
-
-                                <NavDropdown.Item eventKey={SortingTypes.DSC_IGN_CASE}
-                                                  onClick={(e) => this.onSortClicked(SortingTypes.DSC_IGN_CASE)}>
-                                    Descending Ignore Case
-                                </NavDropdown.Item>
-                            </NavDropdown>
+                            <Nav.Link onClick={(e) => this.onShuffleClicked()}>Shuffle</Nav.Link>
+                            {this.buildSortingItems()}
+                            {this.buildEncodersItems()}
+                            {this.buildDecodersItems()}
                         </Nav>
                     </Container>
                 </Navbar>
