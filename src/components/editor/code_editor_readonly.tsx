@@ -1,24 +1,29 @@
 import React from "react";
 import CodeMirror from "@uiw/react-codemirror";
+import {LanguageName, loadLanguage} from "@uiw/codemirror-extensions-langs";
 
-type CodeEditorProps = {
+type ReadOnlyCodeEditorProps = {
     text: string;
-    onTextChanged: (text: string) => void;
+    syntax: string;
+    width: string | undefined;
+    height: string | undefined;
 }
 
-type CodeEditorState = any;
 
-
-class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
-    contentIsChanged(text: string) {
-        this.props.onTextChanged(text);
-    }
-
+class ReadOnlyCodeEditor extends React.Component<ReadOnlyCodeEditorProps, any> {
     render() {
         const widgetText: string = this.props.text ? this.props.text : "";
+        const extensions: any[] = [];
+        const currentSyntaxLang = loadLanguage(this.props.syntax as LanguageName);
+        if (currentSyntaxLang) {
+            extensions.push(currentSyntaxLang);
+        }
+
         return (
             <div>
-                <CodeMirror height="100vh"
+                <CodeMirror height={this.props.height}
+                            width={this.props.width}
+                            readOnly={true}
                             basicSetup={{
                                 foldGutter: true,
                                 allowMultipleSelections: true,
@@ -30,12 +35,12 @@ class CodeEditor extends React.Component<CodeEditorProps, CodeEditorState> {
                                 syntaxHighlighting: true,
                                 bracketMatching: true,
                             }}
+                            extensions={extensions}
                             value={widgetText}
-                            onChange={(text) => this.contentIsChanged(text)}
                 />
             </div>
         );
     }
 }
 
-export default CodeEditor;
+export default ReadOnlyCodeEditor;

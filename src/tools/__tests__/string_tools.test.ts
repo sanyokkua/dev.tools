@@ -1,20 +1,19 @@
-import * as stringUtils from "../string_tools";
-import {randomizeStringsOrder} from "../string_tools";
+import {getLinesFromString, randomizeStringsOrder, SortingTypes, sortStrings, splitStringBy} from "../string_tools";
 
 describe("splitStringBy", () => {
     test("test empty or null(undefined) data passed to splitStringBy", () => {
-        expect(stringUtils.splitStringBy(null, ","))
+        expect(splitStringBy(null, ","))
             .toStrictEqual([]);
-        expect(stringUtils.splitStringBy(undefined, ","))
+        expect(splitStringBy(undefined, ","))
             .toStrictEqual([]);
-        expect(stringUtils.splitStringBy("", ","))
+        expect(splitStringBy("", ","))
             .toStrictEqual([]);
     });
     test("test null(undefined) splitter passed to splitStringBy", () => {
         const data = "text\nsome\nlines";
-        expect(() => stringUtils.splitStringBy(data, null))
+        expect(() => splitStringBy(data, null))
             .toThrowError("Splitter is null or undefined");
-        expect(() => stringUtils.splitStringBy(data, undefined))
+        expect(() => splitStringBy(data, undefined))
             .toThrowError("Splitter is null or undefined");
     });
     test("test splitStringBy works as expected with appropriate data and splitters", () => {
@@ -27,28 +26,28 @@ describe("splitStringBy", () => {
         const data7 = "        ";
         const data8 = "text YGR2 some YGR2 lines YGR2  YGR2  YGR2  YGR2";
         const expectedResult = ["text", "some", "lines"];
-        expect(stringUtils.splitStringBy(data, "\n")).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data, /\n/)).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data2, "\n\r")).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data2, /[\n\r]+/)).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data3, "\r")).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data3, /\r/)).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data4, ",")).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data4, /[,\\.:]/)).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data5, ":")).toStrictEqual(expectedResult);
-        expect(stringUtils.splitStringBy(data6, "\n")).toStrictEqual(["text"]);
-        expect(stringUtils.splitStringBy(data7, "\n")).toStrictEqual([]);
-        expect(stringUtils.splitStringBy(data8, "YGR2")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data, "\n")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data, /\n/)).toStrictEqual(expectedResult);
+        expect(splitStringBy(data2, "\n\r")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data2, /[\n\r]+/)).toStrictEqual(expectedResult);
+        expect(splitStringBy(data3, "\r")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data3, /\r/)).toStrictEqual(expectedResult);
+        expect(splitStringBy(data4, ",")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data4, /[,\\.:]/)).toStrictEqual(expectedResult);
+        expect(splitStringBy(data5, ":")).toStrictEqual(expectedResult);
+        expect(splitStringBy(data6, "\n")).toStrictEqual(["text"]);
+        expect(splitStringBy(data7, "\n")).toStrictEqual([]);
+        expect(splitStringBy(data8, "YGR2")).toStrictEqual(expectedResult);
     });
 });
 
 describe("getLinesFromString", () => {
     test("test empty or null(undefined) data passed to getLinesFromString", () => {
-        expect(stringUtils.getLinesFromString(null))
+        expect(getLinesFromString(null))
             .toStrictEqual([]);
-        expect(stringUtils.getLinesFromString(undefined))
+        expect(getLinesFromString(undefined))
             .toStrictEqual([]);
-        expect(stringUtils.getLinesFromString(""))
+        expect(getLinesFromString(""))
             .toStrictEqual([]);
     });
     test("test getLinesFromString works as expected with appropriate data", () => {
@@ -56,22 +55,22 @@ describe("getLinesFromString", () => {
         const data2 = "  text\n\rsome\n\rlines";
         const data3 = "text\rsome\rlines   ";
         const expectedResult = ["text", "some", "lines"];
-        expect(stringUtils.getLinesFromString(data)).toStrictEqual(expectedResult);
-        expect(stringUtils.getLinesFromString(data)).toStrictEqual(expectedResult);
-        expect(stringUtils.getLinesFromString(data2)).toStrictEqual(expectedResult);
-        expect(stringUtils.getLinesFromString(data2)).toStrictEqual(expectedResult);
-        expect(stringUtils.getLinesFromString(data3)).toStrictEqual(expectedResult);
-        expect(stringUtils.getLinesFromString(data3)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data2)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data2)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data3)).toStrictEqual(expectedResult);
+        expect(getLinesFromString(data3)).toStrictEqual(expectedResult);
     });
 });
 
 describe("sortStrings", () => {
     test("test empty or null(undefined) data passed to sortStrings", () => {
-        expect(stringUtils.sortStrings(null))
+        expect(sortStrings(null))
             .toStrictEqual([]);
-        expect(stringUtils.sortStrings(undefined))
+        expect(sortStrings(undefined))
             .toStrictEqual([]);
-        expect(stringUtils.sortStrings([]))
+        expect(sortStrings([]))
             .toStrictEqual([]);
     });
     test("test sortStrings works as expected with appropriate data", () => {
@@ -178,23 +177,23 @@ describe("sortStrings", () => {
             "cORnflAKeS",
         ];
 
-        expect(stringUtils.sortStrings(data1)).toStrictEqual(expData1);
-        expect(stringUtils.sortStrings(data2asc)).toStrictEqual(expData2asc);
-        expect(stringUtils.sortStrings(data3desc, stringUtils.SortingTypes.DSC)).toStrictEqual(expData3desc);
-        expect(stringUtils.sortStrings(data4ascCase, stringUtils.SortingTypes.ASC_IGN_CASE))
+        expect(sortStrings(data1)).toStrictEqual(expData1);
+        expect(sortStrings(data2asc)).toStrictEqual(expData2asc);
+        expect(sortStrings(data3desc, SortingTypes.DSC)).toStrictEqual(expData3desc);
+        expect(sortStrings(data4ascCase, SortingTypes.ASC_IGN_CASE))
             .toStrictEqual(expData4ascCase);
-        expect(stringUtils.sortStrings(data5descCase, stringUtils.SortingTypes.DSC_IGN_CASE))
+        expect(sortStrings(data5descCase, SortingTypes.DSC_IGN_CASE))
             .toStrictEqual(expData5descCase);
     });
 });
 
 describe("randomizeStringsOrder", () => {
     test("test empty or null(undefined) data passed to randomizeStringsOrder", () => {
-        expect(stringUtils.randomizeStringsOrder(null))
+        expect(randomizeStringsOrder(null))
             .toStrictEqual([]);
-        expect(stringUtils.randomizeStringsOrder(undefined))
+        expect(randomizeStringsOrder(undefined))
             .toStrictEqual([]);
-        expect(stringUtils.randomizeStringsOrder([]))
+        expect(randomizeStringsOrder([]))
             .toStrictEqual([]);
     });
     test("test randomizeStringsOrder works as expected with appropriate data", () => {
@@ -213,7 +212,7 @@ describe("randomizeStringsOrder", () => {
             "tOoThbrUSh",
         ];
 
-        expect(stringUtils.sortStrings(data1)).toStrictEqual(expData1);
-        expect(stringUtils.sortStrings(data2)).not.toStrictEqual(data2);
+        expect(sortStrings(data1)).toStrictEqual(expData1);
+        expect(sortStrings(data2)).not.toStrictEqual(data2);
     });
 });

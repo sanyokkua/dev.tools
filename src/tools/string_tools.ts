@@ -1,4 +1,4 @@
-import {Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS} from "@/tools/encoding_tools";
+import {Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS} from "../tools/encoding_tools";
 
 export enum SortingTypes {
     ASC = "ASCENDING",

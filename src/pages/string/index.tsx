@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
 import NavigationBar from "@/components/navigation";
-import CodeEditor from "@/components/editor/codeeditor";
+import Code_editor from "@/components/editor/code_editor";
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {copyToClipboard, getFromClipboard} from "@/tools/common_tools";
 import {
@@ -176,7 +176,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
                     </Container>
                 </Navbar>
 
-                <CodeEditor text={editorText} onTextChanged={(text) => this.onTextChanged(text)}/>
+                <Code_editor text={editorText} onTextChanged={(text) => this.onTextChanged(text)}/>
             </>
         );
     }
