@@ -6,36 +6,30 @@ type CodeEditorProps = {
     onTextChanged: (text: string) => void;
 }
 
-type CodeEditorState = any;
 
+export const CodeEditor: React.FC<CodeEditorProps> = (props: CodeEditorProps) => {
+    const contentIsChanged = (text: string) => props.onTextChanged(text);
+    const widgetText: string = props.text ? props.text : "";
 
-class Code_editor extends React.Component<CodeEditorProps, CodeEditorState> {
-    contentIsChanged(text: string) {
-        this.props.onTextChanged(text);
-    }
+    return (
+        <div>
+            <CodeMirror height="100vh"
+                        basicSetup={{
+                            foldGutter: true,
+                            allowMultipleSelections: true,
+                            indentOnInput: true,
+                            tabSize: 4,
+                            highlightActiveLine: true,
+                            highlightActiveLineGutter: true,
+                            highlightSelectionMatches: true,
+                            syntaxHighlighting: true,
+                            bracketMatching: true,
+                        }}
+                        value={widgetText}
+                        onChange={(text) => contentIsChanged(text)}
+            />
+        </div>
+    );
+};
 
-    render() {
-        const widgetText: string = this.props.text ? this.props.text : "";
-        return (
-            <div>
-                <CodeMirror height="100vh"
-                            basicSetup={{
-                                foldGutter: true,
-                                allowMultipleSelections: true,
-                                indentOnInput: true,
-                                tabSize: 4,
-                                highlightActiveLine: true,
-                                highlightActiveLineGutter: true,
-                                highlightSelectionMatches: true,
-                                syntaxHighlighting: true,
-                                bracketMatching: true,
-                            }}
-                            value={widgetText}
-                            onChange={(text) => this.contentIsChanged(text)}
-                />
-            </div>
-        );
-    }
-}
-
-export default Code_editor;
+export default CodeEditor;

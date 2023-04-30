@@ -1,7 +1,5 @@
-import React, {ReactElement} from "react";
-import NavigationBar from "@/components/navigation";
-import Code_editor from "@/components/editor/code_editor";
-import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
+import React from "react";
+import CodeEditor from "@/components/editor/code_editor";
 import {copyToClipboard, getFromClipboard} from "@/tools/common_tools";
 import {
     decodeText,
@@ -13,54 +11,83 @@ import {
     splitStringBy,
 } from "@/tools/string_tools";
 import {Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS} from "@/tools/encoding_tools";
+import AppLayout, {mapPageMenuItemsToMenuPropsItems, PageMenuItem} from "@/components/app_layout";
+import {MessageType, showMessage} from "@/components/notifications";
+import SplitModal from "@/components/string/string_modals";
 
 type StringPageState = {
     text: string;
+    showModal: boolean;
 };
 export default class StringPage extends React.Component<any, StringPageState> {
     constructor(props: any) {
         super(props);
-        this.setState({
+        this.state = {
             text: "",
-        });
+            showModal: false,
+        };
     }
 
     onCopyClicked() {
         const txt = this.state?.text;
         copyToClipboard(txt && txt.length > 0 ? txt : "");
+        showMessage(MessageType.INFO, "Copied");
     }
 
     onPasteClicked() {
         getFromClipboard()
-            .then((text) => this.setState({text: text}))
-            .catch(err => console.error(err));
-
+            .then((text) => {
+                this.setState({text: text});
+                showMessage(MessageType.INFO, "Pasted");
+            })
+            .catch(err => {
+                console.error(err);
+                showMessage(MessageType.ERROR, "Failed to paste data");
+            });
     }
 
     onCutClicked() {
         const txt = this.state?.text;
         copyToClipboard(txt && txt.length > 0 ? txt : "");
         this.setState({text: ""});
+        showMessage(MessageType.INFO, "Cut");
     }
 
     onClearClicked() {
         this.setState({text: ""});
+        showMessage(MessageType.INFO, "Cleared");
     }
 
     onSplitClicked() {
+        this.setState({showModal: true});
+    }
+
+    splitText(splitter: string | null) {
+        this.setState({showModal: false});
         const txt = this.state.text;
         if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "Nothing to split");
+            return;
+        }
+        if (!splitter) {
+            showMessage(MessageType.WARNING, "Split is cancelled");
+            return;
+        }
+        if (splitter.length === 0) {
+            showMessage(MessageType.WARNING, "Splitter is empty");
             return;
         }
 
-        const strings = splitStringBy(txt, ".");
+        const strings = splitStringBy(txt, splitter);
         const result = strings.join("\n");
         this.setState({text: result});
+        showMessage(MessageType.SUCCESS, "Split successful");
     }
 
     onShuffleClicked() {
         const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "Nothing to shuffle");
             return;
         }
 
@@ -68,11 +95,13 @@ export default class StringPage extends React.Component<any, StringPageState> {
         const sorted = randomizeStringsOrder(linesFromString);
 
         this.setState({text: sorted.join("\n")});
+        showMessage(MessageType.SUCCESS, "Shuffle successful");
     }
 
     onSortClicked(sortType: SortingTypes) {
         const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "Nothing to sort");
             return;
         }
 
@@ -80,6 +109,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
         const sorted = sortStrings(linesFromString, sortType);
 
         this.setState({text: sorted.join("\n")});
+        showMessage(MessageType.SUCCESS, "Sort successful");
     }
 
     onTextChanged(text: string) {
@@ -91,93 +121,89 @@ export default class StringPage extends React.Component<any, StringPageState> {
     onEncodeClicked(encoder: Encoder) {
         const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "Nothing to encode");
             return;
         }
 
         encodeText(txt, encoder)
-            .then((text: string) => this.setState({text: text}))
-            .catch(e => console.warn(e));
+            .then((text: string) => {
+                this.setState({text: text});
+                showMessage(MessageType.SUCCESS, "Encoded successful");
+            })
+            .catch(err => {
+                console.error(err);
+                showMessage(MessageType.ERROR, "Failed to encode data");
+            });
     }
 
     onDecodeClicked(decoder: Decoder) {
         const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "Nothing to decode");
             return;
         }
 
         decodeText(txt, decoder)
-            .then((text: string) => this.setState({text: text}))
-            .catch(e => console.warn(e));
-    }
-
-    buildSortingItems() {
-        const dropdownItems: ReactElement[] = [];
-        [SortingTypes.ASC, SortingTypes.DSC, SortingTypes.ASC_IGN_CASE, SortingTypes.DSC_IGN_CASE]
-            .forEach((value: SortingTypes) => {
-                dropdownItems.push(
-                    <NavDropdown.Item eventKey={value} onClick={(e) => this.onSortClicked(value)}>
-                        {value}
-                    </NavDropdown.Item>,
-                );
+            .then((text: string) => {
+                this.setState({text: text});
+                showMessage(MessageType.SUCCESS, "Decoded successful");
+            })
+            .catch(err => {
+                console.error(err);
+                showMessage(MessageType.ERROR, "Failed to decode data");
             });
-        return <NavDropdown title="Sorting" id="basic-nav-dropdown-sort">
-            {dropdownItems}
-        </NavDropdown>;
     }
 
-    buildEncodersItems() {
-        const dropdownItems: ReactElement[] = [];
+    buildMenuItemsSort(): PageMenuItem[] {
+        return [SortingTypes.ASC, SortingTypes.DSC, SortingTypes.ASC_IGN_CASE, SortingTypes.DSC_IGN_CASE]
+            .map(sortType => {
+                return {title: sortType, onClick: () => this.onSortClicked(sortType)};
+            });
+    }
+
+    buildMenuItemsEncoders(): PageMenuItem[] {
+        const dropdownItems: PageMenuItem[] = [];
         ENCODERS.forEach((value: EncodeDecodeFunc, key: Encoder) => {
             dropdownItems.push(
-                <NavDropdown.Item eventKey={key} onClick={(e) => this.onEncodeClicked(key)}>
-                    {key}
-                </NavDropdown.Item>,
+                {title: key, onClick: () => this.onEncodeClicked(key)},
             );
         });
-
-        return <NavDropdown title="Encoders" id="basic-nav-dropdown-encode">
-            {dropdownItems}
-        </NavDropdown>;
+        return dropdownItems;
     }
 
-    buildDecodersItems() {
-        const dropdownItems: ReactElement[] = [];
+    buildMenuItemsDecoders(): PageMenuItem[] {
+        const dropdownItems: PageMenuItem[] = [];
         DECODERS.forEach((value: EncodeDecodeFunc, key: Decoder) => {
             dropdownItems.push(
-                <NavDropdown.Item eventKey={key} onClick={(e) => this.onDecodeClicked(key)}>
-                    {key}
-                </NavDropdown.Item>,
+                {title: key, onClick: () => this.onDecodeClicked(key)},
             );
         });
 
-        return <NavDropdown title="Decoders" id="basic-nav-dropdown-decode">
-            {dropdownItems}
-        </NavDropdown>;
+        return dropdownItems;
     }
 
     render() {
         const editorText: string = this.state?.text ? this.state.text : "";
-        return (
-            <>
-                <NavigationBar/>
-                <Navbar bg="light" variant="light" expand="lg">
-                    <Container>
-                        <Nav>
-                            <Nav.Link onClick={(e) => this.onCopyClicked()}>Copy</Nav.Link>
-                            <Nav.Link onClick={(e) => this.onPasteClicked()}>Paste</Nav.Link>
-                            <Nav.Link onClick={(e) => this.onCutClicked()}>Cut</Nav.Link>
-                            <Nav.Link onClick={(e) => this.onClearClicked()}>Clear</Nav.Link>
-                            <Nav.Link onClick={(e) => this.onSplitClicked()}>Split</Nav.Link>
-                            <Nav.Link onClick={(e) => this.onShuffleClicked()}>Shuffle</Nav.Link>
-                            {this.buildSortingItems()}
-                            {this.buildEncodersItems()}
-                            {this.buildDecodersItems()}
-                        </Nav>
-                    </Container>
-                </Navbar>
+        const operations: PageMenuItem[] = [
+            {title: "Copy", onClick: () => this.onCopyClicked()},
+            {title: "Paste", onClick: () => this.onPasteClicked()},
+            {title: "Cut", onClick: () => this.onCutClicked()},
+            {title: "Clear", onClick: () => this.onClearClicked()},
+            {title: "Split", onClick: () => this.onSplitClicked()},
+            {title: "Shuffle", onClick: () => this.onShuffleClicked()},
+            {title: "Sorting", children: this.buildMenuItemsSort()},
+            {title: "Encoders", children: this.buildMenuItemsEncoders()},
+            {title: "Decoders", children: this.buildMenuItemsDecoders()},
 
-                <Code_editor text={editorText} onTextChanged={(text) => this.onTextChanged(text)}/>
-            </>
+        ];
+        const menuItems = mapPageMenuItemsToMenuPropsItems(operations);
+        const content = <div>
+            <CodeEditor text={editorText} onTextChanged={(text) => this.onTextChanged(text)}/>
+            <SplitModal showModal={this.state.showModal}
+                        onSubmit={(value) => this.splitText(value?.splitSymbol)}/>
+        </div>;
+        return (
+            <AppLayout breadcrumbItems={["Home", "string"]} content={content} menuProps={menuItems}/>
         );
     }
 }

@@ -1,11 +1,10 @@
 import React from "react";
-import NavigationBar from "@/components/navigation";
+import AppLayout from "@/components/app_layout";
 
 export default function JsonPage() {
     return (
         <>
-            <NavigationBar/>
-            <div>Json Page</div>
+            <AppLayout breadcrumbItems={["Home", "Json"]} content={<div>Json Page</div>}/>
         </>
 
     );

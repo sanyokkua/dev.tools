@@ -1,24 +1,33 @@
 import React from "react";
-import {Toast, ToastContainer} from "react-bootstrap";
+import {message} from "antd";
 
-type NotificationToastProps = {
-    header: string;
-    message: string;
-    show: boolean;
-    onClose: () => void;
-};
+export enum MessageType {
+    SUCCESS = "success",
+    ERROR = "error",
+    WARNING = "warning",
+    INFO = "info",
+    LOADING = "loading",
+}
 
-export function NotificationToast(props: NotificationToastProps) {
-    return (
-        <ToastContainer className="p-3" position="bottom-end">
-            <Toast onClose={() => props.onClose()}
-                   show={props.show} bg="success"
-                   delay={3000} autohide>
-                <Toast.Header>
-                    <strong className="me-auto">{props.header}</strong>
-                </Toast.Header>
-                <Toast.Body> <strong className="me-auto">{props.message}</strong> </Toast.Body>
-            </Toast>
-        </ToastContainer>
-    );
+export function showMessage(msgType: MessageType, content: string, onClose?: () => void): void {
+    switch (msgType) {
+        case MessageType.INFO:
+            message.info(content, undefined, onClose);
+            return;
+        case MessageType.SUCCESS:
+            message.success(content, undefined, onClose);
+            return;
+        case MessageType.WARNING:
+            message.warning(content, undefined, onClose);
+            return;
+        case MessageType.ERROR:
+            message.error(content, undefined, onClose);
+            return;
+        case MessageType.LOADING:
+            message.loading(content, undefined, onClose);
+            return;
+        default:
+            message.info(content, undefined, onClose);
+            return;
+    }
 }

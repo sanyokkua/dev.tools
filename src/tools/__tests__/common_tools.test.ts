@@ -30,10 +30,12 @@ describe("joinTerminalCommands", () => {
             expect(joinTerminalCommands(["git clone"])).toStrictEqual("git clone");
         });
         test("test joinTerminalCommands, with errors applicable", () => {
-            expect(joinTerminalCommands(["git clone someRepo", "git pull origin master", "cd .."], true)).toStrictEqual("git clone someRepo & git pull origin master & cd ..");
+            expect(joinTerminalCommands(["git clone someRepo", "git pull origin master", "cd .."], true))
+                .toStrictEqual("git clone someRepo & git pull origin master & cd ..");
         });
         test("test joinTerminalCommands, with errors NOT applicable", () => {
-            expect(joinTerminalCommands(["git clone someRepo", "git pull origin master", "cd .."], false)).toStrictEqual("git clone someRepo && git pull origin master && cd ..");
+            expect(joinTerminalCommands(["git clone someRepo", "git pull origin master", "cd .."], false))
+                .toStrictEqual("git clone someRepo && git pull origin master && cd ..");
         });
     });
 });

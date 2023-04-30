@@ -1,11 +1,10 @@
 import React from "react";
-import NavigationBar from "@/components/navigation";
+import AppLayout from "@/components/app_layout";
 
 export default function TerminalUtilsPage() {
     return (
         <>
-            <NavigationBar/>
-            <div>Terminal Utils Page</div>
+            <AppLayout breadcrumbItems={["Home", "Terminal"]} content={<div>Terminal Utils Page</div>}/>
         </>
     );
 }
