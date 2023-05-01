@@ -1,6 +1,7 @@
 import React from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import {LanguageName, loadLanguage} from "@uiw/codemirror-extensions-langs";
+import {darcula} from "@uiw/codemirror-theme-darcula";
 
 type ReadOnlyCodeEditorProps = {
     text: string;
@@ -23,6 +24,7 @@ export const ReadOnlyCodeEditor: React.FC<ReadOnlyCodeEditorProps> = (props: Rea
             <CodeMirror height={props.height}
                         width={props.width}
                         readOnly={true}
+                        theme={darcula}
                         basicSetup={{
                             foldGutter: true,
                             allowMultipleSelections: true,

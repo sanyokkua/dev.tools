@@ -221,7 +221,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
         ];
         const menuItems = mapPageMenuItemsToMenuPropsItems(operations);
         const content = <div>
-            <CodeEditor text={editorText} onTextChanged={(text) => this.onTextChanged(text)}/>
+            <CodeEditor text={editorText} onTextChanged={(text) => this.onTextChanged(text)} height={"50hv"}/>
             <SplitModal showModal={this.state.showModal}
                         onSubmit={(value) => this.splitText(value?.splitSymbol)}/>
         </div>;
