@@ -6,6 +6,7 @@ import {
     encodeText,
     getLinesFromString,
     randomizeStringsOrder,
+    removeDuplicates,
     SortingTypes,
     sortStrings,
     splitStringBy,
@@ -98,6 +99,20 @@ export default class StringPage extends React.Component<any, StringPageState> {
         showMessage(MessageType.SUCCESS, "Shuffle successful");
     }
 
+    onRemoveDuplicatesClicked(ignoreCase: boolean = false) {
+        const txt = this.state?.text;
+        if (txt === null || txt === undefined || txt.length === 0) {
+            showMessage(MessageType.WARNING, "No lines to filter duplicates");
+            return;
+        }
+        const linesFromString = getLinesFromString(txt);
+        const strings = removeDuplicates(linesFromString, ignoreCase);
+        this.setState({
+            text: strings.join("\n"),
+        });
+        showMessage(MessageType.SUCCESS, "Duplicates removed successfully");
+    }
+
     onSortClicked(sortType: SortingTypes) {
         const txt = this.state?.text;
         if (txt === null || txt === undefined || txt.length === 0) {
@@ -182,6 +197,13 @@ export default class StringPage extends React.Component<any, StringPageState> {
         return dropdownItems;
     }
 
+    buildMenuItemsDuplicates(): PageMenuItem[] {
+        return [
+            {title: "Remove Duplicates", onClick: () => this.onRemoveDuplicatesClicked(false)},
+            {title: "Remove Duplicates Ignore Case", onClick: () => this.onRemoveDuplicatesClicked(true)},
+        ];
+    }
+
     render() {
         const editorText: string = this.state?.text ? this.state.text : "";
         const operations: PageMenuItem[] = [
@@ -191,6 +213,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
             {title: "Clear", onClick: () => this.onClearClicked()},
             {title: "Split", onClick: () => this.onSplitClicked()},
             {title: "Shuffle", onClick: () => this.onShuffleClicked()},
+            {title: "Remove Duplicate Lines", children: this.buildMenuItemsDuplicates()},
             {title: "Sorting", children: this.buildMenuItemsSort()},
             {title: "Encoders", children: this.buildMenuItemsEncoders()},
             {title: "Decoders", children: this.buildMenuItemsDecoders()},

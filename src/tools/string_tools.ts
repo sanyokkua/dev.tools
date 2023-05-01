@@ -114,3 +114,22 @@ export async function decodeText(text: string, decoder: Decoder): Promise<string
 
     return text;
 }
+
+export function removeDuplicates(lines: string[] | undefined | null, ignoreCase: boolean = false): string[] {
+    if (lines === undefined || lines === null || lines.length === 0) {
+        return [];
+    }
+    if (lines.length === 1) {
+        return [lines[0]];
+    }
+    const uniqueArr: string[] = [];
+    const map: Map<string, boolean> = new Map();
+    lines.forEach((item: string) => {
+        const key: string = ignoreCase ? item.toLowerCase() : item;
+        if (!map.has(key)) {
+            map.set(key, true);
+            uniqueArr.push(item);
+        }
+    });
+    return uniqueArr;
+}

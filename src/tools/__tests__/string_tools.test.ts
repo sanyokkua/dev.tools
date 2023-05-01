@@ -1,4 +1,11 @@
-import {getLinesFromString, randomizeStringsOrder, SortingTypes, sortStrings, splitStringBy} from "../string_tools";
+import {
+    getLinesFromString,
+    randomizeStringsOrder,
+    removeDuplicates,
+    SortingTypes,
+    sortStrings,
+    splitStringBy,
+} from "../string_tools";
 
 describe("splitStringBy", () => {
     test("test empty or null(undefined) data passed to splitStringBy", () => {
@@ -214,5 +221,57 @@ describe("randomizeStringsOrder", () => {
 
         expect(sortStrings(data1)).toStrictEqual(expData1);
         expect(sortStrings(data2)).not.toStrictEqual(data2);
+    });
+});
+
+describe("removeDuplicates", () => {
+    test("test empty or null(undefined) data passed to removeDuplicates", () => {
+        expect(removeDuplicates(null))
+            .toStrictEqual([]);
+        expect(removeDuplicates(undefined))
+            .toStrictEqual([]);
+        expect(removeDuplicates([]))
+            .toStrictEqual([]);
+    });
+    test("test removeDuplicates works as expected with appropriate data", () => {
+        const data1 = ["text"];
+        const expData1 = ["text"];
+        const data2 = [
+            "1111",
+            "aaaa",
+            "2222",
+            "GlOBAl",
+            "1111",
+            "AAAA",
+            "ffffff",
+            "wwwww",
+            "ddddd",
+            "ww",
+        ];
+        const expData2 = [
+            "1111",
+            "aaaa",
+            "2222",
+            "GlOBAl",
+            "AAAA",
+            "ffffff",
+            "wwwww",
+            "ddddd",
+            "ww",
+        ];
+        const expData3 = [
+            "1111",
+            "aaaa",
+            "2222",
+            "GlOBAl",
+            "ffffff",
+            "wwwww",
+            "ddddd",
+            "ww",
+        ];
+
+        expect(removeDuplicates(data1)).toStrictEqual(expData1);
+        expect(removeDuplicates(data2, false)).toStrictEqual(expData2);
+        expect(removeDuplicates(data2, true)).toStrictEqual(expData3);
     });
 });
