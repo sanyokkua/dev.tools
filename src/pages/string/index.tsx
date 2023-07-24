@@ -226,7 +226,7 @@ export default class StringPage extends React.Component<any, StringPageState> {
                         onSubmit={(value) => this.splitText(value?.splitSymbol)}/>
         </div>;
         return (
-            <AppLayout breadcrumbItems={["Home", "string"]} content={content} menuProps={menuItems}/>
+            <AppLayout breadcrumbItems={["Home", "String"]} content={content} menuProps={menuItems}/>
         );
     }
 }

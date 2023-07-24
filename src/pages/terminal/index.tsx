@@ -90,7 +90,7 @@ export default class TerminalUtilsPage extends React.Component<any, TerminalUtil
             </>}
         </div>;
         return (
-            <AppLayout breadcrumbItems={["Home", "string"]} content={content} menuProps={menuItems}/>
+            <AppLayout breadcrumbItems={["Home", "Terminal"]} content={content} menuProps={menuItems}/>
         );
     }
 }
