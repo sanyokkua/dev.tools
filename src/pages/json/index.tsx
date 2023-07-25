@@ -45,7 +45,7 @@ export default class JsonPage extends React.Component<any, JsonPageState> {
     onClearClicked() {
         this.setState({
             formattedJson: "",
-            originalJson: ""
+            originalJson: "",
         });
         showMessage(MessageType.INFO, "Cleared");
     }
@@ -55,8 +55,8 @@ export default class JsonPage extends React.Component<any, JsonPageState> {
         try {
             const json = formatJson(toFormat, 4);
             this.setState({
-                formattedJson: json
-            })
+                formattedJson: json,
+            });
         } catch (e: any) {
             this.setState({
                 formattedJson: "",
@@ -69,8 +69,8 @@ export default class JsonPage extends React.Component<any, JsonPageState> {
         try {
             const json = formatJson(toFormat, 0);
             this.setState({
-                formattedJson: json
-            })
+                formattedJson: json,
+            });
         } catch (e: any) {
             this.setState({
                 formattedJson: "",

@@ -4,8 +4,7 @@ import {generateGitConfig} from "@/tools/git_utils";
 import {copyToClipboard} from "@/tools/common_tools";
 import {MessageType, showMessage} from "@/components/notifications";
 import AppLayout from "@/components/app_layout";
-import {GenericButton} from "@/components/common_controls";
-import {Col, Row} from "antd";
+import {GenericCodeViewerWithCopyButton} from "@/components/common_controls";
 import {GitForm, GitFormResult} from "@/components/git/git_form";
 
 type GitPageState = {
@@ -90,46 +89,15 @@ ssh-keygen -t ed25519 -C "your_email@example.com"`;
             <GitForm isGlobal={true} onSubmit={(res) => this.onFormSubmitted(res)} onReset={() => this.onReset()}/>
 
             {this.state?.combinedCommandString?.length > 0 && <div>
-                <Row>
-                    <Col span={22}>
-                        <ReadOnlyCodeEditor text={this.state.usernameCommand} syntax={"shell"} width={"10hv"}
-                                            height={"3vh"}/>
-                    </Col>
-                    <Col span={2}>
-                        <GenericButton type={"primary"} label={"Copy"} fitToWidth={true}
-                                       onClick={() => this.onCopyBtnClicked(this.state.usernameCommand)}/>
-                    </Col>
-                </Row>
                 <br/>
-                <Row>
-                    <Col span={22}>
-                        <ReadOnlyCodeEditor text={this.state.emailCommandString} syntax={"shell"} width={"10hv"}
-                                            height={"3vh"}/>
-                    </Col>
-                    <Col span={2}>
-                        <GenericButton type={"primary"} label={"Copy"} fitToWidth={true}
-                                       onClick={() => this.onCopyBtnClicked(this.state.emailCommandString)}/>
-                    </Col>
-                </Row>
+                <GenericCodeViewerWithCopyButton codeText={this.state.usernameCommand}/>
                 <br/>
-                <Row>
-                    <Col span={22}>
-                        <ReadOnlyCodeEditor text={this.state.sshCommandString} syntax={"shell"} width={"10hv"}
-                                            height={"3vh"}/>
-                    </Col>
-                    <Col span={2}>
-                        <GenericButton type={"primary"} label={"Copy"} fitToWidth={true}
-                                       onClick={() => this.onCopyBtnClicked(this.state.sshCommandString)}/>
-                    </Col>
-                </Row>
+                <GenericCodeViewerWithCopyButton codeText={this.state.emailCommandString}/>
                 <br/>
-                <div>
-                    <p>Combined command:</p>
-                    <ReadOnlyCodeEditor text={this.state?.combinedCommandString} syntax={"shell"} width={"30hv"}
-                                        height={"5vh"}/>
-                    <GenericButton type={"primary"} label={"Copy"} fitToWidth={true}
-                                   onClick={() => this.onCopyBtnClicked(this.state.combinedCommandString)}/>
-                </div>
+                <GenericCodeViewerWithCopyButton codeText={this.state.sshCommandString}/>
+                <br/>
+                <GenericCodeViewerWithCopyButton codeText={this.state.combinedCommandString} height={"5vh"}/>
+                <br/>
             </div>}
         </>;
         return (

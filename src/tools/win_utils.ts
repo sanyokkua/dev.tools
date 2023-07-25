@@ -1,4 +1,4 @@
-import {joinTerminalCommands} from "@/tools/common_tools";
+import {buildCommand} from "@/tools/common_tools";
 
 export const WIN_GET_URL: string = "https://github.com/microsoft/winget-cli";
 export const WIN_GET_WEB_RESOURCES = ["https://winstall.app/", "https://winget.run/"];
@@ -41,14 +41,6 @@ export const WIN_GET_APPS_LIST: string[] = [
 ];
 
 
-export function buildCommand(values: string[]): string {
-    const commands: string[] = [];
-    if (values && values.length > 0) {
-        values.forEach(value => {
-            commands.push(WIN_GET_INSTALL_TEMPLATE.replace("{}", value));
-        });
-    }
-    const result = joinTerminalCommands(commands, true);
-    console.log(result);
-    return result;
+export function buildWindowsAppInstallCommand(values: string[]): string {
+    return buildCommand(values, WIN_GET_INSTALL_TEMPLATE);
 }

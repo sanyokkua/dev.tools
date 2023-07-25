@@ -1,5 +1,8 @@
 import React from "react";
-import {Button} from "antd";
+import {Button, Col, Row} from "antd";
+import ReadOnlyCodeEditor from "@/components/editor/code_editor_readonly";
+import {copyToClipboard} from "@/tools/common_tools";
+import {MessageType, showMessage} from "@/components/notifications";
 
 export type BtnType = "primary" | "default" | "dashed" | "text" | "link";
 export type BtnSize = "large" | "middle" | "small";
@@ -31,3 +34,30 @@ export function GenericButton(props: GenericButtonProps) {
         </Button>
     );
 }
+
+type GenericCodeViewerWithCopyButtonProps = {
+    codeText: string;
+    height?: string;
+}
+
+export function GenericCodeViewerWithCopyButton(props: GenericCodeViewerWithCopyButtonProps) {
+    const onCopyBtnClicked = (text: string) => {
+        copyToClipboard(text);
+        showMessage(MessageType.SUCCESS, `Copied ${text}`);
+        console.log(`onCopyBtnClicked`);
+    };
+
+    const height = props?.height ? props.height : "3vh";
+
+    return <Row>
+        <Col span={22}>
+            <ReadOnlyCodeEditor text={props.codeText} syntax={"shell"} width={"10hv"} wrapLines={true}
+                                height={height}/>
+        </Col>
+        <Col span={2}>
+            <GenericButton type={"primary"} label={"Copy"} fitToWidth={true}
+                           onClick={() => onCopyBtnClicked(props.codeText)}/>
+        </Col>
+    </Row>;
+}
+

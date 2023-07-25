@@ -25,3 +25,15 @@ export function joinTerminalCommands(commands: string[] | null | undefined, igno
     const separator: string = ignoreErrors ? " & " : " && ";
     return commands.join(separator);
 }
+
+export function buildCommand(values: string[], template: string): string {
+    const commands: string[] = [];
+    if (values && values.length > 0) {
+        values.forEach(value => {
+            commands.push(template.replace("{}", value));
+        });
+    }
+    const result = joinTerminalCommands(commands, true);
+    console.log(result);
+    return result;
+}

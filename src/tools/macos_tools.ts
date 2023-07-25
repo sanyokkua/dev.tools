@@ -1,4 +1,4 @@
-import {joinTerminalCommands} from "@/tools/common_tools";
+import {buildCommand} from "@/tools/common_tools";
 
 export const BREW_WEB_SITE: string = "https://brew.sh/";
 export const BREW_INSTALL_COMMAND: string = `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`;
@@ -56,26 +56,10 @@ export const BREW_FORMULAE_LIST: string[] = [
 
 
 export function buildTerminalAppsCommand(values: string[]): string {
-    const commands: string[] = [];
-    if (values && values.length > 0) {
-        values.forEach(value => {
-            commands.push(BREW_INSTALL_FORMULAE.replace("{}", value));
-        });
-    }
-    const result = joinTerminalCommands(commands, true);
-    console.log(result);
-    return result;
+    return buildCommand(values, BREW_INSTALL_FORMULAE);
 }
 
 export function buildDesktopAppsCommand(values: string[]): string {
-    const commands: string[] = [];
-    if (values && values.length > 0) {
-        values.forEach(value => {
-            commands.push(BREW_INSTALL_CASK.replace("{}", value));
-        });
-    }
-    const result = joinTerminalCommands(commands, true);
-    console.log(result);
-    return result;
+    return buildCommand(values, BREW_INSTALL_CASK);
 }
 
