@@ -1,27 +1,54 @@
+import {joinTerminalCommands} from "@/tools/common_tools";
+
 export const WIN_GET_URL: string = "https://github.com/microsoft/winget-cli";
 export const WIN_GET_WEB_RESOURCES = ["https://winstall.app/", "https://winget.run/"];
 export const WIN_GET_INSTALL_TEMPLATE: string = "winget install --id={} -e";
 export const WIN_GET_APPS_LIST: string[] = [
-    "Git.Git",
-    "OpenJS.NodeJS.LTS",
-    "GoLang.Go.1.19",
-    "Python.Python.3.11",
-    "Google.Chrome",
-    "Postman.Postman",
-    "EclipseAdoptium.Temurin.17.JDK",
-    "JetBrains.IntelliJIDEA.Ultimate",
-    "Microsoft.Skype",
-    "dbeaver.dbeaver",
     "7zip.7zip",
-    "Spotify.Spotify",
-    "Transmission.Transmission",
-    "Docker.DockerDesktop",
-    "Microsoft.Edge",
-    "Microsoft.VisualStudioCode",
-    "JGraph.Draw",
-    "Opera.Opera",
-    "Valve.Steam",
-    "Mozilla.Firefox",
-    "ElectronicArts.EADesktop",
+    "Adobe.Brackets",
     "AntonyCourtney.Tad",
+    "Docker.DockerDesktop",
+    "EclipseAdoptium.Temurin.17.JDK",
+    "ElectronicArts.EADesktop",
+    "Git.Git",
+    "GoLang.Go.1.19",
+    "Google.Chrome",
+    "JGraph.Draw",
+    "JetBrains.CLion",
+    "JetBrains.GoLand",
+    "JetBrains.IntelliJIDEA.Community",
+    "JetBrains.IntelliJIDEA.Ultimate",
+    "JetBrains.PyCharm.Community",
+    "JetBrains.PyCharm.Professional",
+    "JetBrains.WebStorm",
+    "Microsoft.Edge",
+    "Microsoft.RemoteDesktopClient",
+    "Microsoft.Skype",
+    "Microsoft.Teams",
+    "Microsoft.VisualStudioCode",
+    "Mozilla.Firefox",
+    "OpenJS.NodeJS.LTS",
+    "Opera.Opera",
+    "Postman.Postman",
+    "Python.Python.3.11",
+    "Spotify.Spotify",
+    "SublimeHQ.SublimeText.3",
+    "SublimeHQ.SublimeText.4",
+    "TorProject.TorBrowser",
+    "Transmission.Transmission",
+    "Valve.Steam",
+    "dbeaver.dbeaver",
 ];
+
+
+export function buildCommand(values: string[]): string {
+    const commands: string[] = [];
+    if (values && values.length > 0) {
+        values.forEach(value => {
+            commands.push(WIN_GET_INSTALL_TEMPLATE.replace("{}", value));
+        });
+    }
+    const result = joinTerminalCommands(commands, true);
+    console.log(result);
+    return result;
+}

@@ -69,7 +69,7 @@ export default class MacOSSetupPage extends React.Component<any, MacSetupState> 
                 In order to use it and save your time during setup of fresh Mac follow next steps:
             </p>
             <ol>
-                <li>Install <a href={"https://brew.sh/"} target={"_blank"}>Homebrew</a></li>
+                <li>Install <a href={BREW_WEB_SITE} target={"_blank"}>Homebrew</a></li>
                 <li>Select apps from left side on this page</li>
                 <li>Generate one single terminal command</li>
                 <li>Execute command in your terminal</li>
