@@ -1,10 +1,10 @@
-import {Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS} from "../tools/encoding_tools";
+import { Decoder, DECODERS, EncodeDecodeFunc, Encoder, ENCODERS } from '../tools/encoding_tools';
 
 export enum SortingTypes {
-    ASC = "ASCENDING",
-    DSC = "DESCENDING",
-    ASC_IGN_CASE = "ASCENDING IGNORE CASE",
-    DSC_IGN_CASE = "DESCENDING IGNORE CASE",
+    ASC = 'ASCENDING',
+    DSC = 'DESCENDING',
+    ASC_IGN_CASE = 'ASCENDING IGNORE CASE',
+    DSC_IGN_CASE = 'DESCENDING IGNORE CASE',
 }
 
 export function splitStringBy(data: string | undefined | null, splitter: RegExp | string | undefined | null): string[] {
@@ -13,7 +13,7 @@ export function splitStringBy(data: string | undefined | null, splitter: RegExp 
     }
 
     if (splitter === null || splitter === undefined) {
-        throw new Error("Splitter is null or undefined");
+        throw new Error('Splitter is null or undefined');
     }
 
     return data
@@ -31,7 +31,10 @@ export function getLinesFromString(data: string | null | undefined): string[] {
     return splitStringBy(data, splitter);
 }
 
-export function sortStrings(arr: string[] | null | undefined, sortingType: SortingTypes | null | undefined = SortingTypes.ASC): string[] {
+export function sortStrings(
+    arr: string[] | null | undefined,
+    sortingType: SortingTypes | null | undefined = SortingTypes.ASC,
+): string[] {
     if (arr === null || arr === undefined || arr.length === 0) {
         return [];
     }
@@ -46,11 +49,10 @@ export function sortStrings(arr: string[] | null | undefined, sortingType: Sorti
 
     const dataArrCopy: string[] = arr.slice();
 
-    const directionModifier: number = (sortingType === SortingTypes.DSC
-        || sortingType === SortingTypes.DSC_IGN_CASE)
-        ? -1 : 1;
-    const caseInsensitive: boolean = (sortingType === SortingTypes.ASC_IGN_CASE
-        || sortingType === SortingTypes.DSC_IGN_CASE);
+    const directionModifier: number =
+        sortingType === SortingTypes.DSC || sortingType === SortingTypes.DSC_IGN_CASE ? -1 : 1;
+    const caseInsensitive: boolean =
+        sortingType === SortingTypes.ASC_IGN_CASE || sortingType === SortingTypes.DSC_IGN_CASE;
 
     const compFunc = (first: string, second: string) => {
         let compRes: number;
@@ -92,7 +94,7 @@ export function randomizeStringsOrder(arr: string[] | null | undefined): string[
 
 export async function encodeText(text: string, encoder: Encoder): Promise<string> {
     if (text === null || text === undefined || text.length === 0) {
-        return "";
+        return '';
     }
 
     const encoderFunc: EncodeDecodeFunc | undefined = ENCODERS.get(encoder);
@@ -105,7 +107,7 @@ export async function encodeText(text: string, encoder: Encoder): Promise<string
 
 export async function decodeText(text: string, decoder: Decoder): Promise<string> {
     if (text === null || text === undefined || text.length === 0) {
-        return "";
+        return '';
     }
     const decoderFunc: EncodeDecodeFunc | undefined = DECODERS.get(decoder);
     if (decoderFunc) {

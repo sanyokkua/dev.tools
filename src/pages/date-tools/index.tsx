@@ -1,19 +1,19 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
-import { usePage } from '../contexts/PageContext';
+import { usePage } from '../../contexts/PageContext';
 
-const Home = () => {
+const IndexPage = () => {
     const { setPageTitle } = usePage();
     useEffect(() => {
-        setPageTitle('Main Page');
+        setPageTitle('Date Utilities');
     }, [setPageTitle]);
 
     return (
         <Box>
             <Heading mb={4}>Dashboard</Heading>
-            <Text>Welcome to your dashboard. This is the main content area.</Text>
+            <Text>Welcome to your Date Utilities. This is the main content area.</Text>
         </Box>
     );
 };
 
-export default Home;
+export default IndexPage;

@@ -1,23 +1,25 @@
-import * as gitUtils from "../git_utils";
+import * as gitUtils from '../git_utils';
 
-
-describe("generateGitConfig", () => {
-    test("test empty or null(undefined) data passed to generateGitConfig", () => {
-        expect(() => gitUtils.generateGitConfig(null, null))
-            .toThrow(`Passed user name (${null}) and email (${null}) are not correct`);
-        expect(() => gitUtils.generateGitConfig(undefined, undefined))
-            .toThrow(`Passed user name (${undefined}) and email (${undefined}) are not correct`);
-        expect(() => gitUtils.generateGitConfig("     ", "     "))
-            .toThrow(`Passed user name (${"     "}) and email (${"     "}) are not correct`);
+describe('generateGitConfig', () => {
+    test('test empty or null(undefined) data passed to generateGitConfig', () => {
+        expect(() => gitUtils.generateGitConfig(null, null)).toThrow(
+            `Passed user name (${null}) and email (${null}) are not correct`,
+        );
+        expect(() => gitUtils.generateGitConfig(undefined, undefined)).toThrow(
+            `Passed user name (${undefined}) and email (${undefined}) are not correct`,
+        );
+        expect(() => gitUtils.generateGitConfig('     ', '     ')).toThrow(
+            `Passed user name (${'     '}) and email (${'     '}) are not correct`,
+        );
     });
-    test("test generateGitConfig works as expected with appropriate data", () => {
-        const user1Name = "user1";
-        const user1Email = "userAwesome1@mail.com";
+    test('test generateGitConfig works as expected with appropriate data', () => {
+        const user1Name = 'user1';
+        const user1Email = 'userAwesome1@mail.com';
         const user1NameExpected = `git config --global user.name "${user1Name}"`;
         const user1EmailExpected = `git config --global user.email "${user1Email}"`;
 
-        const user2Name = "testUser2";
-        const user2Email = "testAwesome1@mail.com";
+        const user2Name = 'testUser2';
+        const user2Email = 'testAwesome1@mail.com';
         const user2NameExpected = `git config user.name "${user2Name}"`;
         const user2EmailExpected = `git config user.email "${user2Email}"`;
 
