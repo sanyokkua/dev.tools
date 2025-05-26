@@ -1,12 +1,18 @@
-import { Box } from '@chakra-ui/react';
 import { Editor, Monaco } from '@monaco-editor/react';
-import { editor } from 'monaco-editor';
-import React from 'react';
+import { editor, languages } from 'monaco-editor';
+import React, { useCallback } from 'react';
+
+export type EditorProperties = {
+    editor: editor.IStandaloneCodeEditor;
+    monaco: Monaco;
+    languages: languages.ILanguageExtensionPoint[];
+};
+export const DEFAULT_LANGUAGE = 'plaintext';
 
 export type EditorOnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
 
 export interface AppCodeEditorPropsBase {
-    originalContent?: string;
+    editorContent?: string;
     isReadOnly?: boolean;
     wordWrap?: boolean;
     minimap?: boolean;
@@ -15,21 +21,21 @@ export interface AppCodeEditorPropsBase {
 
 export interface CodeEditorProps extends AppCodeEditorPropsBase {
     onChange?: (value: string | undefined, ev: editor.IModelContentChangedEvent) => void;
-    onEditorCreated?: EditorOnMount;
+    onEditorMounted?: (editorProps: EditorProperties) => void;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = (props) => {
     const {
-        originalContent = '',
+        editorContent = '',
         isReadOnly = false,
-        originalLang = 'plaintext',
+        originalLang = DEFAULT_LANGUAGE,
         wordWrap = false,
         minimap = true,
         onChange,
-        onEditorCreated,
+        onEditorMounted,
     } = props;
-    const wordWrapValue = wordWrap ? 'on' : 'off';
 
+    const wordWrapValue = wordWrap ? 'on' : 'off';
     const options: editor.IStandaloneEditorConstructionOptions = {
         autoIndent: 'full',
         contextmenu: true,
@@ -47,19 +53,27 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
         scrollBeyondLastLine: true,
     };
 
+    const editorOnMount: EditorOnMount = useCallback(
+        (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+            if (onEditorMounted) {
+                const languages = monaco.languages.getLanguages();
+                onEditorMounted({ editor, monaco, languages });
+            }
+        },
+        [onEditorMounted],
+    );
+
     return (
-        <Box p={2} borderWidth="1px">
-            <Editor
-                height="90vh"
-                options={options}
-                defaultLanguage="plaintext"
-                defaultValue=""
-                language={originalLang}
-                value={originalContent}
-                onMount={onEditorCreated}
-                onChange={onChange}
-            />
-        </Box>
+        <Editor
+            height="90vh"
+            options={options}
+            defaultLanguage={DEFAULT_LANGUAGE}
+            defaultValue=""
+            language={originalLang}
+            value={editorContent}
+            onMount={editorOnMount}
+            onChange={onChange}
+        />
     );
 };
 

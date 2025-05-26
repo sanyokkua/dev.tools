@@ -11,7 +11,7 @@ const MenuBar = () => {
             align="center"
             padding={4}
             borderBottomWidth="1px"
-            boxShadow="sm"
+            boxShadow="md"
             colorPalette={'blue'}
             bg={{ base: 'blue.800' }}
             color="white"

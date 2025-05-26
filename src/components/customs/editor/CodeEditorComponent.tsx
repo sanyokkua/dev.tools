@@ -1,4 +1,8 @@
-import CodeEditor, { AppCodeEditorPropsBase, EditorOnMount } from '@/components/customs/editor/CodeEditor';
+import CodeEditor, {
+    AppCodeEditorPropsBase,
+    EditorOnMount,
+    EditorProperties,
+} from '@/components/customs/editor/CodeEditor';
 import CodeEditorInfoLine from '@/components/customs/editor/CodeEditorInfoLine';
 import CodeEditorMenu from '@/components/customs/editor/CodeEditorMenu';
 import FileOpen from '@/components/customs/file/FileOpen';
@@ -7,8 +11,6 @@ import { OnBtnClick } from '@/components/customs/PageMenuBar';
 import { FileInfo } from '@/components/customs/types/FileTypes';
 import { toaster } from '@/components/ui/Toaster';
 import { usePage } from '@/contexts/PageContext';
-import { Box } from '@chakra-ui/react';
-import { Monaco } from '@monaco-editor/react';
 import copy from 'copy-to-clipboard';
 import { editor, languages as MonacoLanguages } from 'monaco-editor';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -34,7 +36,7 @@ export interface CodeEditorProps extends AppCodeEditorPropsBase {
 
 const CodeEditorComponent: React.FC<CodeEditorProps> = ({
     editorHeader,
-    originalContent = '',
+    editorContent = '',
     isReadOnly = false,
     wordWrap = false,
     minimap = true,
@@ -60,11 +62,7 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
     const [editorWordWrap, setEditorWordWrap] = useState<boolean>(wordWrap);
     const [editorMinimap, setEditorMinimap] = useState<boolean>(minimap);
     const [openFileDialog, setOpenFileDialog] = useState<boolean>(false);
-    const [fileInfo, setFileInfo] = useState<FileInfo>({
-        name: 'Untitled',
-        extension: '.txt',
-        content: originalContent,
-    });
+    const [fileInfo, setFileInfo] = useState<FileInfo>({ name: 'Untitled', extension: '.txt', content: editorContent });
 
     const [availableLanguages, setAvailableLanguages] = useState<MonacoLanguages.ILanguageExtensionPoint[]>([]);
     const [languageExtensions, setLanguageExtensions] = useState<string[]>(['.txt']);
@@ -73,12 +71,12 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
 
     const monacoEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
 
-    const editorOnMount: EditorOnMount = useCallback(
-        (editorInst: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            const languages = monaco.languages.getLanguages();
+    const editorOnMount = useCallback(
+        (editorProps: EditorProperties) => {
+            const languages = editorProps.languages;
             setAvailableLanguages(languages);
-            monacoEditorRef.current = editorInst;
-            onMount(editorInst, monaco);
+            monacoEditorRef.current = editorProps.editor;
+            onMount(editorProps.editor, editorProps.monaco);
         },
         [onMount],
     );
@@ -138,28 +136,6 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
     const onEditorMiniMapClick: OnBtnClick = useCallback(() => {
         setEditorMinimap((prev) => !prev);
     }, []);
-
-    const hasMountedWrap = useRef(false);
-    useEffect(() => {
-        if (hasMountedWrap.current) {
-            setTimeout(() => {
-                toaster.create({ description: `Word Wrap: ${editorWordWrap ? 'On' : 'Off'}`, type: 'info' });
-            }, 0);
-        } else {
-            hasMountedWrap.current = true;
-        }
-    }, [editorWordWrap]);
-
-    const hasMountedMiniMap = useRef(false);
-    useEffect(() => {
-        if (hasMountedMiniMap.current) {
-            setTimeout(() => {
-                toaster.create({ description: `Mini Map: ${editorMinimap ? 'On' : 'Off'}`, type: 'info' });
-            }, 0);
-        } else {
-            hasMountedMiniMap.current = true;
-        }
-    }, [editorMinimap]);
 
     const onPasteFromClipboard = useCallback(() => {
         navigator.clipboard
@@ -237,8 +213,8 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
     }, []);
 
     return (
-        <Box borderWidth="1px">
-            {editorHeader && <Box p="2">{editorHeader}</Box>}
+        <>
+            {editorHeader && <h1>{editorHeader}</h1>}
             {showMenu && (
                 <CodeEditorMenu
                     languages={availableLanguages}
@@ -264,24 +240,21 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
                     readOnly={infoReadOnly}
                 />
             )}
-
-            <Box p="2">
-                <CodeEditor
-                    originalContent={fileInfo.content}
-                    isReadOnly={isReadOnly}
-                    wordWrap={editorWordWrap}
-                    minimap={editorMinimap}
-                    originalLang={editorLanguageId}
-                    onEditorCreated={editorOnMount}
-                    onChange={onTextChanged}
-                />
-                <FileOpen
-                    openFile={openFileDialog}
-                    supportedFiles={supportedLanguageIds}
-                    onFileOpened={onFileOpenedHandler}
-                />
-            </Box>
-        </Box>
+            <CodeEditor
+                editorContent={fileInfo.content}
+                isReadOnly={isReadOnly}
+                wordWrap={editorWordWrap}
+                minimap={editorMinimap}
+                originalLang={editorLanguageId}
+                onEditorMounted={editorOnMount}
+                onChange={onTextChanged}
+            />
+            <FileOpen
+                openFile={openFileDialog}
+                supportedFiles={supportedLanguageIds}
+                onFileOpened={onFileOpenedHandler}
+            />
+        </>
     );
 };
 

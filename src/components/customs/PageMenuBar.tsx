@@ -1,7 +1,8 @@
-import { Box, Button, HStack, Menu, Portal, Text } from '@chakra-ui/react';
+import { Button, HStack, Menu, Portal, Text } from '@chakra-ui/react';
 import { type SelectionDetails } from '@zag-js/menu';
 import React from 'react';
 import { LuChevronRight } from 'react-icons/lu';
+import AppButton from '@/components/elements/AppButton';
 
 export enum MenuItemType {
     BUTTON = 'button',
@@ -188,11 +189,9 @@ const mapMenuItems = (item: TopLevelMenuItemConfig) => {
 };
 
 const PageMenuBar: React.FC<PageMenuBarProps> = React.memo(({ menuItems }) => (
-    <Box p="2" borderWidth="1px" borderColor="border" color="fg" role="menubar" aria-label="Main menu">
-        <HStack as="nav" justify="flex-start">
-            {menuItems.map(mapMenuItems)}
-        </HStack>
-    </Box>
+    <HStack as="nav" justify="flex-start" colorPalette={'blue'}>
+        {menuItems.map(mapMenuItems)}
+    </HStack>
 ));
 PageMenuBar.displayName = 'PageMenuBar'; // For better debugging
 
