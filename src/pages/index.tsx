@@ -1,6 +1,5 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { usePage } from '@/contexts/PageContext';
 import { useEffect } from 'react';
-import { usePage } from '../contexts/PageContext';
 
 const Home = () => {
     const { setPageTitle } = usePage();
@@ -9,10 +8,10 @@ const Home = () => {
     }, [setPageTitle]);
 
     return (
-        <Box>
-            <Heading mb={4}>Dashboard</Heading>
-            <Text>Welcome to your dashboard. This is the main content area.</Text>
-        </Box>
+        <div>
+            <h2>Dashboard</h2>
+            <p>Welcome to your dashboard. This is the main content area.</p>
+        </div>
     );
 };
 

@@ -15,46 +15,65 @@ import { fileSave } from '@/components/elements/file/FileSave';
 import { FileInfo } from '@/components/elements/file/FileTypes';
 import MenuBar from '@/components/elements/menuBar/MenuBar';
 import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import { SelectItem } from '@/components/ui/AppSelect';
+import AppSelect, { SelectItem } from '@/components/ui/AppSelect';
 import AppColumn from '@/components/ui/layout/Column';
 import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
 import { usePage } from '@/contexts/PageContext';
-import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
+import { Base64 } from 'js-base64';
 
-type HashFunction = (text: string) => Promise<string>;
+type EncodeDecodeFunction = (text: string) => string;
 
-enum EncodingModes {
-    SHA1 = 'sha1',
-    SHA256 = 'sha256',
-    SHA384 = 'sha384',
-    SHA512 = 'sha512',
+enum EncodeModes {
+    ENCODE = 'encode',
+    ENCODE_URL_SAFE = 'encodeUrlSafe',
+    ENCODE_URL = 'encodeUrl',
+    ENCODE_URI = 'encodeUri',
 }
 
-const sha1Option: SelectItem = { key: EncodingModes.SHA1, value: 'SHA1' };
-const sha256Option: SelectItem = { key: EncodingModes.SHA256, value: 'SHA256' };
-const sha384Option: SelectItem = { key: EncodingModes.SHA384, value: 'SHA384' };
-const sha512Option: SelectItem = { key: EncodingModes.SHA512, value: 'SHA512' };
+enum DecodeModes {
+    DECODE = 'decode',
+}
 
-const encodingModeOptions: SelectItem[] = [sha1Option, sha256Option, sha384Option, sha512Option];
+enum AppMode {
+    ENCODE = 'encode',
+    DECODE = 'decode',
+}
 
-const hashFunctions: Record<EncodingModes, HashFunction> = {
-    [EncodingModes.SHA1]: sha1,
-    [EncodingModes.SHA256]: sha256,
-    [EncodingModes.SHA384]: sha384,
-    [EncodingModes.SHA512]: sha512,
+const appModeEncodeItem: SelectItem = { key: AppMode.ENCODE, value: 'Encode' };
+const appModeDecodeItem: SelectItem = { key: AppMode.DECODE, value: 'Decode' };
+const modeSelectItems: SelectItem[] = [appModeEncodeItem, appModeDecodeItem];
+
+const encodeModeOptions: SelectItem[] = [
+    { key: EncodeModes.ENCODE, value: 'Encode' },
+    { key: EncodeModes.ENCODE_URL_SAFE, value: 'Encode Url Safe' },
+    { key: EncodeModes.ENCODE_URL, value: 'Encode Url' },
+    { key: EncodeModes.ENCODE_URI, value: 'Encode Uri' },
+];
+const decodeModeOptions: SelectItem[] = [{ key: DecodeModes.DECODE, value: 'Decode' }];
+
+const EncodingTools: Record<EncodeModes, EncodeDecodeFunction> = {
+    [EncodeModes.ENCODE]: (text: string) => Base64.encode(text, false),
+    [EncodeModes.ENCODE_URL_SAFE]: (text: string) => Base64.encode(text, true),
+    [EncodeModes.ENCODE_URL]: Base64.encodeURL,
+    [EncodeModes.ENCODE_URI]: Base64.encodeURI,
 };
+const DecodingTools: Record<DecodeModes, EncodeDecodeFunction> = { [DecodeModes.DECODE]: Base64.decode };
 
 const Home: React.FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('Hashing Utilities Page');
+        setPageTitle('Base64 Encoding Page');
     }, [setPageTitle]);
 
     // State
+    const [selectedMode, setSelectedMode] = useState<SelectItem>(appModeEncodeItem);
+    const [modeOptions, setModeOptions] = useState<SelectItem[]>(encodeModeOptions);
+
     const [isFileDialogOpen, setIsFileDialogOpen] = useState<boolean>(false);
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>([]);
     const [extensionOptions, setExtensionOptions] = useState<SelectItem[]>([]);
+
     const [fileName, setFileName] = useState<string>('Untitled');
     const [fileExtension, setFileExtension] = useState<string>('.txt');
 
@@ -71,6 +90,17 @@ const Home: React.FC = () => {
     const handleRightEditorMount = useCallback((props: EditorProperties) => {
         rightEditorRef.current = props.editor;
     }, []);
+
+    // Mode selection handler
+    const handleModeSelect = (newKey: string): void => {
+        if (newKey === AppMode.ENCODE.toString()) {
+            setSelectedMode(appModeEncodeItem);
+            setModeOptions(encodeModeOptions);
+        } else {
+            setSelectedMode(appModeDecodeItem);
+            setModeOptions(decodeModeOptions);
+        }
+    };
 
     // File open handler
     const handleFileOpened = (fileInfo: FileInfo): void => {
@@ -118,20 +148,17 @@ const Home: React.FC = () => {
         .addButton('clear', 'Clear', handleRightClear)
         .build();
 
-    // Available hashing functions for ColumnMenu
-    const availableFunctions: AvailableFunction[] = encodingModeOptions.map((option) => ({
+    // Available functions based on mode
+    const functionsMap: Record<string, EncodeDecodeFunction> =
+        selectedMode.key === AppMode.ENCODE.toString() ? EncodingTools : DecodingTools;
+
+    const availableFunctions: AvailableFunction[] = modeOptions.map((option) => ({
         name: option.value,
         onClick: () => {
-            const inputText = getEditorContent(leftEditorRef);
-            const hashFunction = hashFunctions[option.key as EncodingModes];
-
-            hashFunction(inputText)
-                .then((hashValue: string) => {
-                    setEditorContent(rightEditorRef, hashValue);
-                })
-                .catch((error: unknown) => {
-                    console.error(error);
-                });
+            const text = getEditorContent(leftEditorRef);
+            const func: EncodeDecodeFunction = functionsMap[option.key];
+            const result = func(text);
+            setEditorContent(rightEditorRef, result);
         },
     }));
 
@@ -144,7 +171,14 @@ const Home: React.FC = () => {
                 </AppColumn>
 
                 <AppColumn>
-                    <h3>Choose Algorithm</h3>
+                    <h3>Choose Mode</h3>
+                    <AppSelect
+                        items={modeSelectItems}
+                        defaultKey={selectedMode.key}
+                        onSelect={handleModeSelect}
+                        className="inline-select"
+                    />
+                    <br />
                     <ColumnMenu availableFunctions={availableFunctions} />
                 </AppColumn>
 

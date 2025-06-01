@@ -1,18 +1,173 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { usePage } from '../../contexts/PageContext';
+import { editor } from 'monaco-editor';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-const IndexPage = () => {
+import ColumnMenu, { AvailableFunction } from '@/components/elements/column/ColumnMenu';
+import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import {
+    copyToClipboardFromEditor,
+    getEditorContent,
+    pasteFromClipboardToEditor,
+    setEditorContent,
+} from '@/components/elements/editor/CodeEditorUtils';
+import FileNameElement from '@/components/elements/editor/FileNameElement';
+import FileOpen from '@/components/elements/file/FileOpen';
+import { fileSave } from '@/components/elements/file/FileSave';
+import { FileInfo } from '@/components/elements/file/FileTypes';
+import MenuBar from '@/components/elements/menuBar/MenuBar';
+import { MenuBuilder } from '@/components/elements/menuBar/utils';
+import AppSelect, { SelectItem } from '@/components/ui/AppSelect';
+import AppColumn from '@/components/ui/layout/Column';
+import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
+import { usePage } from '@/contexts/PageContext';
+import { formatJson } from '@/tools/json_tools';
+
+const JSON_FORMATTER_ITEM: SelectItem = { key: 'json', value: 'Json' };
+const FORMATTER_ITEMS: SelectItem[] = [JSON_FORMATTER_ITEM];
+const FORMATTER_MAP: Record<string, SelectItem> = { json: JSON_FORMATTER_ITEM };
+
+const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
+
     useEffect(() => {
         setPageTitle('Code Formatter');
     }, [setPageTitle]);
 
+    // State
+    const [isFileDialogOpen, setIsFileDialogOpen] = useState<boolean>(false);
+    const [selectedFormatter, setSelectedFormatter] = useState<SelectItem>(FORMATTER_MAP['json']);
+    const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [supportedExtensions, setSupportedExtensions] = useState<string[]>(['.json']);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [extensionOptions, setExtensionOptions] = useState<SelectItem[]>([{ key: 'json', value: '.json' }]);
+    const [fileName, setFileName] = useState<string>('Untitled');
+    const [fileExtension, setFileExtension] = useState<string>('.json');
+
+    // Editor mount handlers
+    const handleLeftEditorMount = useCallback((props: EditorProperties) => {
+        leftEditorRef.current = props.editor;
+    }, []);
+
+    const handleRightEditorMount = useCallback((props: EditorProperties) => {
+        rightEditorRef.current = props.editor;
+    }, []);
+
+    // Menu and file handlers
+    const handleMenuSelection = (formatter: string): void => {
+        // Placeholder for future formatter selection logic
+        const selected = FORMATTER_MAP[formatter];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (selected) {
+            setSelectedFormatter(selected);
+        }
+    };
+
+    const handleFileOpened = (fileInfo: FileInfo): void => {
+        setIsFileDialogOpen(false);
+        setEditorContent(leftEditorRef, fileInfo.content);
+    };
+
+    const handleOpenFileDialog = (): void => {
+        setIsFileDialogOpen(true);
+    };
+
+    const handleLeftPaste = (): void => {
+        pasteFromClipboardToEditor(leftEditorRef);
+    };
+
+    const handleLeftClear = (): void => {
+        setEditorContent(leftEditorRef, '');
+    };
+
+    const handleSaveFile = (): void => {
+        const content = getEditorContent(rightEditorRef);
+        fileSave({ fileName, fileExtension, fileContent: content });
+    };
+
+    const handleRightCopy = (): void => {
+        copyToClipboardFromEditor(rightEditorRef);
+    };
+
+    const handleRightClear = (): void => {
+        setEditorContent(rightEditorRef, '');
+    };
+
+    // MenuBar items
+    const leftMenuItems = MenuBuilder.newBuilder()
+        .addButton('open-file', 'Open File', handleOpenFileDialog)
+        .addButton('paste-from-clipboard', 'Paste', handleLeftPaste)
+        .addButton('clear', 'Clear', handleLeftClear)
+        .build();
+
+    const rightMenuItems = MenuBuilder.newBuilder()
+        .addButton('save-file', 'Save File', handleSaveFile)
+        .addButton('copy-to-clipboard', 'Copy', handleRightCopy)
+        .addButton('clear', 'Clear', handleRightClear)
+        .build();
+
+    // ColumnMenu functions
+    const formatJsonFunction: AvailableFunction = {
+        name: 'Format',
+        onClick: () => {
+            const content = getEditorContent(leftEditorRef);
+            setEditorContent(rightEditorRef, formatJson(content, 4));
+        },
+    };
+
+    const shortenJsonFunction: AvailableFunction = {
+        name: 'Shorten',
+        onClick: () => {
+            const content = getEditorContent(leftEditorRef);
+            setEditorContent(rightEditorRef, formatJson(content, 0));
+        },
+    };
+
     return (
-        <Box>
-            <Heading mb={4}>Dashboard</Heading>
-            <Text>Welcome to your Code Formatter. This is the main content area.</Text>
-        </Box>
+        <>
+            <AppColumnContainer>
+                <AppColumn>
+                    <MenuBar menuItems={leftMenuItems} />
+                    <CodeEditor minimap={false} onEditorMounted={handleLeftEditorMount} originalLang="json" />
+                </AppColumn>
+
+                <AppColumn>
+                    <h3>Chose Syntax</h3>
+                    <AppSelect
+                        items={FORMATTER_ITEMS}
+                        defaultKey={selectedFormatter.key}
+                        onSelect={handleMenuSelection}
+                        className="inline-select"
+                    />
+                    <br />
+                    <ColumnMenu availableFunctions={[formatJsonFunction, shortenJsonFunction]} />
+                </AppColumn>
+
+                <AppColumn>
+                    <MenuBar menuItems={rightMenuItems} />
+                    <FileNameElement
+                        defaultName={fileName}
+                        defaultExtensionKey={fileExtension}
+                        extensions={extensionOptions}
+                        onNameChanged={setFileName}
+                        onExtensionChanged={setFileExtension}
+                    />
+                    <CodeEditor
+                        minimap={false}
+                        isReadOnly={true}
+                        onEditorMounted={handleRightEditorMount}
+                        originalLang="json"
+                    />
+                </AppColumn>
+            </AppColumnContainer>
+
+            <FileOpen
+                openFile={isFileDialogOpen}
+                supportedFiles={supportedExtensions}
+                onFileOpened={handleFileOpened}
+            />
+        </>
     );
 };
 

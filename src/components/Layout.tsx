@@ -1,6 +1,7 @@
-import { Toaster } from '@/components/ui/Toaster';
-import { Box, Flex } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import AppContainer from '@/components/ui/layout/AppContainer';
+import AppContentContainer from '@/components/ui/layout/AppContentContainer';
+import AppLayoutSideAndContent from '@/components/ui/layout/AppLayoutSideAndContent';
+import React, { ReactNode } from 'react';
 import MenuBar from './MenuBar';
 import Sidebar from './Sidebar';
 
@@ -8,24 +9,18 @@ interface LayoutProps {
     children: ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
-        <Flex flexDirection="column">
+        <AppContainer>
             {/* Top Menu Bar */}
             <MenuBar />
 
-            <Flex>
-                {/* Left Sidebar */}
+            {/* Main Area: Sidebar + Content */}
+            <AppLayoutSideAndContent>
                 <Sidebar />
-
-                {/* Main Content */}
-                <Box flex="1" p={4} overflow="auto">
-                    {children}
-                </Box>
-            </Flex>
-
-            <Toaster />
-        </Flex>
+                <AppContentContainer>{children}</AppContentContainer>
+            </AppLayoutSideAndContent>
+        </AppContainer>
     );
 };
 

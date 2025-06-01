@@ -1,38 +1,25 @@
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { usePage } from '@/contexts/PageContext';
 import Link from 'next/link';
-import { usePage } from '../contexts/PageContext';
+import React from 'react';
 
-const MenuBar = () => {
+const MenuBar: React.FC = () => {
     const { pageTitle } = usePage();
 
     return (
-        <Flex
-            as="nav"
-            align="center"
-            padding={4}
-            borderBottomWidth="1px"
-            boxShadow="md"
-            colorPalette={'blue'}
-            bg={{ base: 'blue.800' }}
-            color="white"
-        >
-            {/* Left column: App Name */}
-            <Box flex="1">
-                <Link href="/">
-                    <Heading as="h1" size="md" letterSpacing="tight">
-                        Developer Utils
-                    </Heading>
-                </Link>
-            </Box>
+        <nav className="menuBarConfig menuBarStyle">
+            {/* Left Column: App Name */}
+            <Link role={'p'} href="/" className="menuBarTitle">
+                Developer Utils
+            </Link>
 
-            {/* Center column: Page title */}
-            <Box flex="1" textAlign="center">
-                {pageTitle}
-            </Box>
+            {/* Center Column: Current Page Title */}
+            <div style={{ textAlign: 'center', flex: 1 }}>
+                <h2 style={{ margin: 0 }}>{pageTitle}</h2>
+            </div>
 
-            {/* Right column: empty box to ensure proper centering */}
-            <Box flex="1" />
-        </Flex>
+            {/* Right Column: Empty element for spacing */}
+            <div style={{ width: '100px' }} />
+        </nav>
     );
 };
 

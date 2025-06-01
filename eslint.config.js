@@ -10,6 +10,7 @@ export default tseslint.config(
     {
         ignores: [
             '**/node_modules/',
+            '**/__tests__/',
             '.git/',
             '.config/',
             '.jest/',

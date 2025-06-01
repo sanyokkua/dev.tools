@@ -1,6 +1,5 @@
-import CodeEditorComponent from '@/components/customs/editor/CodeEditorComponent';
+import CodeEditorComponent from '@/components/elements/editor/CodeEditorComponent';
 import { usePage } from '@/contexts/PageContext';
-import { Box } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 const IndexPage = () => {
@@ -9,11 +8,7 @@ const IndexPage = () => {
         setPageTitle('Code Editor');
     }, [setPageTitle]);
 
-    return (
-        <Box>
-            <CodeEditorComponent editorHeader={"Editor"} />
-        </Box>
-    );
+    return <CodeEditorComponent />;
 };
 
 export default IndexPage;

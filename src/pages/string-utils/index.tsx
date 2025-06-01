@@ -1,9 +1,130 @@
-import { AvailableFunction } from '@/components/customs/column/ColumnMenu';
-import ColumnView from '@/components/customs/column/ColumnView';
-import { MenuBuilder } from '@/components/customs/PageMenuBar';
+import { AvailableFunction } from '@/components/elements/column/ColumnMenu';
+import ColumnView from '@/components/elements/column/ColumnView';
+import { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import { getEditorContent, setEditorContent } from '@/components/elements/editor/CodeEditorUtils';
+import FileOpen from '@/components/elements/file/FileOpen';
+import { FileInfo } from '@/components/elements/file/FileTypes';
+import { MenuBuilder } from '@/components/elements/menuBar/utils';
+import { SelectItem } from '@/components/ui/AppSelect';
 import { usePage } from '@/contexts/PageContext';
-import { Box } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { copyToClipboard, pasteFromClipboard } from '@/tools/clipboard_utils';
+import { IToolList } from '@/tools/types';
+import { LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
+import { editor } from 'monaco-editor';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+const caseUtils: IToolList<(text: string) => string> = {
+    tools: [
+        {
+            text: 'lower case',
+            toolFunction: (text) => {
+                return StringUtils.lowerCase(text);
+            },
+        },
+        {
+            text: 'UPPER CASE',
+            toolFunction: (text) => {
+                return StringUtils.upperCase(text);
+            },
+        },
+        {
+            text: 'Capitalize',
+            toolFunction: (text) => {
+                return StringUtils.capitalize(text);
+            },
+        },
+        {
+            text: 'uNCAPITALIZE',
+            toolFunction: (text) => {
+                return StringUtils.uncapitalize(text);
+            },
+        },
+        {
+            text: 'Swap Case',
+            toolFunction: (text) => {
+                return StringUtils.swapCase(text);
+            },
+        },
+    ],
+};
+const lineUtils: IToolList<(text: string | string[]) => string[]> = {
+    tools: [
+        {
+            text: 'Split String',
+            toolFunction: (text) => {
+                if (typeof text === 'string') {
+                    return LineUtils.splitLines(text);
+                }
+                return text;
+            },
+        },
+        {
+            text: 'Sort ASC',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.sortLines(lines, SortingTypes.ASC);
+            },
+        },
+        {
+            text: 'Sort DSC',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.sortLines(lines, SortingTypes.DSC);
+            },
+        },
+        {
+            text: 'Sort ASC Ignore Case',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.sortLines(lines, SortingTypes.ASC_IGN_CASE);
+            },
+        },
+        {
+            text: 'Sort DSC Ignore Case',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.sortLines(lines, SortingTypes.DSC_IGN_CASE);
+            },
+        },
+        {
+            text: 'Shuffle',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.shuffleLines(lines);
+            },
+        },
+        {
+            text: 'Remove Duplicates',
+            toolFunction: (text) => {
+                let lines: string[] = [];
+                if (typeof text === 'string') {
+                    lines = LineUtils.splitLines(text);
+                }
+                return LineUtils.removeDuplicates(lines);
+            },
+        },
+    ],
+};
+
+const caseUtilsItem = { key: 'caseUtils', value: 'Case Utils' };
+const lineUtilsItem = { key: 'lineUtils', value: 'Line Utils' };
+const items = [caseUtilsItem, lineUtilsItem];
+const selectItems: { [key: string]: SelectItem } = { caseUtils: caseUtilsItem, lineUtils: lineUtilsItem };
 
 const IndexPage = () => {
     const { setPageTitle } = usePage();
@@ -11,43 +132,119 @@ const IndexPage = () => {
         setPageTitle('String Utilities Page');
     }, [setPageTitle]);
 
-    const availableFunctions: AvailableFunction[] = [
-        {
-            name: 'Format Camel',
+    const caseUtilsList: AvailableFunction[] = caseUtils.tools.map((tool) => {
+        return {
+            name: tool.text,
             onClick: () => {
-                console.log('Clicked Format Camel');
+                console.log('caseUtilsList clicked');
+                const content = getEditorContent(monacoLeftEditorRef);
+                const result = tool.toolFunction(content);
+                setEditorContent(monacoRightEditorRef, result);
             },
-        },
-    ];
+        };
+    });
+    const lineUtilsList: AvailableFunction[] = lineUtils.tools.map((tool) => {
+        return {
+            name: tool.text,
+            onClick: () => {
+                console.log('lineUtilsList clicked');
+                const content = getEditorContent(monacoLeftEditorRef);
+                const result = tool.toolFunction(content);
+                setEditorContent(monacoRightEditorRef, result.join('\n'));
+            },
+        };
+    });
+
+    const [openFileDialog, setOpenFileDialog] = useState<boolean>(false);
+    const [select, setSelect] = React.useState<SelectItem>(selectItems['caseUtils']);
+    const [functions, setFunctions] = React.useState<AvailableFunction[]>(caseUtilsList);
+    const monacoLeftEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
+    const monacoRightEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
+
+    const switchFunctionsList = (selected: string) => {
+        if (selected === 'caseUtils') {
+            setFunctions(caseUtilsList);
+        }
+        if (selected === 'lineUtils') {
+            setFunctions(lineUtilsList);
+        }
+    };
+
+    const onMenuSelected = (newVal: string) => {
+        const selectItem = selectItems[newVal];
+        setSelect(selectItem);
+        switchFunctionsList(newVal);
+    };
+
+    const onFileOpen = () => {
+        setOpenFileDialog(true);
+    };
+    const onLeftEditorPaste = () => {
+        pasteFromClipboard(
+            (text) => {
+                setEditorContent(monacoLeftEditorRef, text);
+            },
+            (errMsg) => {
+                console.log('Failed to paste from clipboard: ' + errMsg);
+            },
+        );
+    };
+    const onLeftEditorCopy = () => {
+        if (copyToClipboard(getEditorContent(monacoLeftEditorRef))) {
+            // toaster.create({ description: 'Copied To Clipboard', type: 'info' });
+        }
+    };
+    const onLeftEditorClear = () => {
+        setEditorContent(monacoLeftEditorRef, '');
+    };
+
+    const onRightEditorCopy = () => {
+        if (copyToClipboard(getEditorContent(monacoRightEditorRef))) {
+            // toaster.create({ description: 'Copied To Clipboard', type: 'info' });
+        }
+    };
+    const onRightEditorClear = () => {
+        setEditorContent(monacoRightEditorRef, '');
+    };
+
+    const onFileOpenedHandler = useCallback((openedFileInfo: FileInfo) => {
+        setOpenFileDialog(false);
+        setEditorContent(monacoLeftEditorRef, openedFileInfo.content);
+    }, []);
+
+    const onLeftMount = useCallback((editorProps: EditorProperties) => {
+        monacoLeftEditorRef.current = editorProps.editor;
+    }, []);
+
+    const onRightMount = useCallback((editorProps: EditorProperties) => {
+        monacoRightEditorRef.current = editorProps.editor;
+    }, []);
+
     const menuLeft = MenuBuilder.newBuilder()
-        .addButton('Open File', 'open-file', () => {})
-        .addButton('Paste', 'paste-from-clipboard', () => {})
-        .addButton('Copy', 'copy-to-clipboard', () => {})
-        .addButton('Clear', 'clear', () => {})
+        .addButton('open-file', 'Open File', onFileOpen)
+        .addButton('paste-from-clipboard', 'Paste', onLeftEditorPaste)
+        .addButton('copy-to-clipboard', 'Copy', onLeftEditorCopy)
+        .addButton('clear', 'Clear', onLeftEditorClear)
         .build();
     const menuRight = MenuBuilder.newBuilder()
-        .addButton('Copy', 'copy-to-clipboard', () => {})
-        .addButton('Clear', 'clear', () => {})
+        .addButton('copy-to-clipboard', 'Copy', onRightEditorCopy)
+        .addButton('clear', 'Clear', onRightEditorClear)
         .build();
 
     return (
-        <Box>
+        <>
             <ColumnView
                 leftEditorMenu={menuLeft}
-                leftEditor={{ minimap: false }}
-                selectedItem={{ value: 'hello', label: 'Hello World' }}
-                selectItems={[
-                    { value: 'hello', label: 'Hello World' },
-                    { value: 'hello2', label: 'Hello World 2' },
-                ]}
-                onSelectItem={(item) => {
-                    console.log(item);
-                }}
+                leftEditor={{ minimap: false, onEditorMounted: onLeftMount }}
+                selectedItem={select}
+                selectItems={items}
+                onSelectItem={onMenuSelected}
                 rightEditorMenu={menuRight}
-                rightEditor={{ minimap: false, isReadOnly: true }}
-                functions={{ availableFunctions: availableFunctions }}
+                rightEditor={{ minimap: false, isReadOnly: true, onEditorMounted: onRightMount }}
+                functions={{ availableFunctions: functions }}
             />
-        </Box>
+            <FileOpen openFile={openFileDialog} supportedFiles={[]} onFileOpened={onFileOpenedHandler} />
+        </>
     );
 };
 
