@@ -43,7 +43,7 @@ const Select: React.FC<SelectProps> = ({
         'select-base',
         size !== 'default' && `select-${size}`,
         disabled && 'select-disabled',
-        colorStyle && `color${colorStyle}`,
+        colorStyle && `color-${colorStyle}`,
         block && 'select-block',
     ]
         .filter(Boolean)

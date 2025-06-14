@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import Sidebar, { SideBarItem } from './elements/navigation/sidebar/Sidebar';
+import Sidebar, { SideBarItem } from '../elements/navigation/sidebar/Sidebar';
 
 const sideBarItems: SideBarItem[] = [
     { itemName: 'String Utils', itemLink: '/string-utils' },

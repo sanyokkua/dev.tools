@@ -1,11 +1,11 @@
+import Select, { SelectItem } from '@/controls/Select';
+import ContentContainerGrid from '@/layout/ContentContainerGrid';
+import ContentContainerGridChild from '@/layout/ContentContainerGridChild';
 import React from 'react';
-import Select, { SelectItem } from '../../../custom-components/controls/Select';
-import ContentContainerGrid from '../../../custom-components/layout/ContentContainerGrid';
-import ContentContainerGridChild from '../../../custom-components/layout/ContentContainerGridChild';
-import ColumnMenu, { ColumnMenuProps } from '../../elements/column/ColumnMenu';
-import CodeEditor, { CodeEditorProps } from '../../elements/editor/CodeEditor';
-import Menubar from '../../elements/navigation/menubar/Menubar';
-import { MenuItems } from '../../elements/navigation/menubar/types';
+import CodeEditor, { CodeEditorProps } from '../editor/CodeEditor';
+import Menubar from '../navigation/menubar/Menubar';
+import { MenuItems } from '../navigation/menubar/types';
+import ColumnMenu, { ColumnMenuProps } from './ColumnMenu';
 
 export type ColumnViewProps = {
     leftEditor: CodeEditorProps;

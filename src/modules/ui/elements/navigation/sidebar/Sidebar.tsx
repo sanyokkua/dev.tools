@@ -1,5 +1,5 @@
+import Button from '@/controls/Button';
 import React from 'react';
-import Button from '../../../../custom-components/controls/Button';
 
 export type SideBarItem = { itemName: string; itemLink: string };
 export type SidebarProps = { sidebarItems: SideBarItem[]; onItemClick: (sideBarItem: SideBarItem) => void };

@@ -1,6 +1,6 @@
 import { usePage } from '@/contexts/PageContext';
+import CodeEditorComponent from '@/modules/ui/elements/editor/CodeEditorComponent';
 import { useEffect } from 'react';
-import CodeEditorComponent from '../../controllers/elements/editor/CodeEditorComponent';
 
 const IndexPage = () => {
     const { setPageTitle } = usePage();

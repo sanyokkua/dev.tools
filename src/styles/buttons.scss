@@ -39,8 +39,8 @@
 -----------------------------------*/
 /* SOLID = filled with btn-color, text-color */
 .button-solid {
-  background-color: var(--btn-color);
-  color: var(--btn-text-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .button-solid:hover {
@@ -54,8 +54,8 @@
 
 /* OUTLINED = transparent + border + text */
 .button-outlined {
-  border: 1px solid var(--btn-color);
-  color: var(--btn-color);
+  border: 1px solid var(--bg-color);
+  color: var(--bg-color);
 }
 
 .button-outlined:hover {
@@ -68,8 +68,8 @@
 
 /* DASHED = same as outlined but dashed border */
 .button-dashed {
-  border: 1px dashed var(--btn-color);
-  color: var(--btn-color);
+  border: 1px dashed var(--bg-color);
+  color: var(--bg-color);
 }
 
 .button-dashed:hover {
@@ -83,8 +83,8 @@
 
 /* FILLED = subtle fill + colored text */
 .button-filled {
-  background-color: var(--btn-color);
-  color: var(--btn-text-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   opacity: 0.15;
 }
 
@@ -99,7 +99,7 @@
 
 /* TEXT = no bg or border, just text */
 .button-text {
-  color: var(--btn-color);
+  color: var(--bg-color);
 }
 
 .button-text:hover {
@@ -112,14 +112,14 @@
 
 /* LINK = like text but underlined by default */
 .button-link {
-  color: var(--btn-color);
+  color: var(--bg-color);
   text-decoration: underline;
   background: none;
   border: none;
 }
 
 .button-link:hover {
-  color: var(--btn-color);
+  color: var(--bg-color);
   filter: brightness(0.8);
 }
 
@@ -132,8 +132,8 @@
 -----------------------------------*/
 /* DANGER – overrides color vars */
 .button-danger {
-  --btn-color: var(--Red500);
-  --btn-text-color: var(--Red500Text);
+  --bg-color: var(--error-color);
+  --text-color: var(--error-color-on);
 }
 
 /* GHOST – white border/text (for dark BGs) */

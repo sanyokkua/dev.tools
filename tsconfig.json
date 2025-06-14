@@ -7,10 +7,10 @@
         "baseUrl": "src/",
         "paths": {
             "@/*": ["./src/*"],
-            "@/contexts/*": ["contexts/*"],
-            "@/controllers/*": ["controllers/*"],
-            "@/controls/*": ["custom-components/controls/*"],
-            "@/layout/*": ["custom-components/layout/*"],
+            "@/contexts/*": ["components/contexts/*"],
+            "@/modules/*": ["modules/*"],
+            "@/controls/*": ["components/controls/*"],
+            "@/layout/*": ["components/layout/*"],
             "@/styles/*": ["styles/*"],
             "@/tools/*": ["tools/*"]
         },

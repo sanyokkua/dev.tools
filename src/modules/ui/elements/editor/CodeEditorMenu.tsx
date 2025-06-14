@@ -1,8 +1,8 @@
 import { languages } from 'monaco-editor';
 import React from 'react';
-import Menubar from '../../elements/navigation/menubar/Menubar';
-import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '../../elements/navigation/menubar/types';
-import { MenuBuilder } from '../../elements/navigation/menubar/utils';
+import Menubar from '../navigation/menubar/Menubar';
+import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '../navigation/menubar/types';
+import { MenuBuilder } from '../navigation/menubar/utils';
 
 enum MenuItems {
     FileNew = 'file-new',

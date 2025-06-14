@@ -1,5 +1,4 @@
-// src/toaster/ToasterApi.ts
-export enum NotificationType {
+export enum ToastType {
     INFO = 'info',
     SUCCESS = 'success',
     WARNING = 'warning',
@@ -10,10 +9,9 @@ export interface Toast {
     id: string;
     title?: string;
     message: string;
-    type: NotificationType;
+    type: ToastType;
 }
 
-// Simple event emitter:
 type Listener = (toast: Toast) => void;
 
 class ToasterApiClass {
@@ -28,9 +26,12 @@ class ToasterApiClass {
     }
 
     // Programmatic call from anywhere:
-    public show(message: string, type: NotificationType = NotificationType.INFO, title?: string) {
-        const toast: Toast = { id: Math.random().toString(36).substr(2, 9), title, message, type };
-        this.listeners.forEach((fn) => fn(toast));
+    public show(message: string, type: ToastType = ToastType.INFO, title?: string) {
+        const toastGenId = Math.random().toString(36).substr(2, 9);
+        const toast: Toast = { id: toastGenId, title, message, type };
+        this.listeners.forEach((fn) => {
+            fn(toast);
+        });
     }
 }
 

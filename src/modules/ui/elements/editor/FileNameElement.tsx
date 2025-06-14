@@ -1,6 +1,6 @@
 import React from 'react';
-import Input from '../../../custom-components/controls/Input';
-import Select, { SelectItem } from '../../../custom-components/controls/Select';
+import Input from '@/controls/Input';
+import Select, { SelectItem } from '@/controls/Select';
 
 export type FileNameElementProps = {
     defaultName: string;
@@ -20,6 +20,7 @@ const FileNameElement: React.FC<FileNameElementProps> = (props) => {
                 selectedItem={props.defaultExtensionKey}
                 onSelect={props.onExtensionChanged}
                 size={'small'}
+                colorStyle="black-color"
             />
         </>
     );

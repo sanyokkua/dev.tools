@@ -1,6 +1,6 @@
 import { StringUtils } from 'coreutilsts';
 import React, { ChangeEvent, useEffect, useRef } from 'react';
-import { FileInfo } from '../../elements/file/FileTypes';
+import { FileInfo } from './FileTypes';
 
 export type FileOpenProps = { openFile: boolean; supportedFiles: string[]; onFileOpened: (fileInfo: FileInfo) => void };
 

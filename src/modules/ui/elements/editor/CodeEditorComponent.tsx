@@ -1,16 +1,16 @@
 import { usePage } from '@/contexts/PageContext';
+import { toasterApi, ToastType } from '@/controls/toaster/ToasterApi';
+import ContentContainerFlex from '@/layout/ContentContainerFlex';
 import copy from 'copy-to-clipboard';
 import { editor, languages as MonacoLanguages } from 'monaco-editor';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NotificationType, toasterApi } from '../../../custom-components/controls/toaster/ToasterApi';
-import ContentContainerFlex from '../../../custom-components/layout/ContentContainerFlex';
-import CodeEditor, { AppCodeEditorPropsBase, EditorOnMount, EditorProperties } from '../../elements/editor/CodeEditor';
-import CodeEditorInfoLine from '../../elements/editor/CodeEditorInfoLine';
-import CodeEditorMenu from '../../elements/editor/CodeEditorMenu';
-import FileOpen from '../../elements/file/FileOpen';
-import { fileSave } from '../../elements/file/FileSave';
-import { FileInfo } from '../../elements/file/FileTypes';
-import { OnMenuItemClick } from '../../elements/navigation/menubar/types';
+import FileOpen from '../file/FileOpen';
+import { fileSave } from '../file/FileSave';
+import { FileInfo } from '../file/FileTypes';
+import { OnMenuItemClick } from '../navigation/menubar/types';
+import CodeEditor, { AppCodeEditorPropsBase, EditorOnMount, EditorProperties } from './CodeEditor';
+import CodeEditorInfoLine from './CodeEditorInfoLine';
+import CodeEditorMenu from './CodeEditorMenu';
 
 export type OnFileChangesEvent = (fileInfo?: FileInfo) => void;
 export type OnContentChangesEvent = (content?: string) => void;
@@ -100,7 +100,7 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
         setFileInfo(newFile);
         onEditorContentChanged('');
         onFileCreated(newFile);
-        toasterApi.show('File Created', NotificationType.INFO);
+        toasterApi.show('File Created', ToastType.INFO);
     }, [languageExtensions, onEditorContentChanged, onFileCreated]);
 
     const onFileOpenClick: OnMenuItemClick = useCallback(() => {

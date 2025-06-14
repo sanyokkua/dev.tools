@@ -1,5 +1,5 @@
+import Button from '@/controls/Button';
 import React, { JSX } from 'react';
-import Button from '../../../custom-components/controls/Button';
 
 export type AvailableFunction = { name: string; onClick: () => void };
 

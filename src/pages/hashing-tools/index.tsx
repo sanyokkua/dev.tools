@@ -2,24 +2,24 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
-import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
-import ColumnMenu, { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
-import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
+import { SelectItem } from '@/controls/Select';
+import ColumnMenu, { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
+import CodeEditor, { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '../../controllers/elements/editor/CodeEditorUtils';
-import FileNameElement from '../../controllers/elements/editor/FileNameElement';
-import FileOpen from '../../controllers/elements/file/FileOpen';
-import { fileSave } from '../../controllers/elements/file/FileSave';
-import { FileInfo } from '../../controllers/elements/file/FileTypes';
-import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
-import { SelectItem } from '../../custom-components/controls/Select';
-import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
-import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
+} from '@/modules/ui/elements/editor/CodeEditorUtils';
+import FileNameElement from '@/modules/ui/elements/editor/FileNameElement';
+import FileOpen from '@/modules/ui/elements/file/FileOpen';
+import { fileSave } from '@/modules/ui/elements/file/FileSave';
+import { FileInfo } from '@/modules/ui/elements/file/FileTypes';
+import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
+import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
 
 type HashFunction = (text: string) => Promise<string>;
 

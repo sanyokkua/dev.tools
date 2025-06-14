@@ -1,7 +1,7 @@
 import { usePage } from '@/contexts/PageContext';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Appbar from './elements/navigation/appbar/Appbar';
+import Appbar from '../elements/navigation/appbar/Appbar';
 
 const ApplicationTopBar: React.FC = () => {
     const { pageTitle } = usePage();

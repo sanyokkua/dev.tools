@@ -16,8 +16,8 @@
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  background-color: var(--btn-color);
-  color: var(--btn-text-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .content-container-flex {
@@ -38,5 +38,5 @@
   display: flex;
   flex-direction: column; /* Stacks content inside each column */
   align-items: stretch; /* Ensures child elements fill the column */
-  justify-content: start; /* Aligns items from top to bottom */
+  justify-content: flex-start; /* Aligns items from top to bottom */
 }

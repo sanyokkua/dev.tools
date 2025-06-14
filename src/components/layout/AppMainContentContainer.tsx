@@ -7,7 +7,7 @@ interface AppMainContentContainerProps {
 }
 
 const AppMainContentContainer: React.FC<AppMainContentContainerProps> = ({ children, colorStyle = '' }) => {
-    const classes = ['app-main-content-container', colorStyle && `color${colorStyle}`].filter(Boolean).join(' ');
+    const classes = ['app-main-content-container', colorStyle && `color-${colorStyle}`].filter(Boolean).join(' ');
     return <div className={classes}>{children}</div>;
 };
 

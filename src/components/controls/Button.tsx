@@ -18,17 +18,17 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({
-    text,
-    onClick,
-    variant = 'solid',
-    size = 'default',
-    colorStyle = '',
-    danger = false,
-    ghost = false,
-    disabled = false,
-    loading = false,
-    block = false,
-}) => {
+                                           text,
+                                           onClick,
+                                           variant = 'solid',
+                                           size = 'default',
+                                           colorStyle = '',
+                                           danger = false,
+                                           ghost = false,
+                                           disabled = false,
+                                           loading = false,
+                                           block = false,
+                                       }) => {
     const handle = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!disabled && !loading) onClick();
@@ -43,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({
         disabled && 'button-disabled',
         loading && 'button-loading',
         block && 'button-block',
-        colorStyle && `color${colorStyle}`,
+        colorStyle && `color-${colorStyle}`,
     ]
         .filter(Boolean)
         .join(' ');

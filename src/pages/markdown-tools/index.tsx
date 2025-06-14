@@ -3,20 +3,20 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { usePage } from '@/contexts/PageContext';
-import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
-import CodeEditorInfoLine from '../../controllers/elements/editor/CodeEditorInfoLine';
+import CodeEditor, { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
+import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
 import {
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '../../controllers/elements/editor/CodeEditorUtils';
-import FileOpen from '../../controllers/elements/file/FileOpen';
-import { fileSave } from '../../controllers/elements/file/FileSave';
-import { FileInfo } from '../../controllers/elements/file/FileTypes';
-import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
-import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
-import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
+} from '@/modules/ui/elements/editor/CodeEditorUtils';
+import FileOpen from '@/modules/ui/elements/file/FileOpen';
+import { fileSave } from '@/modules/ui/elements/file/FileSave';
+import { FileInfo } from '@/modules/ui/elements/file/FileTypes';
+import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();

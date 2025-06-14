@@ -67,7 +67,7 @@ const Input: React.FC<InputProps> = ({
         variant === 'outlined' ? 'input-outlined' : 'input-underlined',
         size === 'small' ? 'input-small' : size === 'large' ? 'input-large' : '',
         block ? 'input-block' : '',
-        colorStyle ? `color${colorStyle}` : '',
+        colorStyle ? `color-${colorStyle}` : '',
     ]
         .filter(Boolean)
         .join(' ');

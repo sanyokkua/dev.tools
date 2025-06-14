@@ -1,8 +1,8 @@
+import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
+import { SelectItem } from '@/controls/Select';
 import React from 'react';
-import InformationPanel, { InformationPanelItem } from '../../../custom-components/controls/InformationPanel';
-import { SelectItem } from '../../../custom-components/controls/Select';
-import FileNameElement from '../../elements/editor/FileNameElement';
-import { FileInfo } from '../../elements/file/FileTypes';
+import { FileInfo } from '../file/FileTypes';
+import FileNameElement from './FileNameElement';
 
 export type CodeEditorInfoLineProps = {
     language: string;

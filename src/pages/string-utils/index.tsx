@@ -1,17 +1,17 @@
 import { usePage } from '@/contexts/PageContext';
-import { copyToClipboard, pasteFromClipboard } from '@/tools/clipboard_utils';
-import { IToolList } from '@/tools/types';
+import { SelectItem } from '@/controls/Select';
+import { copyToClipboard, pasteFromClipboard } from '@/modules/tools/clipboard_utils';
+import { IToolList } from '@/modules/tools/types';
+import { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
+import ColumnView from '@/modules/ui/elements/column/ColumnView';
+import { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
+import { getEditorContent, setEditorContent } from '@/modules/ui/elements/editor/CodeEditorUtils';
+import FileOpen from '@/modules/ui/elements/file/FileOpen';
+import { FileInfo } from '@/modules/ui/elements/file/FileTypes';
+import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import { LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
-import ColumnView from '../../controllers/elements/column/ColumnView';
-import { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
-import { getEditorContent, setEditorContent } from '../../controllers/elements/editor/CodeEditorUtils';
-import FileOpen from '../../controllers/elements/file/FileOpen';
-import { FileInfo } from '../../controllers/elements/file/FileTypes';
-import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
-import { SelectItem } from '../../custom-components/controls/Select';
 
 const caseUtils: IToolList<(text: string) => string> = {
     tools: [

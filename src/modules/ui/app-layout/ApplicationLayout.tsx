@@ -1,7 +1,7 @@
+import AppMainContainer from '@/layout/AppMainContainer';
 import AppMainContentContainer from '@/layout/AppMainContentContainer';
 import AppSideBarAndContentContainer from '@/layout/AppSideBarAndContentContainer';
 import React, { ReactNode } from 'react';
-import AppMainContainer from '../custom-components/layout/AppMainContainer';
 import ApplicationSidebar from './ApplicationSidebar';
 import ApplicationTopBar from './ApplicationTopBar';
 
@@ -9,7 +9,7 @@ interface LayoutProps {
     children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <AppMainContainer>
             {/* Top Menu Bar */}
@@ -24,4 +24,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
 };
 
-export default Layout;
+export default ApplicationLayout;

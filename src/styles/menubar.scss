@@ -15,7 +15,7 @@
 }
 
 .menubar-container:hover {
-  background-color: color-mix(in srgb, var(--bg) 90%, var(--White));
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--white-color));
 }
 
 
@@ -32,7 +32,7 @@
 }
 
 .menubar-menu-button:hover {
-  background-color: color-mix(in srgb, var(--bg) 70%, var(--White));
+  background-color: color-mix(in srgb, var(--bg) 70%, var(--white-color));
 }
 
 .menubar-menu-button:active {
@@ -47,7 +47,7 @@
 .menubar-menu-button-dropdown-content {
   display: none;
   position: absolute;
-  background-color: color-mix(in srgb, var(--bg) 90%, var(--White));
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--white-color));
   color: var(--primary-color-on);
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 99;
@@ -74,7 +74,7 @@
 }
 
 .menubar-menu-button-dropdown-item:hover {
-  background-color: color-mix(in srgb, var(--bg) 70%, var(--White));
+  background-color: color-mix(in srgb, var(--bg) 70%, var(--white-color));
 }
 
 .menubar-menu-button, .menubar-menu-button-dropdown-item {

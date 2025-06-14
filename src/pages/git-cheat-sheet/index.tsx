@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { usePage } from '@/contexts/PageContext';
-import ContentContainerFlex from '@/layout/ContentContainerFlex';
-import AppGenericForm, { FormItem, SubmittedField } from '../../controllers/ui/AppGenericForm';
+import ContentContainerFlex from '../../components/layout/ContentContainerFlex';
+import AppGenericForm, { FormItem, SubmittedField } from '../../modules/ui/AppGenericForm';
 
 const InstructionText: string = `
 # Git Configuration Guide

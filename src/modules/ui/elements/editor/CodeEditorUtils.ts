@@ -1,4 +1,4 @@
-import { copyToClipboard, pasteFromClipboard } from '@/tools/clipboard_utils';
+import { copyToClipboard, pasteFromClipboard } from '@/modules/tools/clipboard_utils';
 import { editor } from 'monaco-editor';
 import { RefObject } from 'react';
 

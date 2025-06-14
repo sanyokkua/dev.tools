@@ -2,16 +2,16 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
-import { StringUtils } from 'coreutilsts';
-import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
+import CodeEditor, { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '../../controllers/elements/editor/CodeEditorUtils';
-import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+} from '@/modules/ui/elements/editor/CodeEditorUtils';
+import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+import { StringUtils } from 'coreutilsts';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
