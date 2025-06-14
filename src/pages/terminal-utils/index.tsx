@@ -1,17 +1,17 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import { usePage } from '@/contexts/PageContext';
+import { StringUtils } from 'coreutilsts';
+import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/components/elements/editor/CodeEditorUtils';
-import MenuBar from '@/components/elements/menuBar/MenuBar';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import { usePage } from '@/contexts/PageContext';
-import { StringUtils } from 'coreutilsts';
+} from '../../controllers/elements/editor/CodeEditorUtils';
+import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -64,7 +64,7 @@ const IndexPage: React.FC = () => {
 
     return (
         <>
-            <MenuBar menuItems={menuItems} />
+            <Menubar menuItems={menuItems} />
             <CodeEditor minimap={false} onEditorMounted={handleEditorMount} originalLang="bash" />
         </>
     );

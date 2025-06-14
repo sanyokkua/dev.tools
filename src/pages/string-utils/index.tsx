@@ -1,17 +1,17 @@
-import { AvailableFunction } from '@/components/elements/column/ColumnMenu';
-import ColumnView from '@/components/elements/column/ColumnView';
-import { EditorProperties } from '@/components/elements/editor/CodeEditor';
-import { getEditorContent, setEditorContent } from '@/components/elements/editor/CodeEditorUtils';
-import FileOpen from '@/components/elements/file/FileOpen';
-import { FileInfo } from '@/components/elements/file/FileTypes';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import { SelectItem } from '@/components/ui/AppSelect';
 import { usePage } from '@/contexts/PageContext';
 import { copyToClipboard, pasteFromClipboard } from '@/tools/clipboard_utils';
 import { IToolList } from '@/tools/types';
 import { LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
+import ColumnView from '../../controllers/elements/column/ColumnView';
+import { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
+import { getEditorContent, setEditorContent } from '../../controllers/elements/editor/CodeEditorUtils';
+import FileOpen from '../../controllers/elements/file/FileOpen';
+import { FileInfo } from '../../controllers/elements/file/FileTypes';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+import { SelectItem } from '../../custom-components/controls/Select';
 
 const caseUtils: IToolList<(text: string) => string> = {
     tools: [
@@ -121,8 +121,8 @@ const lineUtils: IToolList<(text: string | string[]) => string[]> = {
     ],
 };
 
-const caseUtilsItem = { key: 'caseUtils', value: 'Case Utils' };
-const lineUtilsItem = { key: 'lineUtils', value: 'Line Utils' };
+const caseUtilsItem = { itemId: 'caseUtils', displayText: 'Case Utils' };
+const lineUtilsItem = { itemId: 'lineUtils', displayText: 'Line Utils' };
 const items = [caseUtilsItem, lineUtilsItem];
 const selectItems: { [key: string]: SelectItem } = { caseUtils: caseUtilsItem, lineUtils: lineUtilsItem };
 
@@ -170,10 +170,10 @@ const IndexPage = () => {
         }
     };
 
-    const onMenuSelected = (newVal: string) => {
-        const selectItem = selectItems[newVal];
+    const onMenuSelected = (newVal: SelectItem) => {
+        const selectItem = selectItems[newVal.itemId];
         setSelect(selectItem);
-        switchFunctionsList(newVal);
+        switchFunctionsList(newVal.itemId);
     };
 
     const onFileOpen = () => {

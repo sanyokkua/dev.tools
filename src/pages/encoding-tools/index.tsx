@@ -1,25 +1,25 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import ColumnMenu, { AvailableFunction } from '@/components/elements/column/ColumnMenu';
-import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import { usePage } from '@/contexts/PageContext';
+import { Base64 } from 'js-base64';
+import ColumnMenu, { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
+import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/components/elements/editor/CodeEditorUtils';
-import FileNameElement from '@/components/elements/editor/FileNameElement';
-import FileOpen from '@/components/elements/file/FileOpen';
-import { fileSave } from '@/components/elements/file/FileSave';
-import { FileInfo } from '@/components/elements/file/FileTypes';
-import MenuBar from '@/components/elements/menuBar/MenuBar';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import AppSelect, { SelectItem } from '@/components/ui/AppSelect';
-import AppColumn from '@/components/ui/layout/Column';
-import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
-import { usePage } from '@/contexts/PageContext';
-import { Base64 } from 'js-base64';
+} from '../../controllers/elements/editor/CodeEditorUtils';
+import FileNameElement from '../../controllers/elements/editor/FileNameElement';
+import FileOpen from '../../controllers/elements/file/FileOpen';
+import { fileSave } from '../../controllers/elements/file/FileSave';
+import { FileInfo } from '../../controllers/elements/file/FileTypes';
+import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+import Select, { SelectItem } from '../../custom-components/controls/Select';
+import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
 
 type EncodeDecodeFunction = (text: string) => string;
 
@@ -39,17 +39,17 @@ enum AppMode {
     DECODE = 'decode',
 }
 
-const appModeEncodeItem: SelectItem = { key: AppMode.ENCODE, value: 'Encode' };
-const appModeDecodeItem: SelectItem = { key: AppMode.DECODE, value: 'Decode' };
+const appModeEncodeItem: SelectItem = { itemId: AppMode.ENCODE, displayText: 'Encode' };
+const appModeDecodeItem: SelectItem = { itemId: AppMode.DECODE, displayText: 'Decode' };
 const modeSelectItems: SelectItem[] = [appModeEncodeItem, appModeDecodeItem];
 
 const encodeModeOptions: SelectItem[] = [
-    { key: EncodeModes.ENCODE, value: 'Encode' },
-    { key: EncodeModes.ENCODE_URL_SAFE, value: 'Encode Url Safe' },
-    { key: EncodeModes.ENCODE_URL, value: 'Encode Url' },
-    { key: EncodeModes.ENCODE_URI, value: 'Encode Uri' },
+    { itemId: EncodeModes.ENCODE, displayText: 'Encode' },
+    { itemId: EncodeModes.ENCODE_URL_SAFE, displayText: 'Encode Url Safe' },
+    { itemId: EncodeModes.ENCODE_URL, displayText: 'Encode Url' },
+    { itemId: EncodeModes.ENCODE_URI, displayText: 'Encode Uri' },
 ];
-const decodeModeOptions: SelectItem[] = [{ key: DecodeModes.DECODE, value: 'Decode' }];
+const decodeModeOptions: SelectItem[] = [{ itemId: DecodeModes.DECODE, displayText: 'Decode' }];
 
 const EncodingTools: Record<EncodeModes, EncodeDecodeFunction> = {
     [EncodeModes.ENCODE]: (text: string) => Base64.encode(text, false),
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
     const handleLeftEditorMount = useCallback((props: EditorProperties) => {
         leftEditorRef.current = props.editor;
         setSupportedExtensions(props.supportedExtensions);
-        setExtensionOptions(props.supportedExtensions.map((ext: string) => ({ key: ext, value: ext })));
+        setExtensionOptions(props.supportedExtensions.map((ext: string) => ({ itemId: ext, displayText: ext })));
     }, []);
 
     const handleRightEditorMount = useCallback((props: EditorProperties) => {
@@ -92,8 +92,8 @@ const Home: React.FC = () => {
     }, []);
 
     // Mode selection handler
-    const handleModeSelect = (newKey: string): void => {
-        if (newKey === AppMode.ENCODE.toString()) {
+    const handleModeSelect = (newKey: SelectItem): void => {
+        if (newKey.itemId === AppMode.ENCODE.toString()) {
             setSelectedMode(appModeEncodeItem);
             setModeOptions(encodeModeOptions);
         } else {
@@ -135,7 +135,7 @@ const Home: React.FC = () => {
         setEditorContent(rightEditorRef, '');
     };
 
-    // Build MenuBar items
+    // Build ApplicationTopBar items
     const leftMenuItems = MenuBuilder.newBuilder()
         .addButton('open-file', 'Open File', handleOpenFileDialog)
         .addButton('paste-from-clipboard', 'Paste', handleLeftPaste)
@@ -150,13 +150,13 @@ const Home: React.FC = () => {
 
     // Available functions based on mode
     const functionsMap: Record<string, EncodeDecodeFunction> =
-        selectedMode.key === AppMode.ENCODE.toString() ? EncodingTools : DecodingTools;
+        selectedMode.itemId === AppMode.ENCODE.toString() ? EncodingTools : DecodingTools;
 
     const availableFunctions: AvailableFunction[] = modeOptions.map((option) => ({
-        name: option.value,
+        name: option.displayText,
         onClick: () => {
             const text = getEditorContent(leftEditorRef);
-            const func: EncodeDecodeFunction = functionsMap[option.key];
+            const func: EncodeDecodeFunction = functionsMap[option.itemId];
             const result = func(text);
             setEditorContent(rightEditorRef, result);
         },
@@ -164,36 +164,33 @@ const Home: React.FC = () => {
 
     return (
         <>
-            <AppColumnContainer>
-                <AppColumn>
-                    <MenuBar menuItems={leftMenuItems} />
+            <ContentContainerGrid>
+                <ContentContainerGridChild>
+                    <Menubar menuItems={leftMenuItems} />
                     <CodeEditor minimap={false} onEditorMounted={handleLeftEditorMount} />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
+                <ContentContainerGridChild>
                     <h3>Choose Mode</h3>
-                    <AppSelect
-                        items={modeSelectItems}
-                        defaultKey={selectedMode.key}
-                        onSelect={handleModeSelect}
-                        className="inline-select"
-                    />
+                    <Select items={modeSelectItems} selectedItem={selectedMode} onSelect={handleModeSelect} />
                     <br />
                     <ColumnMenu availableFunctions={availableFunctions} />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
-                    <MenuBar menuItems={rightMenuItems} />
+                <ContentContainerGridChild>
+                    <Menubar menuItems={rightMenuItems} />
                     <FileNameElement
                         defaultName={fileName}
                         defaultExtensionKey={fileExtension}
                         extensions={extensionOptions}
                         onNameChanged={setFileName}
-                        onExtensionChanged={setFileExtension}
+                        onExtensionChanged={(it) => {
+                            setFileExtension(it.itemId);
+                        }}
                     />
                     <CodeEditor minimap={false} isReadOnly={true} onEditorMounted={handleRightEditorMount} />
-                </AppColumn>
-            </AppColumnContainer>
+                </ContentContainerGridChild>
+            </ContentContainerGrid>
 
             <FileOpen
                 openFile={isFileDialogOpen}

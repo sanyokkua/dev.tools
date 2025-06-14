@@ -1,0 +1,18 @@
+import React from 'react';
+import Chip from './Chip';
+
+export type InformationPanelItem = string | React.ReactElement;
+export type InformationPanelProps = { items: InformationPanelItem[] };
+
+const CodeEditorInfoLine: React.FC<InformationPanelProps> = (props) => {
+    const items = props.items.map((it) => {
+        if (typeof it === 'string') {
+            return <Chip text={it} />;
+        }
+        return it;
+    });
+
+    return <div className="info-panel">{items}</div>;
+};
+
+export default CodeEditorInfoLine;

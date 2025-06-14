@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import AppGenericForm, { FormItem, SubmittedField } from '@/components/ui/AppGenericForm';
 import { usePage } from '@/contexts/PageContext';
+import ContentContainerFlex from '@/layout/ContentContainerFlex';
+import AppGenericForm, { FormItem, SubmittedField } from '../../controllers/ui/AppGenericForm';
 
 const InstructionText: string = `
 # Git Configuration Guide
@@ -244,7 +245,7 @@ ${bashCommands}
     ];
 
     return (
-        <div>
+        <ContentContainerFlex>
             <ReactMarkdown>{InstructionText}</ReactMarkdown>
 
             <h1>Commands Generator</h1>
@@ -258,7 +259,7 @@ ${bashCommands}
             </div>
 
             <div>{generatedCommands && <ReactMarkdown>{generatedCommands}</ReactMarkdown>}</div>
-        </div>
+        </ContentContainerFlex>
     );
 };
 

@@ -1,27 +1,27 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import ColumnMenu, { AvailableFunction } from '@/components/elements/column/ColumnMenu';
-import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import { usePage } from '@/contexts/PageContext';
+import { formatJson } from '@/tools/json_tools';
+import ColumnMenu, { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
+import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/components/elements/editor/CodeEditorUtils';
-import FileNameElement from '@/components/elements/editor/FileNameElement';
-import FileOpen from '@/components/elements/file/FileOpen';
-import { fileSave } from '@/components/elements/file/FileSave';
-import { FileInfo } from '@/components/elements/file/FileTypes';
-import MenuBar from '@/components/elements/menuBar/MenuBar';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import AppSelect, { SelectItem } from '@/components/ui/AppSelect';
-import AppColumn from '@/components/ui/layout/Column';
-import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
-import { usePage } from '@/contexts/PageContext';
-import { formatJson } from '@/tools/json_tools';
+} from '../../controllers/elements/editor/CodeEditorUtils';
+import FileNameElement from '../../controllers/elements/editor/FileNameElement';
+import FileOpen from '../../controllers/elements/file/FileOpen';
+import { fileSave } from '../../controllers/elements/file/FileSave';
+import { FileInfo } from '../../controllers/elements/file/FileTypes';
+import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+import Select, { SelectItem } from '../../custom-components/controls/Select';
+import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
 
-const JSON_FORMATTER_ITEM: SelectItem = { key: 'json', value: 'Json' };
+const JSON_FORMATTER_ITEM: SelectItem = { itemId: 'json', displayText: 'Json' };
 const FORMATTER_ITEMS: SelectItem[] = [JSON_FORMATTER_ITEM];
 const FORMATTER_MAP: Record<string, SelectItem> = { json: JSON_FORMATTER_ITEM };
 
@@ -41,7 +41,7 @@ const IndexPage: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>(['.json']);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [extensionOptions, setExtensionOptions] = useState<SelectItem[]>([{ key: 'json', value: '.json' }]);
+    const [extensionOptions, setExtensionOptions] = useState<SelectItem[]>([{ itemId: 'json', displayText: '.json' }]);
     const [fileName, setFileName] = useState<string>('Untitled');
     const [fileExtension, setFileExtension] = useState<string>('.json');
 
@@ -55,9 +55,9 @@ const IndexPage: React.FC = () => {
     }, []);
 
     // Menu and file handlers
-    const handleMenuSelection = (formatter: string): void => {
+    const handleMenuSelection = (formatter: SelectItem): void => {
         // Placeholder for future formatter selection logic
-        const selected = FORMATTER_MAP[formatter];
+        const selected = FORMATTER_MAP[formatter.itemId];
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (selected) {
             setSelectedFormatter(selected);
@@ -94,7 +94,7 @@ const IndexPage: React.FC = () => {
         setEditorContent(rightEditorRef, '');
     };
 
-    // MenuBar items
+    // ApplicationTopBar items
     const leftMenuItems = MenuBuilder.newBuilder()
         .addButton('open-file', 'Open File', handleOpenFileDialog)
         .addButton('paste-from-clipboard', 'Paste', handleLeftPaste)
@@ -126,32 +126,29 @@ const IndexPage: React.FC = () => {
 
     return (
         <>
-            <AppColumnContainer>
-                <AppColumn>
-                    <MenuBar menuItems={leftMenuItems} />
+            <ContentContainerGrid>
+                <ContentContainerGridChild>
+                    <Menubar menuItems={leftMenuItems} />
                     <CodeEditor minimap={false} onEditorMounted={handleLeftEditorMount} originalLang="json" />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
+                <ContentContainerGridChild>
                     <h3>Chose Syntax</h3>
-                    <AppSelect
-                        items={FORMATTER_ITEMS}
-                        defaultKey={selectedFormatter.key}
-                        onSelect={handleMenuSelection}
-                        className="inline-select"
-                    />
+                    <Select items={FORMATTER_ITEMS} selectedItem={selectedFormatter} onSelect={handleMenuSelection} />
                     <br />
                     <ColumnMenu availableFunctions={[formatJsonFunction, shortenJsonFunction]} />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
-                    <MenuBar menuItems={rightMenuItems} />
+                <ContentContainerGridChild>
+                    <Menubar menuItems={rightMenuItems} />
                     <FileNameElement
                         defaultName={fileName}
                         defaultExtensionKey={fileExtension}
                         extensions={extensionOptions}
                         onNameChanged={setFileName}
-                        onExtensionChanged={setFileExtension}
+                        onExtensionChanged={(it) => {
+                            setFileExtension(it.itemId);
+                        }}
                     />
                     <CodeEditor
                         minimap={false}
@@ -159,8 +156,8 @@ const IndexPage: React.FC = () => {
                         onEditorMounted={handleRightEditorMount}
                         originalLang="json"
                     />
-                </AppColumn>
-            </AppColumnContainer>
+                </ContentContainerGridChild>
+            </ContentContainerGrid>
 
             <FileOpen
                 openFile={isFileDialogOpen}

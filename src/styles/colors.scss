@@ -1,0 +1,844 @@
+/*-----------------------------------
+  4. Color utilities
+     (generates .color<Shade>)
+-----------------------------------*/
+:root {
+  --Red50: #FFEBEE;
+  --Red50Text: #FF2747;
+  --Red100: #FFCDD2;
+  --Red100Text: #FF152C;
+  --Red200: #EF9A9A;
+  --Red200Text: #CC2020;
+  --Red300: #E57373;
+  --Red300Text: #AE2020;
+  --Red400: #EF5350;
+  --Red400Text: #FAC6C5;
+  --Red500: #F44336;
+  --Red500Text: #FAADA7;
+  --Red600: #E53935;
+  --Red600Text: #F29B99;
+  --Red700: #D32F2F;
+  --Red700Text: #E58484;
+  --Red800: #C62828;
+  --Red800Text: #E16C6C;
+  --Red900: #B71C1C;
+  --Red900Text: #E34545;
+  --RedA100: #FF8A80;
+  --RedA100Text: #E61200;
+  --RedA200: #FF5252;
+  --RedA200Text: #FFD9D9;
+  --RedA400: #FF1744;
+  --RedA400Text: #FF869E;
+  --RedA700: #D50000;
+  --RedA700Text: #FF2B2B;
+  --Pink50: #FCE4EC;
+  --Pink50Text: #E93772;
+  --Pink100: #F8BBD0;
+  --Pink100Text: #E81D63;
+  --Pink200: #F48FB1;
+  --Pink200Text: #D31555;
+  --Pink300: #F06292;
+  --Pink300Text: #B9124A;
+  --Pink400: #EC407A;
+  --Pink400Text: #F7ADC6;
+  --Pink500: #E91E63;
+  --Pink500Text: #F27EA5;
+  --Pink600: #D81B60;
+  --Pink600Text: #EC6898;
+  --Pink700: #C2185B;
+  --Pink700Text: #E84988;
+  --Pink800: #AD1457;
+  --Pink800Text: #E6287B;
+  --Pink900: #880E4F;
+  --Pink900Text: #BE146F;
+  --PinkA100: #FF80AB;
+  --PinkA100Text: #E6004E;
+  --PinkA200: #FF4081;
+  --PinkA200Text: #FFC0D5;
+  --PinkA400: #F50057;
+  --PinkA400Text: #FF5893;
+  --PinkA700: #C51162;
+  --PinkA700Text: #EE3D8D;
+  --Purple50: #F3E5F5;
+  --Purple50Text: #B45CC0;
+  --Purple100: #E1BEE7;
+  --Purple100Text: #A744B8;
+  --Purple200: #CE93D8;
+  --Purple200Text: #913AA0;
+  --Purple300: #BA68C8;
+  --Purple300Text: #793186;
+  --Purple400: #AB47BC;
+  --Purple400Text: #CE93D8;
+  --Purple500: #9C27B0;
+  --Purple500Text: #C654D9;
+  --Purple600: #8E24AA;
+  --Purple600Text: #BA48D8;
+  --Purple700: #7B1FA2;
+  --Purple700Text: #A836D8;
+  --Purple800: #6A1B9A;
+  --Purple800Text: #9426D8;
+  --Purple900: #4A148C;
+  --Purple900Text: #681CC4;
+  --PurpleA100: #EA80FC;
+  --PurpleA100Text: #BF05DF;
+  --PurpleA200: #E040FB;
+  --PurpleA200Text: #F4BBFE;
+  --PurpleA400: #D500F9;
+  --PurpleA400Text: #E85EFF;
+  --PurpleA700: #AA00FF;
+  --PurpleA700Text: #CC66FF;
+  --DeepPurple50: #EDE7F6;
+  --DeepPurple50Text: #855CC2;
+  --DeepPurple100: #D1C4E9;
+  --DeepPurple100Text: #7047BA;
+  --DeepPurple200: #B39DDB;
+  --DeepPurple200Text: #623DA5;
+  --DeepPurple300: #9575CD;
+  --DeepPurple300Text: #54338E;
+  --DeepPurple400: #7E57C2;
+  --DeepPurple400Text: #BDA9E0;
+  --DeepPurple500: #673AB7;
+  --DeepPurple500Text: #9C7CD5;
+  --DeepPurple600: #5E35B1;
+  --DeepPurple600Text: #906ED4;
+  --DeepPurple700: #512DA8;
+  --DeepPurple700Text: #7C58D2;
+  --DeepPurple800: #4527A0;
+  --DeepPurple800Text: #6845D2;
+  --DeepPurple900: #311B92;
+  --DeepPurple900Text: #4526CC;
+  --DeepPurpleA100: #B388FF;
+  --DeepPurpleA100Text: #5500EB;
+  --DeepPurpleA200: #7C4DFF;
+  --DeepPurpleA200Text: #DED2FF;
+  --DeepPurpleA400: #651FFF;
+  --DeepPurpleA400Text: #B491FF;
+  --DeepPurpleA700: #6200EA;
+  --DeepPurpleA700Text: #9549FF;
+  --Indigo50: #E8EAF6;
+  --Indigo50Text: #5F6DC0;
+  --Indigo100: #C5CAE9;
+  --Indigo100Text: #4858BA;
+  --Indigo200: #9FA8DA;
+  --Indigo200Text: #3F4EA3;
+  --Indigo300: #7986CB;
+  --Indigo300Text: #36448C;
+  --Indigo400: #5C6BC0;
+  --Indigo400Text: #AEB5E0;
+  --Indigo500: #3F51B5;
+  --Indigo500Text: #828FD4;
+  --Indigo600: #3949AB;
+  --Indigo600Text: #707DCF;
+  --Indigo700: #303F9F;
+  --Indigo700Text: #5666CC;
+  --Indigo800: #283593;
+  --Indigo800Text: #3C4DCA;
+  --Indigo900: #1A237E;
+  --Indigo900Text: #2431B0;
+  --IndigoA100: #8C9EFF;
+  --IndigoA100Text: #0025ED;
+  --IndigoA200: #536DFE;
+  --IndigoA200Text: #D9DFFF;
+  --IndigoA400: #3D5AFE;
+  --IndigoA400Text: #BAC5FF;
+  --IndigoA700: #304FFE;
+  --IndigoA700Text: #A8B5FF;
+  --Blue50: #E3F2FD;
+  --Blue50Text: #309FF0;
+  --Blue100: #BBDEFB;
+  --Blue100Text: #168EF1;
+  --Blue200: #90CAF9;
+  --Blue200Text: #0C81E0;
+  --Blue300: #64B5F6;
+  --Blue300Text: #0B72C4;
+  --Blue400: #42A5F5;
+  --Blue400Text: #0966B1;
+  --Blue500: #2196F3;
+  --Blue500Text: #085B9D;
+  --Blue600: #1E88E5;
+  --Blue600Text: #7BB9F0;
+  --Blue700: #1976D2;
+  --Blue700Text: #5DA5EC;
+  --Blue800: #1565C0;
+  --Blue800Text: #4090EA;
+  --Blue900: #0D47A1;
+  --Blue900Text: #1263E1;
+  --BlueA100: #82B1FF;
+  --BlueA100Text: #0057E7;
+  --BlueA200: #448AFF;
+  --BlueA200Text: #0049C2;
+  --BlueA400: #2979FF;
+  --BlueA400Text: #9FC3FF;
+  --BlueA700: #2962FF;
+  --BlueA700Text: #9FB9FF;
+  --LightBlue50: #E1F5FE;
+  --LightBlue50Text: #28B7F8;
+  --LightBlue100: #B3E5FC;
+  --LightBlue100Text: #0DACF5;
+  --LightBlue200: #81D4FA;
+  --LightBlue200Text: #0999DB;
+  --LightBlue300: #4FC3F7;
+  --LightBlue300Text: #0984BB;
+  --LightBlue400: #29B6F6;
+  --LightBlue400Text: #0774A5;
+  --LightBlue500: #03A9F4;
+  --LightBlue500Text: #026592;
+  --LightBlue600: #039BE5;
+  --LightBlue600Text: #025D89;
+  --LightBlue700: #0288D1;
+  --LightBlue700Text: #2AB3FD;
+  --LightBlue800: #0277BD;
+  --LightBlue800Text: #0FA4FC;
+  --LightBlue900: #01579B;
+  --LightBlue900Text: #017AD9;
+  --LightBlueA100: #80D8FF;
+  --LightBlueA100Text: #009FE6;
+  --LightBlueA200: #40C4FF;
+  --LightBlueA200Text: #0084BF;
+  --LightBlueA400: #00B0FF;
+  --LightBlueA400Text: #006A99;
+  --LightBlueA700: #0091EA;
+  --LightBlueA700Text: #49BAFF;
+  --Cyan50: #E0F7FA;
+  --Cyan50Text: #3DCDE0;
+  --Cyan100: #B2EBF2;
+  --Cyan100Text: #24C4D8;
+  --Cyan200: #80DEEA;
+  --Cyan200Text: #1FA9BA;
+  --Cyan300: #4DD0E1;
+  --Cyan300Text: #1A8C9B;
+  --Cyan400: #26C6DA;
+  --Cyan400Text: #167783;
+  --Cyan500: #00BCD4;
+  --Cyan500Text: #00717F;
+  --Cyan600: #00ACC1;
+  --Cyan600Text: #006774;
+  --Cyan700: #0097A7;
+  --Cyan700Text: #00D3EA;
+  --Cyan800: #00838F;
+  --Cyan800Text: #00B7C8;
+  --Cyan900: #006064;
+  --Cyan900Text: #00868C;
+  --CyanA100: #84FFFF;
+  --CyanA100Text: #00E8E8;
+  --CyanA200: #18FFFF;
+  --CyanA200Text: #00A7A7;
+  --CyanA400: #00E5FF;
+  --CyanA400Text: #008999;
+  --CyanA700: #00B8D4;
+  --CyanA700Text: #006E7F;
+  --Teal50: #E0F2F1;
+  --Teal50Text: #5DBBB6;
+  --Teal100: #B2DFDB;
+  --Teal100Text: #47AAA1;
+  --Teal200: #80CBC4;
+  --Teal200Text: #3A8D85;
+  --Teal300: #4DB6AC;
+  --Teal300Text: #2D6E68;
+  --Teal400: #26A69A;
+  --Teal400Text: #17645C;
+  --Teal500: #009688;
+  --Teal500Text: #00D2BE;
+  --Teal600: #00897B;
+  --Teal600Text: #00C0AC;
+  --Teal700: #00796B;
+  --Teal700Text: #00A996;
+  --Teal800: #00695C;
+  --Teal800Text: #009381;
+  --Teal900: #004D40;
+  --Teal900Text: #006C5A;
+  --TealA100: #A7FFEB;
+  --TealA100Text: #00FDC4;
+  --TealA200: #64FFDA;
+  --TealA200Text: #00D5A2;
+  --TealA400: #1DE9B6;
+  --TealA400Text: #0E8F6F;
+  --TealA700: #00BFA5;
+  --TealA700Text: #007363;
+  --Green50: #E8F5E9;
+  --Green50Text: #63BB6A;
+  --Green100: #C8E6C9;
+  --Green100Text: #52B055;
+  --Green200: #A5D6A7;
+  --Green200Text: #479C4B;
+  --Green300: #81C784;
+  --Green300Text: #3D8840;
+  --Green400: #66BB6A;
+  --Green400Text: #357838;
+  --Green500: #4CAF50;
+  --Green500Text: #2E6930;
+  --Green600: #43A047;
+  --Green600Text: #28602B;
+  --Green700: #388E3C;
+  --Green700Text: #58BD5D;
+  --Green800: #2E7D32;
+  --Green800Text: #40AF46;
+  --Green900: #1B5E20;
+  --Green900Text: #26842D;
+  --GreenA100: #B9F6CA;
+  --GreenA100Text: #20E256;
+  --GreenA200: #69F0AE;
+  --GreenA200Text: #13BC69;
+  --GreenA400: #00E676;
+  --GreenA400Text: #008A47;
+  --GreenA700: #00C853;
+  --GreenA700Text: #007832;
+  --LightGreen50: #F1F8E9;
+  --LightGreen50Text: #94CA57;
+  --LightGreen100: #DCEDC8;
+  --LightGreen100Text: #88C244;
+  --LightGreen200: #C5E1A5;
+  --LightGreen200Text: #79AF3B;
+  --LightGreen300: #AED581;
+  --LightGreen300Text: #6A9A33;
+  --LightGreen400: #9CCC65;
+  --LightGreen400Text: #5F892E;
+  --LightGreen500: #8BC34A;
+  --LightGreen500Text: #547928;
+  --LightGreen600: #7CB342;
+  --LightGreen600Text: #4A6B28;
+  --LightGreen700: #689F38;
+  --LightGreen700Text: #3E5F22;
+  --LightGreen800: #558B2F;
+  --LightGreen800Text: #77C044;
+  --LightGreen900: #33691E;
+  --LightGreen900Text: #47932A;
+  --LightGreenA100: #CCFF90;
+  --LightGreenA100Text: #81EF00;
+  --LightGreenA200: #B2FF59;
+  --LightGreenA200Text: #6FCE00;
+  --LightGreenA400: #76FF03;
+  --LightGreenA400Text: #479B00;
+  --LightGreenA700: #64DD17;
+  --LightGreenA700Text: #3C850E;
+  --Lime50: #F9FBE7;
+  --Lime50Text: #D0DF42;
+  --Lime100: #F0F4C3;
+  --Lime100Text: #CBD92F;
+  --Lime200: #E6EE9C;
+  --Lime200Text: #B9CA23;
+  --Lime300: #DCE775;
+  --Lime300Text: #A4B21F;
+  --Lime400: #D4E157;
+  --Lime400Text: #939F1C;
+  --Lime500: #CDDC39;
+  --Lime500Text: #838D19;
+  --Lime600: #C0CA33;
+  --Lime600Text: #73791F;
+  --Lime700: #AFB42B;
+  --Lime700Text: #696C1A;
+  --Lime800: #9E9D24;
+  --Lime800Text: #5F5E16;
+  --Lime900: #827717;
+  --Lime900Text: #B6A720;
+  --LimeA100: #F4FF81;
+  --LimeA100Text: #D2E600;
+  --LimeA200: #EEFF41;
+  --LimeA200Text: #AFC000;
+  --LimeA400: #C6FF00;
+  --LimeA400Text: #779900;
+  --LimeA700: #AEEA00;
+  --LimeA700Text: #688C00;
+  --Yellow50: #FFFDE7;
+  --Yellow50Text: #FFED25;
+  --Yellow100: #FFF9C4;
+  --Yellow100Text: #FFE710;
+  --Yellow200: #FFF59D;
+  --Yellow200Text: #F7DE00;
+  --Yellow300: #FFF176;
+  --Yellow300Text: #E0C900;
+  --Yellow400: #FFEE58;
+  --Yellow400Text: #CEB900;
+  --Yellow500: #FFEB3B;
+  --Yellow500Text: #BCA900;
+  --Yellow600: #FDD835;
+  --Yellow600Text: #B69402;
+  --Yellow700: #FBC02D;
+  --Yellow700Text: #AE7D03;
+  --Yellow800: #F9A825;
+  --Yellow800Text: #A76905;
+  --Yellow900: #F57F17;
+  --Yellow900Text: #9A4C07;
+  --YellowA100: #FFFF8D;
+  --YellowA100Text: #EEEE00;
+  --YellowA200: #FFFF00;
+  --YellowA200Text: #999900;
+  --YellowA400: #FFEA00;
+  --YellowA400Text: #998C00;
+  --YellowA700: #FFD600;
+  --YellowA700Text: #998000;
+  --Amber50: #FFF8E1;
+  --Amber50Text: #FFCB21;
+  --Amber100: #FFECB3;
+  --Amber100Text: #FFC105;
+  --Amber200: #FFE082;
+  --Amber200Text: #E7AE00;
+  --Amber300: #FFD54F;
+  --Amber300Text: #C89900;
+  --Amber400: #FFCA28;
+  --Amber400Text: #B18500;
+  --Amber500: #FFC107;
+  --Amber500Text: #9D7600;
+  --Amber600: #FFB300;
+  --Amber600Text: #996B00;
+  --Amber700: #FFA000;
+  --Amber700Text: #996000;
+  --Amber800: #FF8F00;
+  --Amber800Text: #995600;
+  --Amber900: #FF6F00;
+  --Amber900Text: #994300;
+  --AmberA100: #FFE57F;
+  --AmberA100Text: #E5B700;
+  --AmberA200: #FFD740;
+  --AmberA200Text: #BF9700;
+  --AmberA400: #FFC400;
+  --AmberA400Text: #997600;
+  --AmberA700: #FFAB00;
+  --AmberA700Text: #996700;
+  --Orange50: #FFF3E0;
+  --Orange50Text: #FFA920;
+  --Orange100: #FFE0B2;
+  --Orange100Text: #FF9A05;
+  --Orange200: #FFCC80;
+  --Orange200Text: #E68A00;
+  --Orange300: #FFB74D;
+  --Orange300Text: #C77700;
+  --Orange400: #FFA726;
+  --Orange400Text: #B06900;
+  --Orange500: #FF9800;
+  --Orange500Text: #995B00;
+  --Orange600: #FB8C00;
+  --Orange600Text: #975400;
+  --Orange700: #F57C00;
+  --Orange700Text: #934A00;
+  --Orange800: #EF6C00;
+  --Orange800Text: #8F4100;
+  --Orange900: #E65100;
+  --Orange900Text: #FF8543;
+  --OrangeA100: #FFD180;
+  --OrangeA100Text: #E69300;
+  --OrangeA200: #FFAB40;
+  --OrangeA200Text: #BF6B00;
+  --OrangeA400: #FF9100;
+  --OrangeA400Text: #995700;
+  --OrangeA700: #FF6D00;
+  --OrangeA700Text: #994100;
+  --DeepOrange50: #FBE9E7;
+  --DeepOrange50Text: #DF5242;
+  --DeepOrange100: #FFCCBC;
+  --DeepOrange100Text: #FF450B;
+  --DeepOrange200: #FFAB91;
+  --DeepOrange200Text: #F03900;
+  --DeepOrange300: #FF8A65;
+  --DeepOrange300Text: #D63300;
+  --DeepOrange400: #FF7043;
+  --DeepOrange400Text: #C12E00;
+  --DeepOrange500: #FF5722;
+  --DeepOrange500Text: #FFAF96;
+  --DeepOrange600: #F4511E;
+  --DeepOrange600Text: #F9A286;
+  --DeepOrange700: #E64A19;
+  --DeepOrange700Text: #F09275;
+  --DeepOrange800: #D84315;
+  --DeepOrange800Text: #EF7F5D;
+  --DeepOrange900: #BF360C;
+  --DeepOrange900Text: #F2592B;
+  --DeepOrangeA100: #FF9E80;
+  --DeepOrangeA100Text: #E63600;
+  --DeepOrangeA200: #FF6E40;
+  --DeepOrangeA200Text: #BF2E00;
+  --DeepOrangeA400: #FF3D00;
+  --DeepOrangeA400Text: #FF8B66;
+  --DeepOrangeA700: #DD2C00;
+  --DeepOrangeA700Text: #FF5E36;
+  --Brown50: #EFEBE9;
+  --Brown50Text: #A0887C;
+  --Brown100: #D7CCC8;
+  --Brown100Text: #907369;
+  --Brown200: #BCAAA4;
+  --Brown200Text: #7A625A;
+  --Brown300: #A1887F;
+  --Brown300Text: #645049;
+  --Brown400: #8D6E63;
+  --Brown400Text: #B7A199;
+  --Brown500: #795548;
+  --Brown500Text: #A67969;
+  --Brown600: #6D4C41;
+  --Brown600Text: #996A5B;
+  --Brown700: #5D4037;
+  --Brown700Text: #825A4D;
+  --Brown800: #4E342E;
+  --Brown800Text: #6D4940;
+  --Brown900: #3E2723;
+  --Brown900Text: #573731;
+  --Grey50: #FAFAFA;
+  --Grey50Text: #969696;
+  --Grey100: #F5F5F5;
+  --Grey100Text: #939393;
+  --Grey200: #EEEEEE;
+  --Grey200Text: #8F8F8F;
+  --Grey300: #E0E0E0;
+  --Grey300Text: #868686;
+  --Grey400: #BDBDBD;
+  --Grey400Text: #717171;
+  --Grey500: #9E9E9E;
+  --Grey500Text: #5F5F5F;
+  --Grey600: #757575;
+  --Grey600Text: #A4A4A4;
+  --Grey700: #616161;
+  --Grey700Text: #888888;
+  --Grey800: #424242;
+  --Grey800Text: #5C5C5C;
+  --Grey900: #212121;
+  --Grey900Text: #2E2E2E;
+  --BlueGrey50: #ECEFF1;
+  --BlueGrey50Text: #7E92A0;
+  --BlueGrey100: #CFD8DC;
+  --BlueGrey100Text: #6C8894;
+  --BlueGrey200: #B0BEC5;
+  --BlueGrey200Text: #5F7681;
+  --BlueGrey300: #90A4AE;
+  --BlueGrey300Text: #50646E;
+  --BlueGrey400: #78909C;
+  --BlueGrey400Text: #465760;
+  --BlueGrey500: #607D8B;
+  --BlueGrey500Text: #94AAB5;
+  --BlueGrey600: #546E7A;
+  --BlueGrey600Text: #7C98A5;
+  --BlueGrey700: #455A64;
+  --BlueGrey700Text: #617E8C;
+  --BlueGrey800: #37474F;
+  --BlueGrey800Text: #4D636F;
+  --BlueGrey900: #263238;
+  --BlueGrey900Text: #35464E;
+  --Black: #000000;
+  --BlackText: #FFFFFF;
+  --White: #FFFFFF;
+  --WhiteText: #000000;
+
+  --primary-color: #006b5f;
+  --primary-color-on: #ffffff;
+  --primary-container-color: #9ef2e3;
+  --primary-container-color-on: #005048;
+
+  --secondary-color: #4a635e;
+  --secondary-color-on: #ffffff;
+  --secondary-container-color: #cce8e2;
+  --secondary-container-color-on: #334b47;
+
+  --tertiary-color: #456179;
+  --tertiary-color-on: #ffffff;
+  --tertiary-container-color: #cbe6ff;
+  --tertiary-container-color-on: #2d4a60;
+
+  --error-color: #ba1a1a;
+  --error-color-on: #ffffff;
+  --error-container-color: #ffdad6;
+  --error-container-color-on: #93000a;
+
+  --surface-color: #f4fbf8;
+  --surface-color-on: #3f4946;
+  --surface-dim-color: #d5dbd9;
+  --surface-dim-color-on: #161d1b;
+
+  --md-shadow-color: #000000;
+  --md-outline-color: #6f7976;
+
+  --hover-color: white;
+}
+
+$md-colors: primary-color,
+primary-container-color,
+secondary-color,
+secondary-container-color,
+tertiary-color,
+tertiary-container-color,
+error-color,
+error-container-color,
+surface-color,
+surface-dim-color;
+
+@each $md-color in $md-colors {
+  .color#{$md-color} {
+    --btn-color: var(--#{$md-color});
+    --btn-text-color: var(--#{$md-color}-on);
+    background: var(--#{$md-color});
+    color: var(--#{$md-color}-on);
+  }
+}
+
+// SCSS list of shades (just the names after the “--”)
+$shades: Red50,
+Red100,
+Red200,
+Red300,
+Red400,
+Red500,
+Red600,
+Red700,
+Red800,
+Red900,
+RedA100,
+RedA200,
+RedA400,
+RedA700,
+Pink50,
+Pink100,
+Pink200,
+Pink300,
+Pink400,
+Pink500,
+Pink600,
+Pink700,
+Pink800,
+Pink900,
+PinkA100,
+PinkA200,
+PinkA400,
+PinkA700,
+Purple50,
+Purple100,
+Purple200,
+Purple300,
+Purple400,
+Purple500,
+Purple600,
+Purple700,
+Purple800,
+Purple900,
+PurpleA100,
+PurpleA200,
+PurpleA400,
+PurpleA700,
+DeepPurple50,
+DeepPurple100,
+DeepPurple200,
+DeepPurple300,
+DeepPurple400,
+DeepPurple500,
+DeepPurple600,
+DeepPurple700,
+DeepPurple800,
+DeepPurple900,
+DeepPurpleA100,
+DeepPurpleA200,
+DeepPurpleA400,
+DeepPurpleA700,
+Indigo50,
+Indigo100,
+Indigo200,
+Indigo300,
+Indigo400,
+Indigo500,
+Indigo600,
+Indigo700,
+Indigo800,
+Indigo900,
+IndigoA100,
+IndigoA200,
+IndigoA400,
+IndigoA700,
+Blue50,
+Blue100,
+Blue200,
+Blue300,
+Blue400,
+Blue500,
+Blue600,
+Blue700,
+Blue800,
+Blue900,
+BlueA100,
+BlueA200,
+BlueA400,
+BlueA700,
+LightBlue50,
+LightBlue100,
+LightBlue200,
+LightBlue300,
+LightBlue400,
+LightBlue500,
+LightBlue600,
+LightBlue700,
+LightBlue800,
+LightBlue900,
+LightBlueA100,
+LightBlueA200,
+LightBlueA400,
+LightBlueA700,
+Cyan50,
+Cyan100,
+Cyan200,
+Cyan300,
+Cyan400,
+Cyan500,
+Cyan600,
+Cyan700,
+Cyan800,
+Cyan900,
+CyanA100,
+CyanA200,
+CyanA400,
+CyanA700,
+Teal50,
+Teal100,
+Teal200,
+Teal300,
+Teal400,
+Teal500,
+Teal600,
+Teal700,
+Teal800,
+Teal900,
+TealA100,
+TealA200,
+TealA400,
+TealA700,
+Green50,
+Green100,
+Green200,
+Green300,
+Green400,
+Green500,
+Green600,
+Green700,
+Green800,
+Green900,
+GreenA100,
+GreenA200,
+GreenA400,
+GreenA700,
+LightGreen50,
+LightGreen100,
+LightGreen200,
+LightGreen300,
+LightGreen400,
+LightGreen500,
+LightGreen600,
+LightGreen700,
+LightGreen800,
+LightGreen900,
+LightGreenA100,
+LightGreenA200,
+LightGreenA400,
+LightGreenA700,
+Lime50,
+Lime100,
+Lime200,
+Lime300,
+Lime400,
+Lime500,
+Lime600,
+Lime700,
+Lime800,
+Lime900,
+LimeA100,
+LimeA200,
+LimeA400,
+LimeA700,
+Yellow50,
+Yellow100,
+Yellow200,
+Yellow300,
+Yellow400,
+Yellow500,
+Yellow600,
+Yellow700,
+Yellow800,
+Yellow900,
+YellowA100,
+YellowA200,
+YellowA400,
+YellowA700,
+Amber50,
+Amber100,
+Amber200,
+Amber300,
+Amber400,
+Amber500,
+Amber600,
+Amber700,
+Amber800,
+Amber900,
+AmberA100,
+AmberA200,
+AmberA400,
+AmberA700,
+Orange50,
+Orange100,
+Orange200,
+Orange300,
+Orange400,
+Orange500,
+Orange600,
+Orange700,
+Orange800,
+Orange900,
+OrangeA100,
+OrangeA200,
+OrangeA400,
+OrangeA700,
+DeepOrange50,
+DeepOrange100,
+DeepOrange200,
+DeepOrange300,
+DeepOrange400,
+DeepOrange500,
+DeepOrange600,
+DeepOrange700,
+DeepOrange800,
+DeepOrange900,
+DeepOrangeA100,
+DeepOrangeA200,
+DeepOrangeA400,
+DeepOrangeA700,
+Brown50,
+Brown100,
+Brown200,
+Brown300,
+Brown400,
+Brown500,
+Brown600,
+Brown700,
+Brown800,
+Brown900,
+Grey50,
+Grey100,
+Grey200,
+Grey300,
+Grey400,
+Grey500,
+Grey600,
+Grey700,
+Grey800,
+Grey900,
+BlueGrey50,
+BlueGrey100,
+BlueGrey200,
+BlueGrey300,
+BlueGrey400,
+BlueGrey500,
+BlueGrey600,
+BlueGrey700,
+BlueGrey800,
+BlueGrey900,
+Black,
+White;
+
+
+@each $shade in $shades {
+  .color#{$shade} {
+    --btn-color: var(--#{$shade});
+    --btn-text-color: var(--#{$shade}Text);
+    background: var(--#{$shade});
+    color: var(--#{$shade}Text);
+  }
+}
+
+//// 2. Loop and emit a class for each
+//@each $shade in $shades {
+//  .color#{$shade} {
+//    background: var(--#{$shade});
+//    color: var(--#{$shade}Text);
+//  }
+//}

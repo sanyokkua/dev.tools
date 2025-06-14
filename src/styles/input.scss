@@ -1,0 +1,62 @@
+/* Base styles for input */
+.input-base {
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 4px; /* Slightly smaller than button's 8px */
+  font-weight: 400; /* Lighter than button's 500 */
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  background: transparent;
+  color: var(--Black);
+  box-sizing: border-box;
+  border: 0; /* Border defined in variants */
+}
+
+/* Variants */
+
+/* Outlined: Full border around the input */
+.input-outlined {
+  border: 1px solid var(--md-outline-color);
+}
+
+/* Underlined: Bottom border only, Material Design-inspired */
+.input-underlined {
+  border-bottom: 1px solid var(--input-border-color, #ccc);
+}
+
+/* States */
+
+/* Hover: Subtle shadow for both variants */
+.input-base:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Focus: Small shadow to indicate active state */
+.input-base:focus {
+  box-shadow: 0 0 0 2px var(--input-focus-shadow, rgba(98, 0, 234, 0.2));
+}
+
+/* Disabled: Grayed out with updated border and text color */
+.input-base[disabled] {
+  --input-border-color: var(--input-disabled-border, #ddd);
+  color: var(--input-disabled-color, #999);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.input-small {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.input-large {
+  font-size: 1.1rem;
+  padding: 0.8rem 1.2rem;
+}
+
+/* Block: Full-width input */
+.input-block {
+  display: block;
+  width: 100%;
+}

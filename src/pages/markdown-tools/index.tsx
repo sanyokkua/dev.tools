@@ -2,21 +2,21 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
-import CodeEditorInfoLine from '@/components/elements/editor/CodeEditorInfoLine';
+import { usePage } from '@/contexts/PageContext';
+import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
+import CodeEditorInfoLine from '../../controllers/elements/editor/CodeEditorInfoLine';
 import {
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/components/elements/editor/CodeEditorUtils';
-import FileOpen from '@/components/elements/file/FileOpen';
-import { fileSave } from '@/components/elements/file/FileSave';
-import { FileInfo } from '@/components/elements/file/FileTypes';
-import MenuBar from '@/components/elements/menuBar/MenuBar';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import AppColumn from '@/components/ui/layout/Column';
-import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
-import { usePage } from '@/contexts/PageContext';
+} from '../../controllers/elements/editor/CodeEditorUtils';
+import FileOpen from '../../controllers/elements/file/FileOpen';
+import { fileSave } from '../../controllers/elements/file/FileSave';
+import { FileInfo } from '../../controllers/elements/file/FileTypes';
+import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -100,7 +100,7 @@ const IndexPage: React.FC = () => {
         setIsMinimapEnabled((prev) => !prev);
     };
 
-    // MenuBar items
+    // ApplicationTopBar items
     const leftMenuItems = MenuBuilder.newBuilder()
         .addButton('new-file', 'New File', handleNewFile)
         .addButton('open-file', 'Open File', handleOpenFileDialog)
@@ -120,7 +120,7 @@ const IndexPage: React.FC = () => {
 
     return (
         <>
-            <MenuBar menuItems={leftMenuItems} />
+            <Menubar menuItems={leftMenuItems} />
 
             <CodeEditorInfoLine
                 language="markdown"
@@ -129,11 +129,13 @@ const IndexPage: React.FC = () => {
                 minimap={isMinimapEnabled ? 'On' : 'Off'}
                 fileInfo={currentFileInfo}
                 onNameChanged={setFileName}
-                onExtensionChanged={setFileExtension}
+                onExtensionChanged={(it) => {
+                    setFileExtension(it.itemId);
+                }}
             />
 
-            <AppColumnContainer>
-                <AppColumn>
+            <ContentContainerGrid>
+                <ContentContainerGridChild>
                     {isEditorVisible && (
                         <CodeEditor
                             minimap={isMinimapEnabled}
@@ -143,10 +145,12 @@ const IndexPage: React.FC = () => {
                             onChange={handleTextChange}
                         />
                     )}
-                </AppColumn>
-                <AppColumn> </AppColumn>
-                <AppColumn>{isPreviewVisible && <ReactMarkdown>{editorContent}</ReactMarkdown>}</AppColumn>
-            </AppColumnContainer>
+                </ContentContainerGridChild>
+                <ContentContainerGridChild> </ContentContainerGridChild>
+                <ContentContainerGridChild>
+                    {isPreviewVisible && <ReactMarkdown>{editorContent}</ReactMarkdown>}
+                </ContentContainerGridChild>
+            </ContentContainerGrid>
 
             <FileOpen openFile={isFileDialogOpen} supportedFiles={['.md', '.txt']} onFileOpened={handleFileOpen} />
         </>

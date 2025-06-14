@@ -1,25 +1,25 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import ColumnMenu, { AvailableFunction } from '@/components/elements/column/ColumnMenu';
-import CodeEditor, { EditorProperties } from '@/components/elements/editor/CodeEditor';
+import { usePage } from '@/contexts/PageContext';
+import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
+import ColumnMenu, { AvailableFunction } from '../../controllers/elements/column/ColumnMenu';
+import CodeEditor, { EditorProperties } from '../../controllers/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/components/elements/editor/CodeEditorUtils';
-import FileNameElement from '@/components/elements/editor/FileNameElement';
-import FileOpen from '@/components/elements/file/FileOpen';
-import { fileSave } from '@/components/elements/file/FileSave';
-import { FileInfo } from '@/components/elements/file/FileTypes';
-import MenuBar from '@/components/elements/menuBar/MenuBar';
-import { MenuBuilder } from '@/components/elements/menuBar/utils';
-import { SelectItem } from '@/components/ui/AppSelect';
-import AppColumn from '@/components/ui/layout/Column';
-import AppColumnContainer from '@/components/ui/layout/ColumnContainer';
-import { usePage } from '@/contexts/PageContext';
-import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
+} from '../../controllers/elements/editor/CodeEditorUtils';
+import FileNameElement from '../../controllers/elements/editor/FileNameElement';
+import FileOpen from '../../controllers/elements/file/FileOpen';
+import { fileSave } from '../../controllers/elements/file/FileSave';
+import { FileInfo } from '../../controllers/elements/file/FileTypes';
+import Menubar from '../../controllers/elements/navigation/menubar/Menubar';
+import { MenuBuilder } from '../../controllers/elements/navigation/menubar/utils';
+import { SelectItem } from '../../custom-components/controls/Select';
+import ContentContainerGrid from '../../custom-components/layout/ContentContainerGrid';
+import ContentContainerGridChild from '../../custom-components/layout/ContentContainerGridChild';
 
 type HashFunction = (text: string) => Promise<string>;
 
@@ -30,10 +30,10 @@ enum EncodingModes {
     SHA512 = 'sha512',
 }
 
-const sha1Option: SelectItem = { key: EncodingModes.SHA1, value: 'SHA1' };
-const sha256Option: SelectItem = { key: EncodingModes.SHA256, value: 'SHA256' };
-const sha384Option: SelectItem = { key: EncodingModes.SHA384, value: 'SHA384' };
-const sha512Option: SelectItem = { key: EncodingModes.SHA512, value: 'SHA512' };
+const sha1Option: SelectItem = { itemId: EncodingModes.SHA1, displayText: 'SHA1' };
+const sha256Option: SelectItem = { itemId: EncodingModes.SHA256, displayText: 'SHA256' };
+const sha384Option: SelectItem = { itemId: EncodingModes.SHA384, displayText: 'SHA384' };
+const sha512Option: SelectItem = { itemId: EncodingModes.SHA512, displayText: 'SHA512' };
 
 const encodingModeOptions: SelectItem[] = [sha1Option, sha256Option, sha384Option, sha512Option];
 
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
     const handleLeftEditorMount = useCallback((props: EditorProperties) => {
         leftEditorRef.current = props.editor;
         setSupportedExtensions(props.supportedExtensions);
-        setExtensionOptions(props.supportedExtensions.map((ext: string) => ({ key: ext, value: ext })));
+        setExtensionOptions(props.supportedExtensions.map((ext: string) => ({ itemId: ext, displayText: ext })));
     }, []);
 
     const handleRightEditorMount = useCallback((props: EditorProperties) => {
@@ -105,7 +105,7 @@ const Home: React.FC = () => {
         setEditorContent(rightEditorRef, '');
     };
 
-    // Build MenuBar items
+    // Build ApplicationTopBar items
     const leftMenuItems = MenuBuilder.newBuilder()
         .addButton('open-file', 'Open File', handleOpenFileDialog)
         .addButton('paste-from-clipboard', 'Paste', handleLeftPaste)
@@ -120,10 +120,10 @@ const Home: React.FC = () => {
 
     // Available hashing functions for ColumnMenu
     const availableFunctions: AvailableFunction[] = encodingModeOptions.map((option) => ({
-        name: option.value,
+        name: option.displayText,
         onClick: () => {
             const inputText = getEditorContent(leftEditorRef);
-            const hashFunction = hashFunctions[option.key as EncodingModes];
+            const hashFunction = hashFunctions[option.itemId as EncodingModes];
 
             hashFunction(inputText)
                 .then((hashValue: string) => {
@@ -137,29 +137,31 @@ const Home: React.FC = () => {
 
     return (
         <>
-            <AppColumnContainer>
-                <AppColumn>
-                    <MenuBar menuItems={leftMenuItems} />
+            <ContentContainerGrid>
+                <ContentContainerGridChild>
+                    <Menubar menuItems={leftMenuItems} />
                     <CodeEditor minimap={false} onEditorMounted={handleLeftEditorMount} />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
+                <ContentContainerGridChild>
                     <h3>Choose Algorithm</h3>
                     <ColumnMenu availableFunctions={availableFunctions} />
-                </AppColumn>
+                </ContentContainerGridChild>
 
-                <AppColumn>
-                    <MenuBar menuItems={rightMenuItems} />
+                <ContentContainerGridChild>
+                    <Menubar menuItems={rightMenuItems} />
                     <FileNameElement
                         defaultName={fileName}
                         defaultExtensionKey={fileExtension}
                         extensions={extensionOptions}
                         onNameChanged={setFileName}
-                        onExtensionChanged={setFileExtension}
+                        onExtensionChanged={(it) => {
+                            setFileExtension(it.itemId);
+                        }}
                     />
                     <CodeEditor minimap={false} isReadOnly={true} onEditorMounted={handleRightEditorMount} />
-                </AppColumn>
-            </AppColumnContainer>
+                </ContentContainerGridChild>
+            </ContentContainerGrid>
 
             <FileOpen
                 openFile={isFileDialogOpen}

@@ -7,9 +7,11 @@
         "baseUrl": "src/",
         "paths": {
             "@/*": ["./src/*"],
-            "@/styles/*": ["styles/*"],
-            "@/components/*": ["components/*"],
             "@/contexts/*": ["contexts/*"],
+            "@/controllers/*": ["controllers/*"],
+            "@/controls/*": ["custom-components/controls/*"],
+            "@/layout/*": ["custom-components/layout/*"],
+            "@/styles/*": ["styles/*"],
             "@/tools/*": ["tools/*"]
         },
         "lib": ["dom", "dom.iterable", "esnext"],
