@@ -2,9 +2,12 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
+import FileOpen from '@/controls/file/FileOpen';
+import { fileSave } from '@/controls/file/FileSave';
+import { FileInfo } from '@/controls/file/FileTypes';
 import { SelectItem } from '@/controls/Select';
 import ColumnMenu, { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
-import CodeEditor, { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
+import CodeEditor  from '@/modules/ui/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -12,14 +15,12 @@ import {
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
 import FileNameElement from '@/modules/ui/elements/editor/FileNameElement';
-import FileOpen from '@/modules/ui/elements/file/FileOpen';
-import { fileSave } from '@/modules/ui/elements/file/FileSave';
-import { FileInfo } from '@/modules/ui/elements/file/FileTypes';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 type HashFunction = (text: string) => Promise<string>;
 
@@ -164,7 +165,7 @@ const Home: React.FC = () => {
             </ContentContainerGrid>
 
             <FileOpen
-                openFile={isFileDialogOpen}
+                showOpenFileDialog={isFileDialogOpen}
                 supportedFiles={supportedExtensions}
                 onFileOpened={handleFileOpened}
             />

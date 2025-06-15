@@ -1,4 +1,3 @@
-import { languages } from 'monaco-editor';
 import React from 'react';
 import Menubar from '../navigation/menubar/Menubar';
 import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '../navigation/menubar/types';
@@ -15,13 +14,13 @@ enum MenuItems {
 type HandlersMap = { [key: string]: OnMenuItemClick };
 
 export type CodeEditorMenuProps = {
-    languages: languages.ILanguageExtensionPoint[];
+    languages: SubmenuItemTypeless[];
     onLanguageSelected: (languageId: string) => void;
     onFileNewClick: OnMenuItemClick;
     onFileOpenClick: OnMenuItemClick;
     onFileSaveClick: OnMenuItemClick;
     onEditorWrapLinesClick: OnMenuItemClick;
-    onEditorCodeMapClick: OnMenuItemClick;
+    onEditorMiniMapClick: OnMenuItemClick;
     onContentPasteClick: OnMenuItemClick;
     onContentCopyClick: OnMenuItemClick;
 };
@@ -32,7 +31,7 @@ const CodeEditorMenu: React.FC<CodeEditorMenuProps> = (props) => {
         [MenuItems.FileOpen]: props.onFileOpenClick,
         [MenuItems.FileSave]: props.onFileSaveClick,
         [MenuItems.EditorWrapWords]: props.onEditorWrapLinesClick,
-        [MenuItems.EditorMiniMap]: props.onEditorCodeMapClick,
+        [MenuItems.EditorMiniMap]: props.onEditorMiniMapClick,
     };
     const onSubmenuClick: OnMenuItemClick = (details: BaseMenuItem) => {
         console.log(details);
@@ -42,23 +41,6 @@ const CodeEditorMenu: React.FC<CodeEditorMenuProps> = (props) => {
         const mappedHandler = mappedHandlers[details.id];
         mappedHandler(details);
     };
-    const onLanguageSubmenuClick: OnMenuItemClick = (details: BaseMenuItem) => {
-        console.log(details);
-        const lang = props.languages.find((lang) => lang.id === details.id);
-        console.log(lang);
-        if (lang) {
-            props.onLanguageSelected(lang.id);
-        } else {
-            console.log('Language not found');
-        }
-    };
-    const mappedLangsAsMenuItems: SubmenuItemTypeless[] = props.languages.map((lang) => {
-        let text = lang.id;
-        if (lang.aliases && lang.aliases.length > 0) {
-            text = lang.aliases[0];
-        }
-        return { text: text, id: lang.id, onItemClick: onLanguageSubmenuClick };
-    });
 
     const menu = MenuBuilder.newBuilder()
         .addSubmenu('file', 'File')
@@ -71,7 +53,7 @@ const CodeEditorMenu: React.FC<CodeEditorMenuProps> = (props) => {
         .addItem(MenuItems.EditorMiniMap, 'Code Map', onSubmenuClick)
         .end()
         .addSubmenu('syntax', 'Syntax')
-        .addItems(mappedLangsAsMenuItems)
+        .addItems(props.languages)
         .end()
         .addButton('paste-from-clipboard', 'Paste', props.onContentPasteClick)
         .addButton('copy-to-clipboard', 'Copy', props.onContentCopyClick)

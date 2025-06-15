@@ -3,20 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { usePage } from '@/contexts/PageContext';
-import CodeEditor, { EditorProperties } from '@/modules/ui/elements/editor/CodeEditor';
+import FileOpen from '@/controls/file/FileOpen';
+import { fileSave } from '@/controls/file/FileSave';
+import { FileInfo } from '@/controls/file/FileTypes';
+import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
 import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
 import {
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
-import FileOpen from '@/modules/ui/elements/file/FileOpen';
-import { fileSave } from '@/modules/ui/elements/file/FileSave';
-import { FileInfo } from '@/modules/ui/elements/file/FileTypes';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -40,6 +41,8 @@ const IndexPage: React.FC = () => {
         name: fileName,
         extension: fileExtension,
         content: editorContent,
+        fullName: '',
+        size: 0
     });
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -123,15 +126,10 @@ const IndexPage: React.FC = () => {
             <Menubar menuItems={leftMenuItems} />
 
             <CodeEditorInfoLine
-                language="markdown"
-                extensions={['.md', '.txt']}
+                languageName="markdown"
                 wordWrap={isWordWrapEnabled ? 'On' : 'Off'}
                 minimap={isMinimapEnabled ? 'On' : 'Off'}
                 fileInfo={currentFileInfo}
-                onNameChanged={setFileName}
-                onExtensionChanged={(it) => {
-                    setFileExtension(it.itemId);
-                }}
             />
 
             <ContentContainerGrid>
@@ -141,7 +139,7 @@ const IndexPage: React.FC = () => {
                             minimap={isMinimapEnabled}
                             wordWrap={isWordWrapEnabled}
                             onEditorMounted={handleEditorMount}
-                            originalLang="markdown"
+                            languageId="markdown"
                             onChange={handleTextChange}
                         />
                     )}
@@ -152,7 +150,11 @@ const IndexPage: React.FC = () => {
                 </ContentContainerGridChild>
             </ContentContainerGrid>
 
-            <FileOpen openFile={isFileDialogOpen} supportedFiles={['.md', '.txt']} onFileOpened={handleFileOpen} />
+            <FileOpen
+                showOpenFileDialog={isFileDialogOpen}
+                supportedFiles={['.md', '.txt']}
+                onFileOpened={handleFileOpen}
+            />
         </>
     );
 };

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Toast, toasterApi } from './ToasterApi';
 
+const toasterRoot = document.getElementById('toaster-root') || document.body;
+
 export const ToasterContainer: React.FC = () => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [mounted, setMounted] = useState(false);
@@ -22,7 +24,7 @@ export const ToasterContainer: React.FC = () => {
         return null;
     }
 
-    return createPortal(
+    const toasterContent = (
         <div className="toaster-container">
             {toasts.map((t) => (
                 <div key={t.id} className={`toast ${t.type}`}>
@@ -30,7 +32,7 @@ export const ToasterContainer: React.FC = () => {
                     <div className="toast-message">{t.message}</div>
                 </div>
             ))}
-        </div>,
-        document.body,
+        </div>
     );
+    return createPortal(toasterContent, toasterRoot);
 };

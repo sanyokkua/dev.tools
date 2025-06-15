@@ -2,8 +2,6 @@ import { StringUtils } from 'coreutilsts';
 import React, { ChangeEvent, useEffect, useRef } from 'react';
 import { FileInfo } from './FileTypes';
 
-export type FileOpenProps = { openFile: boolean; supportedFiles: string[]; onFileOpened: (fileInfo: FileInfo) => void };
-
 const readFileAsText = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -19,15 +17,21 @@ const readFileAsText = (file: File): Promise<string> => {
     });
 };
 
-const FileOpen: React.FC<FileOpenProps> = ({ openFile, supportedFiles, onFileOpened }) => {
+export type FileOpenProps = {
+    showOpenFileDialog: boolean;
+    supportedFiles: string[];
+    onFileOpened: (fileInfo: FileInfo) => void;
+};
+
+const FileOpen: React.FC<FileOpenProps> = ({ showOpenFileDialog, supportedFiles, onFileOpened }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const acceptAttribute = supportedFiles.join(',');
 
     useEffect(() => {
-        if (openFile && fileInputRef.current) {
+        if (showOpenFileDialog && fileInputRef.current) {
             fileInputRef.current.click();
         }
-    }, [openFile]);
+    }, [showOpenFileDialog]);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -39,12 +43,18 @@ const FileOpen: React.FC<FileOpenProps> = ({ openFile, supportedFiles, onFileOpe
                 let extension = file.name.split('.').pop() || '';
                 extension = extension.startsWith('.') ? extension : `.${extension}`;
                 const name = StringUtils.removeSuffixIfPresent(file.name, extension);
-                const fileInfo: FileInfo = { name: name, extension: extension, content };
+                const fileInfo: FileInfo = {
+                    fullName: file.name,
+                    size: file.size,
+                    name: name,
+                    extension: extension.toLowerCase(),
+                    content,
+                };
                 onFileOpened(fileInfo);
             })
             .catch((error: unknown) => {
                 console.error('Error reading file:', error);
-                onFileOpened({ name: '', extension: '', content: '' });
+                onFileOpened({ fullName: '', size: 0, name: '', extension: '', content: '' });
             })
             .finally(() => {
                 event.target.value = '';

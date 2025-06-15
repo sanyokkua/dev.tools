@@ -65,7 +65,5 @@ warning-color, warning-container-color;
   .color-#{$md-color} {
     --bg-color: var(--#{$md-color});
     --text-color: var(--#{$md-color}-on);
-    background: var(--bg-color);
-    color: var(--text-color);
   }
 }

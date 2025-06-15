@@ -1,4 +1,3 @@
-import { ToasterContainer } from '@/controls/toaster/ToasterContainer';
 import NextDocument, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 
 export default class Document extends NextDocument {
@@ -13,7 +12,6 @@ export default class Document extends NextDocument {
                 <body>
                     <Main />
                     <NextScript />
-                    <ToasterContainer />
                 </body>
             </Html>
         );

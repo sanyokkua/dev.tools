@@ -6,6 +6,12 @@ export interface SelectItem {
     displayText: string;
 }
 
+export function createSelectItemsFromStringArray(items: string[]): SelectItem[] {
+    return items.map((itemId) => {
+        return { itemId: itemId, displayText: itemId };
+    });
+}
+
 export type Size = 'small' | 'default' | 'large';
 
 interface SelectProps {
