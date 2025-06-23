@@ -1,4 +1,5 @@
 import { PageProvider } from '@/contexts/PageContext';
+import { ToasterContainer } from '@/controls/toaster/ToasterContainer';
 import ApplicationLayout from '@/modules/ui/app-layout/ApplicationLayout';
 import '@/styles/appbar.scss';
 import '@/styles/buttons.scss';
@@ -22,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} />
                 <div id="modal-root"></div>
                 <div id="toaster-root"></div>
+                <ToasterContainer />
             </ApplicationLayout>
         </PageProvider>
     );

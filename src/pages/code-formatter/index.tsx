@@ -2,9 +2,9 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
-import FileOpen from '@/controls/file/FileOpen';
-import { fileSave } from '@/controls/file/FileSave';
+import { saveTextFile } from '@/controls/file/FileSave';
 import { FileInfo } from '@/controls/file/FileTypes';
+import OpenFileDialog from '@/controls/file/OpenFileDialog';
 import { formatJson } from '@/modules/tools/json_tools';
 import ColumnMenu, { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
 import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
@@ -15,12 +15,12 @@ import {
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
 import FileNameElement from '@/modules/ui/elements/editor/FileNameElement';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import Select, { SelectItem } from '../../components/controls/Select';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 const JSON_FORMATTER_ITEM: SelectItem = { itemId: 'json', displayText: 'Json' };
 const FORMATTER_ITEMS: SelectItem[] = [JSON_FORMATTER_ITEM];
@@ -34,7 +34,7 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
 
     // State
-    const [isFileDialogOpen, setIsFileDialogOpen] = useState<boolean>(false);
+    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
     const [selectedFormatter, setSelectedFormatter] = useState<SelectItem>(FORMATTER_MAP['json']);
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -65,13 +65,12 @@ const IndexPage: React.FC = () => {
         }
     };
 
-    const handleFileOpened = (fileInfo: FileInfo): void => {
-        setIsFileDialogOpen(false);
-        setEditorContent(leftEditorRef, fileInfo.content);
+    const handleFileOpened = (fileInfo?: FileInfo): void => {
+        setEditorContent(leftEditorRef, fileInfo?.content ?? '');
     };
 
     const handleOpenFileDialog = (): void => {
-        setIsFileDialogOpen(true);
+        fileInputDialogRef.current?.click();
     };
 
     const handleLeftPaste = (): void => {
@@ -84,7 +83,7 @@ const IndexPage: React.FC = () => {
 
     const handleSaveFile = (): void => {
         const content = getEditorContent(rightEditorRef);
-        fileSave({ fileName, fileExtension, fileContent: content });
+        saveTextFile({ fileName, fileExtension, fileContent: content });
     };
 
     const handleRightCopy = (): void => {
@@ -160,10 +159,12 @@ const IndexPage: React.FC = () => {
                 </ContentContainerGridChild>
             </ContentContainerGrid>
 
-            <FileOpen
-                showOpenFileDialog={isFileDialogOpen}
+            <OpenFileDialog
                 supportedFiles={supportedExtensions}
                 onFileOpened={handleFileOpened}
+                onMount={(ref) => {
+                    fileInputDialogRef.current = ref;
+                }}
             />
         </>
     );

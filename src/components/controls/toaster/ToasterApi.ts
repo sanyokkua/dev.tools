@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 export enum ToastType {
     INFO = 'info',
     SUCCESS = 'success',
@@ -15,11 +17,16 @@ export interface Toast {
 type Listener = (toast: Toast) => void;
 
 class ToasterApiClass {
-    private listeners = new Set<Listener>();
+    private listeners: Set<Listener>;
+
+    constructor() {
+        this.listeners = new Set<Listener>(); // Initialize the set of listeners
+    }
 
     // Called by <ToasterContainer> to subscribe
     onShow(fn: Listener) {
         this.listeners.add(fn);
+
         return () => {
             this.listeners.delete(fn);
         };
@@ -27,7 +34,7 @@ class ToasterApiClass {
 
     // Programmatic call from anywhere:
     public show(message: string, type: ToastType = ToastType.INFO, title?: string) {
-        const toastGenId = Math.random().toString(36).substr(2, 9);
+        const toastGenId = v4(); // give unique id to close later this toast
         const toast: Toast = { id: toastGenId, title, message, type };
         this.listeners.forEach((fn) => {
             fn(toast);

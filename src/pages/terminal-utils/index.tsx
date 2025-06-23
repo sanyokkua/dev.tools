@@ -9,10 +9,10 @@ import {
     pasteFromClipboardToEditor,
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import { StringUtils } from 'coreutilsts';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();

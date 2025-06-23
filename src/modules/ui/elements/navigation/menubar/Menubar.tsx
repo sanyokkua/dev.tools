@@ -38,7 +38,7 @@ const Menubar: FC<MenuBarProps> = memo(({ menuItems }) => {
             );
         });
         return (
-            <li className="menubar-menu-button-item menubar-menu-button-dropdown">
+            <li key={item.id} className="menubar-menu-button-item menubar-menu-button-dropdown">
                 <a
                     className="menubar-menu-button menubar-menu-button-dropdown-item"
                     onClick={(e) => {

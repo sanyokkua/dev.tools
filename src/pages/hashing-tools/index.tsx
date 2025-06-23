@@ -2,12 +2,12 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
-import FileOpen from '@/controls/file/FileOpen';
-import { fileSave } from '@/controls/file/FileSave';
+import { saveTextFile } from '@/controls/file/FileSave';
 import { FileInfo } from '@/controls/file/FileTypes';
+import OpenFileDialog from '@/controls/file/OpenFileDialog';
 import { SelectItem } from '@/controls/Select';
 import ColumnMenu, { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
-import CodeEditor  from '@/modules/ui/elements/editor/CodeEditor';
+import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -15,12 +15,12 @@ import {
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
 import FileNameElement from '@/modules/ui/elements/editor/FileNameElement';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import { sha1, sha256, sha384, sha512 } from 'crypto-hash';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 type HashFunction = (text: string) => Promise<string>;
 
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
     }, [setPageTitle]);
 
     // State
-    const [isFileDialogOpen, setIsFileDialogOpen] = useState<boolean>(false);
+    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>([]);
     const [extensionOptions, setExtensionOptions] = useState<SelectItem[]>([]);
     const [fileName, setFileName] = useState<string>('Untitled');
@@ -74,14 +74,13 @@ const Home: React.FC = () => {
     }, []);
 
     // File open handler
-    const handleFileOpened = (fileInfo: FileInfo): void => {
-        setIsFileDialogOpen(false);
-        setEditorContent(leftEditorRef, fileInfo.content);
+    const handleFileOpened = (fileInfo?: FileInfo): void => {
+        setEditorContent(leftEditorRef, fileInfo?.content ?? '');
     };
 
     // Left editor actions
     const handleOpenFileDialog = (): void => {
-        setIsFileDialogOpen(true);
+        fileInputDialogRef.current?.click();
     };
 
     const handleLeftPaste = (): void => {
@@ -95,7 +94,7 @@ const Home: React.FC = () => {
     // Right editor actions
     const handleSaveFile = (): void => {
         const content = getEditorContent(rightEditorRef);
-        fileSave({ fileName, fileExtension, fileContent: content });
+        saveTextFile({ fileName, fileExtension, fileContent: content });
     };
 
     const handleRightCopy = (): void => {
@@ -164,8 +163,10 @@ const Home: React.FC = () => {
                 </ContentContainerGridChild>
             </ContentContainerGrid>
 
-            <FileOpen
-                showOpenFileDialog={isFileDialogOpen}
+            <OpenFileDialog
+                onMount={(ref) => {
+                    fileInputDialogRef.current = ref;
+                }}
                 supportedFiles={supportedExtensions}
                 onFileOpened={handleFileOpened}
             />

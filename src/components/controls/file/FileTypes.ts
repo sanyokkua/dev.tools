@@ -1,3 +1,5 @@
+import { DEFAULT_EXTENSION } from '@/common/constants';
+
 export type FileInfo = {
     fullName: string; // name+extension
     size: number; // size in bytes
@@ -11,5 +13,5 @@ export function createEmptyFile(): FileInfo {
 }
 
 export function createDefaultFile(): FileInfo {
-    return { fullName: '', size: 0, content: '', name: 'Untitled', extension: '.txt' };
+    return { fullName: '', size: 0, content: '', name: 'Untitled', extension: DEFAULT_EXTENSION };
 }

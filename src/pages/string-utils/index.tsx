@@ -1,17 +1,17 @@
 import { usePage } from '@/contexts/PageContext';
-import FileOpen from '@/controls/file/FileOpen';
 import { FileInfo } from '@/controls/file/FileTypes';
+import OpenFileDialog from '@/controls/file/OpenFileDialog';
 import { SelectItem } from '@/controls/Select';
 import { copyToClipboard, pasteFromClipboard } from '@/modules/tools/clipboard_utils';
 import { IToolList } from '@/modules/tools/types';
 import { AvailableFunction } from '@/modules/ui/elements/column/ColumnMenu';
 import ColumnView from '@/modules/ui/elements/column/ColumnView';
 import { getEditorContent, setEditorContent } from '@/modules/ui/elements/editor/CodeEditorUtils';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import { LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 import { editor } from 'monaco-editor';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 const caseUtils: IToolList<(text: string) => string> = {
     tools: [
@@ -132,6 +132,8 @@ const IndexPage = () => {
         setPageTitle('String Utilities Page');
     }, [setPageTitle]);
 
+    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
+
     const caseUtilsList: AvailableFunction[] = caseUtils.tools.map((tool) => {
         return {
             name: tool.text,
@@ -155,7 +157,6 @@ const IndexPage = () => {
         };
     });
 
-    const [openFileDialog, setOpenFileDialog] = useState<boolean>(false);
     const [select, setSelect] = React.useState<SelectItem>(selectItems['caseUtils']);
     const [functions, setFunctions] = React.useState<AvailableFunction[]>(caseUtilsList);
     const monacoLeftEditorRef = useRef<editor.IStandaloneCodeEditor>(null);
@@ -177,7 +178,7 @@ const IndexPage = () => {
     };
 
     const onFileOpen = () => {
-        setOpenFileDialog(true);
+        fileInputDialogRef.current?.click();
     };
     const onLeftEditorPaste = () => {
         pasteFromClipboard(
@@ -207,9 +208,8 @@ const IndexPage = () => {
         setEditorContent(monacoRightEditorRef, '');
     };
 
-    const onFileOpenedHandler = useCallback((openedFileInfo: FileInfo) => {
-        setOpenFileDialog(false);
-        setEditorContent(monacoLeftEditorRef, openedFileInfo.content);
+    const onFileOpenedHandler = useCallback((openedFileInfo?: FileInfo) => {
+        setEditorContent(monacoLeftEditorRef, openedFileInfo?.content ?? '');
     }, []);
 
     const onLeftMount = useCallback((editorProps: EditorProperties) => {
@@ -243,7 +243,13 @@ const IndexPage = () => {
                 rightEditor={{ minimap: false, isReadOnly: true, onEditorMounted: onRightMount }}
                 functions={{ availableFunctions: functions }}
             />
-            <FileOpen showOpenFileDialog={openFileDialog} supportedFiles={[]} onFileOpened={onFileOpenedHandler} />
+            <OpenFileDialog
+                onMount={(ref) => {
+                    fileInputDialogRef.current = ref;
+                }}
+                supportedFiles={[]}
+                onFileOpened={onFileOpenedHandler}
+            />
         </>
     );
 };

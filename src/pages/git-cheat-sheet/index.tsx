@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { usePage } from '@/contexts/PageContext';
 import ContentContainerFlex from '../../components/layout/ContentContainerFlex';
@@ -246,7 +245,7 @@ ${bashCommands}
 
     return (
         <ContentContainerFlex>
-            <ReactMarkdown>{InstructionText}</ReactMarkdown>
+            <div>{InstructionText}</div>
 
             <h1>Commands Generator</h1>
             <p>
@@ -258,7 +257,7 @@ ${bashCommands}
                 <AppGenericForm items={formItems} onSubmit={handleFormSubmit} submitLabel="Generate" />
             </div>
 
-            <div>{generatedCommands && <ReactMarkdown>{generatedCommands}</ReactMarkdown>}</div>
+            <div>{generatedCommands && <div>{generatedCommands}</div>}</div>
         </ContentContainerFlex>
     );
 };

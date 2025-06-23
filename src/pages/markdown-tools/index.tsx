@@ -1,11 +1,10 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { usePage } from '@/contexts/PageContext';
-import FileOpen from '@/controls/file/FileOpen';
-import { fileSave } from '@/controls/file/FileSave';
+import { saveTextFile } from '@/controls/file/FileSave';
 import { FileInfo } from '@/controls/file/FileTypes';
+import OpenFileDialog from '@/controls/file/OpenFileDialog';
 import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
 import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
 import {
@@ -13,11 +12,11 @@ import {
     pasteFromClipboardToEditor,
     setEditorContent,
 } from '@/modules/ui/elements/editor/CodeEditorUtils';
+import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -27,14 +26,15 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
 
     // State
-    const [isFileDialogOpen, setIsFileDialogOpen] = useState<boolean>(false);
     const [isEditorVisible, setIsEditorVisible] = useState<boolean>(true);
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
     const [isWordWrapEnabled, setIsWordWrapEnabled] = useState<boolean>(false);
     const [isMinimapEnabled, setIsMinimapEnabled] = useState<boolean>(true);
-
+    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
     const [editorContent, setEditorContentState] = useState<string>('');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fileName, setFileName] = useState<string>('Untitled');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fileExtension, setFileExtension] = useState<string>('.md');
 
     const [currentFileInfo, setCurrentFileInfo] = useState<FileInfo>({
@@ -42,7 +42,7 @@ const IndexPage: React.FC = () => {
         extension: fileExtension,
         content: editorContent,
         fullName: '',
-        size: 0
+        size: 0,
     });
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -57,11 +57,10 @@ const IndexPage: React.FC = () => {
     );
 
     // File open handler
-    const handleFileOpen = (fileInfo: FileInfo): void => {
-        setIsFileDialogOpen(false);
-        setEditorContent(leftEditorRef, fileInfo.content);
-        setEditorContentState(fileInfo.content);
-        setCurrentFileInfo(fileInfo);
+    const handleFileOpen = (fileInfo?: FileInfo): void => {
+        setEditorContent(leftEditorRef, fileInfo?.content ?? '');
+        setEditorContentState(fileInfo?.content ?? '');
+        setCurrentFileInfo(fileInfo ?? ({} as FileInfo));
     };
 
     // Menu action handlers
@@ -72,12 +71,12 @@ const IndexPage: React.FC = () => {
     };
 
     const handleOpenFileDialog = (): void => {
-        setIsFileDialogOpen(true);
+        fileInputDialogRef.current?.click();
     };
 
     const handleSaveFile = (): void => {
         const content = getEditorContent(leftEditorRef);
-        fileSave({ fileName, fileExtension, fileContent: content });
+        saveTextFile({ fileName, fileExtension, fileContent: content });
     };
 
     const handlePaste = (): void => {
@@ -145,13 +144,13 @@ const IndexPage: React.FC = () => {
                     )}
                 </ContentContainerGridChild>
                 <ContentContainerGridChild> </ContentContainerGridChild>
-                <ContentContainerGridChild>
-                    {isPreviewVisible && <ReactMarkdown>{editorContent}</ReactMarkdown>}
-                </ContentContainerGridChild>
+                <ContentContainerGridChild>{isPreviewVisible && <div>{editorContent}</div>}</ContentContainerGridChild>
             </ContentContainerGrid>
 
-            <FileOpen
-                showOpenFileDialog={isFileDialogOpen}
+            <OpenFileDialog
+                onMount={(ref) => {
+                    fileInputDialogRef.current = ref;
+                }}
                 supportedFiles={['.md', '.txt']}
                 onFileOpened={handleFileOpen}
             />

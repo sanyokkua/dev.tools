@@ -1,7 +1,7 @@
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo } from '@/controls/file/FileTypes';
 import { copyToClipboard, pasteFromClipboard } from '@/modules/tools/clipboard_utils';
-import { EditorLanguage, EditorProperties, EditorPropertiesState } from '@/modules/ui/elements/editor/types';
+import { EditorLanguage, EditorProperties } from '@/modules/ui/elements/editor/types';
 import { OnMenuItemClick, SubmenuItemTypeless } from '@/modules/ui/elements/navigation/menubar/types';
 import { Monaco } from '@monaco-editor/react';
 import { editor, languages } from 'monaco-editor';
@@ -142,8 +142,8 @@ export function buildEditorProperties(editor: editor.IStandaloneCodeEditor, mona
     };
 }
 
-export function getFileLanguage(fileInfo: FileInfo, editorProps: EditorPropertiesState): EditorLanguage {
-    const languageOfFile = editorProps.extensionMap.get(fileInfo.extension);
+export function getFileLanguage(fileInfo: FileInfo, extensionMap: Map<string, EditorLanguage>): EditorLanguage {
+    const languageOfFile = extensionMap.get(fileInfo.extension);
     if (languageOfFile) {
         return languageOfFile;
     }

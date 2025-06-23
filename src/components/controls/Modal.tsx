@@ -2,8 +2,6 @@ import Button from '@/controls/Button';
 import { FC, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-const modalRoot = document.getElementById('modal-root') || document.body;
-
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -42,15 +40,22 @@ const Modal: FC<ModalProps> = ({
     }, [isOpen, onClose]);
 
     // Return null if the modal is not open, so it doesn't render anything
-    if (!isOpen) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!isOpen || !document) {
         return null;
     }
+    const modalRoot = document.getElementById('modal-root') || document.body;
 
     // The actual modal content to be portaled
     const modalContent = (
         <div className="modal-backdrop" onClick={onClose}>
             {/* Stop propagation to prevent clicks inside the modal from closing it */}
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="modal-content"
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
                 <div className="modal-header">
                     <h2 className="modal-title">{title}</h2>
                     <button className="modal-close-button" onClick={onClose}>

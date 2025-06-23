@@ -13,6 +13,14 @@ if (isGithubActions) {
     basePath = `/${repo}`;
 }
 
-const nextConfig = { reactStrictMode: true, output: 'export', assetPrefix: assetPrefix, basePath: basePath };
+const nextConfig = {
+    reactStrictMode: true,
+    output: 'export',
+    assetPrefix: assetPrefix,
+    basePath: basePath,
+    react: {
+        useJsx: true,
+    }
+};
 
 module.exports = nextConfig;

@@ -7,7 +7,7 @@ export type InformationPanelProps = { items: InformationPanelItem[] };
 const CodeEditorInfoLine: React.FC<InformationPanelProps> = (props) => {
     const items = props.items.map((it) => {
         if (typeof it === 'string') {
-            return <Chip text={it} />;
+            return <Chip key={it} text={it} />;
         }
         return it;
     });
