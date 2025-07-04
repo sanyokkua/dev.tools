@@ -1,3 +1,4 @@
+'use client';
 import Button from '@/controls/Button';
 import React from 'react';
 

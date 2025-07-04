@@ -1,5 +1,8 @@
+'use client';
+import { FileOpenProvider } from '@/contexts/FileOpenContext';
+import { FileSaveDialogProvider } from '@/contexts/FileSaveDialogContext';
 import { PageProvider } from '@/contexts/PageContext';
-import { ToasterContainer } from '@/controls/toaster/ToasterContainer';
+import { ToasterProvider } from '@/contexts/ToasterContext';
 import ApplicationLayout from '@/modules/ui/app-layout/ApplicationLayout';
 import '@/styles/appbar.scss';
 import '@/styles/buttons.scss';
@@ -18,13 +21,20 @@ import { AppProps } from 'next/app';
 
 export default function App({ Component, pageProps }: AppProps) {
     return (
-        <PageProvider>
-            <ApplicationLayout>
-                <Component {...pageProps} />
-                <div id="modal-root"></div>
-                <div id="toaster-root"></div>
-                <ToasterContainer />
-            </ApplicationLayout>
-        </PageProvider>
+        <>
+            <div id="modal-root"></div>
+            <div id="toaster-root"></div>
+            <PageProvider>
+                <ToasterProvider>
+                    <FileOpenProvider>
+                        <FileSaveDialogProvider>
+                            <ApplicationLayout>
+                                <Component {...pageProps} />
+                            </ApplicationLayout>
+                        </FileSaveDialogProvider>
+                    </FileOpenProvider>
+                </ToasterProvider>
+            </PageProvider>
+        </>
     );
 }

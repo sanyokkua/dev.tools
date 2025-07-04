@@ -1,3 +1,4 @@
+'use client';
 import Button from '@/controls/Button';
 import { FC, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -40,7 +41,6 @@ const Modal: FC<ModalProps> = ({
     }, [isOpen, onClose]);
 
     // Return null if the modal is not open, so it doesn't render anything
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!isOpen || !document) {
         return null;
     }

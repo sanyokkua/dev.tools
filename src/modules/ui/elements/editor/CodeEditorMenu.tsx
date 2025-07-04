@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Menubar from '../navigation/menubar/Menubar';
 import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '../navigation/menubar/types';

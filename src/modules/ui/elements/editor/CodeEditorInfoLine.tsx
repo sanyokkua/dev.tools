@@ -1,4 +1,5 @@
-import { FileInfo } from '@/controls/file/FileTypes';
+'use client';
+import { FileInfo } from '@/common/file-types';
 import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
 import React from 'react';
 

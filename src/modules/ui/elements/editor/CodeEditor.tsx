@@ -1,5 +1,6 @@
+'use client';
 import { DEFAULT_LANGUAGE_ID } from '@/common/constants';
-import { buildEditorProperties } from '@/modules/ui/elements/editor/CodeEditorUtils';
+import { buildEditorProperties } from '@/modules/ui/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import { Editor, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';

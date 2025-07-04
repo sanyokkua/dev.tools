@@ -1,6 +1,6 @@
+import { copyToClipboard, pasteFromClipboard } from '@/common/clipboard-utils';
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
-import { FileInfo } from '@/controls/file/FileTypes';
-import { copyToClipboard, pasteFromClipboard } from '@/modules/tools/clipboard_utils';
+import { FileInfo } from '@/common/file-types';
 import { EditorLanguage, EditorProperties } from '@/modules/ui/elements/editor/types';
 import { OnMenuItemClick, SubmenuItemTypeless } from '@/modules/ui/elements/navigation/menubar/types';
 import { Monaco } from '@monaco-editor/react';

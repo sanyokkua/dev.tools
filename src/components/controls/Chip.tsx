@@ -1,6 +1,7 @@
+'use client';
 import React from 'react';
 
-export type ChipProps = { text: string };
+type ChipProps = { text: string };
 
 const Chip: React.FC<ChipProps> = (props) => {
     return <div className="chip">{props.text}</div>;

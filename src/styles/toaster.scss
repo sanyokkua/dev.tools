@@ -1,61 +1,77 @@
 .toaster-container {
-  position: fixed;
-  top: 1rem; /* change to bottom/right/left as desired */
-  right: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 9999;
-  pointer-events: none; /* let clicks pass through blank areas */
+    position: fixed; // Positions the element relative to viewport, not parent elements
+    bottom: 1rem; // Distance from the bottom edge of the viewport (replaces top)
+    right: 1rem; // Distance from the right edge of the viewport
+    display: flex;
+    flex-direction: column-reverse; // Stack toast messages vertically in reverse order
+    gap: 0.5rem; // Space between each toast message
+    z-index: 9999; // Ensures container is displayed above other elements
+    pointer-events: none; // Allows clicks to pass through the empty areas of this container
 }
 
 .toast {
-  --t-bg-color: var(--primary-container-color);
-  --t-text-color: var(--primary-container-color-on);
+    // Custom CSS variables for theme colors
+    --t-bg-color: var(--primary-container-color);
+    --t-text-color: var(--primary-container-color-on);
 
-  min-width: 200px;
-  max-width: 320px;
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  color: var(--t-text-color);
-  background-color: var(--t-bg-color);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--md-shadow-color) 90%, var(--white-color));
-  pointer-events: all; /* allow interacting with toasts themselves */
-  animation: slideIn 0.3s ease-out;
+    // Size constraints
+    min-width: 200px;
+    max-width: 320px;
+
+    // Padding and spacing
+    padding: 0.75rem 1rem;
+
+    // Rounded corners for a softer look
+    border-radius: 4px;
+
+    // Text color using custom variable
+    color: var(--t-text-color);
+
+    // Background using custom variable
+    background-color: var(--t-bg-color);
+
+    // Shadow effect with transparency mix
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--md-shadow-color) 90%, var(--white-color));
+
+    // Ensure all elements within the toast are interactive
+    pointer-events: all;
+
+    // Animation for smooth entrance
+    animation: slideIn 0.3s ease-out;
 }
 
 .toast .toast-title {
-  font-weight: bold;
-  margin-bottom: 0.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
 }
 
 .toast.info {
-  --t-bg-color: var(--info-container-color);
-  --t-text-color: var(--info-container-color-on);
+    --t-bg-color: var(--info-container-color);
+    --t-text-color: var(--info-container-color-on);
 }
 
 .toast.success {
-  --t-bg-color: var(--success-container-color);
-  --t-text-color: var(--success-container-color-on);
+    --t-bg-color: var(--success-container-color);
+    --t-text-color: var(--success-container-color-on);
 }
 
 .toast.warning {
-  --t-bg-color: var(--warning-container-color);
-  --t-text-color: var(--warning-container-color-on);
+    --t-bg-color: var(--warning-container-color);
+    --t-text-color: var(--warning-container-color-on);
 }
 
 .toast.error {
-  --t-bg-color: var(--error-container-color);
-  --t-text-color: var(--error-container-color-on);
+    --t-bg-color: var(--error-container-color);
+    --t-text-color: var(--error-container-color-on);
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

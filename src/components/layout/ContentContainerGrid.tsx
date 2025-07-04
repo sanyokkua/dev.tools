@@ -1,3 +1,4 @@
+'use client';
 import React, { ReactElement } from 'react';
 import ContentContainerGridChild, { ContentContainerGridChildProps } from './ContentContainerGridChild';
 

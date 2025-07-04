@@ -1,3 +1,4 @@
+'use client';
 import NextDocument, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 
 export default class Document extends NextDocument {

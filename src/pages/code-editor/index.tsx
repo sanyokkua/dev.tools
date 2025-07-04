@@ -1,11 +1,14 @@
+'use client';
+
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID } from '@/common/constants';
+import { FileInfo } from '@/common/file-types';
+import { createDefaultFile } from '@/common/file-utils';
+import { useFileOpen } from '@/contexts/FileOpenContext';
+import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
-import { saveTextFile } from '@/controls/file/FileSave';
-import { createDefaultFile, FileInfo } from '@/controls/file/FileTypes';
-import OpenFileDialog from '@/controls/file/OpenFileDialog';
-import Modal from '@/controls/Modal';
+import { useToast } from '@/contexts/ToasterContext';
 import { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
-import { toasterApi, ToastType } from '@/controls/toaster/ToasterApi';
+import { ToastType } from '@/controls/toaster/types';
 import ContentContainerFlex from '@/layout/ContentContainerFlex';
 import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
 import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
@@ -17,11 +20,9 @@ import {
     mapEditorLanguagesToMenuItem,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/modules/ui/elements/editor/CodeEditorUtils';
-import FileNameElement from '@/modules/ui/elements/editor/FileNameElement';
+} from '@/modules/ui/elements/editor/code-editor-utils';
 import { EditorLanguage, EditorProperties } from '@/modules/ui/elements/editor/types';
 import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '@/modules/ui/elements/navigation/menubar/types';
-import { extractErrorDetails } from 'coreutilsts';
 import { editor, languages } from 'monaco-editor';
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
@@ -87,15 +88,17 @@ function mapBoolean(b: boolean): 'On' | 'Off' {
 
 const IndexPage = () => {
     const { setPageTitle } = usePage();
+    const { showFileSaveDialog } = useFileSaveDialog();
+    const { showFileOpenDialog } = useFileOpen();
+    const { showToast } = useToast();
+
     useEffect(() => {
         setPageTitle('Code Editor');
     }, [setPageTitle]);
 
     // Begin of State
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
     const [editorState, setEditorState] = useState<CodeEditorState>(createDefaultState());
-    const [fileSaveDialogShow, setFileSaveDialogShow] = useState<boolean>(false);
     // End of Common FileInfo
 
     // Begin of CodeEditor
@@ -129,7 +132,7 @@ const IndexPage = () => {
                     fileSaveExtensions: saveFileExtensions,
                 };
             });
-            toasterApi.show('Language changed to ' + languageId, ToastType.INFO);
+            showToast({ message: 'Language changed to ' + languageId, type: ToastType.INFO });
         },
         [setEditorState],
     );
@@ -150,16 +153,51 @@ const IndexPage = () => {
                 editorLanguageId: languageOfFile.id,
             };
         });
-        toasterApi.show('New file created', ToastType.SUCCESS);
+        showToast({ message: 'New file created', type: ToastType.SUCCESS });
     }, [setEditorState]);
     const menuOnFileOpenClick: OnMenuItemClick = useCallback(() => {
-        if (fileInputDialogRef.current) {
-            fileInputDialogRef.current.click();
-        }
+        showFileOpenDialog({
+            supportedFiles: editorState.editorPropsSupportedExtensions,
+            onSuccess: (fileInfo) => {
+                if (!fileInfo) {
+                    showToast({ message: 'No files are chosen', type: ToastType.WARNING });
+                    return;
+                }
+                setEditorContent(editorRef, fileInfo.content);
+                setEditorState((prevState) => {
+                    const languageOfFile = getFileLanguage(fileInfo, prevState.editorPropsExtensionMap);
+                    const saveFileExtensions = createSelectItemsFromStringArray(languageOfFile.extensions);
+                    return {
+                        ...prevState,
+                        fileName: fileInfo.name,
+                        fileFullName: fileInfo.fullName,
+                        fileExtension: fileInfo.extension,
+                        fileContent: fileInfo.content,
+                        fileSize: fileInfo.size,
+                        fileSaveExtensions: saveFileExtensions,
+                        editorLanguageId: languageOfFile.id,
+                    };
+                });
+                showToast({ message: 'File opened', type: ToastType.INFO });
+            },
+            onFailure: (err) => {
+                console.log(err);
+                showToast({ message: 'Failed to open file', type: ToastType.ERROR });
+            },
+        });
     }, []);
     const menuOnFileSaveClick: OnMenuItemClick = useCallback(() => {
-        setFileSaveDialogShow(true);
-    }, []);
+        const content = getEditorContent(editorRef);
+        const ext = editorState.fileExtension;
+        const name = editorState.fileName;
+        showFileSaveDialog({
+            fileContent: content,
+            fileName: name,
+            fileExtension: ext,
+            mimeType: editorState.editorPropsSupportedMimeTypes[0],
+            availableExtensions: editorState.fileSaveExtensions.map((e) => e.itemId),
+        });
+    }, [editorState]);
     const menuOnEditorWrapLinesClick: OnMenuItemClick = useCallback(() => {
         setEditorState((prevState) => {
             return { ...prevState, editorWordWrap: !prevState.editorWordWrap };
@@ -183,67 +221,6 @@ const IndexPage = () => {
         [menuOnLanguageSelected],
     );
     // End of CodeEditorMenu
-
-    // Begin of FileOpen
-    const fileOpenOnFileOpened: (fileInfo?: FileInfo) => void = useCallback(
-        (fileInfo) => {
-            if (!fileInfo) {
-                toasterApi.show('No files are chosen', ToastType.WARNING);
-                return;
-            }
-            setEditorContent(editorRef, fileInfo.content);
-            setEditorState((prevState) => {
-                const languageOfFile = getFileLanguage(fileInfo, prevState.editorPropsExtensionMap);
-                const saveFileExtensions = createSelectItemsFromStringArray(languageOfFile.extensions);
-                return {
-                    ...prevState,
-                    fileName: fileInfo.name,
-                    fileFullName: fileInfo.fullName,
-                    fileExtension: fileInfo.extension,
-                    fileContent: fileInfo.content,
-                    fileSize: fileInfo.size,
-                    fileSaveExtensions: saveFileExtensions,
-                    editorLanguageId: languageOfFile.id,
-                };
-            });
-            toasterApi.show('File opened', ToastType.INFO);
-        },
-        [setEditorContent, setEditorState],
-    );
-    // End of FileOpen
-
-    // Begin of SaveFileModal
-    const saveFileOnClose: () => void = useCallback(() => {
-        setFileSaveDialogShow(false);
-    }, [setFileSaveDialogShow]);
-    const saveFileOnConfirm = useCallback(() => {
-        setFileSaveDialogShow(false);
-        const fileInfo = buildFileInfo(editorState, editorRef);
-        try {
-            saveTextFile({
-                fileName: fileInfo.name,
-                fileContent: fileInfo.content,
-                fileMimeType: editorState.editorPropsSupportedMimeTypes[0],
-                fileExtension: fileInfo.extension,
-            });
-            toasterApi.show('File saved', ToastType.SUCCESS);
-        } catch (e: unknown) {
-            const errMsg = extractErrorDetails(e);
-            console.log(errMsg);
-            toasterApi.show('File was not saved', ToastType.WARNING);
-        }
-    }, [editorState, setFileSaveDialogShow]);
-    const saveFileOnNameChanged: (name: string) => void = useCallback((name) => {
-        setEditorState((prevState) => {
-            return { ...prevState, fileName: name };
-        });
-    }, []);
-    const saveFileOnExtensionChanged: (extension: SelectItem) => void = useCallback((extension) => {
-        setEditorState((prevState) => {
-            return { ...prevState, fileExtension: extension.itemId };
-        });
-    }, []);
-    // End of SaveFileModal
 
     const menuLanguages = useMemo(
         () => mapEditorLanguagesToMenuItem(editorState.editorPropsMappedLanguages, onMenuLanguageItemClick),
@@ -285,30 +262,6 @@ const IndexPage = () => {
                 onEditorMounted={editorOnEditorMounted}
                 onChange={onEditorContentChanged}
             />
-
-            <OpenFileDialog
-                onMount={(ref) => {
-                    fileInputDialogRef.current = ref;
-                }}
-                supportedFiles={editorState.editorPropsSupportedExtensions}
-                onFileOpened={fileOpenOnFileOpened}
-            />
-            <Modal
-                isOpen={fileSaveDialogShow}
-                onClose={saveFileOnClose}
-                onConfirm={saveFileOnConfirm}
-                title="Save File As"
-                confirmText="Submit"
-            >
-                <p>Please enter desired file name and chose available extension for this file type.</p>
-                <FileNameElement
-                    defaultName={editorState.fileName}
-                    defaultExtensionKey={editorState.fileExtension}
-                    extensions={editorState.fileSaveExtensions}
-                    onNameChanged={saveFileOnNameChanged}
-                    onExtensionChanged={saveFileOnExtensionChanged}
-                />
-            </Modal>
         </ContentContainerFlex>
     );
 };

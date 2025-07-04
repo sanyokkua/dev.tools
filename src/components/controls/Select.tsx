@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { Color } from './types';
 
@@ -12,7 +13,7 @@ export function createSelectItemsFromStringArray(items: string[]): SelectItem[] 
     });
 }
 
-export type Size = 'small' | 'default' | 'large';
+type Size = 'small' | 'default' | 'large';
 
 interface SelectProps {
     items: SelectItem[];

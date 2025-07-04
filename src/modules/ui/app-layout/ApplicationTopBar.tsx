@@ -1,3 +1,4 @@
+'use client';
 import { usePage } from '@/contexts/PageContext';
 import { useRouter } from 'next/router';
 import React from 'react';

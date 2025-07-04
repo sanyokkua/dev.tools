@@ -1,3 +1,4 @@
+'use client';
 import { usePage } from '@/contexts/PageContext';
 import { useEffect } from 'react';
 

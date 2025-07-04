@@ -1,69 +1,64 @@
 :root {
-  --black-color: #000000;
-  --black-color-on: #FFFFFF;
+    --black-color: #000000;
+    --black-color-on: #ffffff;
 
-  --white-color: #FFFFFF;
-  --white-color-on: #000000;
+    --white-color: #ffffff;
+    --white-color-on: #000000;
 
-  --primary-color: #006b5f;
-  --primary-color-on: #ffffff;
-  --primary-container-color: #9ef2e3;
-  --primary-container-color-on: #005048;
+    --primary-color: #006b5f;
+    --primary-color-on: #ffffff;
+    --primary-container-color: #9ef2e3;
+    --primary-container-color-on: #005048;
 
-  --secondary-color: #4a635e;
-  --secondary-color-on: #ffffff;
-  --secondary-container-color: #cce8e2;
-  --secondary-container-color-on: #334b47;
+    --secondary-color: #4a635e;
+    --secondary-color-on: #ffffff;
+    --secondary-container-color: #cce8e2;
+    --secondary-container-color-on: #334b47;
 
-  --tertiary-color: #456179;
-  --tertiary-color-on: #ffffff;
-  --tertiary-container-color: #cbe6ff;
-  --tertiary-container-color-on: #2d4a60;
+    --tertiary-color: #456179;
+    --tertiary-color-on: #ffffff;
+    --tertiary-container-color: #cbe6ff;
+    --tertiary-container-color-on: #2d4a60;
 
-  --error-color: #ba1a1a;
-  --error-color-on: #ffffff;
-  --error-container-color: #ffdad6;
-  --error-container-color-on: #93000a;
+    --error-color: #ba1a1a;
+    --error-color-on: #ffffff;
+    --error-container-color: #ffdad6;
+    --error-container-color-on: #93000a;
 
-  --surface-color: #f4fbf8;
-  --surface-color-on: #3f4946;
-  --surface-dim-color: #d5dbd9;
-  --surface-dim-color-on: #161d1b;
+    --surface-color: #f4fbf8;
+    --surface-color-on: #3f4946;
+    --surface-dim-color: #d5dbd9;
+    --surface-dim-color-on: #161d1b;
 
-  --info-color: #27638a;
-  --info-color-on: #ffffff;
-  --info-container-color: #cae6ff;
-  --info-container-color-on: #004b70;
+    --info-color: #27638a;
+    --info-color-on: #ffffff;
+    --info-container-color: #cae6ff;
+    --info-container-color-on: #004b70;
 
-  --success-color: #3b6939;
-  --success-color-on: #ffffff;
-  --success-container-color: #bcf0b4;
-  --success-container-color-on: #235024;
+    --success-color: #3b6939;
+    --success-color-on: #ffffff;
+    --success-container-color: #bcf0b4;
+    --success-container-color-on: #235024;
 
-  --warning-color: #685f12;
-  --warning-color-on: #ffffff;
-  --warning-container-color: #f1e48a;
-  --warning-container-color-on: #4f4800;
+    --warning-color: #685f12;
+    --warning-color-on: #ffffff;
+    --warning-container-color: #f1e48a;
+    --warning-container-color-on: #4f4800;
 
-  --md-shadow-color: #000000;
-  --md-outline-color: #6f7976;
+    --md-shadow-color: #000000;
+    --md-outline-color: #6f7976;
 
-  --hover-color: white;
+    --hover-color: white;
 }
 
-$md-colors: black-color, white-color,
-primary-color, primary-container-color,
-secondary-color, secondary-container-color,
-tertiary-color, tertiary-container-color,
-error-color, error-container-color,
-surface-color, surface-dim-color,
-info-color, info-container-color,
-success-color, success-container-color,
-warning-color, warning-container-color;
+$md-colors:
+    black-color, white-color, primary-color, primary-container-color, secondary-color, secondary-container-color,
+    tertiary-color, tertiary-container-color, error-color, error-container-color, surface-color, surface-dim-color,
+    info-color, info-container-color, success-color, success-container-color, warning-color, warning-container-color;
 
 @each $md-color in $md-colors {
-  .color-#{$md-color} {
-    --bg-color: var(--#{$md-color});
-    --text-color: var(--#{$md-color}-on);
-  }
+    .color-#{$md-color} {
+        --bg-color: var(--#{$md-color});
+        --text-color: var(--#{$md-color}-on);
+    }
 }

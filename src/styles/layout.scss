@@ -1,42 +1,52 @@
 .app-main-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100vw;
 }
 
 .app-sidebar-and-content-container {
-  display: flex;
-  flex: 1;
+    display: flex;
+    flex: 1;
 }
 
 .app-main-content-container {
-  flex: 1;
-  padding: 1vh;
-  height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+    flex: 1;
+    padding: 1vh;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .content-container-flex {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  //height: 100vh;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    //height: 100vh;
 }
 
 .content-container-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 1fr);
-  height: 100vh;
-  gap: 1vw;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 1fr);
+    height: 100vh;
+    gap: 1vw;
 }
 
 .content-container-grid-child {
-  display: flex;
-  flex-direction: column; /* Stacks content inside each column */
-  align-items: stretch; /* Ensures child elements fill the column */
-  justify-content: flex-start; /* Aligns items from top to bottom */
+    display: flex;
+    flex-direction: column; /* Stacks content inside each column */
+    align-items: stretch; /* Ensures child elements fill the column */
+    justify-content: flex-start; /* Aligns items from top to bottom */
+}
+
+.scrollable-container {
+    display: flex;
+    flex-direction: column; /* Stacks content inside each column */
+    align-items: stretch; /* Ensures child elements fill the column */
+    justify-content: flex-start; /* Aligns items from top to bottom */
+    overflow-y: scroll;
+    height: 75%;
+    overflow-wrap: break-word;
 }

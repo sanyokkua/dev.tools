@@ -1,26 +1,24 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from 'next';
 
 const isGithubActions = process.env.GITHUB_ACTIONS || false;
-
 let assetPrefix = '';
 let basePath = '';
 
 if (isGithubActions) {
-    // trim off `<owner>/`
+    // Trim off `<owner>/`
+    // @ts-expect-error can't happen on GitHub Action
     const repo = process.env.GITHUB_REPOSITORY.replace(/.*?\//, '');
-
     assetPrefix = `/${repo}/`;
     basePath = `/${repo}`;
 }
 
-const nextConfig = {
+const nextConfig: NextConfig = {
+    /* config options here */
     reactStrictMode: true,
     output: 'export',
     assetPrefix: assetPrefix,
     basePath: basePath,
-    react: {
-        useJsx: true,
-    }
+    react: { useJsx: true },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

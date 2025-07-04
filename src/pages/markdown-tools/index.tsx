@@ -1,25 +1,31 @@
+'use client';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useFileOpen } from '@/contexts/FileOpenContext';
 import { usePage } from '@/contexts/PageContext';
-import { saveTextFile } from '@/controls/file/FileSave';
-import { FileInfo } from '@/controls/file/FileTypes';
-import OpenFileDialog from '@/controls/file/OpenFileDialog';
+import { useToast } from '@/contexts/ToasterContext';
+import { ToastType } from '@/controls/toaster/types';
 import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
 import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
 import {
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/modules/ui/elements/editor/CodeEditorUtils';
+} from '@/modules/ui/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
 import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
 
+import { FileInfo } from '@/common/file-types';
+import { saveTextFile } from '@/common/file-utils';
+
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
+    const { showFileOpenDialog } = useFileOpen();
+    const { showToast } = useToast();
 
     useEffect(() => {
         setPageTitle('Markdown Utilities');
@@ -30,13 +36,13 @@ const IndexPage: React.FC = () => {
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
     const [isWordWrapEnabled, setIsWordWrapEnabled] = useState<boolean>(false);
     const [isMinimapEnabled, setIsMinimapEnabled] = useState<boolean>(true);
-    const fileInputDialogRef = useRef<HTMLInputElement | null>(null);
     const [editorContent, setEditorContentState] = useState<string>('');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fileName, setFileName] = useState<string>('Untitled');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fileExtension, setFileExtension] = useState<string>('.md');
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [currentFileInfo, setCurrentFileInfo] = useState<FileInfo>({
         name: fileName,
         extension: fileExtension,
@@ -56,13 +62,6 @@ const IndexPage: React.FC = () => {
         [editorContent],
     );
 
-    // File open handler
-    const handleFileOpen = (fileInfo?: FileInfo): void => {
-        setEditorContent(leftEditorRef, fileInfo?.content ?? '');
-        setEditorContentState(fileInfo?.content ?? '');
-        setCurrentFileInfo(fileInfo ?? ({} as FileInfo));
-    };
-
     // Menu action handlers
     const handleNewFile = (): void => {
         const emptyContent = '';
@@ -71,7 +70,21 @@ const IndexPage: React.FC = () => {
     };
 
     const handleOpenFileDialog = (): void => {
-        fileInputDialogRef.current?.click();
+        showFileOpenDialog({
+            supportedFiles: ['.md', '.txt'],
+            onSuccess: (fileInfo) => {
+                if (!fileInfo) {
+                    showToast({ message: 'No files are chosen', type: ToastType.WARNING });
+                    return;
+                }
+                setEditorContent(leftEditorRef, fileInfo.content);
+                showToast({ message: 'File opened', type: ToastType.INFO });
+            },
+            onFailure: (err) => {
+                console.log(err);
+                showToast({ message: 'Failed to open file', type: ToastType.ERROR });
+            },
+        });
     };
 
     const handleSaveFile = (): void => {
@@ -146,14 +159,6 @@ const IndexPage: React.FC = () => {
                 <ContentContainerGridChild> </ContentContainerGridChild>
                 <ContentContainerGridChild>{isPreviewVisible && <div>{editorContent}</div>}</ContentContainerGridChild>
             </ContentContainerGrid>
-
-            <OpenFileDialog
-                onMount={(ref) => {
-                    fileInputDialogRef.current = ref;
-                }}
-                supportedFiles={['.md', '.txt']}
-                onFileOpened={handleFileOpen}
-            />
         </>
     );
 };

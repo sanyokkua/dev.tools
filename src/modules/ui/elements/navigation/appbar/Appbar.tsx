@@ -1,3 +1,4 @@
+'use client';
 import React, { MouseEvent } from 'react';
 
 export type AppBarProps = {

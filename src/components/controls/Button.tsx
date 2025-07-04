@@ -1,8 +1,9 @@
+'use client';
 import React from 'react';
 import { Color } from './types';
 
-export type Variant = 'solid' | 'outlined' | 'dashed' | 'filled' | 'text' | 'link';
-export type Size = 'small' | 'default' | 'large';
+type Variant = 'solid' | 'outlined' | 'dashed' | 'filled' | 'text' | 'link';
+type Size = 'small' | 'default' | 'large';
 
 interface ButtonProps {
     text: string;

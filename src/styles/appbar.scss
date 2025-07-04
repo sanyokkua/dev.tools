@@ -1,27 +1,27 @@
 .app-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color);
-  color: var(--primary-color-on);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--primary-color-on);
 }
 
 .app-bar-title-link {
-  margin: 0;
-  color: var(--primary-color-on);
-  font-weight: 400;
-  letter-spacing: 0.025em;
+    margin: 0;
+    color: var(--primary-color-on);
+    font-weight: 400;
+    letter-spacing: 0.025em;
 }
 
 .app-bar-page-title {
-  flex: 1;
-  margin: 0;
-  color: var(--primary-color-on);
-  text-align: center;
-  font-size: 1.25rem;
+    flex: 1;
+    margin: 0;
+    color: var(--primary-color-on);
+    text-align: center;
+    font-size: 1.25rem;
 }
 
 .app-bar-spacing-stub {
-  width: 100px;
+    width: 100px;
 }

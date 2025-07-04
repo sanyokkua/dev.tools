@@ -1,3 +1,4 @@
+'use client';
 import { ChangeEvent, FC, FormEvent, useCallback, useMemo, useState } from 'react';
 
 export enum ValueType {

@@ -2,36 +2,36 @@
   1. Base + helpers
 -----------------------------------*/
 .button-base {
-  font-size: 1rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  outline: none;
-  background: transparent;
-  border: none;
-  display: inline-block;
-  text-align: center;
-  user-select: none;
-  margin: 1px;
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    background: transparent;
+    border: none;
+    display: inline-block;
+    text-align: center;
+    user-select: none;
+    margin: 1px;
 }
 
 /* Sizes */
 .button-small {
-  font-size: 0.9rem;
-  padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
 }
 
 .button-large {
-  font-size: 1.1rem;
-  padding: 1rem 1.6rem;
+    font-size: 1.1rem;
+    padding: 1rem 1.6rem;
 }
 
 /* Block */
 .button-block {
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 }
 
 /*-----------------------------------
@@ -39,92 +39,92 @@
 -----------------------------------*/
 /* SOLID = filled with btn-color, text-color */
 .button-solid {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .button-solid:hover {
-  filter: brightness(0.9);
-  box-shadow: 0 0 4px var(--md-shadow-color);
+    filter: brightness(0.9);
+    box-shadow: 0 0 4px var(--md-shadow-color);
 }
 
 .button-solid:active {
-  transform: scale(0.9);
+    transform: scale(0.9);
 }
 
 /* OUTLINED = transparent + border + text */
 .button-outlined {
-  border: 1px solid var(--bg-color);
-  color: var(--bg-color);
+    border: 1px solid var(--bg-color);
+    color: var(--bg-color);
 }
 
 .button-outlined:hover {
-  filter: brightness(1.5);
+    filter: brightness(1.5);
 }
 
 .button-outlined:active {
-  transform: scale(0.9);
+    transform: scale(0.9);
 }
 
 /* DASHED = same as outlined but dashed border */
 .button-dashed {
-  border: 1px dashed var(--bg-color);
-  color: var(--bg-color);
+    border: 1px dashed var(--bg-color);
+    color: var(--bg-color);
 }
 
 .button-dashed:hover {
-  filter: brightness(1.5);
-  transform: scale(1.05);
+    filter: brightness(1.5);
+    transform: scale(1.05);
 }
 
 .button-dashed:active {
-  transform: scale(0.9);
+    transform: scale(0.9);
 }
 
 /* FILLED = subtle fill + colored text */
 .button-filled {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  opacity: 0.15;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    opacity: 0.15;
 }
 
 .button-filled:hover {
-  opacity: 0.3;
+    opacity: 0.3;
 }
 
 .button-filled:active {
-  opacity: 0.6;
-  transform: scale(0.98);
+    opacity: 0.6;
+    transform: scale(0.98);
 }
 
 /* TEXT = no bg or border, just text */
 .button-text {
-  color: var(--bg-color);
+    color: var(--bg-color);
 }
 
 .button-text:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .button-text:active {
-  filter: brightness(0.8);
+    filter: brightness(0.8);
 }
 
 /* LINK = like text but underlined by default */
 .button-link {
-  color: var(--bg-color);
-  text-decoration: underline;
-  background: none;
-  border: none;
+    color: var(--bg-color);
+    text-decoration: underline;
+    background: none;
+    border: none;
 }
 
 .button-link:hover {
-  color: var(--bg-color);
-  filter: brightness(0.8);
+    color: var(--bg-color);
+    filter: brightness(0.8);
 }
 
 .button-link:active {
-  transform: scale(0.98);
+    transform: scale(0.98);
 }
 
 /*-----------------------------------
@@ -132,46 +132,46 @@
 -----------------------------------*/
 /* DANGER – overrides color vars */
 .button-danger {
-  --bg-color: var(--error-color);
-  --text-color: var(--error-color-on);
+    --bg-color: var(--error-color);
+    --text-color: var(--error-color-on);
 }
 
 /* GHOST – white border/text (for dark BGs) */
 .button-ghost {
-  background: none !important;
-  color: #fff !important;
-  border: 1px solid #fff !important;
+    background: none !important;
+    color: #fff !important;
+    border: 1px solid #fff !important;
 }
 
 /* DISABLED */
 .button-disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* LOADING */
 .button-loading {
-  position: relative;
-  pointer-events: none;
-  opacity: 0.8;
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
 }
 
 .button-loading::before {
-  content: '';
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: rgba(255, 255, 255, 0.8);
-  animation: spin 0.8s linear infinite;
-  margin-right: 0.5em;
-  vertical-align: middle;
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.8);
+    animation: spin 0.8s linear infinite;
+    margin-right: 0.5em;
+    vertical-align: middle;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }

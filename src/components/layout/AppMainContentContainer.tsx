@@ -1,3 +1,4 @@
+'use client';
 import { Color } from '@/controls/types';
 import React, { ReactNode } from 'react';
 

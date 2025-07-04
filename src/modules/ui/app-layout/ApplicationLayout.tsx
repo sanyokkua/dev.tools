@@ -1,3 +1,4 @@
+'use client';
 import AppMainContainer from '@/layout/AppMainContainer';
 import AppMainContentContainer from '@/layout/AppMainContentContainer';
 import AppSideBarAndContentContainer from '@/layout/AppSideBarAndContentContainer';
