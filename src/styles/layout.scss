@@ -49,3 +49,30 @@
     height: 75%;
     overflow-wrap: break-word;
 }
+
+.horizontal-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    align-items: stretch; /* Ensures children fill container height */
+    gap: 0; /* Optional: remove spacing between children */
+}
+
+.horizontal-container > * {
+    flex: 1 1 0; /* Equal width distribution */
+    min-width: 0; /* Prevents overflow issues with long content */
+}
+
+.text-container {
+    /* Base surface styling */
+    background: var(--white-color);
+    color: var(--surface-color-on);
+    border-radius: 4px;
+    padding: 1vh;
+    /* Default elevation level 1 */
+    box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}

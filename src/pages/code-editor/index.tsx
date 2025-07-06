@@ -3,6 +3,7 @@
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { createDefaultFile } from '@/common/file-utils';
+import { mapBoolean } from '@/common/formatting-tools';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
@@ -80,10 +81,6 @@ function buildFileInfo(state: CodeEditorState, editorProps: RefObject<IStandalon
         name: state.fileName,
         extension: state.fileExtension,
     };
-}
-
-function mapBoolean(b: boolean): 'On' | 'Off' {
-    return b ? 'On' : 'Off';
 }
 
 const IndexPage = () => {

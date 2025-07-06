@@ -14,3 +14,7 @@ export function formatJson(jsonStr: string, spaces: number = 4): string {
         throw error;
     }
 }
+
+export function mapBoolean(b: boolean): 'On' | 'Off' {
+    return b ? 'On' : 'Off';
+}

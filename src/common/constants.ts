@@ -15,3 +15,5 @@ export const DEFAULT_EXTENSION: string = '.txt';
  * Represents the default textual data format if no specific MIME type can be determined.
  */
 export const DEFAULT_MIME_TYPE: string = 'text/plain';
+
+export const DEFAULT_FILE_NAME: string = 'Untitled';

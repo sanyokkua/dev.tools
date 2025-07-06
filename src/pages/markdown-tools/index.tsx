@@ -7,7 +7,6 @@ import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
 import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
-import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
 import {
     getEditorContent,
     pasteFromClipboardToEditor,
@@ -16,11 +15,25 @@ import {
 import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
 import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
-import ContentContainerGrid from '../../components/layout/ContentContainerGrid';
-import ContentContainerGridChild from '../../components/layout/ContentContainerGridChild';
 
+import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { saveTextFile } from '@/common/file-utils';
+import { mapBoolean } from '@/common/formatting-tools';
+import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
+import HorizontalContainer from '@/layout/HorizontalContainer';
+import ScrollableContentContainer from '@/layout/ScrollableContentContainer';
+import TextContainer from '@/layout/TextContainer';
+import 'highlight.js/styles/github.css';
+import 'katex/dist/katex.min.css';
+import ReactMarkdown from 'react-markdown';
+import { useReactToPrint } from 'react-to-print';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+
+const markdownExtension = '.md';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -31,45 +44,47 @@ const IndexPage: React.FC = () => {
         setPageTitle('Markdown Utilities');
     }, [setPageTitle]);
 
-    // State
+    const contentRef = useRef<HTMLDivElement>(null);
+    const reactToPrintFn = useReactToPrint({ contentRef });
+
+    // State management
     const [isEditorVisible, setIsEditorVisible] = useState<boolean>(true);
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
     const [isWordWrapEnabled, setIsWordWrapEnabled] = useState<boolean>(false);
     const [isMinimapEnabled, setIsMinimapEnabled] = useState<boolean>(true);
-    const [editorContent, setEditorContentState] = useState<string>('');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [fileName, setFileName] = useState<string>('Untitled');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [fileExtension, setFileExtension] = useState<string>('.md');
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [currentFileInfo, setCurrentFileInfo] = useState<FileInfo>({
-        name: fileName,
-        extension: fileExtension,
-        content: editorContent,
+        name: DEFAULT_FILE_NAME,
+        extension: markdownExtension,
+        content: '',
         fullName: '',
         size: 0,
     });
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-    // Editor mount handler
+    // Event handlers with useCallback for optimization
     const handleEditorMount = useCallback(
         (props: EditorProperties) => {
             leftEditorRef.current = props.editor;
-            setEditorContent(leftEditorRef, editorContent);
+            setEditorContent(leftEditorRef, currentFileInfo.content);
         },
-        [editorContent],
+        [currentFileInfo.content],
     );
 
-    // Menu action handlers
-    const handleNewFile = (): void => {
+    const handleNewFile = useCallback(() => {
         const emptyContent = '';
         setEditorContent(leftEditorRef, emptyContent);
-        setEditorContentState(emptyContent);
-    };
+        setCurrentFileInfo((prevState) => ({
+            ...prevState,
+            content: emptyContent,
+            name: DEFAULT_FILE_NAME,
+            extension: markdownExtension,
+            fullName: `${DEFAULT_FILE_NAME}${markdownExtension}`,
+            size: emptyContent.length,
+        }));
+    }, []);
 
-    const handleOpenFileDialog = (): void => {
+    const handleOpenFileDialog = useCallback(() => {
         showFileOpenDialog({
             supportedFiles: ['.md', '.txt'],
             onSuccess: (fileInfo) => {
@@ -78,44 +93,52 @@ const IndexPage: React.FC = () => {
                     return;
                 }
                 setEditorContent(leftEditorRef, fileInfo.content);
+                setCurrentFileInfo(fileInfo);
                 showToast({ message: 'File opened', type: ToastType.INFO });
             },
-            onFailure: (err) => {
-                console.log(err);
+            onFailure: (err: unknown) => {
+                console.error(err);
                 showToast({ message: 'Failed to open file', type: ToastType.ERROR });
             },
         });
-    };
+    }, [showFileOpenDialog, showToast]);
 
-    const handleSaveFile = (): void => {
+    const handleSaveFile = useCallback(() => {
         const content = getEditorContent(leftEditorRef);
-        saveTextFile({ fileName, fileExtension, fileContent: content });
-    };
+        saveTextFile({
+            fileName: currentFileInfo.name,
+            fileExtension: currentFileInfo.extension,
+            fileContent: content,
+        });
+    }, [currentFileInfo]);
 
-    const handlePaste = (): void => {
+    const handlePaste = useCallback(() => {
         pasteFromClipboardToEditor(leftEditorRef);
         const updatedContent = getEditorContent(leftEditorRef);
-        setEditorContent(leftEditorRef, updatedContent);
-        setEditorContentState(updatedContent);
-    };
+        setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
+    }, []);
 
-    const handleToggleEditor = (): void => {
+    const handleToggleEditor = useCallback(() => {
         setIsEditorVisible((prev) => !prev);
-    };
+    }, []);
 
-    const handleTogglePreview = (): void => {
+    const handleTogglePreview = useCallback(() => {
         setIsPreviewVisible((prev) => !prev);
-    };
+    }, []);
 
-    const handleToggleWordWrap = (): void => {
+    const handleToggleWordWrap = useCallback(() => {
         setIsWordWrapEnabled((prev) => !prev);
-    };
+    }, []);
 
-    const handleToggleMinimap = (): void => {
+    const handleToggleMinimap = useCallback(() => {
         setIsMinimapEnabled((prev) => !prev);
-    };
+    }, []);
 
-    // ApplicationTopBar items
+    const handlePrint = useCallback(() => {
+        reactToPrintFn();
+    }, [reactToPrintFn]);
+
+    // Application menu items
     const leftMenuItems = MenuBuilder.newBuilder()
         .addButton('new-file', 'New File', handleNewFile)
         .addButton('open-file', 'Open File', handleOpenFileDialog)
@@ -125,40 +148,55 @@ const IndexPage: React.FC = () => {
         .addButton('show-preview', 'Show Preview', handleTogglePreview)
         .addButton('word-wrap', 'Word Wrap', handleToggleWordWrap)
         .addButton('mini-map', 'Mini Map', handleToggleMinimap)
+        .addButton('save-pdf', 'Print Markdown', handlePrint)
         .build();
 
-    // Text change handler
-    const handleTextChange = (): void => {
+    // Editor change handler
+    const handleTextChange = useCallback(() => {
         const updatedContent = getEditorContent(leftEditorRef);
-        setEditorContentState(updatedContent);
-    };
+        setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
+    }, []);
+
+    // Information panel data
+    const infoPanelItems: InformationPanelItem[] = [
+        `WordWrap: ${mapBoolean(isWordWrapEnabled)}`,
+        `Minimap: ${mapBoolean(isMinimapEnabled)}`,
+        `MD Editor: ${mapBoolean(isEditorVisible)}`,
+        `MD Preview: ${mapBoolean(isPreviewVisible)}`,
+        `FileName: ${currentFileInfo.name}`,
+        `TextLength: ${currentFileInfo.content.length}`,
+    ];
 
     return (
         <>
             <Menubar menuItems={leftMenuItems} />
+            <InformationPanel items={infoPanelItems} />
 
-            <CodeEditorInfoLine
-                languageName="markdown"
-                wordWrap={isWordWrapEnabled ? 'On' : 'Off'}
-                minimap={isMinimapEnabled ? 'On' : 'Off'}
-                fileInfo={currentFileInfo}
-            />
+            <HorizontalContainer>
+                {isEditorVisible && (
+                    <CodeEditor
+                        minimap={isMinimapEnabled}
+                        wordWrap={isWordWrapEnabled}
+                        onEditorMounted={handleEditorMount}
+                        languageId="markdown"
+                        onChange={handleTextChange}
+                        height="100vh"
+                    />
+                )}
 
-            <ContentContainerGrid>
-                <ContentContainerGridChild>
-                    {isEditorVisible && (
-                        <CodeEditor
-                            minimap={isMinimapEnabled}
-                            wordWrap={isWordWrapEnabled}
-                            onEditorMounted={handleEditorMount}
-                            languageId="markdown"
-                            onChange={handleTextChange}
-                        />
-                    )}
-                </ContentContainerGridChild>
-                <ContentContainerGridChild> </ContentContainerGridChild>
-                <ContentContainerGridChild>{isPreviewVisible && <div>{editorContent}</div>}</ContentContainerGridChild>
-            </ContentContainerGrid>
+                {isPreviewVisible && (
+                    <ScrollableContentContainer>
+                        <TextContainer ref={contentRef}>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm, remarkMath]}
+                                rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                            >
+                                {currentFileInfo.content}
+                            </ReactMarkdown>
+                        </TextContainer>
+                    </ScrollableContentContainer>
+                )}
+            </HorizontalContainer>
         </>
     );
 };
