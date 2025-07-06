@@ -1,0 +1,58 @@
+.paper {
+    /* Base surface styling */
+    background: color-mix(in srgb, var(--surface-color) 95%, var(--primary-color));
+    color: var(--surface-color-on);
+    border-radius: 8px;
+    padding: 1vh;
+    margin: 1vh;
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Default elevation level 1 */
+    box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.paper-1 {
+    box-shadow:
+        0 1px 3px 0 rgba(0, 0, 0, 0.1),
+        0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.paper-2 {
+    box-shadow:
+        0 4px 8px 0 rgba(0, 0, 0, 0.12),
+        0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.paper-3 {
+    box-shadow:
+        0 8px 16px 0 rgba(0, 0, 0, 0.14),
+        0 4px 8px -2px rgba(0, 0, 0, 0.12);
+}
+
+.paper-4 {
+    box-shadow:
+        0 12px 24px 0 rgba(0, 0, 0, 0.16),
+        0 6px 12px -2px rgba(0, 0, 0, 0.14);
+}
+
+.paper-5 {
+    box-shadow:
+        0 16px 32px 0 rgba(0, 0, 0, 0.18),
+        0 8px 16px -4px rgba(0, 0, 0, 0.16);
+}
+
+/* Optional: Add depth on interaction */
+.paper:hover {
+    box-shadow:
+        0 4px 16px 0 rgba(0, 0, 0, 0.5),
+        0 2px 4px -1px rgba(0, 0, 0, 0.12);
+    transform: scale(1.01);
+}
+
+.paper:active {
+    box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, 0.5),
+        0 1px 2px -1px rgba(0, 0, 0, 0.12);
+}

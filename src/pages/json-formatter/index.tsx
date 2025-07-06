@@ -38,7 +38,7 @@ const IndexPage: React.FC = () => {
         return groupsMap;
     }, []);
 
-    return <ToolView toolChoseHeader="Code Formatters" toolViewFunctionGroups={toolsGroups} />;
+    return <ToolView toolChoseHeader="Json Formatter" toolViewFunctionGroups={toolsGroups} toolEditorsLangId="json" />;
 };
 
 export default IndexPage;

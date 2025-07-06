@@ -104,6 +104,7 @@ const IndexPage = () => {
     // Begin of CodeEditor
     const editorOnEditorMounted: (editorProps: EditorProperties) => void = useCallback((editorProps) => {
         editorRef.current = editorProps.editor;
+        console.log(editorProps.languageIdMap);
         setEditorState((prevState) => {
             return {
                 ...prevState,

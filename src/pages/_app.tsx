@@ -16,6 +16,7 @@ import '@/styles/menubar.scss';
 import '@/styles/modal.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
+import '@/styles/surfaces.scss';
 import '@/styles/toaster.scss';
 import { AppProps } from 'next/app';
 

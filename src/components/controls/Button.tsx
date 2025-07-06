@@ -7,7 +7,7 @@ type Size = 'small' | 'default' | 'large';
 
 interface ButtonProps {
     text: string;
-    onClick: () => void;
+    onClick?: () => void;
     variant?: Variant;
     size?: Size;
     colorStyle?: Color;
@@ -16,6 +16,7 @@ interface ButtonProps {
     disabled?: boolean;
     loading?: boolean;
     block?: boolean;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -29,10 +30,13 @@ const Button: React.FC<ButtonProps> = ({
     disabled = false,
     loading = false,
     block = false,
+    type = 'button',
 }) => {
     const handle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        if (!disabled && !loading) onClick();
+        if (!disabled && !loading && onClick) {
+            e.preventDefault();
+            onClick();
+        }
     };
 
     const classes = [
@@ -50,7 +54,7 @@ const Button: React.FC<ButtonProps> = ({
         .join(' ');
 
     return (
-        <button type="button" onClick={handle} disabled={disabled || loading} className={classes}>
+        <button type={type} onClick={handle} disabled={disabled || loading} className={classes}>
             {text}
         </button>
     );

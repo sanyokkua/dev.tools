@@ -30,8 +30,10 @@ type InputType =
 // Define props interface
 interface InputProps {
     defaultValue?: string;
+    value?: string;
     type?: InputType;
-    onChange: (text: string) => void;
+    onChange?: (text: string) => void;
+    onChangeDefault?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     readOnly?: boolean;
     variant?: 'outlined' | 'underlined';
@@ -39,12 +41,25 @@ interface InputProps {
     block?: boolean;
     colorStyle?: Color;
     placeholder?: string;
+    id?: string;
+    name?: string;
+    form?: string;
+    autoComplete?: string;
+    autoFocus?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    required?: boolean;
+    checked?: boolean;
 }
 
 // Input component
 const Input: React.FC<InputProps> = ({
     defaultValue = '',
     type = 'text',
+    value = '',
     onChange,
     disabled = false,
     readOnly = false,
@@ -53,13 +68,32 @@ const Input: React.FC<InputProps> = ({
     block = false,
     colorStyle = '',
     placeholder = '',
+    onChangeDefault,
+    id,
+    name,
+    form,
+    autoComplete,
+    autoFocus,
+    minLength,
+    maxLength,
+    min,
+    max,
+    step,
+    required,
+    checked,
 }) => {
     // Handle change event
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (onChangeDefault) {
+            onChangeDefault(e);
+            return;
+        }
         if (disabled || readOnly) {
             return;
         }
-        onChange(e.target.value);
+        if (onChange) {
+            onChange(e.target.value);
+        }
     };
 
     // Construct class names dynamically
@@ -77,11 +111,24 @@ const Input: React.FC<InputProps> = ({
         <input
             type={type}
             defaultValue={defaultValue}
+            value={value}
             onChange={handleChange}
             disabled={disabled}
             readOnly={readOnly}
             className={classes}
             placeholder={placeholder}
+            id={id}
+            name={name}
+            form={form}
+            autoComplete={autoComplete}
+            autoFocus={autoFocus}
+            minLength={minLength}
+            maxLength={maxLength}
+            min={min}
+            max={max}
+            step={step}
+            required={required}
+            checked={checked}
         />
     );
 };

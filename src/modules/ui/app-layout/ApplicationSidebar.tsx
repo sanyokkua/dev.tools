@@ -6,7 +6,7 @@ import Sidebar, { SideBarItem } from '../elements/navigation/sidebar/Sidebar';
 const sideBarItems: SideBarItem[] = [
     { itemName: 'String Utils', itemLink: '/string-utils' },
     { itemName: 'Code Editor', itemLink: '/code-editor' },
-    { itemName: 'Code Formatter', itemLink: '/code-formatter' },
+    { itemName: 'Json Formatter', itemLink: '/json-formatter' },
     { itemName: 'Hashing Tools', itemLink: '/hashing-tools' },
     { itemName: 'Encoding Tools', itemLink: '/encoding-tools' },
     { itemName: 'Terminal Utils', itemLink: '/terminal-utils' },

@@ -5,7 +5,6 @@ import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import { Editor, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useCallback } from 'react';
-
 export type EditorOnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
 
 export interface AppCodeEditorPropsBase {
@@ -14,6 +13,8 @@ export interface AppCodeEditorPropsBase {
     isReadOnly?: boolean;
     wordWrap?: boolean;
     minimap?: boolean;
+    height?: string;
+    theme?: 'vs-dark' | 'light';
 }
 
 export interface CodeEditorProps extends AppCodeEditorPropsBase {
@@ -30,6 +31,8 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
         minimap = true,
         onChange,
         onEditorMounted,
+        height = '100vh',
+        theme = 'vs-dark',
     } = props;
 
     const wordWrapValue = wordWrap ? 'on' : 'off';
@@ -63,7 +66,7 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
 
     return (
         <Editor
-            height="100vh"
+            height={height}
             options={options}
             defaultLanguage={languageId}
             defaultValue=""
@@ -71,7 +74,7 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
             value={editorContent}
             onMount={editorOnMount}
             onChange={onChange}
-            theme="vs-dark"
+            theme={theme}
         />
     );
 };

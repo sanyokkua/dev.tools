@@ -2,7 +2,7 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { DEFAULT_EXTENSION, DEFAULT_MIME_TYPE } from '@/common/constants';
+import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
@@ -75,7 +75,11 @@ export type ToolViewFunctionGroups = Map<string, ToolViewGroup>;
  * @property {(ToolViewFunctionGroups)} toolViewFunctionGroups - Required object that contains all function groups associated with the tools view.
  * This property is essential for rendering and managing tool functions within the component.
  */
-type ToolViewProps = { toolChoseHeader?: string; toolViewFunctionGroups: ToolViewFunctionGroups };
+type ToolViewProps = {
+    toolChoseHeader?: string;
+    toolViewFunctionGroups: ToolViewFunctionGroups;
+    toolEditorsLangId?: string;
+};
 
 type ToolViewState = { selectItems: SelectItem[]; selectedItem: SelectItem; availableFunctions: AvailableFunction[] };
 
@@ -147,7 +151,11 @@ const createInitialState = (
     };
 };
 
-const ToolView: React.FC<ToolViewProps> = ({ toolChoseHeader, toolViewFunctionGroups }) => {
+const ToolView: React.FC<ToolViewProps> = ({
+    toolChoseHeader,
+    toolViewFunctionGroups,
+    toolEditorsLangId = DEFAULT_LANGUAGE_ID,
+}) => {
     const { showFileOpenDialog } = useFileOpen();
     const { showFileSaveDialog } = useFileSaveDialog();
     const { showToast } = useToast();
@@ -254,7 +262,7 @@ const ToolView: React.FC<ToolViewProps> = ({ toolChoseHeader, toolViewFunctionGr
         <ContentContainerGrid>
             <ContentContainerGridChild>
                 <Menubar menuItems={leftMenu} />
-                <CodeEditor minimap={false} onEditorMounted={handleLeftMount} />
+                <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId={toolEditorsLangId} />
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
@@ -277,7 +285,12 @@ const ToolView: React.FC<ToolViewProps> = ({ toolChoseHeader, toolViewFunctionGr
 
             <ContentContainerGridChild>
                 <Menubar menuItems={rightMenu} />
-                <CodeEditor minimap={false} isReadOnly onEditorMounted={handleRightMount} />
+                <CodeEditor
+                    minimap={false}
+                    isReadOnly
+                    onEditorMounted={handleRightMount}
+                    languageId={toolEditorsLangId}
+                />
             </ContentContainerGridChild>
         </ContentContainerGrid>
     );

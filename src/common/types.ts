@@ -41,3 +41,5 @@ export interface IHashUtil {
     description?: string;
     toolFunction: (input: string) => Promise<string>;
 }
+
+export type OSType = 'windows' | 'macos' | 'linux';

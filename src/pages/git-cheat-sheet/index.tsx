@@ -1,266 +1,249 @@
 'use client';
-import React, { useEffect, useState } from 'react';
 
+import {
+    generateGitCommands,
+    GIT_CONFIG_GLOBAL_USER_EMAIL,
+    GIT_CONFIG_GLOBAL_USER_NAME,
+    GIT_CONFIG_GLOBAL_VERIFY,
+    GIT_CONFIG_USER_EMAIL,
+    GIT_CONFIG_USER_NAME,
+    GIT_CONFIG_VERIFY,
+    GIT_INSTALL_LINUX,
+    GIT_INSTALL_MACOS,
+    GIT_INSTALL_WINDOWS,
+    GIT_VERIFY_INSTALL,
+    GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY,
+    GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING,
+    GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING,
+    GPG_CONFIGURE_GIT_SIGNING_ADD_KEY,
+    GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING,
+    GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING,
+    GPG_GENERATE_KEY,
+    GPG_GET_KEY_ID,
+    GPG_INSTALL_LINUX,
+    GPG_INSTALL_MACOS,
+    GPG_INSTALL_WINDOWS,
+    GPG_VERIFY_INSTALL,
+    INSTALL_XCLIP,
+    SSH_KEY_ADD_AGENT,
+    SSH_KEY_COPY_PUBLIC_KEY_LINUX,
+    SSH_KEY_COPY_PUBLIC_KEY_MACOS,
+    SSH_KEY_COPY_PUBLIC_KEY_WINDOWS,
+    SSH_KEY_GENERATE,
+    SSH_KEY_TEST,
+} from '@/common/git-utils';
+import { OSType } from '@/common/types';
 import { usePage } from '@/contexts/PageContext';
-import ContentContainerFlex from '../../components/layout/ContentContainerFlex';
-import AppGenericForm, { FormItem, SubmittedField } from '../../modules/ui/AppGenericForm';
-
-const InstructionText: string = `
-# Git Configuration Guide
-
-Get your dev environment ready in minutes—let’s dive into setting up Git (plus optional SSH & GPG) on your machine.
-
----
-
-## 1. Prerequisites
-
-- A modern OS (Linux, macOS, Windows WSL/Cygwin)
-- Internet access to download Git and, optionally, connect to a Git hosting service (GitHub, GitLab, Bitbucket…)
-- A verified email on your VCS provider if you plan to sign commits with GPG
-
----
-
-## 2. Install Git
-
-1. Go to https://git-scm.com/ and grab the installer for your OS.  
-2. Follow on-screen prompts. On Windows, you can stick with defaults; on macOS/Linux, package managers are your friends:
-
-   \`\`\`bash
-   # macOS (Homebrew)
-   brew install git
-
-   # Ubuntu/Debian
-   sudo apt update && sudo apt install git
-
-   # Fedora
-   sudo dnf install git
-   \`\`\`
-
-3. Verify installation:
-
-   \`\`\`bash
-   git --version
-   \`\`\`
-
----
-
-## 3. Configure Username & Email
-
-Tell Git who you are—this info will show up in every commit.
-
-\`\`\`bash
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-\`\`\`
-
-To double-check:
-
-\`\`\`bash
-git config --global --list
-\`\`\`
-
----
-
-## 4. (Optional) Generate & Add an SSH Key
-
-SSH keys let you push/pull without typing your password every time.
-
-### 4.1 Create the Key
-
-Replace \`you@example.com\` with your actual email:
-
-\`\`\`bash
-# Preferred: Ed25519 (more secure + faster)
-ssh-keygen -t ed25519 -C "you@example.com"
-
-# Fallback for older systems:
-ssh-keygen -t rsa -b 4096 -C "you@example.com"
-\`\`\`
-
-- Press **Enter** to accept the default file location (\`~/.ssh/id_ed25519\` or \`id_rsa\`).  
-- If you already have a key under that name, give it a custom name (e.g. \`id_ed25519_github\`).  
-- Enter a strong passphrase when prompted.
-
-### 4.2 Add SSH Key to Agent
-
-\`\`\`bash
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
-\`\`\`
-
-*(Replace with your custom path/file if you chose one.)*
-
-### 4.3 Copy & Register on Your VCS
-
-\`\`\`bash
-# macOS/Linux
-cat ~/.ssh/id_ed25519.pub | pbcopy
-
-# Windows (Git Bash)
-cat ~/.ssh/id_ed25519.pub | clip
-\`\`\`
-
-1. Log into GitHub/GitLab/Bitbucket.  
-2. Go to **Settings → SSH and GPG keys** → **New SSH key**.  
-3. Paste the public key, give it a memorable title, and **Save**.
-
----
-
-## 5. (Optional) Generate & Use a GPG Key for Signing
-
-Signed commits and tags boost trust and traceability.
-
-### 5.1 Install GPG
-
-- macOS: \`brew install gnupg\`  
-- Ubuntu/Debian: \`sudo apt install gnupg\`  
-- Fedora: \`sudo dnf install gnupg2\`
-
-### 5.2 Generate Your Key
-
-\`\`\`bash
-gpg --full-generate-key
-\`\`\`
-
-- Choose **RSA 4096** or press Enter to accept defaults.  
-- Set expiry (or leave non-expiring).  
-- Enter your **verified** email (or GitHub’s no-reply if you want privacy).  
-- Supply a passphrase.
-
-### 5.3 Extract Your Key ID
-
-\`\`\`bash
-gpg --list-secret-keys --keyid-format=long
-\`\`\`
-
-Look for the line \`sec   4096R/ABCDEFG123456789\`. Your key ID is the part after \`/\`.
-
-### 5.4 Add Key to Your Git Provider
-
-\`\`\`bash
-gpg --armor --export ABCDEFG123456789
-\`\`\`
-
-Copy everything from \`-----BEGIN PGP PUBLIC KEY BLOCK-----\` to \`-----END PGP PUBLIC KEY BLOCK-----\`, then paste into **Settings → SSH and GPG keys → New GPG key** on GitHub (or equivalent).
-
-### 5.5 Tell Git to Sign by Default
-
-\`\`\`bash
-git config --global user.signingkey ABCDEFG123456789
-git config --global commit.gpgsign true
-git config --global tag.gpgSign true
-# If your GPG binary is gpg2 on Linux:
-git config --global gpg.program gpg2
-\`\`\`
-
----
-
-## 6. Verify Everything Works
-
-1. **SSH**:  
-   \`\`\`bash
-   ssh -T git@github.com
-   \`\`\`
-   You should see a “success” message.  
-2. **GPG**:  
-   \`\`\`bash
-   echo "test" | git commit -S --file=-  # creates a signed commit
-   git log --show-signature -1          # view signature
-   \`\`\`
-
----
-
-## 7. Troubleshooting Tips
-
-- If SSH still asks for a password, check \`~/.ssh/config\` or ensure your private key is added to \`ssh-agent\`.  
-- On macOS, you might need to enable keychain integration:
-
-  \`\`\`bash
-  git config --global credential.helper osxkeychain
-  \`\`\`
-
-- If GPG signing fails, ensure your pinentry tool can prompt for your passphrase. On Linux, install \`pinentry-curses\` or \`pinentry-gtk\`.
-
----
-
-## What’s Next?
-
-• **Global \`.gitignore\`**: ignore OS and editor files everywhere.  
-• **Git aliases**: speed up common commands (\`st\` → \`status\`, \`ci\` → \`commit\`).  
-• **Branch workflows**: Git Flow, GitHub Flow, trunk-based—pick one for your team.  
-• **Commit templates**: enforce consistent messages.  
-• **Credential managers**: Git Credential Manager Core for seamless HTTPS auth.  
-
-Keen to dive deeper into any of these? Let me know, and we’ll level up your Git game!
-`;
-
-enum PageFields {
-    USERNAME = 'username',
-    EMAIL = 'email',
-    GLOBAL_CONFIG = 'globalConfig',
-}
-
-const IndexPage: React.FC = () => {
+import ContentContainerFlex from '@/layout/ContentContainerFlex';
+import CodeSnippet from '@/modules/ui/elements/CodeSnippet';
+import { StringUtils } from 'coreutilsts';
+import { FC, useEffect, useState } from 'react';
+import GitForm, { FormData } from '../../components/page-specific/git-cheat-sheet/git-form';
+import GuideChooser from '../../components/page-specific/git-cheat-sheet/guide-chooser';
+
+const GitCheatSheetPage: FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
         setPageTitle('Git Cheat Sheet');
     }, [setPageTitle]);
 
-    const [generatedCommands, setGeneratedCommands] = useState<string>('');
+    const [chosenGuide, setChosenGuide] = useState<string>('');
 
-    const handleFormSubmit = (submittedFields: SubmittedField[]): void => {
-        const fieldValues: Record<string, string> = {};
-        submittedFields.forEach((field) => {
-            fieldValues[field.itemKey] = String(field.itemValue);
-        });
+    const [nameValue, setNameValue] = useState<string>('Your Name');
+    const [emailValue, setEmailValue] = useState<string>('your@example.com');
+    const [osType, setOsType] = useState<OSType>('macos');
 
-        if (!fieldValues[PageFields.GLOBAL_CONFIG]) {
-            fieldValues[PageFields.GLOBAL_CONFIG] = 'false';
+    const [rawCommands, setRawCommands] = useState<string>('');
+    const [singleLineCommands, setSingleLineCommands] = useState<string>('');
+    const [detailedCommands, setDetailedCommands] = useState<{ description: string; command: string }[]>([]);
+
+    const handleGenerate = (data: FormData) => {
+        const { name, email, globalConfig, os } = data;
+        setNameValue(name);
+        setEmailValue(email);
+        setOsType(os);
+        if (name.trim().length === 0 || email.trim().length === 0) {
+            setRawCommands('');
+            setSingleLineCommands('');
+            setDetailedCommands([]);
+            return;
         }
 
-        const isGlobal: string = fieldValues[PageFields.GLOBAL_CONFIG] === 'true' ? ' --global' : '';
-        const commandsList: string[] = [];
+        const commands = generateGitCommands(name, email, globalConfig, os);
+        const allText = commands.map((cmd) => cmd.command).join('\n');
+        const singleLine = commands.map((cmd) => cmd.command).join(' && ');
 
-        commandsList.push(`git config${isGlobal} user.name ${fieldValues[PageFields.USERNAME]}`);
-        commandsList.push(`git config${isGlobal} user.email ${fieldValues[PageFields.EMAIL]}`);
-        commandsList.push(`ssh-keygen -t ed25519 -C "${fieldValues[PageFields.USERNAME]}"`);
-        commandsList.push(`ssh-keygen -t ed25519 -C "${fieldValues[PageFields.USERNAME]}"`);
-        commandsList.push(`gpg --full-generate-key`);
-
-        const bashCommands = commandsList.join('\n');
-        setGeneratedCommands(`
-## Commands to use:
-
-\`\`\`bash
-${bashCommands}
-\`\`\`
-    `);
+        setRawCommands(allText);
+        setSingleLineCommands(singleLine);
+        setDetailedCommands(commands);
     };
 
-    const formItems: FormItem[] = [
-        { itemKey: PageFields.USERNAME, itemType: 'text', itemName: 'User Name', isRequired: true },
-        { itemKey: PageFields.EMAIL, itemType: 'email', itemName: 'User Email', isRequired: true },
-        { itemKey: PageFields.GLOBAL_CONFIG, itemType: 'checkbox', itemName: 'Generate Global', isRequired: false },
-    ];
+    const codeLanguage = osType === 'windows' ? 'powershell' : 'bash';
+
+    const interactiveGuide = (
+        <section>
+            <h2>Interactive Command Generator</h2>
+            <p>Fill in your details to generate customized Git setup commands:</p>
+            <GitForm onSubmit={handleGenerate} />
+
+            {rawCommands && (
+                <>
+                    <br />
+                    <CodeSnippet
+                        headerText="All Commands (replace placeholders)"
+                        content={rawCommands}
+                        language={codeLanguage}
+                    />
+                    {detailedCommands.map((cmd) => (
+                        <CodeSnippet
+                            key={StringUtils.slugifyString(cmd.description)}
+                            headerText={cmd.description}
+                            content={cmd.command}
+                            language={codeLanguage}
+                        />
+                    ))}
+                    <CodeSnippet
+                        headerText="Single-Line Command (chain with &&)"
+                        content={singleLineCommands}
+                        language={codeLanguage}
+                    />
+                </>
+            )}
+        </section>
+    );
+    const manualGuide = (
+        <section>
+            <h2>Manual Setup Guide</h2>
+
+            <h3>1. Install Git</h3>
+            <p>
+                Download Git from <a href="https://git-scm.com/downloads">git-scm.com/downloads</a> or use:
+            </p>
+            <CodeSnippet headerText="macOS (Homebrew)" content={GIT_INSTALL_MACOS} language="bash" />
+            <CodeSnippet headerText="Windows (Winget)" content={GIT_INSTALL_WINDOWS} language="powershell" />
+            <CodeSnippet headerText="Ubuntu/Debian" content={GIT_INSTALL_LINUX} language="bash" />
+            <CodeSnippet headerText="Verify Installation" content={GIT_VERIFY_INSTALL} language="bash" />
+
+            <h3>2. Configure User Info</h3>
+            <CodeSnippet
+                headerText="Set Local Username"
+                content={`${GIT_CONFIG_USER_NAME} \"${nameValue}\"`}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Set Global Username"
+                content={`${GIT_CONFIG_GLOBAL_USER_NAME} \"${nameValue}\"`}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Set Local Email"
+                content={`${GIT_CONFIG_USER_EMAIL} \"${emailValue}\"`}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Set Global Email"
+                content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} \"${emailValue}\"`}
+                language="bash"
+            />
+            <CodeSnippet headerText="List Local Config" content={GIT_CONFIG_VERIFY} language="bash" />
+            <CodeSnippet headerText="List Global Config" content={GIT_CONFIG_GLOBAL_VERIFY} language="bash" />
+
+            <h3>3. Optional: SSH Key Setup</h3>
+            <CodeSnippet
+                headerText="Generate SSH Key"
+                content={`${SSH_KEY_GENERATE} \"${emailValue}\"`}
+                language="bash"
+            />
+            <CodeSnippet headerText="Start SSH Agent & Add Key" content={SSH_KEY_ADD_AGENT} language="bash" />
+            <CodeSnippet headerText="Copy Public Key (macOS)" content={SSH_KEY_COPY_PUBLIC_KEY_MACOS} language="bash" />
+            <CodeSnippet headerText="Install xclip (Linux)" content={INSTALL_XCLIP} language="bash" />
+            <CodeSnippet headerText="Copy Public Key (Linux)" content={SSH_KEY_COPY_PUBLIC_KEY_LINUX} language="bash" />
+            <CodeSnippet
+                headerText="Copy Public Key (Windows)"
+                content={SSH_KEY_COPY_PUBLIC_KEY_WINDOWS}
+                language="powershell"
+            />
+
+            <h3>4. Optional: GPG Commit Signing</h3>
+            <CodeSnippet headerText="Install GPG (macOS)" content={GPG_INSTALL_MACOS} language="bash" />
+            <CodeSnippet headerText="Install GPG (Linux)" content={GPG_INSTALL_LINUX} language="bash" />
+            <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
+            <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
+            <CodeSnippet headerText="List Secret Keys" content={GPG_GET_KEY_ID} language="bash" />
+            <CodeSnippet
+                headerText="Configure Global Signing Key"
+                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Enable Global Commit Signing"
+                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Enable Global Tag Signing"
+                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Configure Local Signing Key"
+                content={GPG_CONFIGURE_GIT_SIGNING_ADD_KEY}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Enable Local Commit Signing"
+                content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="Enable Local Tag Signing"
+                content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING}
+                language="bash"
+            />
+
+            <h3>5. Verify Setup</h3>
+            <CodeSnippet headerText="Test SSH Connection" content={SSH_KEY_TEST} language="bash" />
+            <CodeSnippet headerText="Test GPG Setup" content={GPG_VERIFY_INSTALL} language="bash" />
+        </section>
+    );
+
+    function handleGuideChosen(value: string) {
+        setChosenGuide(value);
+    }
+
+    let guide = null;
+    if (chosenGuide === 'manual') {
+        guide = manualGuide;
+    } else if (chosenGuide === 'interactive') {
+        guide = interactiveGuide;
+    } else {
+        guide = null;
+    }
 
     return (
         <ContentContainerFlex>
-            <div>{InstructionText}</div>
+            <section>
+                <h1>Git Cheat Sheet</h1>
+                <div>
+                    <p>On this page you can find instruction on how to configure Git on your local machine</p>
+                    <p>Chose the version of the Guide you would like to see:</p>
+                    <br />
+                    <GuideChooser
+                        options={[
+                            { label: 'Interactive Guide', value: 'interactive' },
+                            { label: 'Manual Guide', value: 'manual' },
+                        ]}
+                        selectedValue={chosenGuide}
+                        onChange={handleGuideChosen}
+                    />
+                </div>
 
-            <h1>Commands Generator</h1>
-            <p>
-                Below you can find a command generation tool that will help to create all the required commands to set
-                up Git
-            </p>
-
-            <div>
-                <AppGenericForm items={formItems} onSubmit={handleFormSubmit} submitLabel="Generate" />
-            </div>
-
-            <div>{generatedCommands && <div>{generatedCommands}</div>}</div>
+                <br />
+                {guide}
+            </section>
         </ContentContainerFlex>
     );
 };
 
-export default IndexPage;
+export default GitCheatSheetPage;
