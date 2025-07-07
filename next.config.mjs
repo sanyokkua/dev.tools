@@ -1,5 +1,3 @@
-import type { NextConfig } from 'next';
-
 const isGithubActions = process.env.GITHUB_ACTIONS || false;
 let assetPrefix = '';
 let basePath = '';
@@ -12,7 +10,10 @@ if (isGithubActions) {
     basePath = `/${repo}`;
 }
 
-const nextConfig: NextConfig = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
     /* config options here */
     reactStrictMode: true,
     output: 'export',
