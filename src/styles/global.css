@@ -1,0 +1,6 @@
+/* Resets default spacing and ensures full height for root elements */
+html,
+body {
+    margin: 0; /* Removes browser-default spacing around the page edges */
+    height: 100vh; /* Makes the document fill 100% of the browser window height (vh = viewport height) */
+}

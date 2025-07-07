@@ -1,0 +1,10 @@
+/* Styles for compact UI components like tags or badges with rounded styling */
+.chip {
+    display: inline-block; /* Creates a box that sits inline with text but allows width/height control */
+    padding: 0 10px; /* Adds 10px horizontal space inside the chip (no vertical padding) */
+    line-height: 3vh; /* Sets height to 3% of viewport height (creates pill shape that scales with screen size) */
+    border-radius: 25px; /* Creates pill-shaped corners with 25px radius (fixed size works well for small elements) */
+    font-size: 0.8rem; /* 12.8px text size (0.8 × 16px) for compact appearance */
+    background-color: var(--secondary-color); /* Uses theme-defined background color from CSS variables */
+    color: var(--secondary-color-on); /* Uses theme-defined text color that contrasts with background */
+}

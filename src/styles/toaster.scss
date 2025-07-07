@@ -1,0 +1,83 @@
+/* Container for toast notifications positioned in the bottom-right corner */
+.toaster-container {
+    position: fixed; /* Anchors to viewport edges regardless of scrolling */
+    bottom: 1rem; /* 16px distance from bottom of screen */
+    right: 1rem; /* 16px distance from right of screen */
+    display: flex; /* Enables flexbox layout */
+    flex-direction: column-reverse; /* New toasts appear at top of container */
+    gap: 0.5rem; /* 8px spacing between individual toast messages */
+    z-index: 9999; /* Always appears above other content */
+    pointer-events: none; /* Allows clicks to pass through empty container areas */
+}
+
+/* Base styling for toast notifications with theming capabilities */
+.toast {
+    /* Theme variables that can be overridden by modifier classes */
+    --t-bg-color: var(--primary-container-color); /* Default background color */
+    --t-text-color: var(--primary-container-color-on); /* Default text color */
+
+    /* Width constraints for optimal readability */
+    min-width: 200px; /* Prevents content compression below 200px */
+    max-width: 320px; /* Limits width to avoid horizontal stretching */
+
+    /* Internal spacing with balanced proportions */
+    padding: 0.75rem 1rem; /* 12px vertical and 16px horizontal padding */
+
+    /* Subtle rounded corners */
+    border-radius: 4px; /* Gentle 4px radius on all corners */
+
+    /* Themed text and background */
+    color: var(--t-text-color); /* Uses current theme's text color */
+    background-color: var(--t-bg-color); /* Uses current theme's background color */
+
+    /* Soft shadow with color blending */
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--md-shadow-color) 90%, var(--white-color)); /* 90% shadow color + 10% white for subtle depth */
+
+    /* Enables interactions within toast elements */
+    pointer-events: all; /* Overrides container's pointer-events setting */
+
+    /* Entry animation from right edge */
+    animation: slideIn 0.3s ease-out; /* Smooth 0.3s slide-in effect */
+}
+
+/* Title text styling within toast messages */
+.toast .toast-title {
+    font-weight: bold; /* Emphasizes title text */
+    margin-bottom: 0.25rem; /* 4px spacing below title (0.25 × 16px) */
+}
+
+/* Info toast variant using blue-themed colors */
+.toast.info {
+    --t-bg-color: var(--info-container-color); /* Blue background */
+    --t-text-color: var(--info-container-color-on); /* Contrasting text */
+}
+
+/* Success toast variant using green-themed colors */
+.toast.success {
+    --t-bg-color: var(--success-container-color); /* Green background */
+    --t-text-color: var(--success-container-color-on); /* Contrasting text */
+}
+
+/* Warning toast variant using yellow-themed colors */
+.toast.warning {
+    --t-bg-color: var(--warning-container-color); /* Yellow background */
+    --t-text-color: var(--warning-container-color-on); /* Contrasting text */
+}
+
+/* Error toast variant using red-themed colors */
+.toast.error {
+    --t-bg-color: var(--error-container-color); /* Red background */
+    --t-text-color: var(--error-container-color-on); /* Contrasting text */
+}
+
+/* Slide-in animation for toast messages */
+@keyframes slideIn {
+    from {
+        opacity: 0; /* Starts completely transparent */
+        transform: translateX(100%); /* Enters from right edge */
+    }
+    to {
+        opacity: 1; /* Ends fully visible */
+        transform: translateX(0); /* Settles at normal position */
+    }
+}

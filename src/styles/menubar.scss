@@ -1,0 +1,103 @@
+/* Main container for the menu bar with tertiary color theme */
+.menubar-container {
+    /* Sets theme colors using CSS variables */
+    --bg: var(--tertiary-color); /* Background color from theme definition */
+    --border: var(--md-outline-color); /* Border color from material design system */
+    --text: var(--tertiary-color-on); /* Text color that contrasts with background */
+
+    background-color: var(--bg); /* Applies tertiary theme background */
+    margin: 0 0 4px 0; /* Adds 4px bottom margin for spacing below the menu */
+    padding: 0; /* Removes internal spacing */
+    overflow: hidden; /* Ensures content doesn't extend outside container */
+    list-style-type: none; /* Removes default bullet points from menu items */
+    box-shadow: 0 0 2px var(--md-shadow-color); /* Adds subtle 2px shadow */
+    -webkit-user-select: none; /* Prevents text selection in Safari */
+    -ms-user-select: none; /* Prevents text selection in IE/Edge */
+    user-select: none; /* Standard text selection prevention */
+}
+
+/* Lightens background when user hovers over menu bar */
+.menubar-container:hover {
+    /* Mixes 90% tertiary color with 10% white for subtle hover effect */
+    background-color: color-mix(in srgb, var(--bg) 90%, var(--white-color));
+}
+
+/* Container for individual menu buttons (floats them left) */
+.menubar-menu-button-item {
+    float: left; /* Positions menu items horizontally */
+}
+
+/* Base styling for menu buttons */
+.menubar-menu-button {
+    color: var(--text); /* Uses theme-defined text color */
+    display: inline-block; /* Allows spacing while sitting in text flow */
+    padding: 5pt 10pt; /* Adds 5pt vertical and 10pt horizontal spacing (pt = absolute measurement) */
+    border-right: 1px solid var(--text); /* Adds separator line between buttons */
+    cursor: pointer; /* Shows hand cursor to indicate clickable element */
+}
+
+/* Darkens button background on hover */
+.menubar-menu-button:hover {
+    /* Mixes 70% tertiary color with 30% white for stronger hover effect */
+    background-color: color-mix(in srgb, var(--bg) 70%, var(--white-color));
+}
+
+/* Visual feedback when clicking menu button */
+.menubar-menu-button:active {
+    transform: scale(0.9); /* Temporarily shrinks button to 90% size */
+}
+
+/* Container for dropdown menus */
+.menubar-menu-button-dropdown {
+    display: inline-block; /* Maintains inline positioning with main menu */
+}
+
+/* Hidden dropdown content that appears on hover */
+.menubar-menu-button-dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute; /* Positions relative to nearest positioned ancestor */
+    background-color: color-mix(in srgb, var(--bg) 90%, var(--white-color)); /* Slightly lightened background */
+    color: var(--primary-color-on); /* Uses primary color text for contrast */
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); /* Adds deeper shadow for elevation */
+    z-index: 99; /* Ensures appears above other content */
+    max-height: 70vh; /* Limits height to 70% of screen height */
+    overflow-y: auto; /* Adds vertical scrollbar when needed */
+    scrollbar-width: thin; /* Makes scrollbar less prominent in Firefox */
+}
+
+/* Style for individual dropdown items */
+.menubar-menu-button-dropdown-item {
+    color: var(--text); /* Consistent text color with main menu */
+    padding: 5pt 10pt; /* Same spacing as main menu buttons */
+    text-decoration: none; /* Removes link underline */
+    display: block; /* Makes entire item clickable */
+    text-align: left; /* Left-aligns text */
+    cursor: pointer; /* Shows hand cursor */
+}
+
+/* Subtle scale effect when clicking dropdown items */
+.menubar-menu-button-dropdown-item:active {
+    transform: scale(0.95); /* Shrinks to 95% during click */
+}
+
+/* Adds bottom border to dropdown items */
+.menubar-menu-button-dropdown-item-border {
+    border-bottom: 1px solid var(--text); /* Thin line separator */
+}
+
+/* Highlights dropdown items when hovered */
+.menubar-menu-button-dropdown-item:hover {
+    /* Stronger color mix than main menu hover (70% tertiary) */
+    background-color: color-mix(in srgb, var(--bg) 70%, var(--white-color));
+}
+
+/* Adds smooth transition to background color changes */
+.menubar-menu-button,
+.menubar-menu-button-dropdown-item {
+    transition: background-color 0.1s ease-in-out; /* 0.1s animation with acceleration */
+}
+
+/* Shows dropdown content when hovering over parent menu */
+.menubar-menu-button-dropdown:hover .menubar-menu-button-dropdown-content {
+    display: block; /* Changes from hidden to visible */
+}
