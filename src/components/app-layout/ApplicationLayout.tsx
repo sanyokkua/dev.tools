@@ -1,8 +1,8 @@
 'use client';
-import AppMainContainer from '@/layout/AppMainContainer';
-import AppMainContentContainer from '@/layout/AppMainContentContainer';
-import AppSideBarAndContentContainer from '@/layout/AppSideBarAndContentContainer';
 import React, { ReactNode } from 'react';
+import AppMainContainer from '../layouts/AppMainContainer';
+import AppMainContentContainer from '../layouts/AppMainContentContainer';
+import AppSideBarAndContentContainer from '../layouts/AppSideBarAndContentContainer';
 import ApplicationSidebar from './ApplicationSidebar';
 import ApplicationTopBar from './ApplicationTopBar';
 

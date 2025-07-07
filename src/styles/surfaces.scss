@@ -1,58 +1,72 @@
+/* Base component for elevated surfaces with theme-based styling and elevation levels */
 .paper {
-    /* Base surface styling */
-    background: color-mix(in srgb, var(--surface-color) 95%, var(--primary-color));
-    color: var(--surface-color-on);
-    border-radius: 8px;
-    padding: 1vh;
-    margin: 1vh;
-    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    /* Default elevation level 1 */
-    box-shadow:
+    /* Creates surface with subtle color blend between surface and primary color */
+    background: color-mix(
+        in srgb,
+        var(--surface-color) 95%,
+        var(--primary-color)
+    ); /* Mixes 95% surface color with 5% primary color for depth */
+    color: var(--surface-color-on); /* Text color that contrasts with surface */
+    border-radius: 8px; /* Rounded corners with 8px radius */
+    padding: 1vh; /* Vertical padding equal to 1% of viewport height (responsive spacing) */
+    margin: 1vh; /* Adds 1% viewport height spacing around the paper */
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth shadow animation with Material Design timing */
+
+    /* Default elevation level 1 - subtle shadow system */
+    box-shadow: /* Large, soft outer shadow */
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+        /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        /* Subtle bottom shadow */ 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
+/* Elevation level 1 - minimal shadow for subtle separation */
 .paper-1 {
     box-shadow:
         0 1px 3px 0 rgba(0, 0, 0, 0.1),
-        0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        /* Small soft shadow */ 0 1px 2px -1px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
 }
 
+/* Elevation level 2 - moderate shadow for mid-level depth */
 .paper-2 {
     box-shadow:
         0 4px 8px 0 rgba(0, 0, 0, 0.12),
-        0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        /* Medium outer shadow */ 0 2px 4px -1px rgba(0, 0, 0, 0.1); /* Inner shadow */
 }
 
+/* Elevation level 3 - stronger shadow for significant depth */
 .paper-3 {
     box-shadow:
         0 8px 16px 0 rgba(0, 0, 0, 0.14),
-        0 4px 8px -2px rgba(0, 0, 0, 0.12);
+        /* Large outer shadow */ 0 4px 8px -2px rgba(0, 0, 0, 0.12); /* Deeper inner shadow */
 }
 
+/* Elevation level 4 - pronounced shadow for prominent elements */
 .paper-4 {
     box-shadow:
         0 12px 24px 0 rgba(0, 0, 0, 0.16),
-        0 6px 12px -2px rgba(0, 0, 0, 0.14);
+        /* Very large outer shadow */ 0 6px 12px -2px rgba(0, 0, 0, 0.14); /* Strong inner shadow */
 }
 
+/* Elevation level 5 - maximum shadow for floating elements */
 .paper-5 {
     box-shadow:
         0 16px 32px 0 rgba(0, 0, 0, 0.18),
-        0 8px 16px -4px rgba(0, 0, 0, 0.16);
+        /* Largest outer shadow */ 0 8px 16px -4px rgba(0, 0, 0, 0.16); /* Deepest inner shadow */
 }
 
-/* Optional: Add depth on interaction */
+/* Visual enhancement on hover interaction */
 .paper:hover {
+    /* Dramatically increases shadow intensity for hover state */
     box-shadow:
         0 4px 16px 0 rgba(0, 0, 0, 0.5),
-        0 2px 4px -1px rgba(0, 0, 0, 0.12);
-    transform: scale(1.01);
+        /* Strong outer glow */ 0 2px 4px -1px rgba(0, 0, 0, 0.12); /* Inner shadow */
+    transform: scale(1.01); /* Slightly enlarges element for tactile feedback */
 }
 
+/* Visual feedback when element is being clicked */
 .paper:active {
+    /* Tightens shadow for pressed state */
     box-shadow:
         0 2px 4px -1px rgba(0, 0, 0, 0.5),
-        0 1px 2px -1px rgba(0, 0, 0, 0.12);
+        /* Concentrated shadow */ 0 1px 2px -1px rgba(0, 0, 0, 0.12); /* Inner shadow */
 }

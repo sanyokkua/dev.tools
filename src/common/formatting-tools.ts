@@ -15,6 +15,11 @@ export function formatJson(jsonStr: string, spaces: number = 4): string {
     }
 }
 
+/**
+ * Maps a Boolean value to an "On" or "Off" string representation.
+ * @param b - Boolean flag indicating the state to represent as text
+ * @returns The corresponding text representation ('On' or 'Off')
+ */
 export function mapBoolean(b: boolean): 'On' | 'Off' {
     return b ? 'On' : 'Off';
 }

@@ -1,49 +1,52 @@
+/* Base styles for select dropdowns - establishes common appearance and behavior */
 .select-base {
-    font-size: 1rem;
-    padding: 0.4rem 1rem;
-    border-radius: 8px;
-    font-weight: 400; /* Lighter than button's 500 */
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    outline: none;
-    background-color: transparent;
-    display: inline-block;
-    text-align: center;
-    user-select: none;
-
-    border: 1px solid var(--md-outline-color);
-    color: var(--bg-color);
-
-    appearance: none; /* Removes default browser styles */
+    font-size: 1rem; /* Standard text size (16px) for readability */
+    padding: 0.4rem 1rem; /* 6.4px vertical and 16px horizontal padding (based on 16px base size) */
+    border-radius: 8px; /* Creates pill-shaped corners */
+    font-weight: 400; /* Lighter weight for better contrast against buttons */
+    transition: all 0.2s ease-in-out; /* Smooth animation for all property changes */
+    cursor: pointer; /* Shows hand icon to indicate clickable element */
+    outline: none; /* Removes browser default focus outline */
+    background-color: transparent; /* Allows variants to set their own background */
+    display: inline-block; /* Enables width/height control while sitting inline */
+    text-align: center; /* Centers text horizontally */
+    user-select: none; /* Prevents accidental text selection during interaction */
+    border: 1px solid var(--md-outline-color); /* Theme-defined border using material design outline color */
+    color: var(--bg-color); /* Uses theme background color for text (e.g., primary color) */
+    appearance: none; /* Removes default browser arrow styling for consistent cross-browser appearance */
 }
 
+/* Brightens select element on hover for visual feedback */
 .select-base:hover {
-    filter: brightness(1.5);
+    filter: brightness(1.5); /* Increases brightness by 50% during mouse hover */
 }
 
+/* Visual feedback when clicking select element */
 .select-base:active {
-    transform: scale(0.9);
+    transform: scale(0.9); /* Temporarily shrinks to 90% size during click */
 }
 
+/* Visual indication for disabled selects */
 .select-disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-    pointer-events: none;
+    cursor: not-allowed; /* Shows "not allowed" cursor */
+    opacity: 0.5; /* Makes element appear faded */
+    pointer-events: none; /* Prevents any interactions */
 }
 
-/* Sizes */
+/* SMALL SELECT = compact size for space-constrained contexts */
 .select-small {
-    font-size: 0.9rem;
-    padding: 0.4rem 1rem;
+    font-size: 0.9rem; /* 14.4px text size (0.9 × 16px) */
+    padding: 0.4rem 1rem; /* Same vertical padding as base but smaller text */
 }
 
+/* LARGE SELECT = increased size for better visibility/tap targets */
 .select-large {
-    font-size: 1.1rem;
-    padding: 1rem 1.6rem;
+    font-size: 1.1rem; /* 17.6px text size (1.1 × 16px) */
+    padding: 1rem 1.6rem; /* 16px vertical and 25.6px horizontal padding */
 }
 
-/* Block */
+/* FULL-WIDTH SELECT = stretches to fill container */
 .select-block {
-    display: block;
-    width: 100%;
+    display: block; /* Makes element take full width of parent container */
+    width: 100%; /* Explicitly sets width to 100% for compatibility */
 }

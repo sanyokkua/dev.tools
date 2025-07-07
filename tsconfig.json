@@ -17,11 +17,12 @@
             "@/*": ["./src/*"],
             "@/common/*": ["common/*"],
             "@/contexts/*": ["components/contexts/*"],
-            "@/modules/*": ["modules/*"],
             "@/controls/*": ["components/controls/*"],
+            "@/layouts/*": ["components/layouts/*"],
             "@/layout/*": ["components/layout/*"],
-            "@/styles/*": ["styles/*"],
-            "@/tools/*": ["tools/*"]
+            "@/elements/*": ["components/elements/*"],
+            "@/page-specific/*": ["components/page-specific/*"],
+            "@/styles/*": ["styles/*"]
         },
         "baseUrl": "src/"
     },

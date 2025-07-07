@@ -43,7 +43,6 @@ export const useFileOpen = (): FileOpenContextValue => {
  *
  * @param children - The React components to wrap with this context.
  */
-
 export const FileOpenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const inputRef = useRef<HTMLInputElement>(null);
 

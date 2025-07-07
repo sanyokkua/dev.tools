@@ -10,10 +10,6 @@ import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
-import ContentContainerFlex from '@/layout/ContentContainerFlex';
-import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
-import CodeEditorInfoLine from '@/modules/ui/elements/editor/CodeEditorInfoLine';
-import CodeEditorMenu from '@/modules/ui/elements/editor/CodeEditorMenu';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -21,11 +17,15 @@ import {
     mapEditorLanguagesToMenuItem,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/modules/ui/elements/editor/code-editor-utils';
-import { EditorLanguage, EditorProperties } from '@/modules/ui/elements/editor/types';
-import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '@/modules/ui/elements/navigation/menubar/types';
+} from '@/elements/editor/code-editor-utils';
+import { EditorLanguage, EditorProperties } from '@/elements/editor/types';
+import { BaseMenuItem, OnMenuItemClick, SubmenuItemTypeless } from '@/elements/navigation/menubar/types';
 import { editor, languages } from 'monaco-editor';
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CodeEditor from '../../components/elements/editor/CodeEditor';
+import CodeEditorInfoLine from '../../components/elements/editor/CodeEditorInfoLine';
+import CodeEditorMenu from '../../components/elements/editor/CodeEditorMenu';
+import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
 interface CodeEditorState {
@@ -176,7 +176,7 @@ const IndexPage = () => {
                         editorLanguageId: languageOfFile.id,
                     };
                 });
-                showToast({ message: 'File opened', type: ToastType.INFO });
+                showToast({ message: 'File opened', type: ToastType.SUCCESS });
             },
             onFailure: (err) => {
                 console.log(err);
@@ -207,10 +207,10 @@ const IndexPage = () => {
         });
     }, []);
     const menuOnContentPasteClick: OnMenuItemClick = useCallback(() => {
-        pasteFromClipboardToEditor(editorRef);
+        pasteFromClipboardToEditor(editorRef, () => {}, showToast);
     }, []);
     const menuOnContentCopyClick: OnMenuItemClick = useCallback(() => {
-        copyToClipboardFromEditor(editorRef);
+        copyToClipboardFromEditor(editorRef, showToast);
     }, []);
     const onMenuLanguageItemClick: OnMenuItemClick = useCallback(
         (item: BaseMenuItem) => {

@@ -1,11 +1,12 @@
 import { copyToClipboard, pasteFromClipboard } from '@/common/clipboard-utils';
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
-import { EditorLanguage, EditorProperties } from '@/modules/ui/elements/editor/types';
-import { OnMenuItemClick, SubmenuItemTypeless } from '@/modules/ui/elements/navigation/menubar/types';
+import { ShowToastOptions, ToastType } from '@/controls/toaster/types';
 import { Monaco } from '@monaco-editor/react';
 import { editor, languages } from 'monaco-editor';
 import { RefObject } from 'react';
+import { OnMenuItemClick, SubmenuItemTypeless } from '../navigation/menubar/types';
+import { EditorLanguage, EditorProperties } from './types';
 
 export function getEditorContent(editor: RefObject<editor.IStandaloneCodeEditor | null>): string {
     if (editor.current) {
@@ -23,14 +24,21 @@ export function setEditorContent(editor: RefObject<editor.IStandaloneCodeEditor 
 export function pasteFromClipboardToEditor(
     editor: RefObject<editor.IStandaloneCodeEditor | null>,
     onErrorCallback?: (errMsg: string) => void,
+    showToast?: (options: ShowToastOptions) => void,
 ) {
     const onSuccess = (text: string) => {
         editor.current?.setValue(text);
+        if (showToast) {
+            showToast({ message: 'Pasted from Clipboard', type: ToastType.INFO });
+        }
     };
     const onError = (errMsg: string) => {
         console.log(`Failed to paste to editor: ${errMsg}`);
         if (onErrorCallback) {
             onErrorCallback(errMsg);
+        }
+        if (showToast) {
+            showToast({ message: 'Failed to paste from Clipboard', type: ToastType.ERROR });
         }
     };
 
@@ -39,9 +47,18 @@ export function pasteFromClipboardToEditor(
     }
 }
 
-export function copyToClipboardFromEditor(editor: RefObject<editor.IStandaloneCodeEditor | null>) {
+export function copyToClipboardFromEditor(
+    editor: RefObject<editor.IStandaloneCodeEditor | null>,
+    showToast?: (options: ShowToastOptions) => void,
+) {
     if (editor.current) {
-        copyToClipboard(editor.current.getValue());
+        const result = copyToClipboard(editor.current.getValue());
+        if (showToast) {
+            showToast({
+                message: result ? 'Copied to Clipboard' : 'Failed to copy to Clipboard',
+                type: result ? ToastType.SUCCESS : ToastType.WARNING,
+            });
+        }
     }
 }
 

@@ -1,14 +1,14 @@
 'use client';
 import { createStringUtilList } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
-import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '@/modules/ui/elements/column/ToolView';
 import { useEffect, useMemo } from 'react';
+import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const IndexPage = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('String Utilities Page');
+        setPageTitle('String Utilities');
     }, [setPageTitle]);
 
     // Memoize the tool groups to prevent recreation on every render

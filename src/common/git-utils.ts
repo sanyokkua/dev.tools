@@ -53,12 +53,30 @@ export const GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING = 'git config tag.gpgS
 
 export const GPG_TEST = 'echo "test" | git commit -S --file=- && git log --show-signature -1';
 
+/**
+ * Defines a basic structure for representing git-related commands.
+ * @property description - Brief explanation of what the command does
+ * @property command - Actual shell command to execute
+ */
 export type GitCommand = { description: string; command: string };
 
+/**
+ * Creates a git command object with description and command string.
+ * @param description - Brief explanation of the git command's purpose
+ * @param command - The actual git command to be executed
+ */
 function generateCommand(description: string, command: string): GitCommand {
     return { description, command };
 }
 
+/**
+ * Generates a sequence of Git configuration and setup commands based on the provided user information.
+ * @param name - The user's full name for Git configuration
+ * @param email - The user's email address used in Git identity settings
+ * @param globalConfig - Flag indicating whether to configure Git settings globally or per-repository
+ * @param os - Operating system type for OS-specific commands
+ * @returns Array of Git-related command objects with instructions and execution details
+ */
 export function generateGitCommands(name: string, email: string, globalConfig: boolean, os: OSType): GitCommand[] {
     const commands: GitCommand[] = [];
 

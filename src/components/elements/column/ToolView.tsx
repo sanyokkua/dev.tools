@@ -8,19 +8,19 @@ import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Select, { SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
-import ContentContainerGrid from '@/layout/ContentContainerGrid';
-import ContentContainerGridChild from '@/layout/ContentContainerGridChild';
-import ScrollableContentContainer from '@/layout/ScrollableContentContainer';
-import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
+import ContentContainerGrid from '../../layouts/ContentContainerGrid';
+import ContentContainerGridChild from '../../layouts/ContentContainerGridChild';
+import ScrollableContentContainer from '../../layouts/ScrollableContentContainer';
+import CodeEditor from '../editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/modules/ui/elements/editor/code-editor-utils';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
-import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+} from '../editor/code-editor-utils';
+import { EditorProperties } from '../editor/types';
+import Menubar from '../navigation/menubar/Menubar';
+import { MenuBuilder } from '../navigation/menubar/utils';
 import ColumnMenu, { AvailableFunction } from './ColumnMenu';
 
 /**
@@ -50,9 +50,12 @@ export type ToolViewFunction = {
  * objects that define individual actions or operations available in the grouped interface.
  *
  * @typedef {Object} ToolViewGroup
- * @property {string} funcGroupId - A unique identifier for this function group within the application's tool view hierarchy.
- * @property {string} funcGroupName - The human-readable name of the function group displayed to users in UI elements such as menus or panels.
- * @property {ToolViewFunction[]} functions - An array of `ToolViewFunction` objects that define the individual operations available in this group.
+ * @property {string} funcGroupId - A unique identifier for this function group within the application's tool view
+ *     hierarchy.
+ * @property {string} funcGroupName - The human-readable name of the function group displayed to users in UI elements
+ *     such as menus or panels.
+ * @property {ToolViewFunction[]} functions - An array of `ToolViewFunction` objects that define the individual
+ *     operations available in this group.
  */
 export type ToolViewGroup = { funcGroupId: string; funcGroupName: string; functions: ToolViewFunction[] };
 
@@ -70,10 +73,12 @@ export type ToolViewFunctionGroups = Map<string, ToolViewGroup>;
  *
  * @interface ToolViewProps
  *
- * @property {string} [toolChoseHeader] - Optional header text displayed above the tool selection area. If not provided, defaults to no header text.
+ * @property {string} [toolChoseHeader] - Optional header text displayed above the tool selection area. If not
+ *     provided, defaults to no header text.
  *
- * @property {(ToolViewFunctionGroups)} toolViewFunctionGroups - Required object that contains all function groups associated with the tools view.
- * This property is essential for rendering and managing tool functions within the component.
+ * @property {(ToolViewFunctionGroups)} toolViewFunctionGroups - Required object that contains all function groups
+ *     associated with the tools view. This property is essential for rendering and managing tool functions within the
+ *     component.
  */
 type ToolViewProps = {
     toolChoseHeader?: string;
@@ -195,10 +200,10 @@ const ToolView: React.FC<ToolViewProps> = ({
         });
     };
     const handleLeftPaste = () => {
-        pasteFromClipboardToEditor(leftEditorRef);
+        pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
     };
     const handleLeftCopy = () => {
-        copyToClipboardFromEditor(leftEditorRef);
+        copyToClipboardFromEditor(leftEditorRef, showToast);
     };
     const handleLeftClear = () => {
         setEditorContent(leftEditorRef, '');
@@ -219,7 +224,7 @@ const ToolView: React.FC<ToolViewProps> = ({
         });
     };
     const handleRightCopy = () => {
-        copyToClipboardFromEditor(rightEditorRef);
+        copyToClipboardFromEditor(rightEditorRef, showToast);
     };
     const handleRightClear = () => {
         setEditorContent(rightEditorRef, '');
@@ -287,6 +292,7 @@ const ToolView: React.FC<ToolViewProps> = ({
                 <Menubar menuItems={rightMenu} />
                 <CodeEditor
                     minimap={false}
+                    wordWrap={true}
                     isReadOnly
                     onEditorMounted={handleRightMount}
                     languageId={toolEditorsLangId}

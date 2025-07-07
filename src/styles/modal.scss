@@ -1,86 +1,98 @@
+/* Semi-transparent overlay that appears behind modals to dim the background */
 .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    animation: fadeIn 0.3s forwards;
+    position: fixed; /* Locks overlay to screen edges regardless of scrolling */
+    top: 0; /* Positions at top of viewport */
+    left: 0; /* Positions at left of viewport */
+    width: 100vw; /* Covers full viewport width (100% of screen width) */
+    height: 100vh; /* Covers full viewport height (100% of screen height) */
+    background-color: rgba(0, 0, 0, 0.6); /* Black with 60% opacity for dimming effect */
+    display: flex; /* Enables flexbox for centering content */
+    justify-content: center; /* Horizontally centers modal content */
+    align-items: center; /* Vertically centers modal content */
+    z-index: 1000; /* Ensures overlay appears above all other content */
+    opacity: 0; /* Starts hidden */
+    animation: fadeIn 0.3s forwards; /* Fades in over 0.3 seconds, keeps final state */
 }
 
+/* Main modal window styling with card-like appearance */
 .modal-content {
-    background-color: (var(--primary-container-color));
-    padding: 1.5rem 2rem;
-    border-radius: 12px;
+    /* Background color from theme (e.g., light blue card) */
+    background-color: (var(--primary-container-color)); /* Note: Likely typo - should be var(...) */
+    padding: 1.5rem 2rem; /* 24px vertical and 32px horizontal padding (1.5×16px, 2×16px) */
+    border-radius: 12px; /* Rounded corners with 12px radius */
+    /* Multiple shadows for depth perception */
     box-shadow:
         0 10px 25px -5px rgba(0, 0, 0, 0.1),
-        0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    width: 90%;
-    max-width: 500px;
-    transform: scale(0.95);
-    animation: zoomIn 0.3s forwards;
-    position: relative;
+        /* Large soft shadow below */ 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Smaller inner shadow */
+    width: 90%; /* Takes 90% of container width */
+    max-width: 500px; /* Caps width at 500px for readability */
+    transform: scale(0.95); /* Starts slightly smaller for zoom effect */
+    animation: zoomIn 0.3s forwards; /* Grows to normal size over 0.3s */
+    position: relative; /* Needed for absolute positioning of children */
 }
 
+/* Header section containing title and close button */
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    display: flex; /* Flexbox for horizontal layout */
+    justify-content: space-between; /* Separates title and close button */
+    align-items: center; /* Vertically centers items */
+    padding-bottom: 1rem; /* 16px spacing below header content */
+    margin-bottom: 1rem; /* Creates visual separation from body content */
 }
 
+/* Title text styling */
 .modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--primary-container-color-on);
-    margin: 0;
+    font-size: 1.25rem; /* 20px text size (1.25 × 16px) */
+    font-weight: 600; /* Semi-bold font weight */
+    color: var(--primary-container-color-on); /* Text color that contrasts with modal background */
+    margin: 0; /* Removes browser default spacing */
 }
 
+/* Styling for the close button (X icon) */
 .modal-close-button {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--secondary-color);
-    padding: 0.25rem;
+    background: transparent; /* No background */
+    border: none; /* No border */
+    font-size: 1.5rem; /* 24px icon size (1.5 × 16px) */
+    line-height: 1; /* Tightens vertical spacing */
+    cursor: pointer; /* Hand cursor for clickability */
+    color: var(--secondary-color); /* Theme-defined secondary color */
+    padding: 0.25rem; /* 4px spacing around button (0.25 × 16px) */
 }
 
+/* Visual feedback when hovering over close button */
 .modal-close-button:hover {
-    color: var(--black-color);
+    color: var(--black-color); /* Changes to pure black on hover */
 }
 
+/* Main content area between header and footer */
 .modal-body {
-    margin-bottom: 1.5rem;
-    color: var(--primary-container-color-on);
+    margin-bottom: 1.5rem; /* 24px spacing below content (1.5 × 16px) */
+    color: var(--primary-container-color-on); /* Consistent text color */
 }
 
+/* Footer containing action buttons */
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
+    display: flex; /* Flexbox for horizontal layout */
+    justify-content: flex-end; /* Right-aligns buttons */
+    gap: 0.75rem; /* 12px spacing between buttons (0.75 × 16px) */
 }
 
+/* Animation for fading in elements */
 @keyframes fadeIn {
     from {
-        opacity: 0;
+        opacity: 0; /* Starts completely transparent */
     }
     to {
-        opacity: 1;
+        opacity: 1; /* Ends fully visible */
     }
 }
 
+/* Animation for scaling elements */
 @keyframes zoomIn {
     from {
-        transform: scale(0.95);
+        transform: scale(0.95); /* Starts at 95% size */
     }
     to {
-        transform: scale(1);
+        transform: scale(1); /* Ends at normal size */
     }
 }

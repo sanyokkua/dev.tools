@@ -2,8 +2,8 @@
 import { OSType } from '@/common/types';
 import Button from '@/controls/Button';
 import Input from '@/controls/Input';
-import PaperContainer from '@/layout/PaperContainer';
 import React, { useState } from 'react';
+import PaperContainer from '../../layouts/PaperContainer';
 
 export type FormData = { name: string; email: string; globalConfig: boolean; os: OSType };
 

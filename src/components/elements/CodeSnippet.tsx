@@ -8,8 +8,8 @@ import powershell from 'highlight.js/lib/languages/powershell';
 import shell from 'highlight.js/lib/languages/shell';
 import 'highlight.js/styles/base16/material-darker.css';
 
-import PaperContainer from '@/layout/PaperContainer';
 import React, { useEffect, useRef } from 'react';
+import PaperContainer from '../layouts/PaperContainer';
 
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('shell', shell);
@@ -20,7 +20,8 @@ type SupportedLanguages = 'bash' | 'shell' | 'powershell';
 type ReadOnlyCodeEditorProps = { headerText?: string; content: string; language?: SupportedLanguages };
 
 /**
- * Functional component for displaying a read-only code editor with syntax highlighting and copy-to-clipboard functionality.
+ * Functional component for displaying a read-only code editor with syntax highlighting and copy-to-clipboard
+ * functionality.
  * @param props - Component properties including header text, content, and optional programming language.
  */
 const CodeSnippet: React.FC<ReadOnlyCodeEditorProps> = (props) => {

@@ -4,13 +4,13 @@ import React, { useEffect, useMemo } from 'react';
 import { usePage } from '@/contexts/PageContext';
 
 import { createEncodingDecodingUtilList } from '@/common/utils-factory';
-import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '@/modules/ui/elements/column/ToolView';
+import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const Home: React.FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('Base64 Encoding Page');
+        setPageTitle('Encoding Utilities');
     }, [setPageTitle]);
 
     // Memoize the tool groups to prevent recreation on every render

@@ -6,24 +6,17 @@ import { useFileOpen } from '@/contexts/FileOpenContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
-import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
-import {
-    getEditorContent,
-    pasteFromClipboardToEditor,
-    setEditorContent,
-} from '@/modules/ui/elements/editor/code-editor-utils';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
-import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+import { getEditorContent, pasteFromClipboardToEditor, setEditorContent } from '@/elements/editor/code-editor-utils';
+import { EditorProperties } from '@/elements/editor/types';
+import { MenuBuilder } from '@/elements/navigation/menubar/utils';
+import CodeEditor from '../../components/elements/editor/CodeEditor';
+import Menubar from '../../components/elements/navigation/menubar/Menubar';
 
 import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { saveTextFile } from '@/common/file-utils';
 import { mapBoolean } from '@/common/formatting-tools';
 import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
-import HorizontalContainer from '@/layout/HorizontalContainer';
-import ScrollableContentContainer from '@/layout/ScrollableContentContainer';
-import TextContainer from '@/layout/TextContainer';
 import 'highlight.js/styles/github.css';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
@@ -32,6 +25,9 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import HorizontalContainer from '../../components/layouts/HorizontalContainer';
+import ScrollableContentContainer from '../../components/layouts/ScrollableContentContainer';
+import TextContainer from '../../components/layouts/TextContainer';
 
 const markdownExtension = '.md';
 
@@ -113,7 +109,7 @@ const IndexPage: React.FC = () => {
     }, [currentFileInfo]);
 
     const handlePaste = useCallback(() => {
-        pasteFromClipboardToEditor(leftEditorRef);
+        pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
         const updatedContent = getEditorContent(leftEditorRef);
         setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
     }, []);

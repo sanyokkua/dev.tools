@@ -1,62 +1,59 @@
-/* Base styles for input */
+/* Base styles shared by all input types - defines common appearance and behavior */
 .input-base {
-    font-size: 1rem;
-    padding: 0.6rem 1rem;
-    border-radius: 4px; /* Slightly smaller than button's 8px */
-    font-weight: 400; /* Lighter than button's 500 */
-    transition: all 0.2s ease-in-out;
-    outline: none;
-    background: transparent;
-    color: var(--Black);
-    box-sizing: border-box;
-    border: 0; /* Border defined in variants */
+    font-size: 1rem; /* Sets standard text size (16px) for readability */
+    padding: 0.6rem 1rem; /* Adds 9.6px vertical and 16px horizontal padding (based on 16px base size) */
+    border-radius: 4px; /* Creates slightly rounded corners (half the button's 8px radius) */
+    font-weight: 400; /* Uses normal font weight (lighter than buttons for better contrast) */
+    transition: all 0.2s ease-in-out; /* Smooth animation for all property changes over 0.2 seconds */
+    outline: none; /* Removes browser default focus outline */
+    background: transparent; /* Default transparent background for variant flexibility */
+    color: var(--Black); /* Sets text color using theme variable */
+    box-sizing: border-box; /* Ensures padding doesn't increase total width */
+    border: 0; /* Base border removed - added in variants */
 }
 
-/* Variants */
-
-/* Outlined: Full border around the input */
+/* OUTLINED INPUT = full border around the input field */
 .input-outlined {
-    border: 1px solid var(--md-outline-color);
+    border: 1px solid var(--md-outline-color); /* Adds 1px solid border using theme-defined outline color */
 }
 
-/* Underlined: Bottom border only, Material Design-inspired */
+/* UNDERLINED INPUT = bottom-only border, inspired by Material Design */
 .input-underlined {
-    border-bottom: 1px solid var(--input-border-color, #ccc);
+    border-bottom: 1px solid var(--input-border-color, #ccc); /* Bottom border with fallback color */
 }
 
-/* States */
-
-/* Hover: Subtle shadow for both variants */
+/* HOVER STATE = subtle visual feedback when mouse is over input */
 .input-base:hover {
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05); /* Adds 2px light gray shadow for hover effect */
 }
 
-/* Focus: Small shadow to indicate active state */
+/* FOCUS STATE = indicates active input field */
 .input-base:focus {
-    box-shadow: 0 0 0 2px var(--input-focus-shadow, rgba(98, 0, 234, 0.2));
+    box-shadow: 0 0 0 2px var(--input-focus-shadow, rgba(98, 0, 234, 0.2)); /* Purple-tinged focus indicator */
 }
 
-/* Disabled: Grayed out with updated border and text color */
+/* DISABLED STATE = visual indication for inactive inputs */
 .input-base[disabled] {
-    --input-border-color: var(--input-disabled-border, #ddd);
-    color: var(--input-disabled-color, #999);
-    opacity: 0.5;
-    cursor: not-allowed;
+    --input-border-color: var(--input-disabled-border, #ddd); /* Light gray border for disabled state */
+    color: var(--input-disabled-color, #999); /* Gray text for disabled appearance */
+    opacity: 0.5; /* Makes entire input appear faded */
+    cursor: not-allowed; /* Shows "not allowed" cursor when hovering */
 }
 
-/* Sizes */
+/* SMALL INPUT = compact size for space-constrained contexts */
 .input-small {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem; /* 14.4px text size (0.9 × 16px) */
+    padding: 0.4rem 0.8rem; /* 6.4px vertical and 12.8px horizontal padding */
 }
 
+/* LARGE INPUT = increased size for better visibility/tap targets */
 .input-large {
-    font-size: 1.1rem;
-    padding: 0.8rem 1.2rem;
+    font-size: 1.1rem; /* 17.6px text size (1.1 × 16px) */
+    padding: 0.8rem 1.2rem; /* 12.8px vertical and 19.2px horizontal padding */
 }
 
-/* Block: Full-width input */
+/* BLOCK INPUT = full-width input for form layouts */
 .input-block {
-    display: block;
-    width: 100%;
+    display: block; /* Makes element take full width of parent container */
+    width: 100%; /* Explicitly sets width to 100% for compatibility */
 }

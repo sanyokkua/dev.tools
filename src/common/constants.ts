@@ -6,7 +6,8 @@
 export const DEFAULT_LANGUAGE_ID: string = 'plaintext';
 /**
  * Default file extension used when none is specified.
- * This value applies globally across the application's file operations and ensures consistent default behavior for new or unspecified files.
+ * This value applies globally across the application's file operations and ensures consistent default behavior for new
+ * or unspecified files.
  */
 export const DEFAULT_EXTENSION: string = '.txt';
 /**
@@ -16,4 +17,7 @@ export const DEFAULT_EXTENSION: string = '.txt';
  */
 export const DEFAULT_MIME_TYPE: string = 'text/plain';
 
+/**
+ * Default filename used when no file name is specified or available.
+ */
 export const DEFAULT_FILE_NAME: string = 'Untitled';

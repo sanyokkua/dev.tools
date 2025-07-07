@@ -3,22 +3,25 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
-import CodeEditor from '@/modules/ui/elements/editor/CodeEditor';
+import { useToast } from '@/contexts/ToasterContext';
+import { ToastType } from '@/controls/toaster/types';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
-} from '@/modules/ui/elements/editor/code-editor-utils';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
-import Menubar from '@/modules/ui/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '@/modules/ui/elements/navigation/menubar/utils';
+} from '@/elements/editor/code-editor-utils';
+import { EditorProperties } from '@/elements/editor/types';
+import { MenuBuilder } from '@/elements/navigation/menubar/utils';
 import { StringUtils } from 'coreutilsts';
+import CodeEditor from '../../components/elements/editor/CodeEditor';
+import Menubar from '../../components/elements/navigation/menubar/Menubar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
+    const { showToast } = useToast();
 
     useEffect(() => {
         setPageTitle('Terminal Utils');
@@ -39,11 +42,11 @@ const IndexPage: React.FC = () => {
 
     // Handlers
     const handlePaste = useCallback((): void => {
-        pasteFromClipboardToEditor(editorOriginalRef);
+        pasteFromClipboardToEditor(editorOriginalRef, () => {}, showToast);
     }, []);
 
     const handleCopy = useCallback((): void => {
-        copyToClipboardFromEditor(editorResultRef);
+        copyToClipboardFromEditor(editorResultRef, showToast);
     }, []);
 
     const handleClear = useCallback((): void => {
@@ -67,12 +70,15 @@ const IndexPage: React.FC = () => {
 
     const handleShell = () => {
         setLanguageId('shell');
+        showToast({ message: 'Changed Syntax to shell', type: ToastType.INFO });
     };
     const handleBat = () => {
         setLanguageId('bat');
+        showToast({ message: 'Changed Syntax to bat', type: ToastType.INFO });
     };
     const handlePowershell = () => {
         setLanguageId('powershell');
+        showToast({ message: 'Changed Syntax to powershell', type: ToastType.INFO });
     };
 
     const topMenuItems = MenuBuilder.newBuilder()

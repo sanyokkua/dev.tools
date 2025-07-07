@@ -3,6 +3,9 @@ import Button from '@/controls/Button';
 import { FC, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+/**
+ * Properties for configuring a modal component.
+ */
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -13,6 +16,16 @@ interface ModalProps {
     cancelText?: string;
 }
 
+/**
+ * Creates a reusable modal component with customizable content and actions.
+ * @param isOpen - Determines whether the modal is currently visible.
+ * @param onClose - Callback to handle closing of the modal.
+ * @param onConfirm - Optional callback for confirm action in the modal.
+ * @param title - Header text displayed at the top of the modal.
+ * @param children - Main content area inside the modal body.
+ * @param confirmText - Text of Confirm button
+ * @param cancelText - Text of Cancel button
+ * @returns A React portal-rendered modal overlay with backdrop and content.*/
 const Modal: FC<ModalProps> = ({
     isOpen,
     onClose,
@@ -34,7 +47,7 @@ const Modal: FC<ModalProps> = ({
             window.addEventListener('keydown', handleKeyDown);
         }
 
-        // Cleanup function to remove event listener
+        // Cleanup function to remove an event listener
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };

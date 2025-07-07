@@ -1,64 +1,76 @@
+/* Global color palette definitions for consistent theming across the application */
 :root {
-    --black-color: #000000;
-    --black-color-on: #ffffff;
+    /* Basic black and white colors with contrasting text options */
+    --black-color: #000000; /* Pure black background */
+    --black-color-on: #ffffff; /* White text for black backgrounds */
 
-    --white-color: #ffffff;
-    --white-color-on: #000000;
+    --white-color: #ffffff; /* Pure white background */
+    --white-color-on: #000000; /* Black text for white backgrounds */
 
-    --primary-color: #006b5f;
-    --primary-color-on: #ffffff;
-    --primary-container-color: #9ef2e3;
-    --primary-container-color-on: #005048;
+    /* Primary theme colors for main actions and highlights */
+    --primary-color: #006b5f; /* Teal primary background color */
+    --primary-color-on: #ffffff; /* White text for primary color backgrounds */
+    --primary-container-color: #9ef2e3; /* Light teal background for containers */
+    --primary-container-color-on: #005048; /* Darker teal text for container backgrounds */
 
-    --secondary-color: #4a635e;
-    --secondary-color-on: #ffffff;
-    --secondary-container-color: #cce8e2;
-    --secondary-container-color-on: #334b47;
+    /* Secondary theme colors for secondary actions and elements */
+    --secondary-color: #4a635e; /* Muted green-blue background */
+    --secondary-color-on: #ffffff; /* White text for secondary backgrounds */
+    --secondary-container-color: #cce8e2; /* Light green-blue container background */
+    --secondary-container-color-on: #334b47; /* Dark green-blue text for containers */
 
-    --tertiary-color: #456179;
-    --tertiary-color-on: #ffffff;
-    --tertiary-container-color: #cbe6ff;
-    --tertiary-container-color-on: #2d4a60;
+    /* Tertiary theme colors for less prominent elements */
+    --tertiary-color: #456179; /* Deep blue background */
+    --tertiary-color-on: #ffffff; /* White text for tertiary backgrounds */
+    --tertiary-container-color: #cbe6ff; /* Light blue container background */
+    --tertiary-container-color-on: #2d4a60; /* Dark blue text for containers */
 
-    --error-color: #ba1a1a;
-    --error-color-on: #ffffff;
-    --error-container-color: #ffdad6;
-    --error-container-color-on: #93000a;
+    /* Error theme colors for destructive actions or alerts */
+    --error-color: #ba1a1a; /* Bright red background */
+    --error-color-on: #ffffff; /* White text for error backgrounds */
+    --error-container-color: #ffdad6; /* Light red container background */
+    --error-container-color-on: #93000a; /* Dark red text for containers */
 
-    --surface-color: #f4fbf8;
-    --surface-color-on: #3f4946;
-    --surface-dim-color: #d5dbd9;
-    --surface-dim-color-on: #161d1b;
+    /* Surface colors for background surfaces and cards */
+    --surface-color: #f4fbf8; /* Light greenish background */
+    --surface-color-on: #3f4946; /* Gray text for surface backgrounds */
+    --surface-dim-color: #d5dbd9; /* Subtle gray background */
+    --surface-dim-color-on: #161d1b; /* Dark gray text for dim surfaces */
 
-    --info-color: #27638a;
-    --info-color-on: #ffffff;
-    --info-container-color: #cae6ff;
-    --info-container-color-on: #004b70;
+    /* Utility colors for specific status types */
+    --info-color: #27638a; /* Blue for informational messages */
+    --info-color-on: #ffffff; /* White text for info backgrounds */
+    --info-container-color: #cae6ff; /* Light blue container background */
+    --info-container-color-on: #004b70; /* Dark blue text for info containers */
 
-    --success-color: #3b6939;
-    --success-color-on: #ffffff;
-    --success-container-color: #bcf0b4;
-    --success-container-color-on: #235024;
+    --success-color: #3b6939; /* Green for success states */
+    --success-color-on: #ffffff; /* White text for success backgrounds */
+    --success-container-color: #bcf0b4; /* Light green container background */
+    --success-container-color-on: #235024; /* Dark green text for success containers */
 
-    --warning-color: #685f12;
-    --warning-color-on: #ffffff;
-    --warning-container-color: #f1e48a;
-    --warning-container-color-on: #4f4800;
+    --warning-color: #685f12; /* Yellow-green for warning states */
+    --warning-color-on: #ffffff; /* White text for warning backgrounds */
+    --warning-container-color: #f1e48a; /* Light yellow container background */
+    --warning-container-color-on: #4f4800; /* Olive text for warning containers */
 
-    --md-shadow-color: #000000;
-    --md-outline-color: #6f7976;
-
-    --hover-color: white;
+    /* Specialized colors for shadows, outlines, and hover states */
+    --md-shadow-color: #000000; /* Black shadow color */
+    --md-outline-color: #6f7976; /* Gray outline color */
+    --hover-color: white; /* White hover overlay */
 }
 
+/* List of all color names used for generating utility classes */
 $md-colors:
     black-color, white-color, primary-color, primary-container-color, secondary-color, secondary-container-color,
     tertiary-color, tertiary-container-color, error-color, error-container-color, surface-color, surface-dim-color,
     info-color, info-container-color, success-color, success-container-color, warning-color, warning-container-color;
 
+/* Generates utility classes for all defined colors using SCSS map iteration
+   Creates classes like .color-primary-color that set --bg-color and --text-color variables
+   This avoids repetitive manual class creation for each color combination */
 @each $md-color in $md-colors {
     .color-#{$md-color} {
-        --bg-color: var(--#{$md-color});
-        --text-color: var(--#{$md-color}-on);
+        --bg-color: var(--#{$md-color}); /* Sets background color variable from theme */
+        --text-color: var(--#{$md-color}-on); /* Sets matching text color from theme */
     }
 }

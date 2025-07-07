@@ -1,8 +1,8 @@
 'use client';
 import { createJsonFormatter } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
-import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '@/modules/ui/elements/column/ToolView';
 import React, { useEffect, useMemo } from 'react';
+import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();

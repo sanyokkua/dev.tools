@@ -1,20 +1,35 @@
+/* Themed status panel using tertiary color scheme, designed for compact horizontal display */
 .info-panel {
-    --bg: var(--tertiary-container-color);
-    --text: var(--tertiary-container-color-on);
+    /* Sets theme colors from global variables - uses tertiary container palette */
+    --bg: var(--tertiary-container-color); /* Background color from theme definition */
+    --text: var(--tertiary-container-color-on); /* Text color that contrasts with background */
 
-    margin: 0 0 8px 0;
-    padding: 0;
-    overflow: hidden;
-    height: 4vh;
-    width: 100%;
+    /* Creates bottom spacing while keeping other margins zero */
+    margin: 0 0 8px 0; /* 8px gap below panel (top/right/left margins = 0) */
 
-    background-color: var(--bg);
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    justify-items: center;
+    /* Removes internal spacing between panel edges and content */
+    padding: 0; /* No padding inside the panel (0px) */
 
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+    /* Ensures content doesn't overflow visible area */
+    overflow: hidden; /* Cuts off any content that extends beyond panel boundaries */
+
+    /* Fixed height based on screen size with responsive behavior */
+    height: 4vh; /* 4% of viewport height (adjusts automatically with screen size) */
+
+    /* Full-width horizontal panel */
+    width: 100%; /* Stretches to fill entire container width */
+
+    /* Applies background color using theme variable */
+    background-color: var(--bg); /* Uses tertiary container background color */
+
+    /* Alignment settings for centering content (requires flex/grid container) */
+    align-items: center; /* Vertically centers content in flex/grid containers */
+    align-content: center; /* Centers content across multiple lines in grid */
+    justify-content: center; /* Horizontally centers content in flex containers */
+    justify-items: center; /* Centers content in grid cells */
+
+    /* Prevents text selection for better UI interaction */
+    -webkit-user-select: none; /* Safari browser compatibility */
+    -ms-user-select: none; /* Internet Explorer/Edge compatibility */
+    user-select: none; /* Standard browser support */
 }

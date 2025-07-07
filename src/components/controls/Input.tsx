@@ -2,7 +2,9 @@
 import React from 'react';
 import { Color } from './types';
 
-// Define input types as per HTML spec
+/**
+ * Enumerates valid HTML input element types supported by browsers.
+ */
 type InputType =
     | 'button'
     | 'checkbox'
@@ -27,7 +29,9 @@ type InputType =
     | 'url'
     | 'week';
 
-// Define props interface
+/**
+ * Props interface for configuring input components with various styling and behavior options.
+ */
 interface InputProps {
     defaultValue?: string;
     value?: string;
@@ -55,7 +59,33 @@ interface InputProps {
     checked?: boolean;
 }
 
-// Input component
+/**
+ * Renders a customizable input element with various styling and behavior options.
+ * @param defaultValue - Default Value in Input
+ * @param type - Input field type (text, number, etc.)
+ * @param value - Current input value
+ * @param onChange - Callback for handling value changes
+ * @param disabled - Controls input state: enabled or disabled
+ * @param readOnly - Sets input to read-only mode
+ * @param variant - Visual style: 'outlined' or 'underlined'
+ * @param size - Size modifier: 'default', 'small', or 'large'
+ * @param block - Makes the input take full width of its container
+ * @param colorStyle
+ * @param placeholder - Hint text displayed when field is empty
+ * @param onChangeDefault
+ * @param id - Unique identifier for form fields
+ * @param name - Name attribute used in form submission
+ * @param form
+ * @param autoComplete
+ * @param autoFocus
+ * @param minLength
+ * @param maxLength
+ * @param min
+ * @param max
+ * @param step
+ * @param required - Marks input as mandatory field
+ * @param checked
+ */
 const Input: React.FC<InputProps> = ({
     defaultValue = '',
     type = 'text',

@@ -62,7 +62,7 @@ export function saveTextFile({
 
 /**
  * createFileReader - function to create a FileReader object
- * @param  onSuccess callback function when file is loaded successfully
+ * @param  onSuccess callback function when a file is loaded successfully
  * @param  onFailure callback function when file loading fails
  * @return the created FileReader instance
  */
@@ -128,7 +128,8 @@ export const createFileReadPromise = (file: File): Promise<string> => {
  * @param {File} file - The file to generate the info for. This should be an instance of the File API object.
  * @param {string} content - The contents of the file represented as a string.
  *
- * @returns {FileInfo} An object containing information about the file, including its name, extension, size, and content.
+ * @returns {FileInfo} An object containing information about the file, including its name, extension, size, and
+ *     content.
  */
 export function createFileInfo(file: File, content: string): FileInfo {
     const ext = '.' + (file.name.split('.').pop() || '');

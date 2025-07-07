@@ -2,6 +2,10 @@ import { formatJson } from '@/common/formatting-tools';
 import { IHashUtil, IStringUtil, UtilList } from '@/common/types';
 import { CaseUtils, EncodingUtils, HashingUtils, LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 
+/**
+ * Creates and returns an array of utility functions for string manipulation.
+ * @returns An array containing string transformation tools with their configurations.
+ */
 export function createStringUtils(): IStringUtil[] {
     return [
         {
@@ -27,6 +31,10 @@ export function createStringUtils(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates an array of case transformation utilities.
+ * @returns Array of utility objects with predefined case conversion functions.
+ */
 export function createCaseUtils(): IStringUtil[] {
     return [
         {
@@ -118,6 +126,11 @@ export function createCaseUtils(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates an array of utility functions for line manipulation.
+ *
+ * @returns Array of string utilities for various text processing operations
+ */
 export function createLineUtils(): IStringUtil[] {
     function splitInternal(input: string): string[] {
         return LineUtils.splitStringIntoLines(input, '\n');
@@ -203,6 +216,10 @@ export function createLineUtils(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates a list of string utility groups containing their respective utilities.
+ * @returns Array of utility lists with grouped string manipulation tools.
+ */
 export function createStringUtilList(): UtilList[] {
     return [
         { toolGroupId: 'string-utils', displayName: 'String Utils', utils: createStringUtils() },
@@ -211,6 +228,10 @@ export function createStringUtilList(): UtilList[] {
     ];
 }
 
+/**
+ * Creates an array of utility objects for encoding different data formats.
+ * @returns Array of string utility tools with their respective encoding functions.
+ */
 export function createEncodingUtils(): IStringUtil[] {
     return [
         { toolId: 'encode-url', textToDisplay: 'Encode Url', toolFunction: (input) => StringUtils.encodeUrl(input) },
@@ -227,6 +248,10 @@ export function createEncodingUtils(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates an array of utility objects for URL and base64 decoding operations.
+ * @returns Array of String utilities with their respective decode functions
+ */
 export function createDecodingUtils(): IStringUtil[] {
     return [
         { toolId: 'decode-url', textToDisplay: 'Decode Url', toolFunction: (input) => StringUtils.decodeUrl(input) },
@@ -238,6 +263,10 @@ export function createDecodingUtils(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates a list of utility groups containing encoding and decoding utilities.
+ * @returns Array of utility lists with specified tools for encoding and decoding operations
+ */
 export function createEncodingDecodingUtilList(): UtilList[] {
     return [
         { toolGroupId: 'encoding-utils', displayName: 'Encoding Utils', utils: createEncodingUtils() },
@@ -245,6 +274,10 @@ export function createEncodingDecodingUtilList(): UtilList[] {
     ];
 }
 
+/**
+ * Creates an array of hashing utility objects for different cryptographic algorithms.
+ * @returns Array of hash utilities with their respective encoding methods and display text
+ */
 export function createHashingUtils(): IHashUtil[] {
     return [
         {
@@ -275,6 +308,10 @@ export function createHashingUtils(): IHashUtil[] {
     ];
 }
 
+/**
+ * Creates an array of JSON formatting tools with different configurations.
+ * @returns Array of string utility objects providing JSON formatting capabilities.
+ */
 export function createJsonFormatter(): IStringUtil[] {
     return [
         {

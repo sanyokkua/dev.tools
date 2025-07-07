@@ -9,6 +9,9 @@ import { createPortal } from 'react-dom';
 
 import { saveTextFile } from '@/common/file-utils';
 
+/**
+ * Defines configuration options for a save file dialog.
+ */
 export interface SaveFileDialogOptions {
     fileContent: string;
     fileName: string; // without extension
@@ -17,12 +20,22 @@ export interface SaveFileDialogOptions {
     mimeType?: string; // optional override
 }
 
+/**
+ * Configuration properties for a modal dialog component.
+ * Defines state and behavior of the dialog interface.
+ */
 interface Props {
     isOpen: boolean;
     options: SaveFileDialogOptions;
     onClose: () => void;
 }
 
+/**
+ * A modal dialog component for saving files with user-provided names and extensions.
+ * @param isOpen - Indicates whether the save dialog is currently displayed
+ * @param options - Configuration object containing file details and available extensions
+ * @param onClose - Callback function to handle closing the dialog
+ */
 export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) => {
     const { fileContent, fileName, fileExtension, availableExtensions, mimeType } = options;
     const { showToast } = useToast();

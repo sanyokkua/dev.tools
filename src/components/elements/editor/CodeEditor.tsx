@@ -1,10 +1,11 @@
 'use client';
 import { DEFAULT_LANGUAGE_ID } from '@/common/constants';
-import { buildEditorProperties } from '@/modules/ui/elements/editor/code-editor-utils';
-import { EditorProperties } from '@/modules/ui/elements/editor/types';
 import { Editor, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useCallback } from 'react';
+import { buildEditorProperties } from './code-editor-utils';
+import { EditorProperties } from './types';
+
 export type EditorOnMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
 
 export interface AppCodeEditorPropsBase {

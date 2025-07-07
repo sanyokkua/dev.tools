@@ -4,7 +4,8 @@
  * @property {string} toolId - Unique identifier for the string processing tool.
  * @property {string} textToDisplay - The input or target text to process using this utility.
  * @property {string?} description - Optional detailed explanation of what the tool does.
- * @property {(input: string) => string} toolFunction - Function that performs the actual string manipulation operation on the provided input.
+ * @property {(input: string) => string} toolFunction - Function that performs the actual string manipulation operation
+ *     on the provided input.
  */
 export interface IStringUtil {
     toolId: string;
@@ -33,7 +34,8 @@ export interface UtilList {
  * @property {string} toolId - Unique identifier for the hashing tool.
  * @property {string} textToDisplay - Human-readable name or label for the tool.
  * @property {string=} description - Optional detailed description of the hashing functionality.
- * @property {(input: string) => Promise<string>} toolFunction - Asynchronous function that performs the hash operation on provided input.
+ * @property {(input: string) => Promise<string>} toolFunction - Asynchronous function that performs the hash operation
+ *     on provided input.
  */
 export interface IHashUtil {
     toolId: string;
@@ -42,4 +44,8 @@ export interface IHashUtil {
     toolFunction: (input: string) => Promise<string>;
 }
 
+/**
+ * Represents operating system types supported by the application.
+ * Used to identify platform-specific behavior or configurations.
+ */
 export type OSType = 'windows' | 'macos' | 'linux';

@@ -1,3 +1,6 @@
+/**
+ * Represents a color value used in UI components.
+ */
 export type Color =
     | ''
     | 'black-color'

@@ -1,78 +1,93 @@
+/* Main application container that establishes vertical layout structure */
 .app-main-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    max-width: 100vw;
+    display: flex; /* Enables flexible box layout for child elements */
+    flex-direction: column; /* Stacks children vertically (top-to-bottom) */
+    min-height: 100vh; /* Minimum height equals 100% of viewport height */
+    max-width: 100vw; /* Prevents horizontal overflow beyond screen width */
 }
 
+/* Container for sidebar and main content area with horizontal flex layout */
 .app-sidebar-and-content-container {
-    display: flex;
-    flex: 1;
+    display: flex; /* Creates horizontal layout for sidebar + content */
+    flex: 1; /* Takes remaining space in parent container */
 }
 
+/* Main content area with responsive padding and theme-based styling */
 .app-main-content-container {
-    flex: 1;
-    padding: 1vh;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    flex: 1; /* Fills available space in parent container */
+    padding: 1vh; /* Adds 1% of viewport height as padding (responsive spacing) */
+    height: 100%; /* Stretches to fill parent container */
+    overflow: hidden; /* Prevents content from spilling outside boundaries */
+    box-sizing: border-box; /* Includes padding in width/height calculations */
+    background-color: var(--bg-color); /* Uses theme-defined background color */
+    color: var(--text-color); /* Applies theme-defined text color */
 }
 
+/* Vertical flex container for stacked content sections */
 .content-container-flex {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
+    display: flex; /* Creates flexible layout for children */
+    flex: 1; /* Expands to fill available space */
+    flex-direction: column; /* Arranges children vertically */
 }
 
+/* Three-column grid layout with responsive column widths */
 .content-container-grid {
-    display: grid;
+    display: grid; /* Enables CSS Grid layout */
+    /* Creates three columns:
+   - Left: flexible (1fr) with minimum 0 width
+   - Middle: fixed at 30% of available space (0.3fr)
+   - Right: flexible (1fr) with minimum 0 width */
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 1fr);
-    height: 100vh;
-    gap: 1vw;
+    height: 100vh; /* Fixed height equal to viewport height */
+    gap: 1vw; /* Sets 1% of viewport width spacing between columns */
 }
 
+/* Base styling for grid column containers */
 .content-container-grid-child {
-    display: flex;
-    flex-direction: column; /* Stacks content inside each column */
-    align-items: stretch; /* Ensures child elements fill the column */
-    justify-content: flex-start; /* Aligns items from top to bottom */
+    display: flex; /* Creates flexible container for content */
+    flex-direction: column; /* Stacks content vertically */
+    align-items: stretch; /* Makes children fill column width */
+    justify-content: flex-start; /* Aligns content to top of column */
 }
 
+/* Scrollable area for content that exceeds container height */
 .scrollable-container {
-    display: flex;
-    flex-direction: column; /* Stacks content inside each column */
-    align-items: stretch; /* Ensures child elements fill the column */
-    justify-content: flex-start; /* Aligns items from top to bottom */
-    overflow-y: scroll;
-    height: 75%;
-    overflow-wrap: break-word;
+    display: flex; /* Creates flexible layout */
+    flex-direction: column; /* Stacks content vertically */
+    align-items: stretch; /* Children fill container width */
+    justify-content: flex-start; /* Content starts from top */
+    overflow-y: scroll; /* Adds vertical scrollbar when needed */
+    height: 75%; /* Takes 75% of parent container height */
+    overflow-wrap: break-word; /* Breaks long words to prevent horizontal overflow */
 }
 
+/* Horizontal layout container for equally distributed elements */
 .horizontal-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    align-items: stretch; /* Ensures children fill container height */
-    gap: 0; /* Optional: remove spacing between children */
+    display: flex; /* Enables flexbox for horizontal arrangement */
+    flex-direction: row; /* Positions children left-to-right */
+    width: 100%; /* Takes full width of parent container */
+    height: 100%; /* Takes full height of parent container */
+    align-items: stretch; /* Makes children fill container height */
+    gap: 0; /* Removes spacing between child elements */
 }
 
+/* Equal-width distribution for direct children of horizontal container */
 .horizontal-container > * {
-    flex: 1 1 0; /* Equal width distribution */
+    flex: 1 1 0; /* Allows growth (1), shrink (1), and sets base width to 0 */
     min-width: 0; /* Prevents overflow issues with long content */
 }
 
+/* Styled container for text content with elevation and padding */
 .text-container {
-    /* Base surface styling */
-    background: var(--white-color);
-    color: var(--surface-color-on);
-    border-radius: 4px;
-    padding: 1vh;
-    /* Default elevation level 1 */
-    box-shadow:
+    /* Theme-based surface styling */
+    background: var(--white-color); /* Uses theme-defined white background */
+    color: var(--surface-color-on); /* Applies matching text color */
+    border-radius: 4px; /* Adds subtle corner rounding */
+    padding: 1vh; /* Responsive vertical padding (1% of viewport height) */
+
+    /* Material Design-inspired elevation (shadow) */
+    box-shadow: /* Large, soft outer shadow */
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+        /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        /* Subtle bottom shadow */ 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }

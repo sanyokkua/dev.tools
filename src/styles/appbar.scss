@@ -1,27 +1,31 @@
+/* Container for the top navigation bar with horizontal layout and theme-based styling */
 .app-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: var(--primary-color-on);
+    display: flex; /* Enables horizontal layout with flexible child elements */
+    align-items: center; /* Vertically centers all items within the app bar */
+    justify-content: space-between; /* Distributes space between direct children, pushing first and last to edges */
+    padding: 0.5rem 1rem; /* Adds 8px vertical padding (0.5×16px base font size) and 16px horizontal padding */
+    background-color: var(--primary-color); /* Applies main theme color from CSS variables (e.g., dark blue) */
+    color: var(--primary-color-on); /* Sets text/icon color that contrasts with the background */
 }
 
+/* Styles for the logo/title link in the app bar */
 .app-bar-title-link {
-    margin: 0;
-    color: var(--primary-color-on);
-    font-weight: 400;
-    letter-spacing: 0.025em;
+    margin: 0; /* Removes browser default spacing around the link */
+    color: var(--primary-color-on); /* Ensures consistent text color with other app bar elements */
+    font-weight: 400; /* Uses normal font weight for balanced visual weight */
+    letter-spacing: 0.025em; /* Increases letter spacing by 2.5% of font size for better readability */
 }
 
+/* Centered page title in the app bar with emphasized typography */
 .app-bar-page-title {
-    flex: 1;
-    margin: 0;
-    color: var(--primary-color-on);
-    text-align: center;
-    font-size: 1.25rem;
+    flex: 1; /* Allows element to grow/shrink and take remaining space between elements */
+    margin: 0; /* Eliminates default spacing to maintain alignment */
+    color: var(--primary-color-on); /* Maintains visual consistency with app bar theme */
+    text-align: center; /* Horizontally centers title text */
+    font-size: 1.25rem; /* Sets text to 20px (1.25×16px) for prominent display */
 }
 
+/* Fixed-size invisible element to create spacing in the app bar layout */
 .app-bar-spacing-stub {
-    width: 100px;
+    width: 100px; /* Creates a 100px-wide empty space to separate UI elements (absolute measurement) */
 }
