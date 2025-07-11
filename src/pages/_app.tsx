@@ -16,6 +16,7 @@ import '@/styles/modal.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
 import '@/styles/surfaces.scss';
+import '@/styles/table.scss';
 import '@/styles/toaster.scss';
 import { AppProps } from 'next/app';
 import ApplicationLayout from '../components/app-layout/ApplicationLayout';

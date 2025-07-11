@@ -1,5 +1,6 @@
 import { formatJson } from '@/common/formatting-tools';
-import { IHashUtil, IStringUtil, UtilList } from '@/common/types';
+import { mapApplicationToCommand } from '@/common/macos-utils';
+import { CommandBuilder, IHashUtil, IStringUtil, OSType, UtilList } from '@/common/types';
 import { CaseUtils, EncodingUtils, HashingUtils, LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 
 /**
@@ -326,3 +327,13 @@ export function createJsonFormatter(): IStringUtil[] {
         },
     ];
 }
+
+export const getCommandBuilder = (osType: OSType): CommandBuilder => {
+    if (osType === 'macos') {
+        return mapApplicationToCommand;
+    }
+
+    return () => {
+        return { name: 'not-implemented', command: 'not-implemented' };
+    };
+};

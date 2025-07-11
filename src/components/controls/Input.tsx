@@ -87,7 +87,7 @@ interface InputProps {
  * @param checked
  */
 const Input: React.FC<InputProps> = ({
-    defaultValue = '',
+    defaultValue,
     type = 'text',
     value = '',
     onChange,
