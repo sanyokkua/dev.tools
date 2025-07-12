@@ -43,16 +43,20 @@ export const GPG_VERIFY_INSTALL = 'gpg --version';
 export const GPG_GENERATE_KEY = 'gpg --full-generate-key';
 export const GPG_GET_KEY_ID = 'gpg --list-secret-keys --keyid-format=long';
 
-export const GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY = 'git config --global user.signingkey YOUR_GENERATED_KEY_123456';
+export const GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY = 'git config --global user.signingkey YOUR_KEY_ID';
 export const GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING = 'git config --global commit.gpgsign true';
 export const GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING = 'git config --global tag.gpgSign true';
 
-export const GPG_CONFIGURE_GIT_SIGNING_ADD_KEY = 'git config user.signingkey YOUR_GENERATED_KEY_123456';
+export const GPG_CONFIGURE_GIT_SIGNING_ADD_KEY = 'git config user.signingkey YOUR_KEY_ID';
 export const GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING = 'git config commit.gpgsign true';
 export const GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING = 'git config tag.gpgSign true';
-
+export const GPG_PINENTRY_INSTALL = 'brew install pinentry-mac';
+export const GPG_PINENTRY_SETUP_MKDIR_GNUPG = 'mkdir ~/.gnupg';
+export const GPG_PINENTRY_SETUP_ADD_AGENT_RECORD =
+    'echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" > ~/.gnupg/gpg-agent.conf';
+export const GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG = "echo 'use-agent' > ~/.gnupg/gpg.conf";
+export const GPG_PINENTRY_ADD_EXPORT_TO_PROFILE = 'export GPG_TTY=$(tty)';
 export const GPG_TEST = 'echo "test" | git commit -S --file=- && git log --show-signature -1';
-
 
 /**
  * Creates a git command object with description and command string.
@@ -97,12 +101,12 @@ export function generateGitCommands(name: string, email: string, globalConfig: b
     commands.push(generateCommand('Install GPG', GPG_INSTALL[os]));
     commands.push(generateCommand('Verify GPG', GPG_VERIFY_INSTALL));
     commands.push(generateCommand('Generate GPG Key', GPG_GENERATE_KEY));
-    commands.push(generateCommand('Get GPG Key ID', GPG_GET_KEY_ID));
+    commands.push(generateCommand('Get GPG Key ID (sec   algorithm/YOUR_KEY_ID YYYY-MM-DD [SC]\n)', GPG_GET_KEY_ID));
 
     if (globalConfig) {
         commands.push(
             generateCommand(
-                'Configure Git Global Signing (replace YOUR_GENERATED_KEY_123456 with the key ID from the previous command)',
+                'Configure Git Global Signing (replace YOUR_KEY_ID with the key ID from the previous command)',
                 GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY,
             ),
         );
@@ -118,14 +122,39 @@ export function generateGitCommands(name: string, email: string, globalConfig: b
     } else {
         commands.push(
             generateCommand(
-                'Configure Git Signing (replace YOUR_GENERATED_KEY_123456 with the key ID from the previous command)',
+                'Configure Git Signing (replace YOUR_KEY_ID with the key ID from the previous command)',
                 GPG_CONFIGURE_GIT_SIGNING_ADD_KEY,
             ),
         );
         commands.push(generateCommand('Configure Git Commit Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING));
         commands.push(generateCommand('Configure Git Tag Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING));
     }
+    if (os === 'macos') {
+        commands.push(
+            generateCommand('To enable visual pass prompts for GPG signing, install pinentry', GPG_PINENTRY_INSTALL),
+        );
+        commands.push(
+            generateCommand("Create GPG config folder (if it doesn't exist)", GPG_PINENTRY_SETUP_MKDIR_GNUPG),
+        );
+        commands.push(
+            generateCommand(
+                'Add pinentry to gpg-agent config (if entry not present)',
+                GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
+            ),
+        );
+        commands.push(
+            generateCommand("Add 'use-agent' to GPG config (if missing)", GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG),
+        );
+        commands.push(
+            generateCommand(
+                'Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)',
+                GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
+            ),
+        );
+    }
+    commands.push(generateCommand('Copy SSH Public Key', SSH_KEY_COPY[os]));
     commands.push(generateCommand('Test GPG', GPG_TEST));
+    commands.push(generateCommand('Test SSH', SSH_KEY_TEST));
 
     return commands;
 }

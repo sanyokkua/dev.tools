@@ -514,6 +514,13 @@ export const MAC_OS_BREW_APPS: Application[] = [
         brewType: BrewType.COMMAND,
         category: Category.BUILD_TOOLING,
     },
+    {
+        id: 'pinentry-mac',
+        name: 'Pinentry',
+        description: 'Password entry utility for GPG on Mac',
+        brewType: BrewType.COMMAND,
+        category: Category.SYSTEM_UTILS,
+    },
 ];
 
 export function mapApplicationToCommand(app: Application): Command {

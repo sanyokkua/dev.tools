@@ -23,6 +23,11 @@ import {
     GPG_INSTALL_LINUX,
     GPG_INSTALL_MACOS,
     GPG_INSTALL_WINDOWS,
+    GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
+    GPG_PINENTRY_INSTALL,
+    GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
+    GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG,
+    GPG_PINENTRY_SETUP_MKDIR_GNUPG,
     GPG_VERIFY_INSTALL,
     INSTALL_XCLIP,
     SSH_KEY_ADD_AGENT,
@@ -170,7 +175,11 @@ const GitCheatSheetPage: FC = () => {
             <CodeSnippet headerText="Install GPG (Linux)" content={GPG_INSTALL_LINUX} language="bash" />
             <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
             <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
-            <CodeSnippet headerText="List Secret Keys" content={GPG_GET_KEY_ID} language="bash" />
+            <CodeSnippet
+                headerText="List Secret Keys (and copy id, eg.: sec   rsa4096/YOUR_KEY_ID YYYY-MM-DD [SC])"
+                content={GPG_GET_KEY_ID}
+                language="bash"
+            />
             <CodeSnippet
                 headerText="Configure Global Signing Key"
                 content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY}
@@ -199,6 +208,31 @@ const GitCheatSheetPage: FC = () => {
             <CodeSnippet
                 headerText="Enable Local Tag Signing"
                 content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) To enable visual pass prompts for GPG signing, install pinentry"
+                content={GPG_PINENTRY_INSTALL}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Create GPG config folder (if it doesn't exist)"
+                content={GPG_PINENTRY_SETUP_MKDIR_GNUPG}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add pinentry to gpg-agent config (if entry not present)"
+                content={GPG_PINENTRY_SETUP_ADD_AGENT_RECORD}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add 'use-agent' to GPG config (if missing)"
+                content={GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)"
+                content={GPG_PINENTRY_ADD_EXPORT_TO_PROFILE}
                 language="bash"
             />
 
