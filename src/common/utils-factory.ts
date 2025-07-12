@@ -328,12 +328,18 @@ export function createJsonFormatter(): IStringUtil[] {
     ];
 }
 
+/**
+ * Creates a new instance of the CommandBuilder based on the operating system type.
+ *
+ * @param {OSType} osType - The target operating system for which to create the builder.
+ * @returns {CommandBuilder} An instance that constructs commands appropriate for the given OS.
+ */
 export const getCommandBuilder = (osType: OSType): CommandBuilder => {
     if (osType === 'macos') {
         return mapApplicationToCommand;
     }
 
     return () => {
-        return { name: 'not-implemented', command: 'not-implemented' };
+        return { description: 'not-implemented', command: 'not-implemented' };
     };
 };

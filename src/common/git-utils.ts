@@ -1,4 +1,4 @@
-import { OSType } from '@/common/types';
+import { Command, OSType } from '@/common/types';
 
 export const GIT_INSTALL_MACOS = 'brew install git';
 export const GIT_INSTALL_LINUX = 'sudo apt update && sudo apt install -y git';
@@ -53,19 +53,13 @@ export const GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING = 'git config tag.gpgS
 
 export const GPG_TEST = 'echo "test" | git commit -S --file=- && git log --show-signature -1';
 
-/**
- * Defines a basic structure for representing git-related commands.
- * @property description - Brief explanation of what the command does
- * @property command - Actual shell command to execute
- */
-export type GitCommand = { description: string; command: string };
 
 /**
  * Creates a git command object with description and command string.
  * @param description - Brief explanation of the git command's purpose
  * @param command - The actual git command to be executed
  */
-function generateCommand(description: string, command: string): GitCommand {
+function generateCommand(description: string, command: string): Command {
     return { description, command };
 }
 
@@ -77,8 +71,8 @@ function generateCommand(description: string, command: string): GitCommand {
  * @param os - Operating system type for OS-specific commands
  * @returns Array of Git-related command objects with instructions and execution details
  */
-export function generateGitCommands(name: string, email: string, globalConfig: boolean, os: OSType): GitCommand[] {
-    const commands: GitCommand[] = [];
+export function generateGitCommands(name: string, email: string, globalConfig: boolean, os: OSType): Command[] {
+    const commands: Command[] = [];
 
     commands.push(generateCommand('Install Git', GIT_INSTALL[os]));
     commands.push(generateCommand('Verify Git', GIT_VERIFY_INSTALL));

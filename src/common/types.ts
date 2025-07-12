@@ -121,9 +121,20 @@ export interface Application {
     brewType?: BrewType; // Only for MacOS
 }
 
+/**
+ * Interface representing a CLI command structure.
+ * Defines the basic properties required to describe and execute a command in a
+ * command-line environment.
+ */
 export interface Command {
-    name: string;
+    description: string;
     command: string;
 }
 
+/**
+ * Creates a function that builds and returns a {@link Command} instance configured for the specified application context.
+ * This interface represents a factory method pattern used to construct commands dynamically based on an `Application` environment.
+ *
+ * The returned command is fully initialized with all necessary configurations, dependencies, and settings required to operate within the given application context.
+ */
 export type CommandBuilder = (app: Application) => Command;

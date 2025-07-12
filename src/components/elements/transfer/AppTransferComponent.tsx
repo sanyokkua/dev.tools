@@ -38,16 +38,16 @@ const AppTransferComponent: React.FC<Props> = ({ items, osType }) => {
                     <h3>All-in-One Command</h3>
                     <CodeSnippet
                         content={combinedCommand!.command}
-                        headerText={combinedCommand!.name}
+                        headerText={combinedCommand!.description}
                         language="shell"
                     />
 
                     <h3>Individual Commands</h3>
                     {commands.map((cmd) => (
                         <CodeSnippet
-                            key={cmd.name}
+                            key={cmd.description}
                             content={cmd.command}
-                            headerText={`Install ${cmd.name}`}
+                            headerText={`Install ${cmd.description}`}
                             language="shell"
                         />
                     ))}

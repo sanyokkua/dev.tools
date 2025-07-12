@@ -381,7 +381,13 @@ export const MAC_OS_BREW_APPS: Application[] = [
         brewType: BrewType.CASK,
         category: Category.GRAPHICS_AND_3D,
     },
-    // COMMAND type entries
+    {
+        id: 'android-studio',
+        name: 'Android Studio',
+        description: 'Android IDE',
+        brewType: BrewType.CASK,
+        category: Category.CODE_EDITORS,
+    },
     {
         id: 'docker',
         name: 'Docker',
@@ -514,16 +520,15 @@ export function mapApplicationToCommand(app: Application): Command {
     const brewCommandInstall: string = 'brew install';
     const brewCaskInstall: string = 'brew install --cask';
     return {
-        name: app.name,
+        description: app.name,
         command: app.brewType === BrewType.COMMAND ? `${brewCommandInstall} ${app.id}` : `${brewCaskInstall} ${app.id}`,
     };
 }
 
-export const HOME_BREW_LINK = 'https://brew.sh/';
-export const HOME_BREW_INSTALL_SCRIPT =
+export const MAC_OS_BREW_HOME_LINK = 'https://brew.sh/';
+export const MAC_OS_BREW_INSTALL_SCRIPT =
     '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
-
-export const MACOS_CREATE_ZPROFILE = 'cd ~ && touch .zprofile';
-export const ADD_BREW_TO_PROFILE = `echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/ok/.zprofile`;
-export const VERIFY_BREW_INSTALLATION = 'brew doctor';
-export const BREW_UPDATE_UPGRADE = ' brew update && brew upgrade && brew autoremove && brew cleanup\n';
+export const MAC_OS_CREATE_ZPROFILE = 'cd ~ && touch .zprofile';
+export const MAC_OS_BREW_ADD_TO_PROFILE = `echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/ok/.zprofile`;
+export const MAC_OS_BREW_VERIFY_INSTALLATION = 'brew doctor';
+export const MAC_OS_BREW_UPDATE_UPGRADE = ' brew update && brew upgrade && brew autoremove && brew cleanup\n';

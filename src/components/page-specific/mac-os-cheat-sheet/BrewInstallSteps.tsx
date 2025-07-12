@@ -1,10 +1,10 @@
 import {
-    ADD_BREW_TO_PROFILE,
-    BREW_UPDATE_UPGRADE,
-    HOME_BREW_INSTALL_SCRIPT,
-    HOME_BREW_LINK,
-    MACOS_CREATE_ZPROFILE,
-    VERIFY_BREW_INSTALLATION,
+    MAC_OS_BREW_ADD_TO_PROFILE,
+    MAC_OS_BREW_HOME_LINK,
+    MAC_OS_BREW_INSTALL_SCRIPT,
+    MAC_OS_BREW_UPDATE_UPGRADE,
+    MAC_OS_BREW_VERIFY_INSTALLATION,
+    MAC_OS_CREATE_ZPROFILE,
 } from '@/common/macos-utils';
 import CodeSnippet from '@/elements/CodeSnippet';
 import React from 'react';
@@ -32,33 +32,33 @@ const BrewInstallSteps: React.FC = () => (
             description={
                 <>
                     Visit the official docs:{' '}
-                    <a href={HOME_BREW_LINK} target="_blank" rel="noopener noreferrer">
+                    <a href={MAC_OS_BREW_HOME_LINK} target="_blank" rel="noopener noreferrer">
                         brew.sh
                     </a>
                 </>
             }
-            snippets={[{ header: 'Install Script', content: HOME_BREW_INSTALL_SCRIPT }]}
+            snippets={[{ header: 'Install Script', content: MAC_OS_BREW_INSTALL_SCRIPT }]}
         />
 
         <Step
             title="2. Configure Shell Environment"
             description="Ensure you have a .zprofile, then add Homebrew to your PATH."
             snippets={[
-                { header: 'Create .zprofile', content: MACOS_CREATE_ZPROFILE },
-                { header: 'Add brew to PATH', content: ADD_BREW_TO_PROFILE },
+                { header: 'Create .zprofile', content: MAC_OS_CREATE_ZPROFILE },
+                { header: 'Add brew to PATH', content: MAC_OS_BREW_ADD_TO_PROFILE },
             ]}
         />
 
         <Step
             title="3. Verify Installation"
             description="Diagnose any issues with your Homebrew setup."
-            snippets={[{ header: 'brew doctor', content: VERIFY_BREW_INSTALLATION }]}
+            snippets={[{ header: 'brew doctor', content: MAC_OS_BREW_VERIFY_INSTALLATION }]}
         />
 
         <Step
             title="4. Update & Maintenance"
             description="Keep everything up-to-date and clean."
-            snippets={[{ header: 'Update & Upgrade', content: BREW_UPDATE_UPGRADE }]}
+            snippets={[{ header: 'Update & Upgrade', content: MAC_OS_BREW_UPDATE_UPGRADE }]}
         />
     </section>
 );
