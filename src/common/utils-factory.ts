@@ -1,5 +1,6 @@
 import { formatJson } from '@/common/formatting-tools';
-import { IHashUtil, IStringUtil, UtilList } from '@/common/types';
+import { mapApplicationToCommand } from '@/common/macos-utils';
+import { CommandBuilder, IHashUtil, IStringUtil, OSType, UtilList } from '@/common/types';
 import { CaseUtils, EncodingUtils, HashingUtils, LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 
 /**
@@ -326,3 +327,18 @@ export function createJsonFormatter(): IStringUtil[] {
         },
     ];
 }
+
+/**
+ * Factory function that returns a specialized CommandBuilder implementation based on the target operating system.
+ * @param osType - The identifier of the target operating system ('macos').
+ * @returns A CommandBuilder instance configured for the specified OS type. For non-macOS systems, returns a default no-op builder.
+ */
+export const getCommandBuilder = (osType: OSType): CommandBuilder => {
+    if (osType === 'macos') {
+        return mapApplicationToCommand;
+    }
+
+    return () => {
+        return { description: 'not-implemented', command: 'not-implemented' };
+    };
+};

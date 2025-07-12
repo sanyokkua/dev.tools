@@ -23,6 +23,11 @@ import {
     GPG_INSTALL_LINUX,
     GPG_INSTALL_MACOS,
     GPG_INSTALL_WINDOWS,
+    GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
+    GPG_PINENTRY_INSTALL,
+    GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
+    GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG,
+    GPG_PINENTRY_SETUP_MKDIR_GNUPG,
     GPG_VERIFY_INSTALL,
     INSTALL_XCLIP,
     SSH_KEY_ADD_AGENT,
@@ -170,7 +175,11 @@ const GitCheatSheetPage: FC = () => {
             <CodeSnippet headerText="Install GPG (Linux)" content={GPG_INSTALL_LINUX} language="bash" />
             <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
             <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
-            <CodeSnippet headerText="List Secret Keys" content={GPG_GET_KEY_ID} language="bash" />
+            <CodeSnippet
+                headerText="List Secret Keys (and copy id, eg.: sec   rsa4096/YOUR_KEY_ID YYYY-MM-DD [SC])"
+                content={GPG_GET_KEY_ID}
+                language="bash"
+            />
             <CodeSnippet
                 headerText="Configure Global Signing Key"
                 content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY}
@@ -201,6 +210,31 @@ const GitCheatSheetPage: FC = () => {
                 content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING}
                 language="bash"
             />
+            <CodeSnippet
+                headerText="(MacOS) To enable visual pass prompts for GPG signing, install pinentry"
+                content={GPG_PINENTRY_INSTALL}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Create GPG config folder (if it doesn't exist)"
+                content={GPG_PINENTRY_SETUP_MKDIR_GNUPG}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add pinentry to gpg-agent config (if entry not present)"
+                content={GPG_PINENTRY_SETUP_ADD_AGENT_RECORD}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add 'use-agent' to GPG config (if missing)"
+                content={GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG}
+                language="bash"
+            />
+            <CodeSnippet
+                headerText="(MacOS) Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)"
+                content={GPG_PINENTRY_ADD_EXPORT_TO_PROFILE}
+                language="bash"
+            />
 
             <h3>5. Verify Setup</h3>
             <CodeSnippet headerText="Test SSH Connection" content={SSH_KEY_TEST} language="bash" />
@@ -217,8 +251,6 @@ const GitCheatSheetPage: FC = () => {
         guide = manualGuide;
     } else if (chosenGuide === 'interactive') {
         guide = interactiveGuide;
-    } else {
-        guide = null;
     }
 
     return (
@@ -227,6 +259,40 @@ const GitCheatSheetPage: FC = () => {
                 <h1>Git Cheat Sheet</h1>
                 <div>
                     <p>On this page you can find instruction on how to configure Git on your local machine</p>
+                    <p>
+                        Official Instructions can be found on the GitHub, GitLab and other Git Services. For example:
+                        <ul>
+                            <li>
+                                <a
+                                    href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+                                    target="_blank"
+                                >
+                                    GitHub SSH
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key"
+                                    target="_blank"
+                                >
+                                    GitHub GPG
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://docs.gitlab.com/user/ssh/" target="_blank">
+                                    GitLab SSH
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://docs.gitlab.com/user/project/repository/signed_commits/gpg/"
+                                    target="_blank"
+                                >
+                                    GitLab GPG
+                                </a>
+                            </li>
+                        </ul>
+                    </p>
                     <p>Chose the version of the Guide you would like to see:</p>
                     <br />
                     <GuideChooser

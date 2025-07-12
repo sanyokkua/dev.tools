@@ -1,0 +1,16 @@
+.transfer-filters {
+    display: flex;
+    gap: 1rem;
+}
+
+.transfer-table {
+    border-collapse: collapse;
+    margin-top: 1rem;
+    height: max-content;
+}
+
+.transfer-th-td {
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem;
+    text-align: left;
+}

@@ -14,7 +14,7 @@ const sideBarItems: SideBarItem[] = [
     { itemName: 'Markdown Tools', itemLink: '/markdown-tools' },
     // { itemName: 'Date Tools', itemLink: '/date-tools' },
     { itemName: 'Git Cheat-sheet', itemLink: '/git-cheat-sheet' },
-    // { itemName: 'MacOS Cheat-sheet', itemLink: '/mac-os-cheat-sheet' }, //TODO: Feature releases
+    { itemName: 'MacOS Cheat-sheet', itemLink: '/mac-os-cheat-sheet' },
     // { itemName: 'Windows Cheat-sheet', itemLink: '/windows-cheat-sheet' }, //TODO: Feature releases
     // { itemName: 'Prompts Collection', itemLink: '/prompts-collection' }, //TODO: Feature releases
 ];

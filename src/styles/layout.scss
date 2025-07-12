@@ -34,9 +34,9 @@
 .content-container-grid {
     display: grid; /* Enables CSS Grid layout */
     /* Creates three columns:
-   - Left: flexible (1fr) with minimum 0 width
-   - Middle: fixed at 30% of available space (0.3fr)
-   - Right: flexible (1fr) with minimum 0 width */
+- Left: flexible (1fr) with minimum 0 width
+- Middle: fixed at 30% of available space (0.3fr)
+- Right: flexible (1fr) with minimum 0 width */
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 1fr);
     height: 100vh; /* Fixed height equal to viewport height */
     gap: 1vw; /* Sets 1% of viewport width spacing between columns */
@@ -57,7 +57,7 @@
     align-items: stretch; /* Children fill container width */
     justify-content: flex-start; /* Content starts from top */
     overflow-y: scroll; /* Adds vertical scrollbar when needed */
-    height: 75%; /* Takes 75% of parent container height */
+    height: max-content; /* Takes 75% of parent container height */
     overflow-wrap: break-word; /* Breaks long words to prevent horizontal overflow */
 }
 
@@ -68,7 +68,7 @@
     width: 100%; /* Takes full width of parent container */
     height: 100%; /* Takes full height of parent container */
     align-items: stretch; /* Makes children fill container height */
-    gap: 0; /* Removes spacing between child elements */
+    gap: 1rem; /* Removes spacing between child elements */
 }
 
 /* Equal-width distribution for direct children of horizontal container */
@@ -86,6 +86,26 @@
     padding: 1vh; /* Responsive vertical padding (1% of viewport height) */
 
     /* Material Design-inspired elevation (shadow) */
+    box-shadow: /* Large, soft outer shadow */
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        /* Subtle bottom shadow */ 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.rounded-paper {
+    /* Creates surface with subtle color blend between surface and primary color */
+    background: color-mix(
+        in srgb,
+        var(--surface-color) 95%,
+        var(--primary-color)
+    ); /* Mixes 95% surface color with 5% primary color for depth */
+    color: var(--surface-color-on); /* Text color that contrasts with surface */
+    border-radius: 8px; /* Rounded corners with 8px radius */
+    padding: 1vh; /* Vertical padding equal to 1% of viewport height (responsive spacing) */
+    margin: 1vh; /* Adds 1% viewport height spacing around the paper */
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth shadow animation with Material Design timing */
+
+    /* Default elevation level 1 - subtle shadow system */
     box-shadow: /* Large, soft outer shadow */
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
         /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
