@@ -38,6 +38,11 @@ editors on your local PC (or to use on the Cloud VMs).
 - **Interactive Guides**: Step-by-step SSH, GPG, and email setup for Git.
 - **Command Generator**: Auto-generate Git commands based on user input.
 
+### **MacOS Configuration Assistant**
+
+- **Interactive Guides**: Step-by-step brew setup for macOS.
+- **Command Generator**: Auto-generate brew install commands based on selected apps.
+
 ---
 
 ## Screenshots of some app pages

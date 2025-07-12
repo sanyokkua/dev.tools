@@ -28,6 +28,19 @@ type UseTransferRetType = {
     handlers: Handlers;
 };
 
+/**
+ * Hook for managing the transfer of applications based on category and search term.
+ *
+ * This hook provides a set of state variables and functions to manage the selection,
+ * filtering, and building of application commands for transfer. It is designed to be used
+ * in React components that need to handle application transfers with dynamic filtering
+ * and command building.
+ *
+ * @param source - The array of applications to be filtered and selected from.
+ * @param osType - The operating system type which affects the command building process.
+ * @returns An object containing available items, selected items, commands, combined command,
+ * filters, and handlers for state management.
+ */
 export default function useTransfer(source: Application[], osType: OSType): UseTransferRetType {
     const [selectedCategory, setCategory] = useState<SelectItem>(DEFAULT_CATEGORY);
     const [searchTerm, setSearch] = useState<string>('');
@@ -77,7 +90,7 @@ export default function useTransfer(source: Application[], osType: OSType): UseT
         const builder = getCommandBuilder(osType);
         const cmds = selected.map(builder);
         setCommands(cmds);
-        setCombined({ name: 'Install All Brew Apps', command: cmds.map((c) => c.command).join(' && ') });
+        setCombined({ description: 'Install All Brew Apps', command: cmds.map((c) => c.command).join(' && ') });
     }, [osType, selected]);
 
     return {

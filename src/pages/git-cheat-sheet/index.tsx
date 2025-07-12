@@ -251,8 +251,6 @@ const GitCheatSheetPage: FC = () => {
         guide = manualGuide;
     } else if (chosenGuide === 'interactive') {
         guide = interactiveGuide;
-    } else {
-        guide = null;
     }
 
     return (
@@ -261,6 +259,40 @@ const GitCheatSheetPage: FC = () => {
                 <h1>Git Cheat Sheet</h1>
                 <div>
                     <p>On this page you can find instruction on how to configure Git on your local machine</p>
+                    <p>
+                        Official Instructions can be found on the GitHub, GitLab and other Git Services. For example:
+                        <ul>
+                            <li>
+                                <a
+                                    href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+                                    target="_blank"
+                                >
+                                    GitHub SSH
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key"
+                                    target="_blank"
+                                >
+                                    GitHub GPG
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://docs.gitlab.com/user/ssh/" target="_blank">
+                                    GitLab SSH
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://docs.gitlab.com/user/project/repository/signed_commits/gpg/"
+                                    target="_blank"
+                                >
+                                    GitLab GPG
+                                </a>
+                            </li>
+                        </ul>
+                    </p>
                     <p>Chose the version of the Guide you would like to see:</p>
                     <br />
                     <GuideChooser

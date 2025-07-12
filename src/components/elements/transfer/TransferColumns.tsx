@@ -10,6 +10,15 @@ interface Props {
     onRemove: (items: TableItem[]) => void;
 }
 
+/**
+ * Renders two columns for transferring applications: available apps and selected apps.
+ * Each column allows adding and removing applications.
+ * @param Props - The props for the TransferColumns component.
+ * @param Props.available - An array of available applications.
+ * @param Props.selected - An array of selected applications.
+ * @param onAdd - A function to handle adding an application.
+ * @param onRemove - A function to handle removing an application.
+ */
 const TransferColumns: React.FC<Props> = ({ available, selected, onAdd, onRemove }) => (
     <HorizontalContainer>
         <TransferColumn

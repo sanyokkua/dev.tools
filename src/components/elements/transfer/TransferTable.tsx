@@ -14,6 +14,16 @@ interface Props {
     onChange: (items: TableItem[]) => void;
 }
 
+/**
+ * A functional React component that renders a table with checkboxes for selecting multiple items.
+ *
+ * @param props - The properties to configure the TransferTable component.
+ * @param props.items - An array of item objects, each containing an `id`, `name`, `category`, `description`, and `checked` property.
+ * @param props.onChange - A callback function triggered when the checked state of any item changes. It receives the updated items as its argument.
+ *
+ * The component maintains a header checkbox that allows users to select or deselect all items in the list.
+ * The indeterminate state is applied to the header checkbox if some, but not all, items are selected.
+ */
 const TransferTable: React.FC<Props> = ({ items, onChange }) => {
     const headerRef = useRef<HTMLInputElement>(null);
     const allChecked = useMemo(() => items.every((i) => i.checked), [items]);

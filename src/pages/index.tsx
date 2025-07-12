@@ -60,6 +60,10 @@ const Home = () => {
                             <strong>Git Setup Assistant</strong>: Interactive guides for Git configuration (SSH, GPG)
                             and command generation.
                         </li>
+                        <li>
+                            <strong>MacOS Setup Assistant via brew</strong>: Interactive guides for MacOS configuration
+                            (install brew and popular dev apps via brew) and command generation.
+                        </li>
                     </ul>
                     <p>
                         Additional functionality will be added later to assist with setting up your development

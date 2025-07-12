@@ -12,6 +12,17 @@ interface Props {
     osType: OSType;
 }
 
+/**
+ * A React functional component that manages the transfer of items between different categories.
+ *
+ * @param props - The properties passed to the component
+ * @param props.items - The list of items available for transfer
+ * @param props.osType - The operating system type affecting item availability and commands
+ * @returns A container element with transfer controls, columns, or command outputs based on state
+ *
+ * This component renders a comprehensive interface for transferring items between categories,
+ * supporting both basic transfer operations and generating installation commands.
+ */
 const AppTransferComponent: React.FC<Props> = ({ items, osType }) => {
     const { availableItems, selectedItems, commands, combinedCommand, filters, handlers } = useTransfer(items, osType);
 
