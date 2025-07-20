@@ -64,6 +64,10 @@ const Home = () => {
                             <strong>MacOS Setup Assistant via brew</strong>: Interactive guides for MacOS configuration
                             (install brew and popular dev apps via brew) and command generation.
                         </li>
+                        <li>
+                            <strong>Prompts Collection</strong>: Access a variety of pre-built prompts organized by task
+                            categories and available in multiple formats.
+                        </li>
                     </ul>
                     <p>
                         Additional functionality will be added later to assist with setting up your development

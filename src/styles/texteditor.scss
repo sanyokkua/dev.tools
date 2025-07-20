@@ -1,0 +1,44 @@
+.text-editor {
+    background: var(--secondary-container-color);
+    color: var(--secondary-container-color-on);
+    width: 100%;
+    margin-right: 50px;
+    padding: 0.5rem;
+    resize: vertical;
+    box-sizing: border-box;
+    border: var(--primary-color) 1px solid;
+    margin-bottom: 1vh;
+}
+
+.text-editor-label {
+    display: block;
+    margin: 0.5rem 0;
+}
+
+.text-editor:hover {
+    filter: brightness(1.01);
+    background-color: color-mix(in srgb, var(--secondary-container-color) 70%, var(--white-color));
+    box-shadow: 0 0 4px var(--primary-color);
+}
+
+.text-editor:focus {
+    outline: none;
+    filter: brightness(1.05);
+    box-shadow: 0 0 6px var(--primary-color);
+}
+
+.text-font-small {
+    font-size: 0.7rem;
+}
+
+.text-font-medium {
+    font-size: 0.9rem;
+}
+
+.text-font-large {
+    font-size: 1.1rem;
+}
+
+.text-editor-mono {
+    font-family: monospace;
+}
