@@ -43,6 +43,12 @@ editors on your local PC (or to use on the Cloud VMs).
 - **Interactive Guides**: Step-by-step brew setup for macOS.
 - **Command Generator**: Auto-generate brew install commands based on selected apps.
 
+### **Prompts Collection**
+
+- **Prompt Library for LLMs**: Access a variety of pre-built prompts organized by task categories and available in multiple formats.
+- **Editable Prompt Templates**: Customize and fine-tune prompt templates directly within the app before executing them.
+- **Parameterized Prompts**: Build dynamic prompts using configurable parameters to tailor them to specific use cases and prepare them for immediate use.
+
 ---
 
 ## Screenshots of some app pages
@@ -51,10 +57,16 @@ editors on your local PC (or to use on the Cloud VMs).
 ![App Interface StringUtils](docs/StringUtils.png)
 ![App Interface CodeEditor](docs/CodeEditor.png)
 ![App Interface CodeFormatter](docs/CodeFormatter.png)
-![App Interface HashingUtils](docs/HashingUtils.png)
-![App Interface EncodingPage](docs/EncodingPage.png)
-![App Interface MDPage](docs/MDPage.png)
-![App Interface GitPage](docs/GitPage.png)
+![App Interface Hashing](docs/Hashing.png)
+![App Interface Encoding](docs/Encoding.png)
+![App Interface Terminal](docs/Terminal.png)
+![App Interface Markdown](docs/Markdown.png)
+![App Interface Git](docs/Git.png)
+![App Interface MacOS_1](docs/MacOS_1.png)
+![App Interface MacOS_2](docs/MacOS_2.png)
+![App Interface Prompt_1](docs/Prompt_1.png)
+![App Interface Prompt_2](docs/Prompt_2.png)
+![App Interface Prompt_3](docs/Prompt_3.png)
 
 ---
 

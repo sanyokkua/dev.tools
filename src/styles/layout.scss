@@ -71,6 +71,10 @@
     gap: 1rem; /* Removes spacing between child elements */
 }
 
+.horizontal-container-place-center {
+    place-items: center;
+}
+
 /* Equal-width distribution for direct children of horizontal container */
 .horizontal-container > * {
     flex: 1 1 0; /* Allows growth (1), shrink (1), and sets base width to 0 */
@@ -110,4 +114,19 @@
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
         /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
         /* Subtle bottom shadow */ 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.filters-with-headers {
+    display: flex;
+    flex-wrap: wrap; /* Allows stacking on smaller screens */
+    gap: 0.1rem; /* Space between groups */
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    align-items: stretch;
 }
