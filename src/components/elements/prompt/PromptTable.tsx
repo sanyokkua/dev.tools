@@ -10,7 +10,7 @@ interface Props {
     onOpenClicked: (prompt: Prompt) => void;
 }
 
-const PromptTable: React.FC<Props> = ({ items, onCopyClicked, onShowClicked, onOpenClicked }) => {
+const PromptTable: React.FC<Props> = ({ items, onCopyClicked, onShowClicked }) => {
     if (items.length === 0) {
         return <p>No items found.</p>;
     }
@@ -26,7 +26,7 @@ const PromptTable: React.FC<Props> = ({ items, onCopyClicked, onShowClicked, onO
                         <th className="transfer-th-td">Tags</th>
                         <th className="transfer-th-td">Copy Raw</th>
                         <th className="transfer-th-td">Show</th>
-                        <th className="transfer-th-td">Open In New Tab</th>
+                        {/*<th className="transfer-th-td">Open In New Tab</th>*/}
                     </tr>
                 </thead>
                 <tbody>
@@ -58,17 +58,17 @@ const PromptTable: React.FC<Props> = ({ items, onCopyClicked, onShowClicked, onO
                                     size={'small'}
                                 />
                             </td>
-                            <td className="transfer-th-td">
-                                <Button
-                                    text={'Open'}
-                                    onClick={() => {
-                                        onOpenClicked(it);
-                                    }}
-                                    variant={'link'}
-                                    colorStyle={'primary-color'}
-                                    size={'small'}
-                                />
-                            </td>
+                            {/*<td className="transfer-th-td">*/}
+                            {/*    <Button*/}
+                            {/*        text={'Open'}*/}
+                            {/*        onClick={() => {*/}
+                            {/*            onOpenClicked(it);*/}
+                            {/*        }}*/}
+                            {/*        variant={'link'}*/}
+                            {/*        colorStyle={'primary-color'}*/}
+                            {/*        size={'small'}*/}
+                            {/*    />*/}
+                            {/*</td>*/}
                         </tr>
                     ))}
                 </tbody>
