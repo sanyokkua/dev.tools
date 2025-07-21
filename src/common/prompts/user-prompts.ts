@@ -126,6 +126,25 @@ const userParametrizedPromptForRewritingTextToFormalTone = makeUserPromptForText
     ],
     output: ['ONLY the formalized text'],
 });
+const userParametrizedPromptForRewritingTextToSemiFormalTone = makeUserPromptForTextTransformation({
+    userInputParameters: ['UserText: ```{{user_text}}```'],
+    mainTask: 'Convert the UserText into a clear, semi-formal tone suitable for everyday professional communication',
+    instructions: [
+        'Use natural, polite language that sounds professional but conversational',
+        'Use contractions where appropriate for a more approachable tone',
+        'Keep the same structure and line breaks as the original',
+        'Never add headings, commentary, labels, or meta‑text',
+    ],
+    constraints: [
+        'Don’t switch formats (e.g., to email or bullet points) unless the input is already in that format',
+        'Avoid slang or overly casual language, but also avoid overly stiff or formal phrasing',
+    ],
+    errorHandling: [
+        'If UserText is empty or unparseable, return an empty string',
+        'Sanitize any sensitive data without altering non‑sensitive content',
+    ],
+    output: ['ONLY the formalized text'],
+});
 const userParametrizedPromptForRewritingTextToCasualTone = makeUserPromptForTextTransformation({
     userInputParameters: ['UserText: ```{{user_text}}```'],
     mainTask: 'Convert the UserText to a casual, conversational style for everyday communication',
@@ -159,6 +178,104 @@ const userParametrizedPromptForRewritingTextToFriendlyTone = makeUserPromptForTe
     ],
     output: ['ONLY the friendly text'],
 });
+
+const userPromptForPoliteCodeReviewComment = makeUserPromptForTextTransformation({
+    userInputParameters: ['TextToFormat: ```{{text_to_format}}```'],
+    mainTask:
+        'Transform the TextToFormat into a polite and constructive code review comment that encourages collaboration and respectful discussion',
+    instructions: [
+        'Correct any spelling or grammar mistakes',
+        'Use positive, supportive language that encourages improvement',
+        'Phrase suggestions and observations using courteous, indirect expressions',
+        'Maintain a professional and respectful tone throughout',
+        'Avoid blunt or overly direct criticism',
+        'Do not add extra commentary, explanations, or labels outside the revised comment',
+    ],
+    constraints: [
+        'Keep the original intention and technical context intact',
+        'Avoid adding or removing content unless it improves clarity or tone',
+    ],
+    errorHandling: [
+        'If TextToFormat is empty or unparseable, return an empty string',
+        'Sanitize any sensitive data without affecting the rest of the content',
+    ],
+    output: ['ONLY the rewritten, polite review comment'],
+});
+const userPromptForImprovingPullRequestDescription = makeUserPromptForTextTransformation({
+    userInputParameters: ['PullRequestDescription: ```{{pull_request_description_to_format}}```'],
+    mainTask:
+        'Review and refine the PullRequestDescription to enhance clarity, professionalism, and readability in a semi-formal tone suitable for a professional setting',
+    instructions: [
+        'Correct any spelling or grammar errors',
+        'Rephrase sentences to improve clarity and flow',
+        'Ensure the message remains concise and focused',
+        'Use semi-formal, professional language throughout',
+        'Do not include any extra commentary, explanations, or labels',
+    ],
+    constraints: [
+        'Keep the original intent and technical content intact',
+        'Avoid adding or omitting information unless necessary for clarity or tone',
+    ],
+    errorHandling: [
+        'If PullRequestDescription is empty or unparseable, return an empty string',
+        'Sanitize any sensitive data without affecting the rest of the content',
+    ],
+    output: ['ONLY the revised Pull Request description in plain text'],
+});
+const userPromptForInstructionalWikiStyleWithFormat = makeUserPromptForTextTransformation({
+    userInputParameters: [
+        'TextToFormat: ```{{text_to_format}}```',
+        'OutputFormat (optional): {{output_format}} // e.g., "markdown", "plaintext", "html"',
+    ],
+    mainTask:
+        'Transform the TextToFormat into clear and concise instructional content suitable for a Wiki or documentation page',
+    instructions: [
+        'Use a neutral, instructive tone throughout the text',
+        'Prefer passive voice and generic phrasing (e.g., "should be done" instead of "you need to")',
+        'Avoid personal pronouns and direct address',
+        'Use simple, clear vocabulary that is easy to follow',
+        'Maintain clarity and professionalism suitable for internal or public-facing documentation',
+        'Do not add extra commentary, introductions, or closing statements',
+    ],
+    constraints: [
+        'Preserve the technical meaning and instructional intent',
+        'Avoid adding or omitting steps unless necessary for clarity or consistency',
+    ],
+    errorHandling: [
+        'If TextToFormat is empty or unparseable, return an empty string',
+        'Sanitize any sensitive data without affecting the rest of the content',
+    ],
+    output: [
+        'Return ONLY the transformed instructional content in the specified OutputFormat',
+        'If OutputFormat is not specified, return the output in Markdown by default',
+    ],
+});
+const userPromptForExplainingIntendedMeaning = makeUserPromptForTextTransformation({
+    userInputParameters: ['ConfusingText: ```{{confusing_text}}```'],
+    mainTask:
+        'Explain the intended meaning of the ConfusingText in a clear and simple way, focusing on what the author likely meant',
+    instructions: [
+        'Use straightforward and accessible language',
+        'Explain implied meanings, idioms, or nuanced phrases if present',
+        'If the tone is important for understanding, briefly note it (e.g., sarcastic, formal, casual)',
+        'Avoid rephrasing or rewriting the original text — focus on explanation only',
+        'Do not include any personal opinion or critique of the original text',
+    ],
+    constraints: [
+        'Preserve the context and intent as much as possible',
+        'Do not assume facts that aren’t present in the original text',
+        'Avoid speculative or hypothetical interpretations unless clearly signaled (e.g., "might mean")',
+    ],
+    errorHandling: [
+        'If ConfusingText is empty or unparseable, return an empty string',
+        'Sanitize any sensitive data without affecting the rest of the content',
+    ],
+    output: [
+        'Return ONLY the explanation of the intended meaning in plain text',
+        'Keep the explanation clear, concise, and helpful for someone unfamiliar with the original phrasing',
+    ],
+});
+
 const userParametrizedPromptForTransformingTextToEmailFormat = makeUserPromptForTextTransformation({
     userInputParameters: ['UserText: ```{{user_text}}```'],
     mainTask: 'Format the UserText into a professional email with subject, greeting, body, and closing',
@@ -359,7 +476,6 @@ output:
     11. Links & References:
         * …
 `.trim();
-
 const userParametrizedPromptForTranslatingTextInDictionaryFormat = makeUserPromptForTextTransformation({
     userInputParameters: [
         'UserText: ```{{user_text}}``` # Expect new word/phrase/sentence on the new lines',
@@ -423,6 +539,15 @@ export const userPrompts: Prompt[] = [
         'rephrase',
     ),
     createUserParametrizedPrompt(
+        'userParametrizedPromptForRewritingTextToSemiFormalTone',
+        userParametrizedPromptForRewritingTextToSemiFormalTone,
+        PromptCategory.TEXT_PROOFREADING,
+        'User prompt that converts text to a semi-formal tone suitable for work communication',
+        'semi-formal',
+        'text',
+        'rephrase',
+    ),
+    createUserParametrizedPrompt(
         'userParametrizedPromptForRewritingTextToCasualTone',
         userParametrizedPromptForRewritingTextToCasualTone,
         PromptCategory.TEXT_PROOFREADING,
@@ -439,6 +564,56 @@ export const userPrompts: Prompt[] = [
         'friendly',
         'text',
         'rephrase',
+    ),
+    createUserParametrizedPrompt(
+        'userPromptForPoliteCodeReviewComment',
+        userPromptForPoliteCodeReviewComment,
+        PromptCategory.TEXT_PROOFREADING,
+        'User prompt that polites a code review comment by converting comment to polite format',
+        'polite',
+        'code',
+        'review',
+        'comment',
+        'pr',
+        'mr',
+        'github',
+        'gitlab',
+    ),
+    createUserParametrizedPrompt(
+        'userPromptForImprovingPullRequestDescription',
+        userPromptForImprovingPullRequestDescription,
+        PromptCategory.TEXT_PROOFREADING,
+        'User prompt that improves a pull request description by adding missing details and clarifying language',
+        'improve',
+        'description',
+        'pull',
+        'request',
+        'pr',
+        'mr',
+        'github',
+        'gitlab',
+    ),
+    createUserParametrizedPrompt(
+        'userPromptForInstructionalWikiStyleWithFormat',
+        userPromptForInstructionalWikiStyleWithFormat,
+        PromptCategory.TEXT_FORMATTING,
+        'User prompt that formats content into a structured, instructional wiki-style format',
+        'format',
+        'text',
+        'wiki',
+        'instruction',
+        'guide',
+        'tutorial',
+    ),
+    createUserParametrizedPrompt(
+        'userPromptForExplainingIntendedMeaning',
+        userPromptForExplainingIntendedMeaning,
+        PromptCategory.TEXT_FORMATTING,
+        'User prompt that explains the intended meaning of a sentence or phrase',
+        'explain',
+        'meaning',
+        'sentence',
+        'phrase',
     ),
     createUserParametrizedPrompt(
         'userParametrizedPromptForTransformingTextToEmailFormat',
