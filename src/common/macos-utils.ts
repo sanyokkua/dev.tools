@@ -430,6 +430,13 @@ export const MAC_OS_BREW_APPS: Application[] = [
         category: Category.DEV_UTILITIES,
     },
     {
+        id: 'nano',
+        name: 'Nano',
+        description: 'Free (GNU) replacement for the Pico text editor',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
         id: 'podman',
         name: 'Podman',
         description: 'Container runtime',
@@ -573,6 +580,13 @@ export const MAC_OS_BREW_APPS: Application[] = [
         id: 'fleet',
         name: 'Intellij Fleet',
         description: 'Hybrid IDE and text editor',
+        brewType: BrewType.CASK,
+        category: Category.CODE_EDITORS,
+    },
+    {
+        id: 'kate',
+        name: 'Kate',
+        description: 'Multi-document editor by KDE',
         brewType: BrewType.CASK,
         category: Category.CODE_EDITORS,
     },

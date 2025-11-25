@@ -569,7 +569,7 @@ Your capabilities:
   - Document thrown exceptions or error conditions where applicable
 ${capabilities}
 
-Your main task: "Analyze the user provided code and generate test cases"
+Your main task: "Analyze the user provided code and generate code documentation"
 
 instructions:
   - Follow language‑specific standards (TSDoc, JSDoc, JavaDoc, PyDoc, GoDoc, CSSDoc)
@@ -586,7 +586,7 @@ constraints:
 ${constraints}
 
 documentation:
-  - Achieve 100% coverage on all exported members
+  - Achieve 100% documentation coverage on all exported/public members
   - Include minimal illustrative examples only when clarifying complex behavior
 
 errorHandling:
