@@ -77,6 +77,7 @@ export enum Category {
     CLOUD_STORAGE = 'Cloud Storage & File Sharing',
     DOCUMENT_EDITORS = 'Document Editors',
     GRAPHICS_AND_3D = 'Graphics & 3D',
+    NETWORKING = 'Network Tools',
 }
 
 export const ALL_CATEGORIES: { id: string; text: Category }[] = [
@@ -98,6 +99,7 @@ export const ALL_CATEGORIES: { id: string; text: Category }[] = [
     { id: 'cloud_storage', text: Category.CLOUD_STORAGE },
     { id: 'document_editors', text: Category.DOCUMENT_EDITORS },
     { id: 'graphics_and_3d', text: Category.GRAPHICS_AND_3D },
+    { id: 'network_tools', text: Category.NETWORKING },
 ];
 
 export enum BrewType {
