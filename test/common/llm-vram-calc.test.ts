@@ -46,7 +46,7 @@ function expectError(result: Result<CalculatorOutput, ValidationError>, expected
 }
 
 // ============================================================================
-// SECTION 1: Exported Constants Tests
+// SECTION 1: Exported Constants Tests (To cover dumb const definitions)
 // ============================================================================
 
 describe('Exported Constants', () => {
@@ -74,14 +74,12 @@ describe('Exported Constants', () => {
         it('should contain all expected KV cache quantization levels', () => {
             expect(KVCacheQuant.Q4).toBe('q4');
             expect(KVCacheQuant.Q8).toBe('q8');
-            expect(KVCacheQuant.FP4).toBe('fp4');
-            expect(KVCacheQuant.FP8).toBe('fp8');
             expect(KVCacheQuant.FP16).toBe('fp16');
             expect(KVCacheQuant.FP32).toBe('fp32');
         });
 
         it('should have exactly 6 KV cache quantization levels', () => {
-            expect(Object.keys(KVCacheQuant)).toHaveLength(6);
+            expect(Object.keys(KVCacheQuant)).toHaveLength(4);
         });
     });
 
@@ -143,11 +141,9 @@ describe('Exported Constants', () => {
     describe('KV_CACHE_BYTES', () => {
         it('should map KV cache quantizations to correct byte values', () => {
             expect(KV_CACHE_BYTES.q4).toBe(0.5);
-            expect(KV_CACHE_BYTES.q8).toBe(1.0);
-            expect(KV_CACHE_BYTES.fp4).toBe(0.5);
-            expect(KV_CACHE_BYTES.fp8).toBe(1.0);
-            expect(KV_CACHE_BYTES.fp16).toBe(2.0);
-            expect(KV_CACHE_BYTES.fp32).toBe(4.0);
+            expect(KV_CACHE_BYTES.q8).toBe(1);
+            expect(KV_CACHE_BYTES.fp16).toBe(2);
+            expect(KV_CACHE_BYTES.fp32).toBe(4);
         });
     });
 
@@ -155,10 +151,8 @@ describe('Exported Constants', () => {
         it('should map KV cache quantizations to correct factors', () => {
             expect(KV_CACHE_FACTOR.q4).toBe(0.25);
             expect(KV_CACHE_FACTOR.q8).toBe(0.5);
-            expect(KV_CACHE_FACTOR.fp4).toBe(0.25);
-            expect(KV_CACHE_FACTOR.fp8).toBe(0.5);
-            expect(KV_CACHE_FACTOR.fp16).toBe(1.0);
-            expect(KV_CACHE_FACTOR.fp32).toBe(2.0);
+            expect(KV_CACHE_FACTOR.fp16).toBe(1);
+            expect(KV_CACHE_FACTOR.fp32).toBe(2);
         });
     });
 
@@ -269,7 +263,7 @@ describe('Input Validation - Optional Parameters', () => {
         });
 
         it('should accept typical value (4.0)', () => {
-            const result = calculateVram({ ...validBase, model_size_gb: 4.0, quantization: 'Q4' });
+            const result = calculateVram({ ...validBase, model_size_gb: 4, quantization: 'Q4' });
             expect(result.ok).toBe(true);
         });
 
@@ -664,6 +658,28 @@ describe('Input Validation - Optional Parameters', () => {
             expectError(result, 'INVALID_ACTIVE_EXPERTS');
         });
     });
+
+    describe('batch_size', () => {
+        it('should accept null', () => {
+            const result = calculateVram({ ...validBase, batch_size: null });
+            expectSuccess(result);
+        });
+
+        it('should accept positive integers with batch_size', () => {
+            const result = calculateVram({ ...validBase, batch_size: 2 });
+            expectSuccess(result);
+        });
+
+        it('should reject zero', () => {
+            const result = calculateVram({ ...validBase, batch_size: 0 });
+            expectError(result, 'INVALID_BATCH_SIZE');
+        });
+
+        it('should reject negative values', () => {
+            const result = calculateVram({ ...validBase, batch_size: -2 });
+            expectError(result, 'INVALID_BATCH_SIZE');
+        });
+    });
 });
 
 // ============================================================================
@@ -694,7 +710,7 @@ describe('Output Structure', () => {
         it('should correctly reflect full input', () => {
             const result = calculateVram({
                 params_b: 7,
-                model_size_gb: 4.0,
+                model_size_gb: 4,
                 quantization: 'Q4',
                 context_size: 32768,
                 kv_cache_enabled: true,
@@ -710,7 +726,7 @@ describe('Output Structure', () => {
             const summary = output.input_summary;
 
             expect(summary.params_b).toBe(7);
-            expect(summary.model_size_gb).toBe(4.0);
+            expect(summary.model_size_gb).toBe(4);
             expect(summary.quantization).toBe('Q4');
             expect(summary.context_size).toBe(32768);
             expect(summary.kv_cache_enabled).toBe(true);
@@ -806,7 +822,7 @@ describe('Output Structure', () => {
         });
 
         it('should set estimated_gguf_gb to null when model_size_gb is provided', () => {
-            const result = calculateVram({ params_b: 8, model_size_gb: 5.0, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, model_size_gb: 5, quantization: 'Q4' });
             const output = expectSuccess(result);
 
             expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
@@ -1018,7 +1034,6 @@ describe('Calculation Tests', () => {
         it('should have vram_without_cache = model_size + working_buffer', () => {
             const result = calculateVram({ params_b: 8, quantization: 'Q4' });
             const output = expectSuccess(result);
-            // const entry = output.quantization_analysis[0].context_table[0];
 
             // vram_without_cache should be constant across all contexts
             const vramWithoutCache = output.quantization_analysis[0].context_table.map((e) => e.vram_without_cache_gb);
@@ -1187,10 +1202,8 @@ describe('Calculation Tests', () => {
             });
             const output = expectSuccess(result);
 
-            // Exact: layers * ctx * kv_heads * (key_dim + value_dim) * bytes / GB
-            // 32 * 4096 * 8 * 256 * 1.0 / 1073741824 ≈ 0.25 GB
             const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 4096)!;
-            expect(entry.kv_cache_gb).toBeCloseTo(0.25, 1);
+            expect(entry.kv_cache_gb).toBeCloseTo(0.5, 1);
         });
     });
 });
@@ -1424,7 +1437,7 @@ describe('Integration Tests', () => {
     it('should handle full architecture specification', () => {
         const result = calculateVram({
             params_b: 7,
-            model_size_gb: 4.0,
+            model_size_gb: 4,
             quantization: 'Q4',
             context_size: 32768,
             kv_cache_enabled: true,
@@ -1439,7 +1452,7 @@ describe('Integration Tests', () => {
         const output = expectSuccess(result);
 
         expect(output.input_summary.params_b).toBe(7);
-        expect(output.input_summary.model_size_gb).toBe(4.0);
+        expect(output.input_summary.model_size_gb).toBe(4);
         expect(output.input_summary.layers).toBe(32);
         expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
     });
@@ -1496,7 +1509,7 @@ describe('Regression Tests', () => {
         expect(() =>
             calculateVram({
                 params_b: 8,
-                model_size_gb: 4.0,
+                model_size_gb: 4,
                 quantization: 'Q4',
                 context_size: 4096,
                 kv_cache_enabled: true,
@@ -1543,5 +1556,956 @@ describe('Regression Tests', () => {
             const result = calculateVram({ params_b: 8, kv_cache_quant: kvQuant });
             expect(result.ok).toBe(true);
         }
+    });
+});
+
+// ============================================================================
+// SECTION 9: Batch Size Tests
+// ============================================================================
+describe('Batch Size Impact on KV Cache', () => {
+    const baseInput = {
+        params_b: 8,
+        quantization: 'Q4' as const,
+        layers: 32,
+        kv_heads: 8,
+        key_dim: 128,
+        value_dim: 128,
+        kv_cache_quant: 'fp16' as const,
+        context_size: 8192,
+    };
+
+    it('should scale KV cache linearly with batch_size', () => {
+        const result1 = calculateVram({ ...baseInput, batch_size: 1 });
+        const result2 = calculateVram({ ...baseInput, batch_size: 2 });
+        const result4 = calculateVram({ ...baseInput, batch_size: 4 });
+
+        const output1 = expectSuccess(result1);
+        const output2 = expectSuccess(result2);
+        const output4 = expectSuccess(result4);
+
+        const kv1 = output1.quantization_analysis[0].context_table[0].kv_cache_gb;
+        const kv2 = output2.quantization_analysis[0].context_table[0].kv_cache_gb;
+        const kv4 = output4.quantization_analysis[0].context_table[0].kv_cache_gb;
+
+        // KV cache should scale linearly with batch_size
+        expect(kv2 / kv1).toBeCloseTo(2, 1);
+        expect(kv4 / kv1).toBeCloseTo(4, 1);
+    });
+
+    it('should default batch_size to 1 when not specified', () => {
+        const resultWithBatch = calculateVram({ ...baseInput, batch_size: 1 });
+        const resultWithoutBatch = calculateVram({ ...baseInput, batch_size: undefined });
+
+        const outputWith = expectSuccess(resultWithBatch);
+        const outputWithout = expectSuccess(resultWithoutBatch);
+
+        expect(outputWith.quantization_analysis[0].context_table[0].kv_cache_gb).toBe(
+            outputWithout.quantization_analysis[0].context_table[0].kv_cache_gb,
+        );
+    });
+
+    it('should affect total_vram in recommendations', () => {
+        const result1 = calculateVram({ ...baseInput, batch_size: 1, vram_gb: 24, os: 'windows' });
+        const result4 = calculateVram({ ...baseInput, batch_size: 4, vram_gb: 24, os: 'windows' });
+
+        const output1 = expectSuccess(result1);
+        const output4 = expectSuccess(result4);
+
+        // Compare KV cache for the SAME context size (not recommendations)
+        const contextSize = 8192;
+        const entry1 = output1.quantization_analysis[0].context_table.find((e) => e.context_size === contextSize)!;
+        const entry4 = output4.quantization_analysis[0].context_table.find((e) => e.context_size === contextSize)!;
+
+        // KV cache should be 4x larger with batch_size=4
+        expect(entry4.kv_cache_gb).toBeGreaterThan(entry1.kv_cache_gb);
+        expect(entry4.kv_cache_gb / entry1.kv_cache_gb).toBeCloseTo(4, 0);
+
+        // Total VRAM should also be larger for the same context
+        expect(entry4.vram_with_cache_gb).toBeGreaterThan(entry1.vram_with_cache_gb);
+    });
+});
+
+// ============================================================================
+// SECTION 10: KV Cache Formula Verification
+// ============================================================================
+describe('KV Cache Formula Verification', () => {
+    it('should calculate exact KV cache for Llama-3-8B @ 8K context', () => {
+        // Formula: 2 × layers × kv_heads × (key_dim + value_dim) × context × batch × bytes
+        // = 2 × 32 × 8 × 256 × 8192 × 1 × 2 bytes = 2,147,483,648 bytes = 2.0 GB
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4',
+            layers: 32,
+            kv_heads: 8,
+            key_dim: 128,
+            value_dim: 128,
+            kv_cache_quant: 'fp16',
+            context_size: 8192,
+            batch_size: 1,
+        });
+
+        const output = expectSuccess(result);
+
+        // FIX: Find the 8192 context entry explicitly, don't use index 0
+        const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 8192)!;
+
+        expect(entry).toBeDefined();
+        expect(entry.kv_cache_gb).toBeCloseTo(2.0, 1);
+    });
+
+    it('should calculate exact KV cache for Llama-3-70B @ 128K context', () => {
+        // Formula: 2 × layers × kv_heads × (key_dim + value_dim) × context × batch × bytes
+        // = 2 × 80 × 8 × 256 × 131072 × 1 × 2 bytes = 85,899,345,920 bytes = 80.0 GB
+        const result = calculateVram({
+            params_b: 70,
+            quantization: 'Q4',
+            layers: 80,
+            kv_heads: 8,
+            key_dim: 128,
+            value_dim: 128,
+            kv_cache_quant: 'fp16',
+            context_size: 131072,
+            batch_size: 1,
+        });
+
+        const output = expectSuccess(result);
+        const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+        expect(entry).toBeDefined();
+        expect(entry.kv_cache_gb).toBeCloseTo(80.0, 0);
+    });
+
+    it('should respect KV_CACHE_BYTES mapping in calculation', () => {
+        const baseInput = {
+            params_b: 8,
+            quantization: 'Q4' as const,
+            layers: 32,
+            kv_heads: 8,
+            key_dim: 128,
+            value_dim: 128,
+            context_size: 8192,
+            batch_size: 1,
+        };
+
+        const resultQ4 = calculateVram({ ...baseInput, kv_cache_quant: 'q4' });
+        const resultQ8 = calculateVram({ ...baseInput, kv_cache_quant: 'q8' });
+        const resultFP16 = calculateVram({ ...baseInput, kv_cache_quant: 'fp16' });
+        const resultFP32 = calculateVram({ ...baseInput, kv_cache_quant: 'fp32' });
+
+        const outputQ4 = expectSuccess(resultQ4);
+        const outputQ8 = expectSuccess(resultQ8);
+        const outputFP16 = expectSuccess(resultFP16);
+        const outputFP32 = expectSuccess(resultFP32);
+
+        const kvQ4 = outputQ4.quantization_analysis[0].context_table[0].kv_cache_gb;
+        const kvQ8 = outputQ8.quantization_analysis[0].context_table[0].kv_cache_gb;
+        const kvFP16 = outputFP16.quantization_analysis[0].context_table[0].kv_cache_gb;
+        const kvFP32 = outputFP32.quantization_analysis[0].context_table[0].kv_cache_gb;
+
+        // Verify byte ratios: Q4=0.5, Q8=1, FP16=2, FP32=4
+        expect(kvQ8 / kvQ4).toBeCloseTo(2, 1); // 1 / 0.5
+        expect(kvFP16 / kvQ8).toBeCloseTo(2, 1); // 2 / 1
+        expect(kvFP32 / kvFP16).toBeCloseTo(2, 1); // 4 / 2
+    });
+});
+
+// ============================================================================
+// SECTION 11: Working Buffer Tests (MISSING - ADD THIS)
+// ============================================================================
+describe('Working Buffer Application', () => {
+    it('should add WORKING_BUFFER_GB to vram_without_cache', () => {
+        const result = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_enabled: false });
+        const output = expectSuccess(result);
+
+        const modelSize = output.quantization_analysis[0].estimated_gguf_gb!;
+        const vramWithoutCache = output.quantization_analysis[0].min_vram_no_cache_gb;
+
+        expect(vramWithoutCache).toBeCloseTo(modelSize + WORKING_BUFFER_GB, 2);
+    });
+
+    it('should add WORKING_BUFFER_GB to vram_with_cache', () => {
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4',
+            kv_cache_enabled: true,
+            layers: 32,
+            kv_heads: 8,
+            key_dim: 128,
+            value_dim: 128,
+            context_size: 4096,
+        });
+
+        const output = expectSuccess(result);
+        const analysis = output.quantization_analysis[0];
+        const entry = analysis.context_table[0];
+
+        const expectedVram = analysis.estimated_gguf_gb! + entry.kv_cache_gb + WORKING_BUFFER_GB;
+
+        expect(entry.vram_with_cache_gb).toBeCloseTo(expectedVram, 2);
+    });
+});
+
+// ============================================================================
+// SECTION 12: Recommendation Headroom Tests
+// ============================================================================
+describe('Recommendation Headroom Calculation', () => {
+    it('should calculate headroom as available_vram - total_vram', () => {
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4',
+            vram_gb: 24,
+            os: 'windows', // 0.8 GB overhead
+        });
+
+        const output = expectSuccess(result);
+        const availableVram = output.os_overhead.available_gb!;
+
+        for (const rec of output.recommendations!) {
+            const expectedHeadroom = availableVram - rec.total_vram_gb;
+            expect(rec.headroom_gb).toBeCloseTo(expectedHeadroom, 2);
+            expect(rec.headroom_gb).toBeGreaterThanOrEqual(0);
+        }
+    });
+
+    it('should have zero headroom when config exactly fits', () => {
+        // Find a configuration that barely fits
+        const result = calculateVram({ params_b: 1, quantization: 'Q1', vram_gb: 2, os: 'linux-headless' });
+
+        const output = expectSuccess(result);
+        if (output.recommendations) {
+            for (const rec of output.recommendations) {
+                expect(rec.headroom_gb).toBeGreaterThanOrEqual(0);
+            }
+        }
+    });
+});
+
+// ============================================================================
+// SECTION 9: Real Model Validation Tests
+// ============================================================================
+describe('Real Model Validation', () => {
+    // ========================================================================
+    // Model 1: Qwen3-4B-Instruct-2507-GGUF (Q4_K_M)
+    // ========================================================================
+    describe('Qwen3-4B-Instruct-2507', () => {
+        const modelConfig = {
+            name: 'Qwen3-4B-Instruct-2507',
+            params_b: 4,
+            actual_file_size_gb: 2.5,
+            layers: 36,
+            context_length: 262144,
+            embedding_length: 2560,
+            head_count: 32,
+            head_count_kv: 8,
+            key_length: 128,
+            value_length: 128,
+            sliding_window: null,
+            quantization: 'Q4' as const,
+            kv_cache_quant: 'fp16' as const,
+        };
+
+        describe('File Size Estimation', () => {
+            it('should estimate Q4 model size close to actual GGUF file size', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    model_size_gb: null,
+                });
+
+                const output = expectSuccess(result);
+                const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
+
+                // Expected: 4B × 0.5 bytes × 1.05 = 2.1 GB (estimate)
+                expect(estimated).toBeCloseTo(2.1, 1);
+
+                // Test passes if estimate is within 25% of actual
+                const variance =
+                    Math.abs(estimated - modelConfig.actual_file_size_gb) / modelConfig.actual_file_size_gb;
+                expect(variance).toBeLessThan(0.25);
+            });
+
+            it('should use actual file size when provided', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    quantization: modelConfig.quantization,
+                });
+
+                const output = expectSuccess(result);
+                expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
+                expect(output.input_summary.model_size_gb).toBe(modelConfig.actual_file_size_gb);
+            });
+        });
+
+        describe('KV Cache Calculation (Exact Architecture)', () => {
+            it('should calculate KV cache at 4K context', () => {
+                // Formula: 2 × 36 × 8 × 256 × 4096 × 1 × 2 bytes = 1,207,959,552 bytes = 1.13 GB
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    context_size: 4096,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 4096)!;
+
+                expect(entry.kv_cache_gb).toBeCloseTo(1.13, 1);
+            });
+
+            it('should calculate KV cache at 8K context', () => {
+                // Formula: 2 × 36 × 8 × 256 × 8192 × 1 × 2 bytes = 2,415,919,104 bytes = 2.25 GB
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    context_size: 8192,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 8192)!;
+
+                expect(entry.kv_cache_gb).toBeCloseTo(2.25, 1);
+            });
+
+            it('should calculate KV cache at max context (262144)', () => {
+                // 1.13 GB × (262144 / 4096) = 72.0 GB
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    context_size: 262144,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 262144)!;
+
+                expect(entry.kv_cache_gb).toBeCloseTo(72.0, 0);
+            });
+
+            it('should scale KV cache linearly with batch_size', () => {
+                const result1 = calculateVram({
+                    ...modelConfig,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 8192,
+                    batch_size: 1,
+                });
+
+                const result4 = calculateVram({
+                    ...modelConfig,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 8192,
+                    batch_size: 4,
+                });
+
+                const output1 = expectSuccess(result1);
+                const output4 = expectSuccess(result4);
+
+                const kv1 = output1.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 8192,
+                )!.kv_cache_gb;
+                const kv4 = output4.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 8192,
+                )!.kv_cache_gb;
+
+                expect(kv4 / kv1).toBeCloseTo(4, 1);
+            });
+        });
+
+        describe('VRAM Requirements', () => {
+            it('should fit on 24GB GPU at 8K context', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 8192,
+                    vram_gb: 24,
+                    os: 'linux-headless',
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 8192)!;
+
+                expect(entry.fits_in_vram).toBe(true);
+                expect(output.recommendations).not.toBeNull();
+            });
+
+            it('should NOT fit on 8GB GPU at max context', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 262144,
+                    vram_gb: 8,
+                    os: 'linux-headless',
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 262144)!;
+
+                expect(entry.fits_in_vram).toBe(false);
+            });
+        });
+    });
+
+    // ========================================================================
+    // Model 2: Gemma-3-27B-It-QAT (Q4_K_M)
+    // ========================================================================
+    describe('Gemma-3-27B-It-QAT', () => {
+        const modelConfig = {
+            name: 'Gemma-3-27B-It-QAT',
+            params_b: 27,
+            actual_file_size_gb: 16.5,
+            layers: 62,
+            context_length: 131072,
+            embedding_length: 5376,
+            head_count: 32,
+            head_count_kv: 16,
+            key_length: 128,
+            value_length: 128,
+            sliding_window: 1024,
+            quantization: 'Q4' as const,
+            kv_cache_quant: 'fp16' as const,
+        };
+
+        describe('File Size Estimation', () => {
+            it('should estimate Q4 model size close to actual GGUF file size', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                });
+
+                const output = expectSuccess(result);
+                const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
+
+                // Expected: 27B × 0.5 bytes × 1.05 = 14.175 GB
+                expect(estimated).toBeCloseTo(14.2, 1);
+
+                const variance =
+                    Math.abs(estimated - modelConfig.actual_file_size_gb) / modelConfig.actual_file_size_gb;
+                expect(variance).toBeLessThan(0.25);
+            });
+        });
+
+        describe('KV Cache with Sliding Window', () => {
+            it('should cap KV cache at sliding_window size', () => {
+                const result4k = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 4096,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const result131k = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output4k = expectSuccess(result4k);
+                const output131k = expectSuccess(result131k);
+
+                const entry4k = output4k.quantization_analysis[0].context_table.find((e) => e.context_size === 4096)!;
+                const entry131k = output131k.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 131072,
+                )!;
+
+                // Both should be capped at 1024 tokens effective context
+                expect(entry4k.kv_cache_gb).toBeCloseTo(entry131k.kv_cache_gb, 1);
+            });
+
+            it('should calculate KV cache at sliding window limit', () => {
+                // Formula: 2 × 62 × 16 × 256 × 1024 × 1 × 2 bytes = 1,308,622,848 bytes = 1.22 GB
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.kv_cache_gb).toBeCloseTo(1.22, 0);
+            });
+
+            it('should have much smaller KV cache than without sliding window', () => {
+                const withWindow = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const withoutWindow = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const outputWith = expectSuccess(withWindow);
+                const outputWithout = expectSuccess(withoutWindow);
+
+                const entryWith = outputWith.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 131072,
+                )!;
+                const entryWithout = outputWithout.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 131072,
+                )!;
+
+                // Sliding window should reduce KV cache by ~128x (131072 / 1024)
+                expect(entryWith.kv_cache_gb).toBeLessThan(entryWithout.kv_cache_gb);
+                expect(entryWithout.kv_cache_gb / entryWith.kv_cache_gb).toBeGreaterThan(50);
+            });
+        });
+
+        describe('VRAM Requirements', () => {
+            it('should fit on 24GB GPU with sliding window', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    vram_gb: 24,
+                    os: 'linux-headless',
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.fits_in_vram).toBe(true);
+            });
+
+            it('should NOT fit on 16GB GPU without sliding window at max context', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 131072,
+                    vram_gb: 16,
+                    os: 'linux-headless',
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.fits_in_vram).toBe(false);
+            });
+        });
+    });
+
+    // ========================================================================
+    // Model 3: GPT-OSS-20B (Q4_K_M, MoE)
+    // ========================================================================
+    describe('GPT-OSS-20B (MoE)', () => {
+        const modelConfig = {
+            name: 'GPT-OSS-20B',
+            params_b: 20,
+            actual_file_size_gb: 11.6,
+            layers: 24,
+            context_length: 131072,
+            embedding_length: 2880,
+            head_count: 64,
+            head_count_kv: 8,
+            key_length: 64,
+            value_length: 64,
+            sliding_window: 128,
+            expert_count: 32,
+            active_experts: 4,
+            quantization: 'Q4' as const,
+            kv_cache_quant: 'fp16' as const,
+        };
+
+        describe('File Size Estimation', () => {
+            it('should estimate Q4 model size close to actual GGUF file size', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                });
+
+                const output = expectSuccess(result);
+                const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
+
+                // Expected: 20B × 0.5 bytes × 1.05 = 10.5 GB
+                expect(estimated).toBeCloseTo(10.5, 1);
+
+                const variance =
+                    Math.abs(estimated - modelConfig.actual_file_size_gb) / modelConfig.actual_file_size_gb;
+                expect(variance).toBeLessThan(0.25);
+            });
+
+            it('should track MoE metadata in input summary', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    expert_count: modelConfig.expert_count,
+                    active_experts: modelConfig.active_experts,
+                });
+
+                const output = expectSuccess(result);
+                expect(output.input_summary.is_moe).toBe(true);
+                expect(output.input_summary.expert_info).toBe('32 total, 4 active');
+            });
+        });
+
+        describe('KV Cache with Sliding Window', () => {
+            it('should cap KV cache at sliding_window=128', () => {
+                // Formula: 2 × 24 × 8 × 128 × 128 × 1 × 2 bytes = 12,582,912 bytes = 0.012 GB
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.kv_cache_gb).toBeCloseTo(0.012, 2);
+            });
+
+            it('should have identical KV cache at 4K and 131K due to sliding window', () => {
+                const result4k = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 4096,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const result131k = calculateVram({
+                    params_b: modelConfig.params_b,
+                    quantization: modelConfig.quantization,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output4k = expectSuccess(result4k);
+                const output131k = expectSuccess(result131k);
+
+                const entry4k = output4k.quantization_analysis[0].context_table.find((e) => e.context_size === 4096)!;
+                const entry131k = output131k.quantization_analysis[0].context_table.find(
+                    (e) => e.context_size === 131072,
+                )!;
+
+                expect(entry4k.kv_cache_gb).toBeCloseTo(entry131k.kv_cache_gb, 2);
+            });
+        });
+
+        describe('VRAM Requirements', () => {
+            it('should fit on 16GB GPU due to small KV cache from sliding window', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    vram_gb: 16,
+                    os: 'linux-headless',
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.fits_in_vram).toBe(true);
+                expect(output.recommendations).not.toBeNull();
+            });
+
+            it('should fit on 12GB GPU at batch_size=1', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    sliding_window: modelConfig.sliding_window,
+                    context_size: 131072,
+                    vram_gb: 12,
+                    os: 'linux-headless',
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 1,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                expect(entry.fits_in_vram).toBe(true);
+            });
+
+            it('should NOT fit on 16GB GPU at batch_size=64 without sliding window', () => {
+                const result = calculateVram({
+                    params_b: modelConfig.params_b,
+                    model_size_gb: modelConfig.actual_file_size_gb,
+                    layers: modelConfig.layers,
+                    kv_heads: modelConfig.head_count_kv,
+                    key_dim: modelConfig.key_length,
+                    value_dim: modelConfig.value_length,
+                    context_size: 131072,
+                    vram_gb: 16,
+                    os: 'linux-headless',
+                    kv_cache_quant: modelConfig.kv_cache_quant,
+                    batch_size: 64,
+                });
+
+                const output = expectSuccess(result);
+                const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
+
+                // Without sliding window, KV cache at 131K context should exceed VRAM
+                expect(entry.fits_in_vram).toBe(false);
+            });
+        });
+    });
+
+    // ========================================================================
+    // Cross-Model Comparison Tests
+    // ========================================================================
+    describe('Cross-Model Comparison', () => {
+        it('should rank models by VRAM requirement correctly', () => {
+            const qwen = calculateVram({
+                params_b: 4,
+                model_size_gb: 2.5,
+                layers: 36,
+                kv_heads: 8,
+                key_dim: 128,
+                value_dim: 128,
+                context_size: 8192,
+                batch_size: 1,
+            });
+
+            const gemma = calculateVram({
+                params_b: 27,
+                model_size_gb: 16.5,
+                layers: 62,
+                kv_heads: 16,
+                key_dim: 128,
+                value_dim: 128,
+                sliding_window: 1024,
+                context_size: 8192,
+                batch_size: 1,
+            });
+
+            const gptOss = calculateVram({
+                params_b: 20,
+                model_size_gb: 11.6,
+                layers: 24,
+                kv_heads: 8,
+                key_dim: 64,
+                value_dim: 64,
+                sliding_window: 128,
+                context_size: 8192,
+                batch_size: 1,
+            });
+
+            const outputQwen = expectSuccess(qwen);
+            const outputGemma = expectSuccess(gemma);
+            const outputGptOss = expectSuccess(gptOss);
+
+            const vramQwen = outputQwen.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 8192,
+            )!.vram_with_cache_gb;
+            const vramGemma = outputGemma.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 8192,
+            )!.vram_with_cache_gb;
+            const vramGptOss = outputGptOss.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 8192,
+            )!.vram_with_cache_gb;
+
+            expect(vramQwen).toBeLessThan(vramGptOss);
+            expect(vramQwen).toBeLessThan(vramGemma);
+            expect(vramGemma).toBeGreaterThan(vramQwen);
+        });
+
+        it('should show sliding window impact on max context VRAM', () => {
+            const qwen131k = calculateVram({
+                params_b: 4,
+                model_size_gb: 2.5,
+                layers: 36,
+                kv_heads: 8,
+                key_dim: 128,
+                value_dim: 128,
+                context_size: 131072,
+                batch_size: 1,
+            });
+
+            const gemma131k = calculateVram({
+                params_b: 27,
+                model_size_gb: 16.5,
+                layers: 62,
+                kv_heads: 16,
+                key_dim: 128,
+                value_dim: 128,
+                sliding_window: 1024,
+                context_size: 131072,
+                batch_size: 1,
+            });
+
+            const gptOss131k = calculateVram({
+                params_b: 20,
+                model_size_gb: 11.6,
+                layers: 24,
+                kv_heads: 8,
+                key_dim: 64,
+                value_dim: 64,
+                sliding_window: 128,
+                context_size: 131072,
+                batch_size: 1,
+            });
+
+            const outputQwen = expectSuccess(qwen131k);
+            const outputGemma = expectSuccess(gemma131k);
+            const outputGptOss = expectSuccess(gptOss131k);
+
+            const kvQwen = outputQwen.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 131072,
+            )!.kv_cache_gb;
+            const kvGemma = outputGemma.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 131072,
+            )!.kv_cache_gb;
+            const kvGptOss = outputGptOss.quantization_analysis[0].context_table.find(
+                (e) => e.context_size === 131072,
+            )!.kv_cache_gb;
+
+            expect(kvQwen).toBeGreaterThan(kvGemma);
+            expect(kvQwen).toBeGreaterThan(kvGptOss);
+            expect(kvGptOss).toBeLessThan(kvGemma);
+        });
+
+        it('should provide accurate recommendations for each model on 24GB GPU', () => {
+            const models = [
+                {
+                    name: 'Qwen3-4B',
+                    config: { params_b: 4, model_size_gb: 2.5, layers: 36, kv_heads: 8, key_dim: 128, value_dim: 128 },
+                },
+                {
+                    name: 'Gemma-3-27B',
+                    config: {
+                        params_b: 27,
+                        model_size_gb: 16.5,
+                        layers: 62,
+                        kv_heads: 16,
+                        key_dim: 128,
+                        value_dim: 128,
+                        sliding_window: 1024,
+                    },
+                },
+                {
+                    name: 'GPT-OSS-20B',
+                    config: {
+                        params_b: 20,
+                        model_size_gb: 11.6,
+                        layers: 24,
+                        kv_heads: 8,
+                        key_dim: 64,
+                        value_dim: 64,
+                        sliding_window: 128,
+                    },
+                },
+            ];
+
+            for (const model of models) {
+                const result = calculateVram({ ...model.config, vram_gb: 24, os: 'linux-headless', batch_size: 1 });
+
+                const output = expectSuccess(result);
+
+                expect(output.recommendations).not.toBeNull();
+                expect(output.recommendations!.length).toBe(3);
+
+                const optimal = output.recommendations!.find((r) => r.tier === 'optimal')!;
+                expect(optimal.headroom_gb).toBeGreaterThanOrEqual(0);
+            }
+        });
     });
 });

@@ -32,7 +32,7 @@ type Quantization = (typeof Quantization)[keyof typeof Quantization];
 /**
  * KV cache quantization options.
  */
-const KVCacheQuant = { Q4: 'q4', Q8: 'q8', FP4: 'fp4', FP8: 'fp8', FP16: 'fp16', FP32: 'fp32' } as const;
+const KVCacheQuant = { Q4: 'q4', Q8: 'q8', FP16: 'fp16', FP32: 'fp32' } as const;
 
 type KVCacheQuant = (typeof KVCacheQuant)[keyof typeof KVCacheQuant];
 
@@ -99,6 +99,9 @@ interface CalculatorInput {
 
     /** Active experts per token for MoE models. */
     readonly active_experts?: number | null;
+
+    /** Batch size for inference. Default: 1 */
+    readonly batch_size?: number | null;
 }
 
 /**
@@ -219,7 +222,8 @@ type ValidationError =
     | 'INVALID_SLIDING_WINDOW'
     | 'INVALID_MAX_CONTEXT'
     | 'INVALID_EXPERT_COUNT'
-    | 'INVALID_ACTIVE_EXPERTS';
+    | 'INVALID_ACTIVE_EXPERTS'
+    | 'INVALID_BATCH_SIZE';
 
 // ============================================================================
 // SECTION 2: Constants
@@ -246,19 +250,13 @@ const QUANTIZATION_BITS = {
  * Bytes per value for each KV cache quantization level.
  * Used in exact KV cache calculation when layer count is known.
  */
-const KV_CACHE_BYTES = { q4: 0.5, q8: 1, fp4: 0.5, fp8: 1, fp16: 2, fp32: 4 } as const satisfies Record<
-    KVCacheQuant,
-    number
->;
+const KV_CACHE_BYTES = { q4: 0.5, q8: 1, fp16: 2, fp32: 4 } as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * Scaling factor for KV cache estimation when architecture is unknown.
  * Relative to FP16 baseline (factor 1.0).
  */
-const KV_CACHE_FACTOR = { q4: 0.25, q8: 0.5, fp4: 0.25, fp8: 0.5, fp16: 1, fp32: 2 } as const satisfies Record<
-    KVCacheQuant,
-    number
->;
+const KV_CACHE_FACTOR = { q4: 0.25, q8: 0.5, fp16: 1, fp32: 2 } as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * OS-specific memory overhead configuration.
@@ -341,13 +339,6 @@ function isFinitePositive(value: unknown): value is number {
     return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
-// /**
-//  * Checks if a value is a finite non-negative integer.
-//  */
-// function isFiniteNonNegativeInteger(value: unknown): value is number {
-//     return typeof value === 'number' && Number.isFinite(value) && Number.isInteger(value) && value >= 0;
-// }
-
 /**
  * Checks if a value is a finite positive integer.
  */
@@ -368,21 +359,6 @@ function roundTo(value: number, decimals: number): number {
 }
 
 /**
- * Gets the KV base factor based on model size (empirical estimation).
- * Larger models have proportionally smaller KV cache relative to their parameter count.
- *
- * @param params_b - Model parameters in billions.
- * @returns Empirical KV base factor for estimation.
- */
-function getKvBaseFactor(params_b: number): number {
-    if (params_b <= 4) return 0.025;
-    if (params_b <= 14) return 0.015;
-    if (params_b <= 32) return 0.012;
-    if (params_b <= 70) return 0.008;
-    return 0.006;
-}
-
-/**
  * Formats a context size as a human-readable label.
  *
  * @param contextSize - Context size in tokens.
@@ -398,6 +374,42 @@ function formatContextLabel(contextSize: number): string {
         return Number.isInteger(kiloTokens) ? `${kiloTokens}K` : `${kiloTokens.toFixed(1)}K`;
     }
     return String(contextSize);
+}
+
+/**
+ * Estimates transformer layers from parameter count.
+ * Based on common model architectures (Llama, Mistral, Qwen).
+ */
+function estimateLayers(params_b: number): number {
+    if (params_b <= 1) return 16;
+    if (params_b <= 4) return 24;
+    if (params_b <= 8) return 32;
+    if (params_b <= 14) return 40;
+    if (params_b <= 32) return 48;
+    if (params_b <= 70) return 80;
+    return 80 + Math.floor((params_b - 70) * 0.5);
+}
+
+/**
+ * Estimates hidden dimension from parameters and layers.
+ * Formula: hidden_dim ≈ params_b / (layers × 24) × 1e9
+ * Factor of 24 accounts for typical transformer weight distribution
+ */
+function estimateHeadDim(params_b: number, layers: number): number {
+    const hiddenDim = (params_b * 1e9) / (layers * 24);
+    // Round to common head dimensions (64, 96, 128, 256)
+    const commonDims = [64, 96, 128, 256];
+    return commonDims.reduce((prev, curr) => (Math.abs(curr - hiddenDim) < Math.abs(prev - hiddenDim) ? curr : prev));
+}
+
+/**
+ * Estimates KV heads from parameter count.
+ * GQA models typically use 8-16 KV heads regardless of size
+ */
+function estimateKvHeads(params_b: number): number {
+    if (params_b <= 8) return 8;
+    if (params_b <= 32) return 8;
+    return 16;
 }
 
 /**
@@ -473,6 +485,7 @@ function calculateKvCache(
     valueDim: number,
     kvHeads: number,
     slidingWindow: number | null,
+    batch_size: number = 1,
 ): number {
     if (!kvCacheEnabled) {
         return 0;
@@ -484,18 +497,23 @@ function calculateKvCache(
         effectiveContext = Math.min(contextSize, slidingWindow);
     }
 
-    // Exact calculation when layers are known
+    // EXACT calculation when architecture is known
+    const bytesPerValue = KV_CACHE_BYTES[kvCacheQuant];
     if (layers !== null) {
-        const bytesPerValue = KV_CACHE_BYTES[kvCacheQuant];
-        const bytesPerToken = kvHeads * (keyDim + valueDim) * bytesPerValue;
-        const kvBytes = layers * effectiveContext * bytesPerToken;
+        // Formula: 2 × layers × kv_heads × (key_dim + value_dim) × context × batch × bytes
+        const bytesPerToken = 2 * kvHeads * (keyDim + valueDim) * bytesPerValue;
+        const kvBytes = layers * effectiveContext * batch_size * bytesPerToken;
         return kvBytes / BYTES_PER_GB;
     }
 
-    // Estimated calculation when architecture is unknown
-    const kvBase = getKvBaseFactor(params_b);
-    const kvFactor = KV_CACHE_FACTOR[kvCacheQuant];
-    return (effectiveContext / 1000) * params_b * kvBase * kvFactor;
+    // ESTIMATED calculation when architecture unknown
+    const estimatedLayers = estimateLayers(params_b);
+    const estimatedHeadDim = estimateHeadDim(params_b, estimatedLayers);
+    const estimatedKvHeads = estimateKvHeads(params_b);
+
+    const bytesPerToken = 2 * estimatedKvHeads * (estimatedHeadDim + estimatedHeadDim) * bytesPerValue;
+    const kvBytes = estimatedLayers * effectiveContext * batch_size * bytesPerToken;
+    return kvBytes / BYTES_PER_GB;
 }
 
 /**
@@ -607,6 +625,13 @@ function validateInput(input: CalculatorInput): Result<void, ValidationError> {
     if (input.active_experts !== undefined && input.active_experts !== null) {
         if (!isFinitePositiveInteger(input.active_experts)) {
             return err('INVALID_ACTIVE_EXPERTS');
+        }
+    }
+
+    // Validate batch_size value
+    if (input.batch_size !== undefined && input.batch_size !== null) {
+        if (!isFinitePositiveInteger(input.batch_size)) {
+            return err('INVALID_BATCH_SIZE');
         }
     }
 
@@ -766,6 +791,7 @@ function buildContextAnalysis(
     sliding_window: number | null,
     availableVram: number | null,
     quant: Quantization,
+    batch_size: number = 1,
 ): { contextTable: readonly ContextEntry[]; configs: readonly ConfigEntry[] } {
     const contextTable: ContextEntry[] = [];
     const configs: ConfigEntry[] = [];
@@ -782,6 +808,7 @@ function buildContextAnalysis(
             value_dim,
             kv_heads,
             sliding_window,
+            batch_size,
         );
 
         const vramWithCache = modelSize + kvCache + WORKING_BUFFER_GB;
@@ -836,6 +863,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const sliding_window = input.sliding_window ?? null;
     const expert_count = input.expert_count ?? null;
     const active_experts = input.active_experts ?? null;
+    const batch_size = input.batch_size ?? 1;
 
     // Step 1: Determine quantization list
     const quantList: readonly Quantization[] = quantization !== null ? [quantization] : STANDARD_QUANTIZATIONS;
@@ -901,6 +929,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             value_dim,
             kv_heads,
             sliding_window,
+            batch_size,
         );
         const minVramWithCache = modelSize + minKv + WORKING_BUFFER_GB;
 
@@ -918,6 +947,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             sliding_window,
             availableVram,
             quant,
+            batch_size,
         );
 
         allConfigs.push(...configs);
