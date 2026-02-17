@@ -22,7 +22,7 @@ const sideBarItems: SideBarItem[] = [
 const ApplicationSidebar: React.FC = () => {
     const router = useRouter();
 
-    const handleClick = (item: SideBarItem) => {
+    const handleClick = (item: SideBarItem): void => {
         router.push(item.itemLink).catch((err: unknown) => {
             console.error(err);
         });

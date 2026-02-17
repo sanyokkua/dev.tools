@@ -1377,7 +1377,7 @@ describe('Edge Cases', () => {
             const analysis = output.quantization_analysis[0];
 
             // Check that values are rounded
-            const checkRounded = (n: number | null) => {
+            const checkRounded = (n: number | null): void => {
                 if (n === null) return;
                 const rounded = Math.round(n * 100) / 100;
                 expect(n).toBe(rounded);

@@ -1,13 +1,14 @@
 'use client';
-import NextDocument, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
+import NextDocument, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from 'next/document';
 import Link from 'next/link';
+import React from 'react';
 
 export default class Document extends NextDocument {
-    static getInitialProps(ctx: DocumentContext) {
+    static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
         return NextDocument.getInitialProps(ctx);
     }
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Html suppressHydrationWarning>
                 <Head>

@@ -1,8 +1,8 @@
 'use client';
 import { usePage } from '@/contexts/PageContext';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-const IndexPage = () => {
+const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     useEffect(() => {
         setPageTitle('Converting Tools');

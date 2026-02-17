@@ -8,7 +8,7 @@ const ApplicationTopBar: React.FC = () => {
     const { pageTitle } = usePage();
     const router = useRouter();
 
-    const onAppTitleClick = () => {
+    const onAppTitleClick = (): void => {
         router.push('/').catch((err: unknown) => {
             console.error(err);
         });

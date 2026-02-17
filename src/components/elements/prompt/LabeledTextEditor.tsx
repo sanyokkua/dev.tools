@@ -4,7 +4,7 @@ import React from 'react';
 type LabeledTextEditorProps = { label: string; content: string; onChange: (label: string, value: string) => void };
 
 const LabeledTextEditor: React.FC<LabeledTextEditorProps> = ({ label, content, onChange }) => {
-    const handleOnChange = (text: string) => {
+    const handleOnChange = (text: string): void => {
         onChange(label, text);
     };
     return (

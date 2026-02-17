@@ -4,7 +4,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useEffect, useMemo } from 'react';
 import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
-const IndexPage = () => {
+const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
@@ -23,7 +23,7 @@ const IndexPage = () => {
                     funcId: func.toolId,
                     funcName: func.textToDisplay,
                     funcDescription: func.description,
-                    func: (text, onSuccess, onFailure) => {
+                    func: (text, onSuccess, onFailure): void => {
                         try {
                             const result = func.toolFunction(text);
                             onSuccess(result);

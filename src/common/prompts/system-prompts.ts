@@ -110,7 +110,7 @@ export const systemPromptForGeneratingCodeInGoLanguage = generateCodeGenerationP
     ],
     capabilities: [
         'Goroutines, channels, context for concurrency',
-        'error wrapping (\`%w\`) and inspection (errors.Is/As)',
+        'error wrapping (`%w`) and inspection (errors.Is/As)',
     ],
     constraints: ['go fmt and go vet clean', 'Module‑aware with Go 1.20+ compatibility'],
     errorHandling: ['Return errors; avoid panics in library code', 'Wrap errors with meaningful messages'],
@@ -296,7 +296,7 @@ export const systemPromptForRefactoringPythonCode = generateCodeRefactoringPromp
 export const systemPromptForRefactoringGoCode = generateCodeRefactoringPrompt({
     role: 'Senior Go Developer, idiomatic Go advocate',
     instructions: [
-        'Replace error‑return sentinel values with error wrapping (\`%w\`)',
+        'Replace error‑return sentinel values with error wrapping (`%w`)',
         'Extract repeated setup/teardown into helper functions',
         'Use context.Context to carry deadlines and cancellations',
     ],
@@ -1502,11 +1502,11 @@ export const systemPromptForUserStoryGeneration = generateCommonSystemPrompt({
         '- A single Markdown‑formatted user story with the following sections (omit any sections with no content):',
         '  1. **Title:**',
         '  2. **Story:**',
-        '     \`\`\`',
+        '     ```',
         '     As a [user‑role],',
         '     I want to [action],',
         '     so that [business value].',
-        '     \`\`\`',
+        '     ```',
         '  3. **Description:**',
         '     * Scope: …',
         '     * Background: …',

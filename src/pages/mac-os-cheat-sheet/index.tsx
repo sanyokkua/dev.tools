@@ -2,9 +2,9 @@
 import { usePage } from '@/contexts/PageContext';
 import BrewInstallApplications from '@/page-specific/mac-os-cheat-sheet/BrewInstallApplications';
 import BrewInstallSteps from '@/page-specific/mac-os-cheat-sheet/BrewInstallSteps';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-const IndexPage = () => {
+const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     useEffect(() => {
         setPageTitle('MacOS Cheat Sheet');

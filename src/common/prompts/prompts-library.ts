@@ -3,7 +3,7 @@ import { Prompt } from '@/common/prompts/prompts';
 import { systemPrompts } from '@/common/prompts/system-prompts';
 import { userPrompts } from '@/common/prompts/user-prompts';
 
-const sortById = (a: Prompt, b: Prompt) => a.id.localeCompare(b.id);
+const sortById = (a: Prompt, b: Prompt): number => a.id.localeCompare(b.id);
 
 export const promptsLibraryList: Prompt[] = [
     ...systemPrompts.sort(sortById),

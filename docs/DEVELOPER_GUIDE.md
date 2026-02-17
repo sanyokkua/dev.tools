@@ -251,31 +251,31 @@ graph TD
 2. **Pages Router:** Uses Next.js Pages Router (not App Router). Each page is a directory under `src/pages/` with an `index.tsx`.
 
 3. **Context-Driven State:** Four React Context providers wrap the entire app, offering global services to all pages:
-   - `PageContext` → dynamic page title
-   - `ToasterContext` → toast notifications
-   - `FileOpenContext` → native file-open dialog
-   - `FileSaveDialogContext` → file-save modal
+    - `PageContext` → dynamic page title
+    - `ToasterContext` → toast notifications
+    - `FileOpenContext` → native file-open dialog
+    - `FileSaveDialogContext` → file-save modal
 
 4. **Component Hierarchy:**
-   - **Controls** → Primitive UI atoms (Button, Input, Select, Modal)
-   - **Elements** → Composed molecules (CodeEditor, Menubar, ToolView, Transfer, Prompt)
-   - **Layouts** → Container components for structural arrangement
-   - **Page-specific** → Components used by only one page
+    - **Controls** → Primitive UI atoms (Button, Input, Select, Modal)
+    - **Elements** → Composed molecules (CodeEditor, Menubar, ToolView, Transfer, Prompt)
+    - **Layouts** → Container components for structural arrangement
+    - **Page-specific** → Components used by only one page
 
 5. **Factory Pattern for Utilities:** All string, case, line, hashing, encoding, and JSON formatter tools are created via factory functions in `utils-factory.ts`. Pages consume these through the generic `ToolView` component.
 
 6. **Path Aliases:** TypeScript path aliases are configured in `tsconfig.json`:
 
-   | Alias               | Maps To                          |
-   | ------------------- | -------------------------------- |
-   | `@/*`               | `./src/*`                        |
-   | `@/common/*`        | `src/common/*`                   |
-   | `@/contexts/*`      | `src/components/contexts/*`      |
-   | `@/controls/*`      | `src/components/controls/*`      |
-   | `@/layouts/*`       | `src/components/layouts/*`       |
-   | `@/elements/*`      | `src/components/elements/*`      |
-   | `@/page-specific/*` | `src/components/page-specific/*` |
-   | `@/styles/*`        | `src/styles/*`                   |
+    | Alias               | Maps To                          |
+    | ------------------- | -------------------------------- |
+    | `@/*`               | `./src/*`                        |
+    | `@/common/*`        | `src/common/*`                   |
+    | `@/contexts/*`      | `src/components/contexts/*`      |
+    | `@/controls/*`      | `src/components/controls/*`      |
+    | `@/layouts/*`       | `src/components/layouts/*`       |
+    | `@/elements/*`      | `src/components/elements/*`      |
+    | `@/page-specific/*` | `src/components/page-specific/*` |
+    | `@/styles/*`        | `src/styles/*`                   |
 
 ---
 
@@ -390,8 +390,8 @@ const { showToast } = useToast();
 showToast({
     message: 'Operation completed',
     type: ToastType.SUCCESS,
-    title: 'Success',       // optional
-    durationMs: 4000,       // optional, default 4000
+    title: 'Success', // optional
+    durationMs: 4000, // optional, default 4000
 });
 ```
 
@@ -406,8 +406,12 @@ const { showFileOpenDialog } = useFileOpen();
 
 showFileOpenDialog({
     supportedFiles: ['.txt', '.md', '.json'],
-    onSuccess: (fileInfo?: FileInfo) => { /* handle file */ },
-    onFailure: (err?: unknown) => { /* handle error */ },
+    onSuccess: (fileInfo?: FileInfo) => {
+        /* handle file */
+    },
+    onFailure: (err?: unknown) => {
+        /* handle error */
+    },
 });
 ```
 
@@ -491,6 +495,7 @@ Contains the Homebrew application catalog (`Application[]`) and command builder 
 | `dev-chat-user-prompts.ts` | Conversation-focused prompt definitions                                                             |
 
 **Prompt types:**
+
 - `SYSTEM_PROMPT` — Core AI behavior instructions
 - `USER_PROMPT_PARAMETRIZED` — Templates with `{{parameter}}` placeholders
 - `USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED` — Multi-turn conversation prompts
@@ -531,6 +536,7 @@ The **most-reused** component. Provides a complete two-panel transformation inte
 ```
 
 **Props:**
+
 - `toolViewFunctionGroups: Map<string, ToolViewGroup>` — The available tool functions
 - `toolChoseHeader?: string` — Header for the function selector panel
 - `toolEditorsLangId?: string` — Monaco language ID for both editors (default: `plaintext`)
@@ -538,6 +544,7 @@ The **most-reused** component. Provides a complete two-panel transformation inte
 #### CodeEditor (`elements/editor/CodeEditor.tsx`)
 
 A Monaco Editor wrapper with configurable:
+
 - `languageId` — syntax highlighting language
 - `wordWrap` / `minimap` — editor options
 - `onEditorMounted` — callback receiving `EditorProperties` (editor instance + language maps)
@@ -555,7 +562,7 @@ const menuItems = MenuBuilder.newBuilder()
     .addSubmenu('language', 'Language', languageItems)
     .build();
 
-<Menubar menuItems={menuItems} />
+<Menubar menuItems={menuItems} />;
 ```
 
 #### Sidebar (`elements/navigation/sidebar/Sidebar.tsx`)
@@ -569,6 +576,7 @@ A read-only code block with a **copy-to-clipboard** button and syntax highlighti
 #### Transfer (`elements/transfer/`)
 
 A dual-list transfer component with category filtering, search, and command generation. Used by the MacOS cheat-sheet for Homebrew app selection. Key files:
+
 - `useTransfer.ts` — Custom hook managing available/selected state
 - `AppTransferComponent.tsx` — Main component wiring everything together
 - `TransferColumns.tsx` / `TransferControls.tsx` — Sub-components
@@ -576,6 +584,7 @@ A dual-list transfer component with category filtering, search, and command gene
 #### Prompt UI (`elements/prompt/`)
 
 Components for the prompts collection feature:
+
 - `PromptTable.tsx` — Table listing all prompts with filters
 - `PromptView.tsx` — Detail view with parameter editing and template preview
 - `PromptFilters.tsx` — Category, type, and tag filter controls
@@ -613,7 +622,9 @@ This is the simplest pattern. The page creates tool functions via factory, wraps
 ```tsx
 const IndexPage = () => {
     const { setPageTitle } = usePage();
-    useEffect(() => { setPageTitle('Page Title'); }, [setPageTitle]);
+    useEffect(() => {
+        setPageTitle('Page Title');
+    }, [setPageTitle]);
 
     const toolsGroups = useMemo(() => {
         const groupsMap: ToolViewFunctionGroups = new Map();
@@ -626,8 +637,11 @@ const IndexPage = () => {
                     funcId: func.toolId,
                     funcName: func.textToDisplay,
                     func: (text, onSuccess, onFailure) => {
-                        try { onSuccess(func.toolFunction(text)); }
-                        catch (e) { onFailure(e); }
+                        try {
+                            onSuccess(func.toolFunction(text));
+                        } catch (e) {
+                            onFailure(e);
+                        }
                     },
                 })),
             };
@@ -649,7 +663,9 @@ These pages directly use the `CodeEditor` component with additional custom UI (m
 ```tsx
 const IndexPage = () => {
     const { setPageTitle } = usePage();
-    useEffect(() => { setPageTitle('Editor Page'); }, [setPageTitle]);
+    useEffect(() => {
+        setPageTitle('Editor Page');
+    }, [setPageTitle]);
 
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -665,7 +681,9 @@ const IndexPage = () => {
                 minimap={true}
                 wordWrap={false}
                 languageId="javascript"
-                onEditorMounted={(props) => { editorRef.current = props.editor; }}
+                onEditorMounted={(props) => {
+                    editorRef.current = props.editor;
+                }}
                 onChange={handleTextChange}
             />
         </>
@@ -744,13 +762,14 @@ If your page needs new styles:
 
 1. Create an SCSS file in `src/styles/` (e.g., `my-tool.scss`)
 2. Import it in `src/pages/_app.tsx`:
-   ```tsx
-   import '@/styles/my-tool.scss';
-   ```
+    ```tsx
+    import '@/styles/my-tool.scss';
+    ```
 
 ### Step 5: Add Tests (Optional But Recommended)
 
 Create test files in `test/` following the existing patterns:
+
 - `test/common/<module>.test.ts` for utility logic tests
 - Use `@testing-library/react` for component tests
 
@@ -763,10 +782,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
 import { useCallback, useEffect, useMemo } from 'react';
-import ToolView, {
-    ToolViewFunctionGroups,
-    ToolViewGroup,
-} from '../../components/elements/column/ToolView';
+import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const RegexTesterPage = () => {
     const { setPageTitle } = usePage();
@@ -805,18 +821,14 @@ const RegexTesterPage = () => {
         return groupsMap;
     }, []);
 
-    return (
-        <ToolView
-            toolChoseHeader="Regex Tools"
-            toolViewFunctionGroups={toolsGroups}
-        />
-    );
+    return <ToolView toolChoseHeader="Regex Tools" toolViewFunctionGroups={toolsGroups} />;
 };
 
 export default RegexTesterPage;
 ```
 
 Then add to sidebar:
+
 ```tsx
 { itemName: 'Regex Tester', itemLink: '/regex-tester' },
 ```
@@ -871,17 +883,18 @@ The change will automatically appear in the String Utils page because it consume
 To add an entirely new category of tools alongside the existing ones:
 
 1. Create a new factory function in `utils-factory.ts`:
-   ```tsx
-   export function createMyNewUtils(): UtilList[] {
-       return [{
-           toolGroupId: 'my-group',
-           displayName: 'My Tools',
-           utils: [
-               { toolId: 'tool1', textToDisplay: 'Tool 1', toolFunction: (s) => s.toUpperCase() },
-           ],
-       }];
-   }
-   ```
+
+    ```tsx
+    export function createMyNewUtils(): UtilList[] {
+        return [
+            {
+                toolGroupId: 'my-group',
+                displayName: 'My Tools',
+                utils: [{ toolId: 'tool1', textToDisplay: 'Tool 1', toolFunction: (s) => s.toUpperCase() }],
+            },
+        ];
+    }
+    ```
 
 2. Create a new page using [Pattern 1](#pattern-1-toolview-based-pages) that calls your factory.
 
@@ -933,12 +946,12 @@ Parameters inside `{{double_braces}}` are automatically extracted and displayed 
 
 1. Open `src/common/prompts/prompts.ts`
 2. Add to the `PromptCategory` enum:
-   ```tsx
-   export enum PromptCategory {
-       // ... existing categories ...
-       MY_NEW_CATEGORY = 'my-new-category',
-   }
-   ```
+    ```tsx
+    export enum PromptCategory {
+        // ... existing categories ...
+        MY_NEW_CATEGORY = 'my-new-category',
+    }
+    ```
 
 ---
 
@@ -972,6 +985,7 @@ npx jest test/common/prompts.test.ts
 ### Writing New Tests
 
 For utility functions:
+
 ```tsx
 // test/common/my-utils.test.ts
 import { myFunction } from '@/common/my-utils';
@@ -984,6 +998,7 @@ describe('myFunction', () => {
 ```
 
 For React components:
+
 ```tsx
 // test/components/MyComponent.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -1001,4 +1016,4 @@ describe('MyComponent', () => {
 
 ---
 
-*Document generated from a full codebase review of dev.tools v1.2.2.*
+_Document generated from a full codebase review of dev.tools v1.2.2._

@@ -55,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({
     block = false,
     type = 'button',
 }) => {
-    const handle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handle = (e: React.MouseEvent<HTMLButtonElement>): void => {
         if (!disabled && !loading && onClick) {
             e.preventDefault();
             onClick();

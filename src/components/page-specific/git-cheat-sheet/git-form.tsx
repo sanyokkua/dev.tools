@@ -14,17 +14,17 @@ interface FormProps {
 const ConfigForm: React.FC<FormProps> = ({ onSubmit }) => {
     const [formData, setFormData] = useState<FormData>({ name: '', email: '', globalConfig: false, os: 'macos' });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, type, value, checked } = e.target;
         setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         onSubmit(formData);
     };
 
-    function handleReset() {
+    function handleReset(): void {
         const formContent: FormData = { name: '', email: '', globalConfig: false, os: 'macos' };
         setFormData(formContent);
         onSubmit(formContent);

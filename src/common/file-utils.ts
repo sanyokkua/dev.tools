@@ -9,7 +9,7 @@ import { FileInfo, FileSaveProperties, OnErrorHandler, OnSuccessHandler } from '
  * @param fileSaveProperties.fileExtension - The extension of the file to be saved.
  * @return Throws an error if any validation fails, otherwise returns nothing.
  */
-function validateTheFileSaveProperties({ fileName, fileExtension }: FileSaveProperties) {
+function validateTheFileSaveProperties({ fileName, fileExtension }: FileSaveProperties): void {
     if (!fileName || fileName.trim().length === 0) {
         throw new Error("File name can't be empty");
     }
@@ -42,7 +42,7 @@ export function saveTextFile({
     fileContent = '',
     fileExtension = DEFAULT_EXTENSION,
     fileMimeType = DEFAULT_MIME_TYPE,
-}: FileSaveProperties) {
+}: FileSaveProperties): void {
     validateTheFileSaveProperties({ fileName, fileExtension });
 
     const fileFullName = `${fileName}${fileExtension}`;
@@ -66,7 +66,10 @@ export function saveTextFile({
  * @param  onFailure callback function when file loading fails
  * @return the created FileReader instance
  */
-const createFileReader = (onSuccess: OnSuccessHandler, onFailure: OnErrorHandler) => {
+const createFileReader: (onSuccess: OnSuccessHandler, onFailure: OnErrorHandler) => FileReader = (
+    onSuccess,
+    onFailure,
+) => {
     const reader = new FileReader();
     reader.onload = onSuccess;
     reader.onerror = onFailure;

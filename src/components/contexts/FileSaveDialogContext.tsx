@@ -35,12 +35,12 @@ export const FileSaveDialogProvider: React.FC<{ children: ReactNode }> = ({ chil
     const [isOpen, setOpen] = useState(false);
     const [options, setOptions] = useState<SaveFileDialogOptions | null>(null);
 
-    const showFileSaveDialog = (opts: SaveFileDialogOptions) => {
+    const showFileSaveDialog = (opts: SaveFileDialogOptions): void => {
         setOptions(opts);
         setOpen(true);
     };
 
-    const hide = () => {
+    const hide = (): void => {
         setOpen(false);
     };
 

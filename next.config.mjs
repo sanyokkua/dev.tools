@@ -19,7 +19,6 @@ const nextConfig = {
     output: 'export',
     assetPrefix: assetPrefix,
     basePath: basePath,
-    react: { useJsx: true },
 };
 
 export default nextConfig;

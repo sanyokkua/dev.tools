@@ -50,7 +50,7 @@ export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) =>
         }
     }, [isOpen, fileName, fileExtension]);
 
-    const handleConfirm = () => {
+    const handleConfirm = (): void => {
         try {
             saveTextFile({ fileName: name, fileExtension: ext, fileContent: fileContent, fileMimeType: mimeType });
             showToast({ message: 'File Saved', type: ToastType.SUCCESS });

@@ -35,7 +35,7 @@ export const useToast = (): ToastContextValue => {
 export const ToasterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
-    const showToast = (options: ShowToastOptions) => {
+    const showToast = (options: ShowToastOptions): void => {
         const { message, type = ToastType.INFO, title = '', durationMs = 4000 } = options;
         const id = v4();
         setToasts((curr) => [...curr, { id, title, message, type }]);

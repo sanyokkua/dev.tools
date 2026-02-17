@@ -3,7 +3,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useEffect } from 'react';
 import AppMainContainer from '../components/layouts/AppMainContainer';
 
-const Home = () => {
+const Home = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     useEffect(() => {
         setPageTitle('Main Page');

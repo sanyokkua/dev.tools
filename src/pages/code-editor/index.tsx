@@ -83,7 +83,7 @@ function buildFileInfo(state: CodeEditorState, editorProps: RefObject<IStandalon
     };
 }
 
-const IndexPage = () => {
+const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const { showFileSaveDialog } = useFileSaveDialog();
     const { showFileOpenDialog } = useFileOpen();
@@ -156,7 +156,7 @@ const IndexPage = () => {
     const menuOnFileOpenClick: OnMenuItemClick = useCallback(() => {
         showFileOpenDialog({
             supportedFiles: editorState.editorPropsSupportedExtensions,
-            onSuccess: (fileInfo) => {
+            onSuccess: (fileInfo): void => {
                 if (!fileInfo) {
                     showToast({ message: 'No files are chosen', type: ToastType.WARNING });
                     return;
@@ -178,7 +178,7 @@ const IndexPage = () => {
                 });
                 showToast({ message: 'File opened', type: ToastType.SUCCESS });
             },
-            onFailure: (err) => {
+            onFailure: (err): void => {
                 console.log(err);
                 showToast({ message: 'Failed to open file', type: ToastType.ERROR });
             },
@@ -226,7 +226,7 @@ const IndexPage = () => {
     );
 
     // Render Element
-    const onEditorContentChanged = () => {
+    const onEditorContentChanged = (): void => {
         setEditorState((prevState) => {
             const content = getEditorContent(editorRef);
             return { ...prevState, fileSize: content.length };
