@@ -5,7 +5,10 @@ import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/co
 import { usePage } from '@/contexts/PageContext';
 import { FC, useEffect, useState } from 'react';
 import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
-import VramCalculatorForm, { INITIAL_FORM_STATE, VramFormState, } from '../../components/page-specific/llm-vram-calculator/VramCalculatorForm';
+import VramCalculatorForm, {
+    INITIAL_FORM_STATE,
+    VramFormState,
+} from '../../components/page-specific/llm-vram-calculator/VramCalculatorForm';
 import VramResultsDisplay from '../../components/page-specific/llm-vram-calculator/VramResultsDisplay';
 
 /** @description Parses a string to a float, returning null for empty or invalid values. */

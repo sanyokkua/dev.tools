@@ -33,7 +33,7 @@ operations execute in the browser — no data is sent to external servers.
 ### Core Features
 
 | Feature Area            | What It Does                                                                                     |
-|-------------------------|--------------------------------------------------------------------------------------------------|
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
 | **String Utils**        | 20+ transformations — slugify, camelCase, snake_case, split/sort/dedup lines                     |
 | **Code Editor**         | Full Monaco Editor with syntax highlighting, file open/save, language picker                     |
 | **JSON Formatter**      | Minify or beautify JSON with 4-space indentation                                                 |
@@ -53,7 +53,7 @@ operations execute in the browser — no data is sent to external servers.
 ### Runtime Dependencies
 
 | Package                     | Purpose                                           |
-|-----------------------------|---------------------------------------------------|
+| --------------------------- | ------------------------------------------------- |
 | `next` (v16)                | React framework with Pages Router, static export  |
 | `react` / `react-dom` (v19) | UI library                                        |
 | `@monaco-editor/react`      | VS Code's editor engine for code editing pages    |
@@ -72,7 +72,7 @@ operations execute in the browser — no data is sent to external servers.
 ### Dev Dependencies
 
 | Tool                              | Purpose                         |
-|-----------------------------------|---------------------------------|
+| --------------------------------- | ------------------------------- |
 | `typescript` (v5)                 | Type checking                   |
 | `jest` + `@testing-library/react` | Unit/component testing (jsdom)  |
 | `eslint` + `eslint-config-next`   | Linting                         |
@@ -279,16 +279,16 @@ graph TD
 
 6. **Path Aliases:** TypeScript path aliases are configured in `tsconfig.json`:
 
-   | Alias               | Maps To                          |
-      |---------------------|----------------------------------|
-   | `@/*`               | `./src/*`                        |
-   | `@/common/*`        | `src/common/*`                   |
-   | `@/contexts/*`      | `src/components/contexts/*`      |
-   | `@/controls/*`      | `src/components/controls/*`      |
-   | `@/layouts/*`       | `src/components/layouts/*`       |
-   | `@/elements/*`      | `src/components/elements/*`      |
-   | `@/page-specific/*` | `src/components/page-specific/*` |
-   | `@/styles/*`        | `src/styles/*`                   |
+    | Alias               | Maps To                          |
+    | ------------------- | -------------------------------- |
+    | `@/*`               | `./src/*`                        |
+    | `@/common/*`        | `src/common/*`                   |
+    | `@/contexts/*`      | `src/components/contexts/*`      |
+    | `@/controls/*`      | `src/components/controls/*`      |
+    | `@/layouts/*`       | `src/components/layouts/*`       |
+    | `@/elements/*`      | `src/components/elements/*`      |
+    | `@/page-specific/*` | `src/components/page-specific/*` |
+    | `@/styles/*`        | `src/styles/*`                   |
 
 ---
 
@@ -355,7 +355,7 @@ GitHub Pages.
 The project uses **SCSS** with a modular stylesheet approach. All styles are imported globally in `_app.tsx`:
 
 | File                   | Purpose                                                     |
-|------------------------|-------------------------------------------------------------|
+| ---------------------- | ----------------------------------------------------------- |
 | `colors.scss`          | Color tokens, CSS variables, themes                         |
 | `layout.scss`          | Flexbox/grid layout classes                                 |
 | `buttons.scss`         | All button variants and states                              |
@@ -456,7 +456,7 @@ showFileSaveDialog({
 ### Core Types (`types.ts`)
 
 | Type             | Purpose                                               |
-|------------------|-------------------------------------------------------|
+| ---------------- | ----------------------------------------------------- |
 | `IStringUtil`    | Sync string transformation tool (id, label, function) |
 | `UtilList`       | Group of `IStringUtil` items with group metadata      |
 | `IHashUtil`      | Async hash tool (returns `Promise<string>`)           |
@@ -471,7 +471,7 @@ showFileSaveDialog({
 This is the central factory module that creates all tool utilities. Each factory returns arrays of `IStringUtil` or `IHashUtil` objects:
 
 | Factory Function                   | Returns         | Used By             |
-|------------------------------------|-----------------|---------------------|
+| ---------------------------------- | --------------- | ------------------- |
 | `createStringUtils()`              | `IStringUtil[]` | String Utils page   |
 | `createCaseUtils()`                | `IStringUtil[]` | String Utils page   |
 | `createLineUtils()`                | `IStringUtil[]` | String Utils page   |
@@ -485,7 +485,7 @@ All utilities delegate to the `coreutilsts` library for the actual transformatio
 ### File Utilities (`file-utils.ts`)
 
 | Function                        | Purpose                                     |
-|---------------------------------|---------------------------------------------|
+| ------------------------------- | ------------------------------------------- |
 | `saveTextFile(props)`           | Triggers browser file download              |
 | `createFileReadPromise(file)`   | Returns a `Promise<string>` of file content |
 | `createFileInfo(file, content)` | Builds a `FileInfo` from a `File` object    |
@@ -505,7 +505,7 @@ commands.
 ### Prompts System (`common/prompts/`)
 
 | File                       | Purpose                                                                                             |
-|----------------------------|-----------------------------------------------------------------------------------------------------|
+| -------------------------- | --------------------------------------------------------------------------------------------------- |
 | `prompts.ts`               | Types (`Prompt`, `PromptCategory`, `PromptType`), factory functions, filter logic, param extraction |
 | `prompts-library.ts`       | Aggregates all prompts into `promptsLibraryList`                                                    |
 | `system-prompts.ts`        | System prompt definitions                                                                           |
@@ -525,7 +525,7 @@ Self-contained calculation engine for estimating VRAM/RAM requirements of GGUF-q
 **Main entry point:**
 
 ```typescript
-function calculateVram(input: CalculatorInput): Result<CalculatorOutput, ValidationError>{}
+function calculateVram(input: CalculatorInput): Result<CalculatorOutput, ValidationError> {}
 ```
 
 Uses a `Result<T, E>` discriminated union (`ok`/`err` variants) for type-safe error handling — callers check `result.ok` to access either
@@ -534,7 +534,7 @@ Uses a `Result<T, E>` discriminated union (`ok`/`err` variants) for type-safe er
 **Key exported types:**
 
 | Type                   | Purpose                                                        |
-|------------------------|----------------------------------------------------------------|
+| ---------------------- | -------------------------------------------------------------- |
 | `CalculatorInput`      | All input parameters (model size, quantization, context, etc.) |
 | `CalculatorOutput`     | Complete calculation result with all sub-sections              |
 | `InputSummary`         | Resolved/estimated input values echoed back to the user        |
@@ -548,7 +548,7 @@ Uses a `Result<T, E>` discriminated union (`ok`/`err` variants) for type-safe er
 **Key exported constants:**
 
 | Constant                 | Purpose                                         |
-|--------------------------|-------------------------------------------------|
+| ------------------------ | ----------------------------------------------- |
 | `Quantization`           | Enum of 11 GGUF quantization levels (Q2_K–F32)  |
 | `KVCacheQuant`           | Enum of KV cache quantization options (Q4–FP32) |
 | `OperatingSystem`        | Enum of supported OS profiles                   |
@@ -562,7 +562,7 @@ Uses a `Result<T, E>` discriminated union (`ok`/`err` variants) for type-safe er
 ### Controls (Primitive UI Atoms)
 
 | Component          | Key Props                                        |
-|--------------------|--------------------------------------------------|
+| ------------------ | ------------------------------------------------ |
 | `Button`           | `text`, `variant`, `size`, `colorStyle`, `block` |
 | `Input`            | Standard text input with label                   |
 | `Select`           | Dropdown with `SelectItem[]` items               |
@@ -652,7 +652,7 @@ Components for the prompts collection feature:
 Components for the LLM VRAM calculator page:
 
 | Component                | Key Props                                             | Purpose                                                                           |
-|--------------------------|-------------------------------------------------------|-----------------------------------------------------------------------------------|
+| ------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `VramCalculatorForm`     | `formState`, `onFormChange`, `onCalculate`, `onReset` | Multi-section input form with VRAM presets, collapsible advanced/MoE sections     |
 | `VramResultsDisplay`     | `result: Result<CalculatorOutput, ValidationError>`   | Orchestrates result display; shows validation errors or delegates to sub-sections |
 | `InputSummarySection`    | `inputSummary`, `osOverhead`                          | Displays resolved input parameters and OS overhead                                |
@@ -665,7 +665,7 @@ Components for the LLM VRAM calculator page:
 All layout components are thin wrappers applying CSS classes:
 
 | Component                       | Purpose                             |
-|---------------------------------|-------------------------------------|
+| ------------------------------- | ----------------------------------- |
 | `AppMainContainer`              | Root-level full-viewport container  |
 | `AppMainContentContainer`       | Main content area with color style  |
 | `AppSideBarAndContentContainer` | Horizontal split: sidebar + content |
@@ -821,7 +821,7 @@ const sideBarItems: SideBarItem[] = [
 ```
 
 > **Remember:** When adding a new tool page, also update `src/pages/index.tsx` (Core Capabilities list), `README.md` (Core Features), and
-`docs/DEVELOPER_GUIDE.md` (multiple sections).
+> `docs/DEVELOPER_GUIDE.md` (multiple sections).
 
 ### Step 3: Choose Your Page Pattern
 
@@ -1072,7 +1072,7 @@ npx jest test/common/prompts.test.ts
 ### Existing Tests
 
 | Test File                           | What It Tests                                                                                                      |
-|-------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `test/common/prompts.test.ts`       | Prompt filtering, parameter extraction, replacement                                                                |
 | `test/common/llm-vram-calc.test.ts` | LLM VRAM calculation logic — 198 test cases covering constants, validation (14 error types), and calculation logic |
 
