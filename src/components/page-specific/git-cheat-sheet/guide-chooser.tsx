@@ -10,7 +10,7 @@ interface RadioButtonProps {
 }
 
 const RadioButton: React.FC<RadioButtonProps> = ({ label, value, selectedValue, onChange }) => {
-    const handleChange = () => {
+    const handleChange = (): void => {
         onChange(value);
     };
 

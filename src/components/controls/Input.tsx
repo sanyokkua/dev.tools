@@ -113,7 +113,7 @@ const Input: React.FC<InputProps> = ({
     checked,
 }) => {
     // Handle change event
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         if (onChangeDefault) {
             onChangeDefault(e);
             return;

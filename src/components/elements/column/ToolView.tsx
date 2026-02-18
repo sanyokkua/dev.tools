@@ -106,15 +106,15 @@ const mapFunctionsInGroup = (
 ): AvailableFunction[] => {
     return group.functions.map((fn) => ({
         name: fn.funcName,
-        onClick: () => {
+        onClick: (): void => {
             const input = getEditorContent(leftRef);
             fn.func(
                 input,
-                (output) => {
+                (output): void => {
                     setEditorContent(rightRef, output);
                     showToast({ message: `${fn.funcName} executed`, type: ToastType.INFO });
                 },
-                (err) => {
+                (err): void => {
                     console.error(err);
                     showToast({ message: `Failed to execute ${fn.funcName}`, type: ToastType.ERROR });
                 },
@@ -182,10 +182,10 @@ const ToolView: React.FC<ToolViewProps> = ({
         leftEditorRef.current = props.editor;
         setSupportedExtensions(props.supportedExtensions);
     }, []);
-    const handleLeftOpen = () => {
+    const handleLeftOpen = (): void => {
         showFileOpenDialog({
             supportedFiles: supportedExtensions,
-            onSuccess: (fileInfo) => {
+            onSuccess: (fileInfo): void => {
                 if (!fileInfo) {
                     showToast({ message: 'No file chosen', type: ToastType.WARNING });
                     return;
@@ -193,19 +193,19 @@ const ToolView: React.FC<ToolViewProps> = ({
                 setEditorContent(leftEditorRef, fileInfo.content);
                 showToast({ message: 'File opened', type: ToastType.INFO });
             },
-            onFailure: (err) => {
+            onFailure: (err): void => {
                 console.error(err);
                 showToast({ message: 'Could not open file', type: ToastType.ERROR });
             },
         });
     };
-    const handleLeftPaste = () => {
+    const handleLeftPaste = (): void => {
         pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
     };
-    const handleLeftCopy = () => {
+    const handleLeftCopy = (): void => {
         copyToClipboardFromEditor(leftEditorRef, showToast);
     };
-    const handleLeftClear = () => {
+    const handleLeftClear = (): void => {
         setEditorContent(leftEditorRef, '');
     };
 
@@ -213,7 +213,7 @@ const ToolView: React.FC<ToolViewProps> = ({
     const handleRightMount = useCallback((props: EditorProperties) => {
         rightEditorRef.current = props.editor;
     }, []);
-    const handleRightSave = () => {
+    const handleRightSave = (): void => {
         const txt = getEditorContent(rightEditorRef);
         showFileSaveDialog({
             fileContent: txt,
@@ -223,13 +223,13 @@ const ToolView: React.FC<ToolViewProps> = ({
             availableExtensions: supportedExtensions,
         });
     };
-    const handleRightCopy = () => {
+    const handleRightCopy = (): void => {
         copyToClipboardFromEditor(rightEditorRef, showToast);
     };
-    const handleRightClear = () => {
+    const handleRightClear = (): void => {
         setEditorContent(rightEditorRef, '');
     };
-    const handleUseAsInput = () => {
+    const handleUseAsInput = (): void => {
         const out = getEditorContent(rightEditorRef);
         setEditorContent(leftEditorRef, out);
         setEditorContent(rightEditorRef, '');
@@ -250,7 +250,7 @@ const ToolView: React.FC<ToolViewProps> = ({
         .build();
 
     /** When the user picks a new function‐group */
-    const onSelect = (item: SelectItem) => {
+    const onSelect = (item: SelectItem): void => {
         setToolState((prev) => {
             const grp = toolViewFunctionGroups.get(item.itemId);
             return {

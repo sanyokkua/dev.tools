@@ -23,7 +23,7 @@ const IndexPage: React.FC = () => {
                 funcId: func.toolId,
                 funcName: func.textToDisplay,
                 funcDescription: func.description,
-                func: (text, onSuccess, onFailure) => {
+                func: (text, onSuccess, onFailure): void => {
                     try {
                         const result = func.toolFunction(text);
                         onSuccess(result);

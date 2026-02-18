@@ -3,7 +3,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useEffect } from 'react';
 import AppMainContainer from '../components/layouts/AppMainContainer';
 
-const Home = () => {
+const Home = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     useEffect(() => {
         setPageTitle('Main Page');
@@ -68,11 +68,12 @@ const Home = () => {
                             <strong>Prompts Collection</strong>: Access a variety of pre-built prompts organized by task
                             categories and available in multiple formats.
                         </li>
+                        <li>
+                            <strong>LLM VRAM Calculator</strong>: Estimate GPU/unified memory requirements for
+                            GGUF-quantized LLMs with quantization analysis, KV cache sizing, OS overhead, and fit
+                            recommendations.
+                        </li>
                     </ul>
-                    <p>
-                        Additional functionality will be added later to assist with setting up your development
-                        environment, including prompt collections and other tools.
-                    </p>
                 </section>
 
                 <section>

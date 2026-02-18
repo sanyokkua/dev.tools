@@ -18,20 +18,20 @@ const PromptsCollectionView: React.FC<PromptsCollectionViewProps> = ({ prompts }
     const { showToast } = useToast();
     const { availableItems, filters, handlers } = usePromptsFilter(prompts);
 
-    const onShowClicked = (prompt: Prompt) => {
+    const onShowClicked = (prompt: Prompt): void => {
         router.push(`/prompts-collection/${prompt.id}`).catch((err: unknown) => {
             console.error(err);
         });
     };
 
-    const onOpenLinkClicked = (prompt: Prompt) => {
+    const onOpenLinkClicked = (prompt: Prompt): void => {
         const win = window.open(`/prompts-collection/${prompt.id}`, '_blank');
         if (win != null) {
             win.focus();
         }
     };
 
-    const onCopyLinkClicked = (prompt: Prompt) => {
+    const onCopyLinkClicked = (prompt: Prompt): void => {
         if (copyToClipboard(prompt.template)) {
             showToast({ type: ToastType.SUCCESS, message: 'Copied to clipboard' });
         } else {

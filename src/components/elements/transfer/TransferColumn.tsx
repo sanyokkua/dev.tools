@@ -44,8 +44,8 @@ const TransferColumn: React.FC<Props> = ({ header, primaryAction, secondaryActio
         setLocal(items);
     }, [items]);
 
-    const handlePrimary = () => onAction(local);
-    const handleSecondary = () => onAction(local.filter((i) => i.checked));
+    const handlePrimary = (): void => onAction(local);
+    const handleSecondary = (): void => onAction(local.filter((i) => i.checked));
 
     return (
         <div>

@@ -17,7 +17,7 @@ type TextEditorProps = {
 const TextEditor: React.FC<TextEditorProps> = (props) => {
     const { content = '', rows = 3, onContentChange, mono = false, size = TextEditorSize.Medium } = props;
 
-    const handleChangeEvent = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeEvent = (e: ChangeEvent<HTMLTextAreaElement>): void => {
         if (onContentChange) {
             onContentChange(e.target.value);
         }

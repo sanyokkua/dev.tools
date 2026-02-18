@@ -25,7 +25,7 @@ const Home: React.FC = () => {
                 funcId: func.toolId,
                 funcName: func.textToDisplay,
                 funcDescription: func.description,
-                func: (text, onSuccess, onFailure) => {
+                func: (text, onSuccess, onFailure): void => {
                     const result = func.toolFunction(text);
                     result
                         .then((result) => {

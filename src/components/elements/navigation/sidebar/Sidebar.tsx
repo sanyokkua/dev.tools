@@ -7,7 +7,7 @@ export type SidebarProps = { sidebarItems: SideBarItem[]; onItemClick: (sideBarI
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
     const mappedItems = props.sidebarItems.map((item) => {
-        const handleOnClick = () => {
+        const handleOnClick = (): void => {
             props.onItemClick(item);
         };
         return (

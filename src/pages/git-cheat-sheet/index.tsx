@@ -63,7 +63,7 @@ const GitCheatSheetPage: FC = () => {
     const [singleLineCommands, setSingleLineCommands] = useState<string>('');
     const [detailedCommands, setDetailedCommands] = useState<{ description: string; command: string }[]>([]);
 
-    const handleGenerate = (data: FormData) => {
+    const handleGenerate = (data: FormData): void => {
         const { name, email, globalConfig, os } = data;
         setNameValue(name);
         setEmailValue(email);
@@ -133,22 +133,22 @@ const GitCheatSheetPage: FC = () => {
             <h3>2. Configure User Info</h3>
             <CodeSnippet
                 headerText="Set Local Username"
-                content={`${GIT_CONFIG_USER_NAME} \"${nameValue}\"`}
+                content={`${GIT_CONFIG_USER_NAME} "${nameValue}"`}
                 language="bash"
             />
             <CodeSnippet
                 headerText="Set Global Username"
-                content={`${GIT_CONFIG_GLOBAL_USER_NAME} \"${nameValue}\"`}
+                content={`${GIT_CONFIG_GLOBAL_USER_NAME} "${nameValue}"`}
                 language="bash"
             />
             <CodeSnippet
                 headerText="Set Local Email"
-                content={`${GIT_CONFIG_USER_EMAIL} \"${emailValue}\"`}
+                content={`${GIT_CONFIG_USER_EMAIL} "${emailValue}"`}
                 language="bash"
             />
             <CodeSnippet
                 headerText="Set Global Email"
-                content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} \"${emailValue}\"`}
+                content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} "${emailValue}"`}
                 language="bash"
             />
             <CodeSnippet headerText="List Local Config" content={GIT_CONFIG_VERIFY} language="bash" />
@@ -157,7 +157,7 @@ const GitCheatSheetPage: FC = () => {
             <h3>3. Optional: SSH Key Setup</h3>
             <CodeSnippet
                 headerText="Generate SSH Key"
-                content={`${SSH_KEY_GENERATE} \"${emailValue}\"`}
+                content={`${SSH_KEY_GENERATE} "${emailValue}"`}
                 language="bash"
             />
             <CodeSnippet headerText="Start SSH Agent & Add Key" content={SSH_KEY_ADD_AGENT} language="bash" />
@@ -242,7 +242,7 @@ const GitCheatSheetPage: FC = () => {
         </section>
     );
 
-    function handleGuideChosen(value: string) {
+    function handleGuideChosen(value: string): void {
         setChosenGuide(value);
     }
 

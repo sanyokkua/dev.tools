@@ -158,6 +158,6 @@ export function joinPromptLines(lines: string[] | undefined | null, useDash: boo
     if (!lines) {
         return '';
     }
-    const mapperFunc = (line: string) => (useDash ? `  — ${line}` : `  ${line}`);
+    const mapperFunc = (line: string): string => (useDash ? `  — ${line}` : `  ${line}`);
     return lines.map(mapperFunc).join('\n');
 }

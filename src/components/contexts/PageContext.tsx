@@ -31,7 +31,7 @@ export const usePage = (): PageContextType => {
 /**
  * Provider component for managing page title context across the application.
  */
-export const PageProvider = ({ children }: { children: ReactNode }) => {
+export const PageProvider = ({ children }: { children: ReactNode }): React.ReactElement => {
     const [pageTitle, setPageTitle] = useState<string>('');
 
     return <PageContext.Provider value={{ pageTitle, setPageTitle }}>{children}</PageContext.Provider>;

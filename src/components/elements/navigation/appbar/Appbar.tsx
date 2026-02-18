@@ -9,13 +9,13 @@ export type AppBarProps = {
 };
 
 const Appbar: React.FC<AppBarProps> = (props) => {
-    const onAppTitleClick = (event: MouseEvent) => {
+    const onAppTitleClick = (event: MouseEvent): void => {
         if (props.onAppTitleClick) {
             event.preventDefault();
             props.onAppTitleClick();
         }
     };
-    const onPageTitleClick = (event: MouseEvent) => {
+    const onPageTitleClick = (event: MouseEvent): void => {
         if (props.onPageTitleClick) {
             event.preventDefault();
             props.onPageTitleClick();

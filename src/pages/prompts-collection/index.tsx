@@ -28,7 +28,7 @@ const IndexPage: React.FC<Props> = ({ prompts }) => {
 };
 
 // Fetch all prompts at build time
-export async function getStaticProps() {
+export async function getStaticProps(): Promise<{ props: { prompts: Prompt[] } }> {
     return { props: { prompts: promptsLibraryList } };
 }
 

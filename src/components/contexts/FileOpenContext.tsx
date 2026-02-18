@@ -61,7 +61,7 @@ export const FileOpenProvider: React.FC<{ children: ReactNode }> = ({ children }
             return;
         }
 
-        const handler = (e: Event) => {
+        const handler = (e: Event): void => {
             // detach immediately so it only fires once
             inputEl.removeEventListener('change', handler);
 

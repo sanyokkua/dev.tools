@@ -30,7 +30,7 @@ const CodeSnippet: React.FC<ReadOnlyCodeEditorProps> = (props) => {
 
     const codeRef = useRef(null);
 
-    function highligh() {
+    function highligh(): void {
         if (codeRef.current) {
             hljs.highlightElement(codeRef.current);
         }
@@ -40,7 +40,7 @@ const CodeSnippet: React.FC<ReadOnlyCodeEditorProps> = (props) => {
         highligh();
     }, [content, language]);
 
-    function handleClick() {
+    function handleClick(): void {
         if (copyToClipboard(content)) {
             showToast({ message: 'Copied to clipboard', type: ToastType.SUCCESS });
         } else {

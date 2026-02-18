@@ -37,7 +37,7 @@ const Modal: FC<ModalProps> = ({
 }) => {
     // Handle Escape key press for closing the modal
     useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
+        const handleKeyDown = (event: KeyboardEvent): void => {
             if (event.key === 'Escape') {
                 onClose();
             }
@@ -48,7 +48,7 @@ const Modal: FC<ModalProps> = ({
         }
 
         // Cleanup function to remove an event listener
-        return () => {
+        return (): void => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isOpen, onClose]);
@@ -65,7 +65,7 @@ const Modal: FC<ModalProps> = ({
             {/* Stop propagation to prevent clicks inside the modal from closing it */}
             <div
                 className="modal-content"
-                onClick={(e) => {
+                onClick={(e): void => {
                     e.stopPropagation();
                 }}
             >

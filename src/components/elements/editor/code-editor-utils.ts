@@ -25,14 +25,14 @@ export function pasteFromClipboardToEditor(
     editor: RefObject<editor.IStandaloneCodeEditor | null>,
     onErrorCallback?: (errMsg: string) => void,
     showToast?: (options: ShowToastOptions) => void,
-) {
-    const onSuccess = (text: string) => {
+): void {
+    const onSuccess = (text: string): void => {
         editor.current?.setValue(text);
         if (showToast) {
             showToast({ message: 'Pasted from Clipboard', type: ToastType.INFO });
         }
     };
-    const onError = (errMsg: string) => {
+    const onError = (errMsg: string): void => {
         console.log(`Failed to paste to editor: ${errMsg}`);
         if (onErrorCallback) {
             onErrorCallback(errMsg);
@@ -50,7 +50,7 @@ export function pasteFromClipboardToEditor(
 export function copyToClipboardFromEditor(
     editor: RefObject<editor.IStandaloneCodeEditor | null>,
     showToast?: (options: ShowToastOptions) => void,
-) {
+): void {
     if (editor.current) {
         const result = copyToClipboard(editor.current.getValue());
         if (showToast) {
@@ -119,12 +119,12 @@ export function mapEditorLanguages(langs: languages.ILanguageExtensionPoint[]): 
     return langs.map(mapEditorLanguage);
 }
 
-export function getSupportedExtensions(languages: EditorLanguage[]) {
+export function getSupportedExtensions(languages: EditorLanguage[]): string[] {
     const strings = languages.flatMap((lang) => lang.extensions);
     return [...new Set(strings)];
 }
 
-export function getSupportedMimeTypes(languages: EditorLanguage[]) {
+export function getSupportedMimeTypes(languages: EditorLanguage[]): string[] {
     const strings = languages.flatMap((lang) => lang.mimetypes);
     return [...new Set(strings)];
 }

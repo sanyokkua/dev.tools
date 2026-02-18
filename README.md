@@ -1,7 +1,7 @@
-# Client-Side Text Transformation & Code Editing Toolkit
+# Client-Side Text Transformation, Code Editing & LLM VRAM Calculator Toolkit
 
-A **fully client-side application** for text manipulation, code editing, and cheat-sheets for configuring environment.
-Built with the [Monaco Editor](https://microsoft.github.io/monaco-editor/) (VS Code’s engine) and deployed via GitHub
+A **fully client-side application** for text manipulation, code editing, LLM VRAM estimation, and cheat-sheets for configuring environment.
+Built with the [Monaco Editor](https://microsoft.github.io/monaco-editor/) (VS Code's engine) and deployed via GitHub
 Pages, this Next.js app performs all operations directly in the browser — no data is sent to external servers.
 Ideal for developers, technical writers, and data engineers requiring secure, offline-capable tools without opening any
 editors on your local PC (or to use on the Cloud VMs).
@@ -48,6 +48,15 @@ editors on your local PC (or to use on the Cloud VMs).
 - **Prompt Library for LLMs**: Access a variety of pre-built prompts organized by task categories and available in multiple formats.
 - **Editable Prompt Templates**: Customize and fine-tune prompt templates directly within the app before executing them.
 - **Parameterized Prompts**: Build dynamic prompts using configurable parameters to tailor them to specific use cases and prepare them for immediate use.
+
+### **LLM VRAM Calculator**
+
+- **VRAM Estimation for GGUF-Quantized LLMs**: Calculate GPU/unified memory requirements for running Large Language Models in GGUF format.
+- **Quantization Analysis**: Support for 11 quantization levels (Q2_K through F32) with per-quantization context tables and KV cache sizing.
+- **OS Overhead Calculation**: Accounts for operating system memory reservation — macOS unified memory (~25%), Windows, Linux GUI, and Linux headless profiles.
+- **Fit Analysis & Recommendations**: Provides optimal, minimum, and maximum quality recommendations based on your available VRAM.
+- **VRAM Preset Buttons**: Quick-select common GPU memory sizes (4, 8, 12, 16, 32, 64, 96, 128 GB).
+- **MoE Model Support**: Handles Mixture-of-Experts architectures with expert count and active expert parameters.
 
 ---
 

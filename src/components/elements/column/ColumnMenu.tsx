@@ -7,7 +7,7 @@ export type AvailableFunction = { name: string; onClick: () => void };
 type FunctionActionButtonProps = { availableFunction: AvailableFunction };
 
 const FunctionActionButton: React.FC<FunctionActionButtonProps> = ({ availableFunction }) => {
-    const handleClick = () => {
+    const handleClick = (): void => {
         console.log('FunctionActionButton click');
         availableFunction.onClick();
     };

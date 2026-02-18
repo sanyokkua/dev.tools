@@ -19,7 +19,7 @@ import Menubar from '../../components/elements/navigation/menubar/Menubar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
 
-const IndexPage: React.FC = () => {
+const IndexPage: React.FC = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const { showToast } = useToast();
 
@@ -68,15 +68,15 @@ const IndexPage: React.FC = () => {
         setEditorContent(editorResultRef, joined);
     }, []);
 
-    const handleShell = () => {
+    const handleShell = (): void => {
         setLanguageId('shell');
         showToast({ message: 'Changed Syntax to shell', type: ToastType.INFO });
     };
-    const handleBat = () => {
+    const handleBat = (): void => {
         setLanguageId('bat');
         showToast({ message: 'Changed Syntax to bat', type: ToastType.INFO });
     };
-    const handlePowershell = () => {
+    const handlePowershell = (): void => {
         setLanguageId('powershell');
         showToast({ message: 'Changed Syntax to powershell', type: ToastType.INFO });
     };

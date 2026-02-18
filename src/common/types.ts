@@ -78,6 +78,9 @@ export enum Category {
     DOCUMENT_EDITORS = 'Document Editors',
     GRAPHICS_AND_3D = 'Graphics & 3D',
     NETWORKING = 'Network Tools',
+    AI_CODING_TOOLS = 'AI Tools',
+    NOTE_TAKING = 'Notes',
+    GAMING = 'Gaming',
 }
 
 export const ALL_CATEGORIES: { id: string; text: Category }[] = [
@@ -100,6 +103,9 @@ export const ALL_CATEGORIES: { id: string; text: Category }[] = [
     { id: 'document_editors', text: Category.DOCUMENT_EDITORS },
     { id: 'graphics_and_3d', text: Category.GRAPHICS_AND_3D },
     { id: 'network_tools', text: Category.NETWORKING },
+    { id: 'ai_coding_tools', text: Category.AI_CODING_TOOLS },
+    { id: 'notes_taking', text: Category.NOTE_TAKING },
+    { id: 'gaming_apps', text: Category.GAMING },
 ];
 
 export enum BrewType {

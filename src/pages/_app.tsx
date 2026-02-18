@@ -19,10 +19,12 @@ import '@/styles/surfaces.scss';
 import '@/styles/table.scss';
 import '@/styles/texteditor.scss';
 import '@/styles/toaster.scss';
+import '@/styles/vram-calculator.scss';
 import { AppProps } from 'next/app';
+import React from 'react';
 import ApplicationLayout from '../components/app-layout/ApplicationLayout';
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps): React.JSX.Element {
     return (
         <>
             <div id="modal-root"></div>
