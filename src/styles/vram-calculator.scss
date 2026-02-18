@@ -1,0 +1,178 @@
+/* VRAM Calculator page-specific styles */
+
+.vram-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.vram-form-field label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.vram-form-field-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.vram-form-field-inline label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.vram-form-hint {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--secondary-color);
+    margin-top: 0.1rem;
+}
+
+.vram-form-section h3 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.vram-form-details {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.vram-form-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--primary-color);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.vram-form-details summary:hover {
+    opacity: 0.8;
+}
+
+.vram-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.vram-results {
+    margin-top: 2rem;
+}
+
+.vram-kv-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.3rem 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.vram-kv-grid dt {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.vram-kv-grid dd {
+    margin: 0;
+}
+
+.vram-tier-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+}
+
+.vram-tier-optimal {
+    background-color: var(--success-color);
+    color: var(--success-color-on);
+}
+
+.vram-tier-minimum {
+    background-color: var(--warning-color);
+    color: var(--warning-color-on);
+}
+
+.vram-tier-maximum_quality {
+    background-color: var(--info-color);
+    color: var(--info-color-on);
+}
+
+.vram-fits-yes {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.vram-fits-no {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.vram-fits-unknown {
+    color: var(--secondary-color);
+}
+
+.vram-error-message {
+    background-color: var(--error-container-color);
+    color: var(--error-container-color-on);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.vram-quant-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.vram-quant-stat {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+}
+
+.vram-recommendation-card {
+    flex: 1;
+    min-width: 250px;
+}
+
+.vram-recommendation-card .vram-kv-grid {
+    font-size: 0.9rem;
+}
+
+.vram-form-field select,
+.vram-form-field-inline select {
+    color: var(--surface-color-on);
+}
+
+.vram-preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.vram-form-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 2rem;
+}
+
+@media (min-width: 900px) {
+    .vram-form-columns {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}

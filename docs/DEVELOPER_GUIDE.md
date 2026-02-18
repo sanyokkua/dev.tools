@@ -27,22 +27,24 @@
 
 ## 1. Project Overview
 
-**dev.tools** is a fully client-side, browser-based developer toolkit for text manipulation, code editing, and environment setup guides. All operations execute in the browser — no data is sent to external servers.
+**dev.tools** is a fully client-side, browser-based developer toolkit for text manipulation, code editing, and environment setup guides. All
+operations execute in the browser — no data is sent to external servers.
 
 ### Core Features
 
-| Feature Area           | What It Does                                                                 |
-| ---------------------- | ---------------------------------------------------------------------------- |
-| **String Utils**       | 20+ transformations — slugify, camelCase, snake_case, split/sort/dedup lines |
-| **Code Editor**        | Full Monaco Editor with syntax highlighting, file open/save, language picker |
-| **JSON Formatter**     | Minify or beautify JSON with 4-space indentation                             |
-| **Hashing Tools**      | MD5, SHA-1, SHA-256, SHA-384, SHA-512 hash generation                        |
-| **Encoding Tools**     | Base64 and URL-safe encode/decode                                            |
-| **Terminal Utils**     | Shell/Bash/PowerShell script editor with command joining                     |
-| **Markdown Tools**     | Split-pane Monaco editor + live ReactMarkdown preview, PDF export            |
-| **Git Cheat Sheet**    | Interactive + manual guides for Git SSH/GPG setup, command generation        |
-| **MacOS Cheat Sheet**  | Homebrew install guide with app transfer/selection and `brew` command gen    |
-| **Prompts Collection** | Filterable prompt library with parameterized templates for LLMs              |
+| Feature Area            | What It Does                                                                                     |
+|-------------------------|--------------------------------------------------------------------------------------------------|
+| **String Utils**        | 20+ transformations — slugify, camelCase, snake_case, split/sort/dedup lines                     |
+| **Code Editor**         | Full Monaco Editor with syntax highlighting, file open/save, language picker                     |
+| **JSON Formatter**      | Minify or beautify JSON with 4-space indentation                                                 |
+| **Hashing Tools**       | MD5, SHA-1, SHA-256, SHA-384, SHA-512 hash generation                                            |
+| **Encoding Tools**      | Base64 and URL-safe encode/decode                                                                |
+| **Terminal Utils**      | Shell/Bash/PowerShell script editor with command joining                                         |
+| **Markdown Tools**      | Split-pane Monaco editor + live ReactMarkdown preview, PDF export                                |
+| **Git Cheat Sheet**     | Interactive + manual guides for Git SSH/GPG setup, command generation                            |
+| **MacOS Cheat Sheet**   | Homebrew install guide with app transfer/selection and `brew` command gen                        |
+| **Prompts Collection**  | Filterable prompt library with parameterized templates for LLMs                                  |
+| **LLM VRAM Calculator** | Estimates VRAM for GGUF LLMs — quantization analysis, KV cache, OS overhead, fit recommendations |
 
 ---
 
@@ -51,8 +53,8 @@
 ### Runtime Dependencies
 
 | Package                     | Purpose                                           |
-| --------------------------- | ------------------------------------------------- |
-| `next` (v15)                | React framework with Pages Router, static export  |
+|-----------------------------|---------------------------------------------------|
+| `next` (v16)                | React framework with Pages Router, static export  |
 | `react` / `react-dom` (v19) | UI library                                        |
 | `@monaco-editor/react`      | VS Code's editor engine for code editing pages    |
 | `coreutilsts`               | String, case, hashing, encoding utility functions |
@@ -70,7 +72,7 @@
 ### Dev Dependencies
 
 | Tool                              | Purpose                         |
-| --------------------------------- | ------------------------------- |
+|-----------------------------------|---------------------------------|
 | `typescript` (v5)                 | Type checking                   |
 | `jest` + `@testing-library/react` | Unit/component testing (jsdom)  |
 | `eslint` + `eslint-config-next`   | Linting                         |
@@ -179,7 +181,14 @@ dev.tools/
 │   │   └── page-specific/         # Components used by a single page
 │   │       ├── git-cheat-sheet/
 │   │       ├── mac-os-cheat-sheet/
-│   │       └── prompts-collection/
+│   │       ├── prompts-collection/
+│   │       └── llm-vram-calculator/
+│   │           ├── VramCalculatorForm.tsx
+│   │           ├── VramResultsDisplay.tsx
+│   │           ├── QuantizationTable.tsx
+│   │           ├── SummarySection.tsx
+│   │           ├── InputSummarySection.tsx
+│   │           └── RecommendationsSection.tsx
 │   │
 │   ├── pages/                     # ★ Next.js Pages Router
 │   │   ├── _app.tsx               # App wrapper (providers + layout)
@@ -196,9 +205,10 @@ dev.tools/
 │   │   ├── mac-os-cheat-sheet/index.tsx
 │   │   ├── prompts-collection/index.tsx
 │   │   ├── prompts-collection/[id].tsx  # Dynamic prompt detail page
-│   │   ├── converting-tools/      # (Planned, commented out in sidebar)
-│   │   ├── date-tools/            # (Planned, commented out in sidebar)
-│   │   └── windows-cheat-sheet/   # (Planned, commented out in sidebar)
+│   │   ├── llm-vram-calculator/index.tsx
+│   │   ├── converting-tools/      # (Page stub, disabled in sidebar)
+│   │   ├── date-tools/            # (Page stub, disabled in sidebar)
+│   │   └── windows-cheat-sheet/   # (Page stub, disabled in sidebar)
 │   │
 │   └── styles/                    # Global SCSS stylesheets
 │       ├── global.css             # CSS reset
@@ -210,7 +220,8 @@ dev.tools/
 │       ├── appbar.scss            # Top bar styles
 │       ├── modal.scss             # Modal styles
 │       ├── input.scss, select.scss, chip.scss, etc.
-│       └── toaster.scss           # Toast notification styles
+│       ├── toaster.scss           # Toast notification styles
+│       └── vram-calculator.scss   # VRAM calculator form, results, tier badges
 │
 ├── test/
 │   ├── setup.ts                   # Jest setup (testing-library matchers)
@@ -246,7 +257,8 @@ graph TD
 
 **Key architectural principles:**
 
-1. **Static Site Generation (SSG):** The app uses `output: 'export'` in `next.config.mjs` to produce a fully static build. No server-side rendering or API routes.
+1. **Static Site Generation (SSG):** The app uses `output: 'export'` in `next.config.mjs` to produce a fully static build. No server-side rendering or
+   API routes.
 
 2. **Pages Router:** Uses Next.js Pages Router (not App Router). Each page is a directory under `src/pages/` with an `index.tsx`.
 
@@ -262,20 +274,21 @@ graph TD
     - **Layouts** → Container components for structural arrangement
     - **Page-specific** → Components used by only one page
 
-5. **Factory Pattern for Utilities:** All string, case, line, hashing, encoding, and JSON formatter tools are created via factory functions in `utils-factory.ts`. Pages consume these through the generic `ToolView` component.
+5. **Factory Pattern for Utilities:** All string, case, line, hashing, encoding, and JSON formatter tools are created via factory functions in
+   `utils-factory.ts`. Pages consume these through the generic `ToolView` component.
 
 6. **Path Aliases:** TypeScript path aliases are configured in `tsconfig.json`:
 
-    | Alias               | Maps To                          |
-    | ------------------- | -------------------------------- |
-    | `@/*`               | `./src/*`                        |
-    | `@/common/*`        | `src/common/*`                   |
-    | `@/contexts/*`      | `src/components/contexts/*`      |
-    | `@/controls/*`      | `src/components/controls/*`      |
-    | `@/layouts/*`       | `src/components/layouts/*`       |
-    | `@/elements/*`      | `src/components/elements/*`      |
-    | `@/page-specific/*` | `src/components/page-specific/*` |
-    | `@/styles/*`        | `src/styles/*`                   |
+   | Alias               | Maps To                          |
+      |---------------------|----------------------------------|
+   | `@/*`               | `./src/*`                        |
+   | `@/common/*`        | `src/common/*`                   |
+   | `@/contexts/*`      | `src/components/contexts/*`      |
+   | `@/controls/*`      | `src/components/controls/*`      |
+   | `@/layouts/*`       | `src/components/layouts/*`       |
+   | `@/elements/*`      | `src/components/elements/*`      |
+   | `@/page-specific/*` | `src/components/page-specific/*` |
+   | `@/styles/*`        | `src/styles/*`                   |
 
 ---
 
@@ -332,7 +345,8 @@ The project uses a GitHub Actions workflow (`.github/workflows/nextjs.yml`) that
 2. **Builds** the Next.js app via `next build` (static export)
 3. **Deploys** the `./out` directory to GitHub Pages
 
-The `next.config.mjs` dynamically sets `basePath` and `assetPrefix` to `/<repo-name>/` when running in GitHub Actions, ensuring correct asset paths on GitHub Pages.
+The `next.config.mjs` dynamically sets `basePath` and `assetPrefix` to `/<repo-name>/` when running in GitHub Actions, ensuring correct asset paths on
+GitHub Pages.
 
 ---
 
@@ -340,21 +354,23 @@ The `next.config.mjs` dynamically sets `basePath` and `assetPrefix` to `/<repo-n
 
 The project uses **SCSS** with a modular stylesheet approach. All styles are imported globally in `_app.tsx`:
 
-| File            | Purpose                             |
-| --------------- | ----------------------------------- |
-| `colors.scss`   | Color tokens, CSS variables, themes |
-| `layout.scss`   | Flexbox/grid layout classes         |
-| `buttons.scss`  | All button variants and states      |
-| `menubar.scss`  | Menubar navigation styles           |
-| `sidebar.scss`  | Sidebar panel styles                |
-| `appbar.scss`   | Top application bar                 |
-| `modal.scss`    | Modal dialogs                       |
-| `input.scss`    | Input field styles                  |
-| `select.scss`   | Select dropdown styles              |
-| `surfaces.scss` | Surface/card container styles       |
-| `toaster.scss`  | Toast notification styles           |
+| File                   | Purpose                                                     |
+|------------------------|-------------------------------------------------------------|
+| `colors.scss`          | Color tokens, CSS variables, themes                         |
+| `layout.scss`          | Flexbox/grid layout classes                                 |
+| `buttons.scss`         | All button variants and states                              |
+| `menubar.scss`         | Menubar navigation styles                                   |
+| `sidebar.scss`         | Sidebar panel styles                                        |
+| `appbar.scss`          | Top application bar                                         |
+| `modal.scss`           | Modal dialogs                                               |
+| `input.scss`           | Input field styles                                          |
+| `select.scss`          | Select dropdown styles                                      |
+| `surfaces.scss`        | Surface/card container styles                               |
+| `toaster.scss`         | Toast notification styles                                   |
+| `vram-calculator.scss` | VRAM calculator form, results, tier badges, responsive grid |
 
-Components use CSS class names (not CSS Modules) that correspond to these global stylesheets. The `Button` component, for example, composes classes like `button-base button-solid color-primary-color`.
+Components use CSS class names (not CSS Modules) that correspond to these global stylesheets. The `Button` component, for example, composes classes
+like `button-base button-solid color-primary-color`.
 
 ---
 
@@ -440,7 +456,7 @@ showFileSaveDialog({
 ### Core Types (`types.ts`)
 
 | Type             | Purpose                                               |
-| ---------------- | ----------------------------------------------------- |
+|------------------|-------------------------------------------------------|
 | `IStringUtil`    | Sync string transformation tool (id, label, function) |
 | `UtilList`       | Group of `IStringUtil` items with group metadata      |
 | `IHashUtil`      | Async hash tool (returns `Promise<string>`)           |
@@ -455,7 +471,7 @@ showFileSaveDialog({
 This is the central factory module that creates all tool utilities. Each factory returns arrays of `IStringUtil` or `IHashUtil` objects:
 
 | Factory Function                   | Returns         | Used By             |
-| ---------------------------------- | --------------- | ------------------- |
+|------------------------------------|-----------------|---------------------|
 | `createStringUtils()`              | `IStringUtil[]` | String Utils page   |
 | `createCaseUtils()`                | `IStringUtil[]` | String Utils page   |
 | `createLineUtils()`                | `IStringUtil[]` | String Utils page   |
@@ -469,7 +485,7 @@ All utilities delegate to the `coreutilsts` library for the actual transformatio
 ### File Utilities (`file-utils.ts`)
 
 | Function                        | Purpose                                     |
-| ------------------------------- | ------------------------------------------- |
+|---------------------------------|---------------------------------------------|
 | `saveTextFile(props)`           | Triggers browser file download              |
 | `createFileReadPromise(file)`   | Returns a `Promise<string>` of file content |
 | `createFileInfo(file, content)` | Builds a `FileInfo` from a `File` object    |
@@ -478,16 +494,18 @@ All utilities delegate to the `coreutilsts` library for the actual transformatio
 
 ### Git Utils (`git-utils.ts`)
 
-Contains constant strings for Git/SSH/GPG commands and a `generateGitCommands()` function that produces a full command sequence based on user input (name, email, OS, global/local config).
+Contains constant strings for Git/SSH/GPG commands and a `generateGitCommands()` function that produces a full command sequence based on user input (
+name, email, OS, global/local config).
 
 ### MacOS Utils (`macos-utils.ts`)
 
-Contains the Homebrew application catalog (`Application[]`) and command builder functions for generating `brew install` / `brew install --cask` commands.
+Contains the Homebrew application catalog (`Application[]`) and command builder functions for generating `brew install` / `brew install --cask`
+commands.
 
 ### Prompts System (`common/prompts/`)
 
 | File                       | Purpose                                                                                             |
-| -------------------------- | --------------------------------------------------------------------------------------------------- |
+|----------------------------|-----------------------------------------------------------------------------------------------------|
 | `prompts.ts`               | Types (`Prompt`, `PromptCategory`, `PromptType`), factory functions, filter logic, param extraction |
 | `prompts-library.ts`       | Aggregates all prompts into `promptsLibraryList`                                                    |
 | `system-prompts.ts`        | System prompt definitions                                                                           |
@@ -500,6 +518,43 @@ Contains the Homebrew application catalog (`Application[]`) and command builder 
 - `USER_PROMPT_PARAMETRIZED` — Templates with `{{parameter}}` placeholders
 - `USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED` — Multi-turn conversation prompts
 
+### LLM VRAM Calculator (`llm-vram-calc.ts`)
+
+Self-contained calculation engine for estimating VRAM/RAM requirements of GGUF-quantized LLMs.
+
+**Main entry point:**
+
+```typescript
+function calculateVram(input: CalculatorInput): Result<CalculatorOutput, ValidationError>{}
+```
+
+Uses a `Result<T, E>` discriminated union (`ok`/`err` variants) for type-safe error handling — callers check `result.ok` to access either
+`result.value` or `result.error`.
+
+**Key exported types:**
+
+| Type                   | Purpose                                                        |
+|------------------------|----------------------------------------------------------------|
+| `CalculatorInput`      | All input parameters (model size, quantization, context, etc.) |
+| `CalculatorOutput`     | Complete calculation result with all sub-sections              |
+| `InputSummary`         | Resolved/estimated input values echoed back to the user        |
+| `OSOverhead`           | OS memory reservation details                                  |
+| `ContextEntry`         | Per-context-size VRAM breakdown (cache, total, fit status)     |
+| `QuantizationAnalysis` | Per-quantization-level results with context table              |
+| `Recommendation`       | Fit recommendation (optimal / minimum / maximum_quality tier)  |
+| `SummaryStatistics`    | Aggregate stats (total configs, fitting configs, size range)   |
+| `ValidationError`      | String literal union of 14 validation error codes              |
+
+**Key exported constants:**
+
+| Constant                 | Purpose                                         |
+|--------------------------|-------------------------------------------------|
+| `Quantization`           | Enum of 11 GGUF quantization levels (Q2_K–F32)  |
+| `KVCacheQuant`           | Enum of KV cache quantization options (Q4–FP32) |
+| `OperatingSystem`        | Enum of supported OS profiles                   |
+| `STANDARD_CONTEXTS`      | Array of standard context sizes (4K–1M tokens)  |
+| `STANDARD_QUANTIZATIONS` | Array of all standard quantization levels       |
+
 ---
 
 ## 10. Component Library (`src/components/`)
@@ -507,7 +562,7 @@ Contains the Homebrew application catalog (`Application[]`) and command builder 
 ### Controls (Primitive UI Atoms)
 
 | Component          | Key Props                                        |
-| ------------------ | ------------------------------------------------ |
+|--------------------|--------------------------------------------------|
 | `Button`           | `text`, `variant`, `size`, `colorStyle`, `block` |
 | `Input`            | Standard text input with label                   |
 | `Select`           | Dropdown with `SelectItem[]` items               |
@@ -567,7 +622,8 @@ const menuItems = MenuBuilder.newBuilder()
 
 #### Sidebar (`elements/navigation/sidebar/Sidebar.tsx`)
 
-Renders a vertical list of `Button` components from a `SideBarItem[]` array. The `ApplicationSidebar` defines all routes and uses `next/router` for navigation.
+Renders a vertical list of `Button` components from a `SideBarItem[]` array. The `ApplicationSidebar` defines all routes and uses `next/router` for
+navigation.
 
 #### CodeSnippet (`elements/CodeSnippet.tsx`)
 
@@ -575,7 +631,8 @@ A read-only code block with a **copy-to-clipboard** button and syntax highlighti
 
 #### Transfer (`elements/transfer/`)
 
-A dual-list transfer component with category filtering, search, and command generation. Used by the MacOS cheat-sheet for Homebrew app selection. Key files:
+A dual-list transfer component with category filtering, search, and command generation. Used by the MacOS cheat-sheet for Homebrew app selection. Key
+files:
 
 - `useTransfer.ts` — Custom hook managing available/selected state
 - `AppTransferComponent.tsx` — Main component wiring everything together
@@ -590,12 +647,25 @@ Components for the prompts collection feature:
 - `PromptFilters.tsx` — Category, type, and tag filter controls
 - `usePromptsFilter.ts` — Custom hook for filter state management
 
+#### VRAM Calculator (`page-specific/llm-vram-calculator/`)
+
+Components for the LLM VRAM calculator page:
+
+| Component                | Key Props                                             | Purpose                                                                           |
+|--------------------------|-------------------------------------------------------|-----------------------------------------------------------------------------------|
+| `VramCalculatorForm`     | `formState`, `onFormChange`, `onCalculate`, `onReset` | Multi-section input form with VRAM presets, collapsible advanced/MoE sections     |
+| `VramResultsDisplay`     | `result: Result<CalculatorOutput, ValidationError>`   | Orchestrates result display; shows validation errors or delegates to sub-sections |
+| `InputSummarySection`    | `inputSummary`, `osOverhead`                          | Displays resolved input parameters and OS overhead                                |
+| `RecommendationsSection` | `recommendations`                                     | Recommendation cards with tier badges (optimal/minimum/maximum_quality)           |
+| `SummarySection`         | `summary`                                             | Aggregate statistics (total configs, fitting configs, size range)                 |
+| `QuantizationTable`      | `analysis`, `defaultOpen?`                            | Collapsible per-quantization context table with fit status                        |
+
 ### Layouts (Container Components)
 
 All layout components are thin wrappers applying CSS classes:
 
 | Component                       | Purpose                             |
-| ------------------------------- | ----------------------------------- |
+|---------------------------------|-------------------------------------|
 | `AppMainContainer`              | Root-level full-viewport container  |
 | `AppMainContentContainer`       | Main content area with color style  |
 | `AppSideBarAndContentContainer` | Horizontal split: sidebar + content |
@@ -617,7 +687,8 @@ All pages in the codebase follow one of **three patterns**:
 
 **Used by:** String Utils, Hashing Tools, Encoding Tools, JSON Formatter
 
-This is the simplest pattern. The page creates tool functions via factory, wraps them in `ToolViewFunctionGroups`, and passes them to the `ToolView` component:
+This is the simplest pattern. The page creates tool functions via factory, wraps them in `ToolViewFunctionGroups`, and passes them to the `ToolView`
+component:
 
 ```tsx
 const IndexPage = () => {
@@ -700,6 +771,7 @@ These pages have fully custom layouts combining various components:
 - **Git Cheat Sheet:** Form input → command generation → `CodeSnippet` list
 - **MacOS Cheat Sheet:** `AppTransferComponent` for app selection + brew commands
 - **Prompts Collection:** `PromptTable` with filters + detail pages via dynamic routing (`[id].tsx`)
+- **LLM VRAM Calculator:** Form input → `calculateVram()` → multi-section results display with recommendations and per-quantization context tables
 
 ---
 
@@ -747,6 +819,9 @@ const sideBarItems: SideBarItem[] = [
     { itemName: 'My New Tool', itemLink: '/my-new-tool' },
 ];
 ```
+
+> **Remember:** When adding a new tool page, also update `src/pages/index.tsx` (Core Capabilities list), `README.md` (Core Features), and
+`docs/DEVELOPER_GUIDE.md` (multiple sections).
 
 ### Step 3: Choose Your Page Pattern
 
@@ -830,7 +905,12 @@ export default RegexTesterPage;
 Then add to sidebar:
 
 ```tsx
-{ itemName: 'Regex Tester', itemLink: '/regex-tester' },
+{
+    itemName: 'Regex Tester', itemLink
+:
+    '/regex-tester'
+}
+,
 ```
 
 ---
@@ -846,13 +926,20 @@ Then add to sidebar:
 ```tsx
 {
     toolId: 'my-new-transform',
-    textToDisplay: 'My New Transform',
-    description: 'Describes what this transform does',
-    toolFunction: (input: string) => {
+        textToDisplay
+:
+    'My New Transform',
+        description
+:
+    'Describes what this transform does',
+        toolFunction
+:
+    (input: string) => {
         // Your transformation logic here
         return input.split('').reverse().join('');
     },
-},
+}
+,
 ```
 
 The change will automatically appear in the String Utils page because it consumes `createStringUtilList()`.
@@ -866,16 +953,23 @@ The change will automatically appear in the String Utils page because it consume
 ```tsx
 {
     toolId: 'my-hash',
-    textToDisplay: 'My Hash',
-    description: 'Custom hash algorithm',
-    toolFunction: async (input: string) => {
+        textToDisplay
+:
+    'My Hash',
+        description
+:
+    'Custom hash algorithm',
+        toolFunction
+:
+    async (input: string) => {
         const encoded = new TextEncoder().encode(input);
         const hash = await crypto.subtle.digest('SHA-512', encoded);
         return Array.from(new Uint8Array(hash))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
     },
-},
+}
+,
 ```
 
 ### Adding a New Utility Group
@@ -977,10 +1071,10 @@ npx jest test/common/prompts.test.ts
 
 ### Existing Tests
 
-| Test File                           | What It Tests                                       |
-| ----------------------------------- | --------------------------------------------------- |
-| `test/common/prompts.test.ts`       | Prompt filtering, parameter extraction, replacement |
-| `test/common/llm-vram-calc.test.ts` | LLM VRAM calculation logic                          |
+| Test File                           | What It Tests                                                                                                      |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| `test/common/prompts.test.ts`       | Prompt filtering, parameter extraction, replacement                                                                |
+| `test/common/llm-vram-calc.test.ts` | LLM VRAM calculation logic — 198 test cases covering constants, validation (14 error types), and calculation logic |
 
 ### Writing New Tests
 
@@ -1012,7 +1106,8 @@ describe('MyComponent', () => {
 });
 ```
 
-> **Note:** Component tests that use context providers (e.g., `usePage`, `useToast`) will need those providers wrapped around the component in the test. Create wrapper utilities as needed.
+> **Note:** Component tests that use context providers (e.g., `usePage`, `useToast`) will need those providers wrapped around the component in the
+> test. Create wrapper utilities as needed.
 
 ---
 

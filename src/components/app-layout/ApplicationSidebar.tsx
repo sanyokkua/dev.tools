@@ -17,6 +17,7 @@ const sideBarItems: SideBarItem[] = [
     { itemName: 'MacOS Cheat-sheet', itemLink: '/mac-os-cheat-sheet' },
     // { itemName: 'Windows Cheat-sheet', itemLink: '/windows-cheat-sheet' }, //TODO: Feature releases
     { itemName: 'Prompts Collection', itemLink: '/prompts-collection' },
+    { itemName: 'LLM VRAM Calculator', itemLink: '/llm-vram-calculator' },
 ];
 
 const ApplicationSidebar: React.FC = () => {
