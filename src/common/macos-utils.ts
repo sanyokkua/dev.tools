@@ -800,6 +800,85 @@ export const MAC_OS_BREW_APPS: Application[] = [
         brewType: BrewType.CASK,
         category: Category.CODE_EDITORS,
     },
+    {
+        id: 'tlrc',
+        name: 'tldr-pages',
+        description:
+            'Official tldr client written in Rust. The tldr-pages project is a collection of community-maintained help pages for command-line tools, that aims to be a simpler, more approachable complement to traditional man pages.',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'jq',
+        name: 'jq',
+        description: 'Lightweight and flexible command-line JSON processor',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'sd',
+        name: 'sd',
+        description: 'Intuitive find & replace CLI',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'ripgrep',
+        name: 'ripgrep',
+        description: 'Also known as: rg. Search tool like grep and The Silver Searcher',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'fd',
+        name: 'fd',
+        description:
+            "Simple, fast and user-friendly alternative to find. While it does not aim to support all of find's powerful functionality, it provides sensible (opinionated) defaults for a majority of use cases.",
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'midnight-commander',
+        name: 'midnight-commander',
+        description: 'Also known as: mc. Terminal-based visual file manager',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'ranger',
+        name: 'ranger',
+        description: 'ranger is a console file manager with VI key bindings.',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'nnn',
+        name: 'nnn',
+        description: 'Tiny, lightning fast, feature-packed file manager',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'lazygit',
+        name: 'lazygit',
+        description: 'Simple terminal UI for git commands',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'bat',
+        name: 'bat',
+        description: 'Clone of cat(1) with syntax highlighting and Git integration',
+        brewType: BrewType.COMMAND,
+        category: Category.DEV_UTILITIES,
+    },
+    {
+        id: 'pcsx2',
+        name: 'pcsx2',
+        description: 'PCSX2 - Playstation 2 Emulator',
+        brewType: BrewType.CASK,
+        category: Category.GAMING,
+    },
 ];
 
 /**
