@@ -1,4 +1,3 @@
-'use client';
 import { usePage } from '@/contexts/PageContext';
 import { useEffect } from 'react';
 import AppMainContainer from '../components/layouts/AppMainContainer';

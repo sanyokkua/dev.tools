@@ -1,4 +1,3 @@
-'use client';
 import { usePage } from '@/contexts/PageContext';
 import BrewInstallApplications from '@/page-specific/mac-os-cheat-sheet/BrewInstallApplications';
 import BrewInstallSteps from '@/page-specific/mac-os-cheat-sheet/BrewInstallSteps';

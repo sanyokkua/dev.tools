@@ -1,5 +1,3 @@
-'use client';
-
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { createDefaultFile } from '@/common/file-utils';

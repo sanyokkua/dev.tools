@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useMemo } from 'react';
 
 import { usePage } from '@/contexts/PageContext';

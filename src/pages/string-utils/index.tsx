@@ -1,4 +1,3 @@
-'use client';
 import { createStringUtilList } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
 import { useEffect, useMemo } from 'react';

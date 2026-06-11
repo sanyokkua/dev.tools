@@ -1,6 +1,8 @@
 .transfer-filters {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
 }
 
 .transfer-table {

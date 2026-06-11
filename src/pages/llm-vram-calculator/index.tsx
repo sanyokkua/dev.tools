@@ -1,5 +1,3 @@
-'use client';
-
 import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from '@/common/llm-vram-calc';
 import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';

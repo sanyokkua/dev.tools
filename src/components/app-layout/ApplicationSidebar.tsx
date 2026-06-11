@@ -15,6 +15,7 @@ const sideBarItems: SideBarItem[] = [
     // { itemName: 'Date Tools', itemLink: '/date-tools' },
     { itemName: 'Git Cheat-sheet', itemLink: '/git-cheat-sheet' },
     { itemName: 'MacOS Cheat-sheet', itemLink: '/mac-os-cheat-sheet' },
+    { itemName: 'AI Tools Setup', itemLink: '/ai-tools-setup' },
     // { itemName: 'Windows Cheat-sheet', itemLink: '/windows-cheat-sheet' }, //TODO: Feature releases
     { itemName: 'Prompts Collection', itemLink: '/prompts-collection' },
     { itemName: 'LLM VRAM Calculator', itemLink: '/llm-vram-calculator' },

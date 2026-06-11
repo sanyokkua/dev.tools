@@ -1,0 +1,46 @@
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--surface-color-on);
+}
+
+.platform-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tool-link-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.tool-link-badge {
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    color: var(--tertiary-color);
+    border: 1px solid var(--tertiary-color);
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+        background: var(--tertiary-container-color);
+        color: var(--tertiary-container-color-on);
+    }
+}

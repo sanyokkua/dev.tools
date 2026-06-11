@@ -1,8 +1,8 @@
-'use client';
 import { FileOpenProvider } from '@/contexts/FileOpenContext';
 import { FileSaveDialogProvider } from '@/contexts/FileSaveDialogContext';
 import { PageProvider } from '@/contexts/PageContext';
 import { ToasterProvider } from '@/contexts/ToasterContext';
+import '@/styles/ai-tools-setup.scss';
 import '@/styles/appbar.scss';
 import '@/styles/buttons.scss';
 import '@/styles/chip.scss';

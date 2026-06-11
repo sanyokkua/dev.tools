@@ -1,4 +1,3 @@
-'use client';
 import { createJsonFormatter } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
 import React, { useEffect, useMemo } from 'react';

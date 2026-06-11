@@ -1,5 +1,3 @@
-'use client';
-
 import { Prompt } from '@/common/prompts/prompts';
 import { promptsLibraryList } from '@/common/prompts/prompts-library';
 import PromptView from '@/elements/prompt/PromptView';
