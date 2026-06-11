@@ -647,6 +647,13 @@ export const MAC_OS_BREW_APPS: Application[] = [
         category: Category.AI_CODING_TOOLS,
     },
     {
+        id: 'mistral-vibe',
+        name: 'Mistral Vibe',
+        description: 'Terminal AI coding agent powered by Devstral models with MCP and Git context support.',
+        brewType: BrewType.COMMAND,
+        category: Category.AI_CODING_TOOLS,
+    },
+    {
         id: 'claude-code',
         name: 'Claude Code',
         description: 'Terminal-based AI coding assistant',
