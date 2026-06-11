@@ -1,0 +1,660 @@
+brew install aider
+brew install --cask android-file-transfer
+brew install --cask android-studio
+brew install --cask antigravity
+brew install --cask antigravity-cli
+brew install --cask antigravity-ide
+brew install --cask appcleaner
+brew install bat
+brew install --cask blender
+brew install block-goose-cli
+brew install --cask brave-browser
+brew install --cask bruno
+brew install --cask claude
+brew install --cask claude-code
+brew install --cask clion
+brew install --cask codeedit
+brew install --cask codex
+brew install --cask codex-app
+brew install --cask corretto
+brew install --cask corretto@8
+brew install --cask corretto@11
+brew install --cask corretto@17
+brew install --cask corretto@21
+brew install --cask corretto@25
+brew install curl
+brew install --cask cursor
+brew install --cask cursor-cli
+brew install --cask datagrip
+brew install --cask dbeaver-community
+brew install docker
+brew install docker-compose
+brew install --cask docker-desktop
+brew install --cask drawio
+brew install --cask dropbox
+brew install --cask eclipse-ide
+brew install exiftool
+brew install fd
+brew install ffmpeg
+brew install --cask firefox
+brew install --cask fleet (Should be deleted from the app, deprecated)
+brew install gemini-cli
+brew install git
+brew install go
+brew install --cask goland
+brew install --cask google-chrome
+brew install --cask google-drive
+brew install htop
+brew install --cask iina
+brew install --cask intellij-idea
+brew install --cask intellij-idea-ce (deprecated, because now intellij-idea has universal build, should be deleted)
+brew install --cask iterm2
+brew install --cask jellyfin
+brew install jenv
+brew install --cask joplin
+brew install jq
+brew install --cask kate
+brew install --cask keka
+brew install --cask kiro
+brew install --cask kiro-cli
+brew install lazygit
+brew install --cask libreoffice
+brew install llama.cpp
+brew install --cask lm-studio
+brew install maven
+brew install --cask microsoft-edge
+brew install --cask microsoft-teams
+brew install midnight-commander
+brew install nano
+brew install neovim
+brew install --cask netbeans
+brew install nnn
+brew install node
+brew install node@14 (deprecated, needs to be removed)
+brew install node@18 (deprecated, needs to be removed)
+brew install node@20 (deprecated, needs to be removed)
+brew install node@22
+brew install node@24
+brew install nvm
+brew install nvtop
+brew install ollama
+brew install --cask ollama-app
+brew install opencode
+brew install --cask opencode-desktop
+brew install --cask openemu (deprecated, needs to be removed)
+brew install --cask openmtp
+brew install --cask openoffice (deprecated, keep)
+brew install --cask opera
+brew install --cask pcsx2
+brew install --cask pearcleaner
+brew install --cask phpstorm
+brew install pinentry-mac
+brew install podman
+brew install podman-compose
+brew install --cask postman
+brew install --cask protonvpn
+brew install --cask pycharm
+brew install --cask pycharm-ce (deprecated, because now pycharm has universal build, should be deleted)
+brew install pyenv
+brew install python@3.10
+brew install python@3.11
+brew install python@3.12
+brew install python@3.13
+brew install python@3.14
+brew install qwen-code
+brew install ranger
+brew install --cask rider
+brew install ripgrep
+brew install --cask rustrover
+brew install --cask signal
+brew install --cask softmaker-freeoffice
+brew install --cask spotify
+brew install --cask springtoolsforeclipse
+brew install --cask sublime-text
+brew install --cask tad
+brew install --cask telegram
+brew install --cask thunderbird
+brew install tlrc
+brew install --cask tor-browser
+brew install --cask transmission
+brew install tree
+brew install --cask upscayl
+brew install --cask utm
+brew install uv
+brew install vim
+brew install --cask visual-studio-code
+brew install --cask visual-studio-code@insiders
+brew install --cask vlc
+brew install --cask vscodium
+brew install --cask vscodium@insiders
+brew install wget
+brew install --cask zed
+brew install --cask windsurf (no more exists, should be deleted)
+
+windsurf is replaced by:
+- brew install --cask devin-cli (devin-cli, Name: Devin CLI, Coding agent with Devin Cloud integration, https://cli.devin.ai/docs)
+- brew install --cask devin-desktop (devin-desktop, Name: Devin Desktop, Agentic IDE with AI agent command center, https://devin.ai/desktop)
+
+
+Additional new items:
+
+```
+markedit
+Install command:
+brew install --cask markedit
+
+Name: MarkEdit
+
+Markdown editor
+
+https://github.com/MarkEdit-app/MarkEdit
+```
+
+---
+
+```
+qlmarkdown
+Install command:
+brew install --cask qlmarkdown
+
+Name: sbarex QLMarkdown
+
+Quick Look generator for Markdown files
+
+https://github.com/sbarex/QLMarkdown
+```
+
+---
+
+```
+rtk
+Install command:
+brew install rtk
+CLI proxy to minimize LLM token consumption
+
+https://www.rtk-ai.app/
+```
+
+---
+
+```
+helix
+Install command:
+brew install helix
+Also known as: hx
+
+Post-modern modal text editor
+
+https://helix-editor.com
+```
+
+---
+
+```
+lapce
+Install command:
+brew install --cask lapce
+⧉
+Name: Lapce
+
+Open source code editor written in Rust
+
+https://lapce.dev/
+```
+
+---
+
+```
+coteditor
+Install command:
+brew install --cask coteditor
+⧉
+Name: CotEditor
+
+Plain-text editor for web pages, program source codes and more
+
+https://coteditor.com/
+```
+
+---
+
+```
+
+mochi-diffusion
+Install command:
+brew install --cask mochi-diffusion
+⧉
+Name: Mochi Diffusion
+
+Run Stable Diffusion natively
+
+https://github.com/godly-devotion/MochiDiffusion
+
+```
+
+---
+
+```
+diffusionbee
+Install command:
+brew install --cask diffusionbee
+
+Name: Diffusion Bee
+
+Run Stable Diffusion locally
+
+https://diffusionbee.com/
+
+```
+
+---
+
+```
+draw-things
+Install command:
+brew install --cask draw-things
+
+Name: Draw Things
+
+Run Stable Diffusion locally
+
+https://drawthings.ai/
+
+```
+
+---
+
+```
+awscli
+Install command:
+brew install awscli
+⧉
+Also known as: awscli@2
+
+Official Amazon AWS command-line interface
+
+https://aws.amazon.com/cli/
+
+```
+
+---
+
+```
+wpsoffice
+Install command:
+brew install --cask wpsoffice
+⧉
+Name: WPS Office
+
+All-in-one office suite
+
+https://www.wps.com/
+https://www.wps.com/office/mac/
+```
+
+---
+
+```
+foobar2000
+Install command:
+brew install --cask foobar2000
+⧉
+Name: foobar2000
+
+Audio player
+
+https://www.foobar2000.org/mac
+```
+
+---
+
+```
+audacious
+Install command:
+brew install audacious
+⧉
+Lightweight and versatile audio player
+
+https://audacious-media-player.org/
+```
+
+---
+
+```
+mpv
+Install command:
+brew install mpv
+⧉
+Media player based on MPlayer and mplayer2
+
+https://mpv.io
+```
+
+---
+
+```
+handbrake
+Install command:
+brew install handbrake
+⧉
+Open-source video transcoder available for Linux, Mac, and Windows
+
+https://handbrake.fr/
+
+```
+
+---
+
+```
+brave-browser
+Install command:
+brew install --cask brave-browser
+⧉
+Name: Brave
+
+Web browser focusing on privacy
+
+https://brave.com/
+```
+
+---
+
+```
+vivaldi
+Install command:
+brew install --cask vivaldi
+⧉
+Name: Vivaldi
+
+Web browser with built-in email client focusing on customization and control
+
+https://vivaldi.com/
+```
+
+---
+
+```
+waterfox
+Install command:
+brew install --cask waterfox
+⧉
+Name: Waterfox
+
+Web browser
+
+https://www.waterfox.net/
+
+
+```
+
+---
+
+```
+whatsapp
+Install command:
+brew install --cask whatsapp
+⧉
+Name: WhatsApp
+
+Native desktop client for WhatsApp
+
+https://www.whatsapp.com/
+```
+
+---
+```
+slack
+Install command:
+brew install --cask slack
+⧉
+Name: Slack
+
+Team communication and collaboration software
+
+https://slack.com/
+```
+
+---
+
+
+```
+onyx
+Install command:
+brew install --cask onyx
+⧉
+Name: OnyX
+
+Verify system files structure, run miscellaneous maintenance and more
+
+https://www.titanium-software.fr/en/onyx.html
+```
+
+---
+
+```
+maintenance
+Install command:
+brew install --cask maintenance
+⧉
+Name: Maintenance
+
+Operating system maintenance and cleaning utility
+
+https://www.titanium-software.fr/en/maintenance.html
+```
+---
+
+```
+deeper
+Install command:
+brew install --cask deeper
+⧉
+Name: Deeper
+
+Tool to enable and disable hidden functions of Finder and other apps
+
+https://www.titanium-software.fr/en/deeper.html
+
+
+```
+
+---
+
+```
+calhash
+Install command:
+brew install --cask calhash
+⧉
+Name: CalHash
+
+Calculate and compare file checksums
+
+https://www.titanium-software.fr/en/calhash.html
+```
+
+---
+
+# Improved list with descriptions:
+
+Here is the complete, fact-checked list of Homebrew commands with 1-2 sentence descriptions added for each tool, keeping your original order, parameters, and notes intact.
+
+### Main App and Tool List
+
+* `brew install aider` - AI pair programming tool in your terminal. It connects to various LLMs to write and edit code directly in your local Git repository.
+* `brew install --cask android-file-transfer` - Application for macOS to browse and transfer files between your Mac and an Android device via USB.
+* `brew install --cask android-studio` - The official Integrated Development Environment (IDE) for Android app development, built on JetBrains' IntelliJ IDEA software.
+* `brew install --cask antigravity` - An "agent-first" IDE by Google DeepMind built on a VS Code fork. It features an integrated Agent Manager for parallel AI task execution and contextual tab completion.
+* `brew install --cask antigravity-cli` - The command-line interface for Google Antigravity. It allows you to trigger DeepMind AI agents and orchestrate development workflows directly from the terminal.
+* `brew install --cask antigravity-ide` - The standalone desktop IDE package for Google Antigravity, providing a unified graphical workspace for AI-assisted software development.
+* `brew install --cask appcleaner` - A small application that allows you to thoroughly uninstall unwanted Mac apps and automatically delete their associated hidden files.
+* `brew install bat` - A `cat` clone with built-in syntax highlighting and Git integration. It provides a more readable and visually appealing way to view file contents in the terminal.
+* `brew install --cask blender` - A free and open-source 3D creation suite. It supports the entirety of the 3D pipeline, including modeling, rigging, animation, simulation, and rendering.
+* `brew install block-goose-cli` - The CLI version of Goose, Block's open-source AI agent. It can execute shell commands, modify files, and orchestrate complex multi-step development workflows autonomously.
+* `brew install --cask brave-browser` - A privacy-focused Chromium web browser that automatically blocks third-party ads and website trackers by default.
+* `brew install --cask bruno` - An open-source desktop application for testing and managing API requests, serving as a lightweight and local-first alternative to Postman.
+* `brew install --cask claude` - The official desktop application for Anthropic's Claude AI assistant, bringing web-based chat features natively to macOS.
+* `brew install --cask claude-code` - An agentic CLI tool by Anthropic that directly interacts with your local codebase to write, edit, and debug code using Claude models.
+* `brew install --cask clion` - A cross-platform C and C++ IDE developed by JetBrains. It provides advanced code assistance, debugging, and project management tools.
+* `brew install --cask codeedit` - A native, lightweight code editor for macOS built entirely in Swift. It is designed to feel natively integrated into the Mac ecosystem.
+* `brew install --cask codex` - A development environment tool utilizing OpenAI's Codex model capabilities to translate natural language instructions into code.
+* `brew install --cask codex-app` - The desktop application interface for interacting with the OpenAI Codex engine to perform code generation and refactoring tasks.
+* `brew install --cask corretto` - Amazon's no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).
+* `brew install --cask corretto@8` - Amazon Corretto distribution for OpenJDK 8.
+* `brew install --cask corretto@11` - Amazon Corretto distribution for OpenJDK 11.
+* `brew install --cask corretto@17` - Amazon Corretto distribution for OpenJDK 17.
+* `brew install --cask corretto@21` - Amazon Corretto distribution for OpenJDK 21.
+* `brew install --cask corretto@25` - Amazon Corretto distribution for OpenJDK 25.
+* `brew install curl` - A command-line tool for transferring data over various network protocols. It is universally used for downloading files and testing HTTP requests.
+* `brew install --cask cursor` - An AI-powered code editor built as a fork of VS Code. It deeply integrates AI features like codebase querying, auto-completion, and inline bug fixing.
+* `brew install --cask cursor-cli` - The command-line utility for the Cursor editor. It allows you to quickly launch the editor or manage its environment from your terminal.
+* `brew install --cask datagrip` - A cross-platform database IDE by JetBrains. It supports multiple database engines and provides tools for writing SQL, navigating schemas, and exporting data.
+* `brew install --cask dbeaver-community` - A free and open-source universal database tool. It supports all databases that have a JDBC driver, offering comprehensive GUI administration.
+* `brew install docker` - The command-line interface for Docker, allowing you to build, ship, and run distributed applications in isolated containers.
+* `brew install docker-compose` - A tool for defining and running multi-container Docker applications using a declarative YAML configuration file.
+* `brew install --cask docker-desktop` - The graphical application for managing Docker containers and images on macOS. It includes the Docker engine, CLI client, and Docker Compose.
+* `brew install --cask drawio` - A free, open-source diagramming application for creating flowcharts, network diagrams, and UML models.
+* `brew install --cask dropbox` - The desktop client for Dropbox's cloud storage service. It seamlessly syncs files between your local filesystem and the cloud.
+* `brew install --cask eclipse-ide` - A widely used open-source integrated development environment, primarily utilized for Java development but extensible via plugins.
+* `brew install exiftool` - A platform-independent command-line application for reading, writing, and editing meta information (like EXIF data) in a wide variety of files.
+* `brew install fd` - A simple, fast, and user-friendly alternative to the `find` command. It provides smart case sensitivity and colored terminal output by default.
+* `brew install ffmpeg` - A complete, cross-platform CLI solution to record, convert, and stream audio and video. It is the industry standard tool for media processing.
+* `brew install --cask firefox` - The official Mozilla Firefox web browser, renowned for its independent, open-source engine and strong privacy features.
+* `brew install --cask fleet` (Should be deleted from the app, deprecated) - JetBrains' next-generation, polyglot IDE and collaboration environment.
+* `brew install gemini-cli` - A command-line interface for interacting with Google's Gemini AI models. It enables quick AI queries, summarization, and assistance directly in the terminal.
+* `brew install git` - The standard distributed version control system for tracking changes in source code during software development.
+* `brew install go` - The official compiler and standard library for the Go programming language (Golang) developed by Google.
+* `brew install --cask goland` - A commercial IDE by JetBrains explicitly designed for Go development. It provides deep static code analysis and ergonomic design features.
+* `brew install --cask google-chrome` - Google's official cross-platform web browser, known for speed and its extensive extension ecosystem.
+* `brew install --cask google-drive` - The desktop application for Google Drive. It allows you to seamlessly sync and back up files between your Mac and cloud storage.
+* `brew install htop` - An interactive system-monitor process-viewer and process-manager. It serves as an advanced, colorful alternative to the standard `top` command.
+* `brew install --cask iina` - A modern, open-source media player for macOS based on mpv. It features a native Mac interface and supports almost all media formats.
+* `brew install --cask intellij-idea` - The flagship commercial Java IDE by JetBrains. It provides comprehensive enterprise frameworks support and polyglot capabilities.
+* `brew install --cask intellij-idea-ce` (deprecated, because now intellij-idea has universal build, should be deleted) - The free, open-source Community Edition of IntelliJ IDEA for Java and Kotlin development.
+* `brew install --cask iterm2` - A highly customizable terminal emulator for macOS that serves as a feature-rich replacement for Apple's default Terminal app.
+* `brew install --cask jellyfin` - A free, open-source media system that puts you in control of managing and streaming your personal media. It is an alternative to Plex or Emby.
+* `brew install jenv` - A command-line tool to manage multiple Java environment versions. It simplifies switching between different JDKs on your system effortlessly.
+* `brew install --cask joplin` - An open-source note-taking and to-do application with synchronization capabilities. It uses Markdown formatting and supports end-to-end encryption.
+* `brew install jq` - A lightweight and flexible command-line JSON processor. It allows you to slice, filter, map, and transform structured JSON data easily.
+* `brew install --cask kate` - An advanced multi-document text editor by KDE. It features deep syntax highlighting, code folding, and an embedded terminal.
+* `brew install --cask keka` - A full-featured file archiver utility for macOS. It supports compressing and extracting various formats like 7z, Zip, Tar, and RAR.
+* `brew install --cask kiro` - Amazon's new standalone IDE (successor to Amazon Q Developer) built on the VS Code engine, offering deep AWS and generative AI integration.
+* `brew install --cask kiro-cli` - The command-line tool for Amazon Kiro. It allows terminal-based interaction with Amazon's developer AI and manages AWS environment authentication.
+* `brew install lazygit` - A simple terminal UI for Git commands. It visually streamlines version control workflows so you don't have to memorize complex CLI flags.
+* `brew install --cask libreoffice` - A powerful, free, and open-source office suite. It serves as a highly compatible alternative to Microsoft Office.
+* `brew install llama.cpp` - A highly optimized C/C++ port of Meta's LLaMA model architecture. It allows you to run large language models locally with high performance and low memory footprints.
+* `brew install --cask lm-studio` - A desktop application that lets you discover, download, and run local open-source LLMs entirely offline on your own machine.
+* `brew install maven` - A build automation and dependency management tool primarily used for Java projects. It operates using a declarative Project Object Model (POM) XML file.
+* `brew install --cask microsoft-edge` - Microsoft's official Chromium-based web browser. It features deep integration with Microsoft services and Copilot AI.
+* `brew install --cask microsoft-teams` - Microsoft's communication and collaboration platform. It combines workplace chat, video meetings, and file storage.
+* `brew install midnight-commander` - A visual file manager for the terminal. It provides a classic two-pane interface for moving, copying, and navigating files efficiently.
+* `brew install nano` - A simple, user-friendly text editor for the terminal. It is often preferred by beginners for its straightforward command shortcuts displayed directly on-screen.
+* `brew install neovim` - A highly extensible and heavily refactored Vim-based text editor. It focuses on modern features, performance, and first-class Lua scripting support.
+* `brew install --cask netbeans` - An open-source IDE from the Apache Software Foundation. It is primarily used for Java development but also supports languages like PHP and HTML5.
+* `brew install nnn` - A blazing-fast, lightweight terminal file manager. It features disk usage analysis, fuzzy search capabilities, and seamless app integration.
+* `brew install node` - A JavaScript runtime built on Chrome's V8 engine. It allows developers to execute JavaScript code server-side and outside a web browser.
+* `brew install node@14` (deprecated, needs to be removed) - Legacy Node.js runtime version 14.
+* `brew install node@18` (deprecated, needs to be removed) - Legacy Node.js runtime version 18.
+* `brew install node@20` (deprecated, needs to be removed) - Node.js runtime version 20 (Active LTS).
+* `brew install node@22` - Node.js runtime version 22 (Current LTS).
+* `brew install node@24` - Node.js runtime version 24.
+* `brew install nvm` - Node Version Manager. It is a bash script that allows you to seamlessly install, manage, and switch between multiple active Node.js versions.
+* `brew install nvtop` - A terminal-based task monitor for GPUs, functioning similarly to `htop`. It monitors resources across AMD, Intel, and NVIDIA graphics cards.
+* `brew install ollama` - A command-line tool that lets you easily launch and run large language models locally. It handles downloading model weights and executing them locally.
+* `brew install --cask ollama-app` - The graphical menu bar application for Ollama. It provides a background service to run local AI models smoothly without keeping a terminal open.
+* `brew install opencode` - A fully open-source, terminal-native AI coding agent. It supports 75+ AI models and executes multi-step development tasks autonomously without storing your code remotely.
+* `brew install --cask opencode-desktop` - The desktop application interface for OpenCode. It provides a graphical environment for the open-source coding agent while ensuring code processing remains localized.
+* `brew install --cask openemu` (deprecated, needs to be removed) - An open-source video game emulation project for macOS that visually organizes your classic game ROMs.
+* `brew install --cask openmtp` - An advanced Android File Transfer application for macOS. It offers a secure and fast way to transfer files via USB, bypassing standard Android limits.
+* `brew install --cask openoffice` (deprecated, keep) - Apache OpenOffice, an older open-source productivity suite.
+* `brew install --cask opera` - A fast and secure Chromium web browser that includes built-in features like a free VPN, an ad blocker, and integrated social sidebars.
+* `brew install --cask pcsx2` - A powerful, open-source PlayStation 2 emulator. It allows you to play classic PS2 games on your Mac with enhanced resolutions and framerates.
+* `brew install --cask pearcleaner` - An open-source Mac app cleaner utility. It helps you cleanly uninstall applications and reliably remove leftover residual files.
+* `brew install --cask phpstorm` - A commercial, cross-platform IDE for PHP by JetBrains. It provides deep code understanding and robust support for all major PHP frameworks.
+* `brew install pinentry-mac` - A utility for securely entering PINs or passphrases on macOS. It is commonly deployed as the graphical password dialog for GnuPG (GPG).
+* `brew install podman` - A daemonless, open-source container engine designed as a drop-in replacement for Docker. It securely runs containers and pods without requiring root privileges.
+* `brew install podman-compose` - A script that executes `docker-compose.yml` files using Podman. It provides an equivalent multi-container orchestration experience to Docker Compose.
+* `brew install --cask postman` - A popular API platform for building, testing, and utilizing web APIs. It offers a rich GUI for generating requests and deeply inspecting responses.
+* `brew install --cask protonvpn` - The official macOS client for ProtonVPN. It provides a secure, privacy-focused virtual private network service run by the makers of ProtonMail.
+* `brew install --cask pycharm` - A comprehensive Python IDE developed by JetBrains. It offers advanced code analysis, a graphical debugger, and robust web framework integration.
+* `brew install --cask pycharm-ce` (deprecated, because now pycharm has universal build, should be deleted) - The free Community Edition of PyCharm aimed at pure Python development.
+* `brew install pyenv` - A lightweight tool to easily switch between multiple versions of Python. It seamlessly manages global and project-specific Python environments.
+* `brew install python@3.10` - Python programming language runtime version 3.10.
+* `brew install python@3.11` - Python programming language runtime version 3.11.
+* `brew install python@3.12` - Python programming language runtime version 3.12.
+* `brew install python@3.13` - Python programming language runtime version 3.13.
+* `brew install python@3.14` - Python programming language runtime version 3.14.
+* `brew install qwen-code` - A command-line coding assistant powered by Alibaba's Qwen language models. It provides AI-driven code completion, generation, and explanation within the terminal.
+* `brew install ranger` - A terminal file manager configured with VI keybindings. It features a minimalist, text-based interface utilizing a multi-pane directory view.
+* `brew install --cask rider` - A fast and powerful cross-platform .NET IDE by JetBrains. It supports C#, F#, and ASP.NET for developing full-stack web applications and Unity games.
+* `brew install ripgrep` - An extremely fast line-oriented search tool that recursively searches your current directory for a regex pattern. It automatically respects `.gitignore` rules by default.
+* `brew install --cask rustrover` - A standalone IDE by JetBrains dedicated exclusively to Rust development. It features advanced macro expansion, real-time code analysis, and deep Cargo integration.
+* `brew install --cask signal` - The native desktop client for the Signal messaging app. It provides secure, end-to-end encrypted messaging and calling directly from macOS.
+* `brew install --cask softmaker-freeoffice` - A free, lightweight office suite comprising a word processor, spreadsheet, and presentation application. It boasts excellent compatibility with Microsoft Office file formats.
+* `brew install --cask spotify` - The official macOS desktop application for the Spotify music streaming service.
+* `brew install --cask springtoolsforeclipse` - An Eclipse-based IDE tailored specifically for Spring Boot development. It provides ready-to-use tooling for building and deploying enterprise Java applications.
+* `brew install --cask sublime-text` - A sophisticated, lightweight text editor for code, markup, and prose. It is widely known for its exceptional speed, minimal interface, and powerful package ecosystem.
+* `brew install --cask tad` - A fast, cross-platform desktop application for viewing and analyzing tabular data formats like CSVs. It is optimized to handle files with millions of rows effortlessly.
+* `brew install --cask telegram` - The official macOS native client for Telegram. It is a fast, cloud-based messaging app heavily focused on speed and multi-device syncing.
+* `brew install --cask thunderbird` - A free, open-source email, newsfeed, chat, and calendaring client actively developed by the Mozilla Foundation.
+* `brew install tlrc` - The official Rust client for tldr pages. It fetches and displays simplified, community-driven man pages packed with practical examples.
+* `brew install --cask tor-browser` - A privacy-focused web browser that routes your internet traffic through the encrypted Tor network. It is designed to prevent tracking, surveillance, and censorship.
+* `brew install --cask transmission` - A fast, easy, and free BitTorrent client for Mac. It is beloved for its extremely lightweight footprint and clean, native macOS UI.
+* `brew install tree` - A recursive directory listing command-line utility. It produces a depth-indented, colorized visual tree representation of files in a directory.
+* `brew install --cask upscayl` - A free and open-source AI image upscaler tool. It utilizes advanced machine learning models to enlarge and restore low-resolution images.
+* `brew install --cask utm` - A full-featured system emulator and virtual machine host for macOS. It harnesses Apple's Hypervisor framework to run Windows, Linux, and older macOS environments natively.
+* `brew install uv` - An extremely fast Python package and project manager written in Rust. It serves as a massive performance upgrade and drop-in replacement for `pip`, `pip-tools`, and `virtualenv`.
+* `brew install vim` - A highly configurable text editor built to make creating and changing any kind of text very efficient. It is an improved, feature-rich version of the classic UNIX `vi` editor.
+* `brew install --cask visual-studio-code` - Microsoft's immensely popular open-source code editor. It features a vast extension marketplace, built-in Git, and deep multi-language support.
+* `brew install --cask visual-studio-code@insiders` - The nightly pre-release build of Visual Studio Code. It allows developers to test the absolute latest features and bug fixes before the stable release.
+* `brew install --cask vlc` - A free, open-source cross-platform multimedia player. It reliably plays nearly all multimedia files, DVDs, Audio CDs, and various streaming protocols out of the box.
+* `brew install --cask vscodium` - A community-driven, telemetry-free binary distribution of Microsoft's VS Code. It provides the exact same robust editing experience but strips out data tracking.
+* `brew install --cask vscodium@insiders` - The nightly pre-release version of VSCodium. It offers the latest bleeding-edge VS Code features while remaining completely free of Microsoft's telemetry.
+* `brew install wget` - A popular command-line utility for non-interactive downloading of files from the web. It handles HTTP, HTTPS, and FTP protocols and can seamlessly mirror entire websites.
+* `brew install --cask zed` - A high-performance, multiplayer code editor crafted by the creators of Atom. It is written in Rust and designed for blazing speed and real-time developer collaboration.
+* `brew install --cask windsurf` (no more exists, should be deleted) - *Windsurf has been discontinued. (See replacements below).*
+
+---
+
+### Windsurf Replacements
+
+* `brew install --cask devin-cli` - Name: Devin CLI. A command-line interface that integrates with Devin Cloud, providing an agentic coding assistant to autonomously manage projects and development workflows.
+* `brew install --cask devin-desktop` - Name: Devin Desktop. An agentic IDE featuring an AI command center, designed to visually orchestrate complex development tasks utilizing the Devin AI model.
+
+---
+
+### Additional New Items
+
+* `brew install --cask markedit` - Name: MarkEdit. A lightweight, native Markdown editor for macOS built to look, feel, and operate like a standard Apple app.
+* `brew install --cask qlmarkdown` - Name: sbarex QLMarkdown. A macOS Quick Look extension generator that allows you to instantly preview formatted Markdown files simply by pressing the spacebar.
+* `brew install rtk` - A CLI proxy designed to actively minimize LLM token consumption. It sits between your coding agents and APIs, efficiently caching and optimizing prompt payloads.
+* `brew install helix` - Also known as: hx. A modern, Rust-based modal text editor inspired by Neovim. It features built-in language server support and multiple cursors right out of the box.
+* `brew install --cask lapce` - Name: Lapce. An open-source, lightning-fast code editor written in Rust. It utilizes the GPU for UI rendering and provides native support for remote development.
+* `brew install --cask coteditor` - Name: CotEditor. A lightweight, plain-text editor built specifically for macOS. It is ideal for exceptionally fast edits to web pages, source code, and configuration scripts.
+* `brew install --cask mochi-diffusion` - Name: Mochi Diffusion. A desktop app that natively runs Stable Diffusion models on Apple Silicon. It utilizes Apple's Core ML framework for fast, optimized image generation without an internet connection.
+* `brew install --cask diffusionbee` - Name: Diffusion Bee. An easy-to-use Mac app to run Stable Diffusion entirely locally. It requires absolutely zero technical knowledge or terminal commands to start generating AI art.
+* `brew install --cask draw-things` - Name: Draw Things. A powerful app to run Stable Diffusion models locally across macOS and iOS. It grants users granular controls over generation parameters, resolutions, and model layers.
+* `brew install awscli` - Also known as: awscli@2. The official Amazon Web Services command-line interface. It provides a unified, scriptable toolset to manage, deploy, and automate your AWS cloud resources.
+* `brew install --cask wpsoffice` - Name: WPS Office. A comprehensive, all-in-one suite covering documents, spreadsheets, and presentations. It features exceptionally high formatting compatibility with Microsoft Office files.
+* `brew install --cask foobar2000` - Name: foobar2000. An advanced, highly customizable audio player initially famous on Windows. It focuses on exceptionally low memory usage and broad, niche format support.
+* `brew install audacious` - A lightweight, open-source audio player that focuses strictly on high audio quality and low resource usage. It is highly versatile with plugin support and classic Winamp skin compatibility.
+* `brew install mpv` - A free, open-source, and cross-platform media player built off the MPlayer architecture. It features a minimalist on-screen controller and is highly scriptable for power users.
+* `brew install handbrake` - An open-source video transcoder used to convert video from nearly any format. It outputs to a selection of modern, widely supported codecs with customized quality profiles.
+* `brew install --cask brave-browser` - Name: Brave. A privacy-focused web browser that automatically blocks third-party ads and trackers, substantially speeding up standard page load times.
+* `brew install --cask vivaldi` - Name: Vivaldi. A highly customizable web browser built specifically for power users. It features complex tab management, deep UI customization, and a built-in email client.
+* `brew install --cask waterfox` - Name: Waterfox. A privacy-centric web browser based on the core Firefox engine. It aggressively strips out telemetry and prioritizes performance and user choice.
+* `brew install --cask whatsapp` - Name: WhatsApp. The native desktop client for WhatsApp. It allows you to seamlessly send messages and make calls directly from your Mac while syncing instantly with your phone.
+* `brew install --cask slack` - Name: Slack. A ubiquitous team communication and collaboration platform. It organizes workplace conversations into dedicated channels and tightly integrates with third-party productivity tools.
+* `brew install --cask onyx` - Name: OnyX. A robust, multifunction utility system tool for macOS. It allows users to verify startup disks, run deep system maintenance scripts, and configure hidden graphical parameters.
+* `brew install --cask maintenance` - Name: Maintenance. A simplified system maintenance and cleaning utility from the creators of OnyX. It safely automates common macOS tune-up tasks without overwhelming users with complex options.
+* `brew install --cask deeper` - Name: Deeper. A personalization utility tool for macOS by Titanium Software. It exclusively focuses on toggling hidden features and behaviors in Finder, Dock, Safari, and other Apple applications.
+* `brew install --cask calhash` - Name: CalHash. A specialized utility tool for macOS used to calculate and compare cryptographic checksums (hashes) of files to rigorously verify their data integrity.
+
+
+Eclipse Temurin (by Adoptium)Temurin builds are managed natively via Homebrew casks.Java 8: brew install --cask temurin@8Java 11: brew install --cask temurin@11Java 17: brew install --cask temurin@17Java 21: brew install --cask temurin@21Java 25: brew install --cask temurin@25
+
+Microsoft Build of OpenJDKMicrosoft packages their builds into Homebrew casks for immediate macOS support.Java 8: (Not available; Microsoft's build only supports 11+)Java 11: brew install --cask microsoft-openjdk@11Java 17: brew install --cask microsoft-openjdk@17Java 21: brew install --cask microsoft-openjdk@21Java 25: brew install --cask microsoft-openjdk@25
+
+Azul ZuluAzul Zulu provides comprehensive version coverage available through standard Homebrew casks.Java 8: brew install --cask zulu@8Java 11: brew install --cask zulu@11Java 17: brew install --cask zulu@17Java 21: brew install --cask zulu@21Java 25: brew install --cask zulu@25
+
+BellSoft Liberica JDKBellSoft requires you to add their dedicated third-party repository ("tap") to access their full catalog.Setup Tap: brew tap bell-sw/libericaJava 8: brew install --cask liberica-jdk8Java 11: brew install --cask liberica-jdk11Java 17: brew install --cask liberica-jdk17Java 21: brew install --cask liberica-jdk21Java 25: brew install --cask liberica-jdk25
+
