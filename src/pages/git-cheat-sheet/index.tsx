@@ -37,12 +37,12 @@ import {
 } from '@/common/git-utils';
 import { OSType } from '@/common/types';
 import { usePage } from '@/contexts/PageContext';
+import GuideChooser from '@/elements/GuideChooser';
 import { StringUtils } from 'coreutilsts';
 import { FC, useEffect, useState } from 'react';
 import CodeSnippet from '../../components/elements/CodeSnippet';
 import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 import GitForm, { FormData } from '../../components/page-specific/git-cheat-sheet/git-form';
-import GuideChooser from '../../components/page-specific/git-cheat-sheet/guide-chooser';
 
 const GitCheatSheetPage: FC = () => {
     const { setPageTitle } = usePage();

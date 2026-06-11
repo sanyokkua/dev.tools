@@ -1227,3 +1227,435 @@ export const MAC_OS_BREW_VERIFY_INSTALLATION = 'brew doctor';
  * removes outdated versions of installed formulae, and cleans up cached downloads.
  */
 export const MAC_OS_BREW_UPDATE_UPGRADE = ' brew update && brew upgrade && brew autoremove && brew cleanup\n';
+
+export const VRAM_SCRIPT_CONTENT = `#!/usr/bin/env bash
+
+# =========================================================
+# Apple Silicon VRAM / Wired Memory Manager
+# =========================================================
+#
+# Changes:
+#   iogpu.wired_limit_mb
+#
+# Supported presets:
+#   4GB
+#   8GB
+#   16GB
+#   24GB
+#   26GB (default)
+#   28GB
+#
+# Features:
+#   - Apple Silicon detection
+#   - Safe validation
+#   - RAM safety checks
+#   - Interactive UI
+#   - Current value display
+#   - Verification after apply
+#   - Dry-run mode
+#   - Reset mode
+#
+# =========================================================
+
+set -uo pipefail
+
+# ---------------------------------------------------------
+# COLORS
+# ---------------------------------------------------------
+
+RED='\\033[0;31m'
+GREEN='\\033[0;32m'
+YELLOW='\\033[1;33m'
+BLUE='\\033[0;34m'
+CYAN='\\033[0;36m'
+MAGENTA='\\033[0;35m'
+BOLD='\\033[1m'
+NC='\\033[0m'
+
+# ---------------------------------------------------------
+# PRESETS
+# ---------------------------------------------------------
+
+declare -A PRESETS=(
+    ["4"]=4096
+    ["8"]=8192
+    ["16"]=16384
+    ["24"]=24576
+    ["26"]=26624
+    ["28"]=28672
+)
+
+DEFAULT_PRESET="26"
+
+# ---------------------------------------------------------
+# UI HELPERS
+# ---------------------------------------------------------
+
+header() {
+    echo
+    echo -e "\${BOLD}\${CYAN}=================================================\${NC}"
+    echo -e "\${BOLD}\${CYAN}$1\${NC}"
+    echo -e "\${BOLD}\${CYAN}=================================================\${NC}"
+}
+
+info() {
+    echo -e "\${BLUE}▶ $1\${NC}"
+}
+
+success() {
+    echo -e "\${GREEN}✔ $1\${NC}"
+}
+
+warn() {
+    echo -e "\${YELLOW}⚠ $1\${NC}"
+}
+
+error() {
+    echo -e "\${RED}✖ $1\${NC}"
+}
+
+# ---------------------------------------------------------
+# HELP
+# ---------------------------------------------------------
+
+show_help() {
+    cat <<EOF
+
+Usage:
+  ./set-vram.sh
+  ./set-vram.sh 16
+  ./set-vram.sh 24
+  ./set-vram.sh --reset
+  ./set-vram.sh --current
+  ./set-vram.sh --dry-run 28
+
+Available presets:
+  4   -> 4GB
+  8   -> 8GB
+  16  -> 16GB
+  24  -> 24GB
+  26  -> 26GB (default)
+  28  -> 28GB
+
+Options:
+  --current     Show current configured limit
+  --reset       Reset to macOS default behavior
+  --dry-run     Show what would happen
+  --help        Show this help
+
+Examples:
+  ./set-vram.sh
+  ./set-vram.sh 16
+  ./set-vram.sh --dry-run 28
+
+EOF
+}
+
+# ---------------------------------------------------------
+# SYSTEM CHECKS
+# ---------------------------------------------------------
+
+is_apple_silicon() {
+    [[ "$(uname -m)" == "arm64" ]]
+}
+
+get_total_ram_mb() {
+    local bytes
+    bytes=$(sysctl -n hw.memsize)
+    echo $((bytes / 1024 / 1024))
+}
+
+get_current_limit() {
+    sysctl -n iogpu.wired_limit_mb 2>/dev/null || echo "0"
+}
+
+# ---------------------------------------------------------
+# VALIDATION
+# ---------------------------------------------------------
+
+validate_memory_limit() {
+
+    local requested_mb="$1"
+    local total_ram_mb
+
+    total_ram_mb=$(get_total_ram_mb)
+
+    # Keep at least 4GB free for macOS
+    local safe_limit=$((total_ram_mb - 4096))
+
+    if (( requested_mb >= safe_limit )); then
+        error "Requested VRAM limit is too high for this Mac"
+        echo
+        echo "Total RAM:      $((total_ram_mb / 1024)) GB"
+        echo "Requested:      $((requested_mb / 1024)) GB"
+        echo "Recommended max: $((safe_limit / 1024)) GB"
+        echo
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------
+# APPLY
+# ---------------------------------------------------------
+
+apply_limit() {
+
+    local limit_mb="$1"
+    local dry_run="\${2:-false}"
+
+    header "Applying VRAM Limit"
+
+    info "Requested VRAM: $((limit_mb / 1024)) GB"
+    info "Value in MB:    \${limit_mb}"
+
+    echo
+
+    if [[ "$dry_run" == "true" ]]; then
+        warn "DRY RUN MODE — no changes made"
+        return 0
+    fi
+
+    sudo sysctl iogpu.wired_limit_mb="\${limit_mb}"
+
+    local applied
+    applied=$(get_current_limit)
+
+    echo
+
+    if [[ "$applied" == "$limit_mb" ]]; then
+        success "VRAM limit applied successfully"
+    else
+        error "Verification failed"
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------
+# RESET
+# ---------------------------------------------------------
+
+reset_limit() {
+
+    header "Reset VRAM Limit"
+
+    info "Restoring macOS automatic behavior"
+
+    sudo sysctl iogpu.wired_limit_mb=0
+
+    echo
+
+    local current
+    current=$(get_current_limit)
+
+    if [[ "$current" == "0" ]]; then
+        success "VRAM limit reset successfully"
+    else
+        error "Reset verification failed"
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------
+
+clear
+
+header "Apple Silicon VRAM Manager"
+
+# Architecture check
+if ! is_apple_silicon; then
+    error "This script only supports Apple Silicon Macs"
+    exit 1
+fi
+
+TOTAL_RAM_MB=$(get_total_ram_mb)
+CURRENT_LIMIT=$(get_current_limit)
+
+info "Detected Apple Silicon Mac"
+info "Total RAM:       $((TOTAL_RAM_MB / 1024)) GB"
+
+if [[ "$CURRENT_LIMIT" == "0" ]]; then
+    info "Current limit:   macOS automatic"
+else
+    info "Current limit:   $((CURRENT_LIMIT / 1024)) GB"
+fi
+
+echo
+
+# No arguments -> use default preset
+if [[ $# -eq 0 ]]; then
+    PRESET="$DEFAULT_PRESET"
+    LIMIT_MB="\${PRESETS[$PRESET]}"
+
+    validate_memory_limit "$LIMIT_MB"
+    apply_limit "$LIMIT_MB"
+
+    exit 0
+fi
+
+# Parse arguments
+case "\${1:-}" in
+
+    --help)
+        show_help
+        ;;
+
+    --current)
+        echo
+        sysctl iogpu.wired_limit_mb
+        ;;
+
+    --reset)
+        reset_limit
+        ;;
+
+    --dry-run)
+
+        PRESET="\${2:-$DEFAULT_PRESET}"
+
+        if [[ -z "\${PRESETS[$PRESET]:-}" ]]; then
+            error "Invalid preset: $PRESET"
+            exit 1
+        fi
+
+        LIMIT_MB="\${PRESETS[$PRESET]}"
+
+        validate_memory_limit "$LIMIT_MB"
+        apply_limit "$LIMIT_MB" true
+        ;;
+
+    *)
+
+        PRESET="$1"
+
+        if [[ -z "\${PRESETS[$PRESET]:-}" ]]; then
+            error "Invalid preset: $PRESET"
+            echo
+            echo "Allowed presets: 4 8 16 24 26 28"
+            exit 1
+        fi
+
+        LIMIT_MB="\${PRESETS[$PRESET]}"
+
+        validate_memory_limit "$LIMIT_MB"
+        apply_limit "$LIMIT_MB"
+        ;;
+esac
+`;
+
+const BREW_SCRIPT_BOILERPLATE_TOP = `#!/usr/bin/env bash
+
+set -uo pipefail
+
+START_TIME=$(date +%s)
+
+SUCCESS_COUNT=0
+FAILED_COUNT=0
+
+RED='\\033[0;31m'
+GREEN='\\033[0;32m'
+YELLOW='\\033[1;33m'
+BLUE='\\033[0;34m'
+MAGENTA='\\033[0;35m'
+CYAN='\\033[0;36m'
+BOLD='\\033[1m'
+NC='\\033[0m'
+
+print_header() {
+    echo
+    echo -e "\${BOLD}\${CYAN}=================================================\${NC}"
+    echo -e "\${BOLD}\${CYAN}$1\${NC}"
+    echo -e "\${BOLD}\${CYAN}=================================================\${NC}"
+}
+
+print_step() {
+    echo
+    echo -e "\${BOLD}\${BLUE}▶ $1\${NC}"
+}
+
+print_success() {
+    echo -e "\${GREEN}✔ $1\${NC}"
+}
+
+print_error() {
+    echo -e "\${RED}✖ $1\${NC}"
+}
+
+run_task() {
+    local name="$1"
+    shift
+
+    print_step "$name"
+
+    if "$@"; then
+        print_success "$name completed"
+        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+    else
+        print_error "$name failed"
+        FAILED_COUNT=$((FAILED_COUNT + 1))
+    fi
+}
+`;
+
+const BREW_SCRIPT_BOILERPLATE_BOTTOM = `
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+
+print_header "Summary"
+
+echo -e "\${GREEN}Successful:\${NC} \${SUCCESS_COUNT}"
+echo -e "\${RED}Failed:\${NC}     \${FAILED_COUNT}"
+
+echo
+echo -e "\${MAGENTA}Completed in:\${NC} \${DURATION}s"
+
+echo
+print_success "All tasks finished"
+`;
+
+export function generateBrewUpdateScript(formulaIds: string[]): string {
+    const ids = formulaIds.join(' ');
+    return (
+        BREW_SCRIPT_BOILERPLATE_TOP +
+        `
+clear
+
+print_header "Brew Formula Update"
+
+echo -e "\${MAGENTA}Started:\${NC} $(date)"
+echo
+
+run_task "Brew Update" brew update
+
+run_task "Brew Upgrade Formulas" brew upgrade ${ids}
+
+run_task "Brew Autoremove" brew autoremove
+
+run_task "Brew Cleanup" brew cleanup -s
+` +
+        BREW_SCRIPT_BOILERPLATE_BOTTOM
+    );
+}
+
+export function generateBrewUpgradeScript(cascIds: string[]): string {
+    const ids = cascIds.join(' ');
+    return (
+        BREW_SCRIPT_BOILERPLATE_TOP +
+        `
+clear
+
+print_header "Brew Cask Upgrade"
+
+echo -e "\${MAGENTA}Started:\${NC} $(date)"
+echo
+
+run_task "Brew Upgrade Casks" brew upgrade --cask ${ids}
+
+run_task "Brew Autoremove" brew autoremove
+
+run_task "Brew Cleanup" brew cleanup -s
+` +
+        BREW_SCRIPT_BOILERPLATE_BOTTOM
+    );
+}

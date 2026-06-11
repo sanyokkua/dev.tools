@@ -17,11 +17,16 @@ hljs.registerLanguage('powershell', powershell);
 
 type SupportedLanguages = 'bash' | 'shell' | 'powershell';
 
-type ReadOnlyCodeEditorProps = { headerText?: string; content: string; language?: SupportedLanguages };
+type ReadOnlyCodeEditorProps = {
+    headerText?: string;
+    content: string;
+    language?: SupportedLanguages;
+    onDownload?: () => void;
+};
 
 const CodeSnippet: React.FC<ReadOnlyCodeEditorProps> = (props) => {
     const { showToast } = useToast();
-    const { headerText, content, language = 'shell' } = props;
+    const { headerText, content, language = 'shell', onDownload } = props;
 
     const highlighted = hljs.highlight(content, { language }).value;
 
@@ -40,6 +45,15 @@ const CodeSnippet: React.FC<ReadOnlyCodeEditorProps> = (props) => {
                 <code className={`language-${language} hljs`} dangerouslySetInnerHTML={{ __html: highlighted }} />
             </pre>
             <Button text={'Copy'} onClick={handleClick} variant="dashed" colorStyle="primary-color" size={'small'} />
+            {onDownload && (
+                <Button
+                    text={'Download'}
+                    onClick={onDownload}
+                    variant="dashed"
+                    colorStyle="secondary-color"
+                    size={'small'}
+                />
+            )}
         </PaperContainer>
     );
 };
