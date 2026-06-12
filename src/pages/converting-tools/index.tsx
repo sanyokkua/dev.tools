@@ -8,7 +8,6 @@ import { useToast } from '@/contexts/ToasterContext';
 import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
-import '@/styles/converting-tools.scss';
 import React, { useEffect, useMemo, useState } from 'react';
 
 type ConverterMode = 'number-base' | 'data-format' | 'color' | 'units';
