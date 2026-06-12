@@ -195,3 +195,110 @@ describe('Software Installer — Step 2: Manager selection', () => {
         expect(screen.getByTestId('sum-pref')).toHaveTextContent('preferred-only');
     });
 });
+
+describe('Software Installer — Step 3: App catalog', () => {
+    it('renders the catalog table', () => {
+        renderPage();
+        expect(screen.getByTestId('app-catalog')).toBeInTheDocument();
+    });
+
+    it('renders the search input', () => {
+        renderPage();
+        expect(screen.getByPlaceholderText('Search apps…')).toBeInTheDocument();
+    });
+
+    it('renders the basket with empty-state hint', () => {
+        renderPage();
+        expect(screen.getByTestId('app-basket')).toBeInTheDocument();
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+    });
+
+    it('renders category filter chips including All', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Category filter' });
+        expect(within(grp).getByText('All')).toBeInTheDocument();
+    });
+
+    it('Firefox is listed in the catalog', () => {
+        renderPage();
+        expect(screen.getByLabelText('Select Firefox')).toBeInTheDocument();
+    });
+
+    it('selecting an app removes the empty-state and shows it in the basket', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.queryByTestId('basket-empty')).not.toBeInTheDocument();
+        expect(screen.getByTestId('basket-count')).toHaveTextContent('(1)');
+    });
+
+    it('summary app pill updates on selection', () => {
+        renderPage();
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('1 app');
+    });
+
+    it('summary pluralises correctly for 2+ apps', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(screen.getByLabelText('Select Google Chrome'));
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('2 apps');
+    });
+
+    it('Build Scripts button is disabled initially', () => {
+        renderPage();
+        expect(screen.getByRole('button', { name: /Build Scripts/i })).toBeDisabled();
+    });
+
+    it('Build Scripts button enables when at least one app is selected', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
+    });
+
+    it('deselecting an app from catalog removes it from basket', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
+    });
+
+    it('remove button (×) in basket card removes the app', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(screen.getByRole('button', { name: /Remove Firefox/i }));
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+    });
+
+    it('Clear button removes all apps from basket', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(screen.getByRole('button', { name: /Clear/i }));
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+    });
+
+    it('per-app method override select is present in basket card', () => {
+        renderPage();
+        // Select Homebrew first so Firefox has an available preferred manager
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByLabelText('Install method for Firefox')).toBeInTheDocument();
+    });
+
+    it('search hides non-matching apps', () => {
+        renderPage();
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'zznonexistentzzz' } });
+        // Firefox should be gone from the catalog
+        expect(screen.queryByLabelText('Select Firefox')).not.toBeInTheDocument();
+    });
+
+    it('search is case-insensitive', () => {
+        renderPage();
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'FIREFOX' } });
+        expect(screen.getByLabelText('Select Firefox')).toBeInTheDocument();
+    });
+});
