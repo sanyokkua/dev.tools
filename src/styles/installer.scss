@@ -356,3 +356,38 @@
         max-height: none;
     }
 }
+
+// ─── Step 4: Output ───────────────────────────────────────────────────────────
+
+.installer-output {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s3);
+}
+
+.installer-output-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s4);
+    align-items: flex-start;
+}
+
+.installer-output-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+}
+
+.installer-output-empty {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    padding: var(--s2) 0;
+}
+
+@media (max-width: 900px) {
+    .installer-output-controls {
+        flex-direction: column;
+        gap: var(--s3);
+    }
+}
