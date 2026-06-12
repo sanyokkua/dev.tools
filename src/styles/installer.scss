@@ -153,3 +153,206 @@
         align-items: flex-start;
     }
 }
+
+// ─── Step 3: Apps grid (catalog left + basket right) ─────────────────────────
+
+.installer-apps-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--s4);
+    align-items: start;
+}
+
+.installer-search-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    padding: 6px 12px;
+    margin-bottom: var(--s2);
+
+    input {
+        border: none;
+        background: transparent;
+        font: inherit;
+        font-size: 13px;
+        color: var(--on-surface);
+        flex: 1;
+        min-width: 0;
+
+        &::placeholder {
+            color: var(--muted);
+        }
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.installer-catalog-scroll {
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    max-height: 330px;
+    overflow-y: auto;
+}
+
+.installer-avail {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.installer-avail__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--outline-soft);
+
+    &.on {
+        background: var(--primary);
+    }
+}
+
+// Basket
+
+.installer-basket-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--s2);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.installer-basket-count {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.installer-basket-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.installer-basket-empty {
+    font-size: 13px;
+    color: var(--muted);
+    padding: var(--s2) 0;
+    line-height: 1.5;
+}
+
+.installer-basket-card {
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+}
+
+.installer-basket-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s2);
+}
+
+.installer-basket-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.installer-basket-card__name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.installer-basket-card__cat {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.installer-basket-status {
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: var(--r-pill);
+    font-weight: 500;
+    white-space: nowrap;
+
+    &.ok {
+        background: var(--success-container);
+        color: #235024;
+    }
+
+    &.fallback {
+        background: var(--warning-container);
+        color: #4f4800;
+    }
+
+    &.skip {
+        background: var(--warning-container);
+        color: #4f4800;
+    }
+
+    &.error {
+        background: var(--error-container);
+        color: #93000a;
+    }
+}
+
+.installer-basket-card__field {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: 12.5px;
+    color: var(--on-surface-variant);
+
+    select {
+        font: inherit;
+        font-size: 12.5px;
+        background: var(--card);
+        border: 1px solid var(--outline-soft);
+        border-radius: var(--r-sm);
+        color: var(--on-surface);
+        padding: 3px 8px;
+        flex: 1;
+        min-width: 0;
+
+        &:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
+        }
+    }
+
+    label {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
+// Responsive collapse
+
+@media (max-width: 900px) {
+    .installer-apps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .installer-basket-list {
+        max-height: none;
+    }
+}
