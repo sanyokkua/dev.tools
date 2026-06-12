@@ -197,7 +197,13 @@ const IndexPage = (): React.JSX.Element => {
             mimeType: editorState.editorPropsSupportedMimeTypes[0],
             availableExtensions: editorState.fileSaveExtensions.map((e) => e.itemId),
         });
-    }, [editorState, showFileSaveDialog]);
+    }, [
+        editorState.fileName,
+        editorState.fileExtension,
+        editorState.editorPropsSupportedMimeTypes,
+        editorState.fileSaveExtensions,
+        showFileSaveDialog,
+    ]);
 
     const handleWordWrapToggle: () => void = useCallback(() => {
         setEditorState((prevState) => ({ ...prevState, editorWordWrap: !prevState.editorWordWrap }));
