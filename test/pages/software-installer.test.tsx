@@ -86,3 +86,112 @@ describe('Software Installer — page shell', () => {
         expect(screen.getByText('Output')).toBeInTheDocument();
     });
 });
+
+describe('Software Installer — Step 2: Manager selection', () => {
+    it('renders platform manager chips for macOS', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Platform package managers' });
+        expect(within(grp).getByText('Homebrew')).toBeInTheDocument();
+        expect(within(grp).getByText('Mac App Store')).toBeInTheDocument();
+    });
+
+    it('renders dev manager chips always', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Dev package managers' });
+        expect(within(grp).getByText('npm')).toBeInTheDocument();
+        expect(within(grp).getByText('uv')).toBeInTheDocument();
+        expect(within(grp).getByText('pipx')).toBeInTheDocument();
+        expect(within(grp).getByText('cargo')).toBeInTheDocument();
+        expect(within(grp).getByText('go')).toBeInTheDocument();
+    });
+
+    it('all chips start with aria-pressed=false', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Platform package managers' });
+        within(grp)
+            .getAllByRole('button')
+            .forEach((btn) => {
+                expect(btn).toHaveAttribute('aria-pressed', 'false');
+            });
+    });
+
+    it('clicking a chip selects it', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        expect(screen.getByText('Homebrew').closest('button')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('clicking a selected chip deselects it', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByText('Homebrew'));
+        expect(screen.getByText('Homebrew').closest('button')).toHaveAttribute('aria-pressed', 'false');
+    });
+
+    it('summary count updates on toggle', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        expect(screen.getByTestId('sum-managers')).toHaveTextContent('1 manager');
+        fireEvent.click(screen.getByText('Homebrew'));
+        expect(screen.getByTestId('sum-managers')).toHaveTextContent('0 managers');
+    });
+
+    it('plural form: 2 managers', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByText('Mac App Store'));
+        expect(screen.getByTestId('sum-managers')).toHaveTextContent('2 managers');
+    });
+
+    it('platform change resets selected managers', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByText('Windows'));
+        expect(screen.getByTestId('sum-managers')).toHaveTextContent('0 managers');
+    });
+
+    it('windows shows correct chips', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Windows'));
+        const grp = screen.getByRole('group', { name: 'Platform package managers' });
+        expect(within(grp).getByText('winget')).toBeInTheDocument();
+        expect(within(grp).getByText('Chocolatey')).toBeInTheDocument();
+        expect(within(grp).getByText('Scoop')).toBeInTheDocument();
+    });
+
+    it('linux-debian shows apt chip', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Linux'));
+        const grp = screen.getByRole('group', { name: 'Platform package managers' });
+        expect(within(grp).getByText('apt')).toBeInTheDocument();
+    });
+
+    it('pref control renders with two options', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Fallback preference' });
+        expect(within(grp).getByText('Preferred only (skip)')).toBeInTheDocument();
+        expect(within(grp).getByText('Fall back to any available')).toBeInTheDocument();
+    });
+
+    it('pref defaults to preferred-only', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Fallback preference' });
+        expect(within(grp).getByText('Preferred only (skip)').closest('button')).toHaveAttribute(
+            'aria-pressed',
+            'true',
+        );
+    });
+
+    it('switching pref updates summary', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Fall back to any available'));
+        expect(screen.getByTestId('sum-pref')).toHaveTextContent('fallback on');
+    });
+
+    it('switching back to preferred restores preferred-only', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Fall back to any available'));
+        fireEvent.click(screen.getByText('Preferred only (skip)'));
+        expect(screen.getByTestId('sum-pref')).toHaveTextContent('preferred-only');
+    });
+});

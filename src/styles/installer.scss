@@ -90,6 +90,44 @@
     font-weight: 500;
 }
 
+.installer-hint {
+    font-size: 13px;
+    color: var(--on-surface-variant);
+    margin: 0;
+    strong {
+        color: var(--on-surface);
+    }
+}
+
+.installer-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1);
+}
+
+.installer-mgr-subheading {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.installer-divider {
+    border-top: 1px solid var(--outline-soft);
+}
+
+.installer-pref-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    .installer-mgr-subheading {
+        flex: 1;
+        min-width: 200px;
+    }
+}
+
 @media (max-width: 900px) {
     .installer-page {
         padding: var(--s3);
@@ -108,5 +146,10 @@
 
     .seg-control {
         flex-wrap: wrap;
+    }
+
+    .installer-pref-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

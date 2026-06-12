@@ -1,8 +1,9 @@
 // src/pages/software-installer/index.tsx
-import type { CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
+import { APPS_CATALOG } from '@/common/apps-catalog';
+import type { CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
     { value: 'macos', label: 'macOS' },
@@ -20,30 +21,72 @@ const DISTRO_OPTIONS: SegmentedOption[] = [
 
 const PLATFORM_LABEL: Record<CatalogPlatform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' };
 
+type PrefMode = 'preferred' | 'fallback';
+
+const PREF_OPTIONS: SegmentedOption[] = [
+    { value: 'preferred', label: 'Preferred only (skip)' },
+    { value: 'fallback', label: 'Fall back to any available' },
+];
+
+const MANAGER_LABEL: Partial<Record<CatalogManager, string>> = {
+    brew: 'Homebrew',
+    mas: 'Mac App Store',
+    winget: 'winget',
+    choco: 'Chocolatey',
+    scoop: 'Scoop',
+    apt: 'apt',
+    dnf: 'dnf',
+    pacman: 'pacman',
+    zypper: 'zypper',
+    flatpak: 'Flatpak',
+    snap: 'Snap',
+    appimage: 'AppImage',
+    npm: 'npm',
+    uv: 'uv',
+    pipx: 'pipx',
+    cargo: 'cargo',
+    go: 'go',
+};
+
 const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const [platform, setPlatform] = useState<CatalogPlatform>('macos');
     const [linuxDistro, setLinuxDistro] = useState<LinuxDistro>('debian');
+    const [selectedManagers, setSelectedManagers] = useState<CatalogManager[]>([]);
+    const [prefMode, setPrefMode] = useState<PrefMode>('preferred');
 
     useEffect(() => {
         setPageTitle('Software Installer');
     }, [setPageTitle]);
 
+    useEffect(() => {
+        setSelectedManagers([]);
+    }, [platform, linuxDistro]);
+
+    const platformManagers = useMemo<CatalogManager[]>(() => {
+        if (platform === 'linux') return APPS_CATALOG.managers.linux[linuxDistro] ?? [];
+        return APPS_CATALOG.managers[platform as 'macos' | 'windows'] ?? [];
+    }, [platform, linuxDistro]);
+
+    function toggleManager(mgr: CatalogManager): void {
+        setSelectedManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
+    }
+
     return (
         <div className="installer-page">
-            {/* Sticky summary — manager/app counts wired in Tasks 3.2/3.3 */}
+            {/* Sticky summary */}
             <section className="installer-summary" aria-label="Selection summary">
                 <span className="installer-summary__pill" data-testid="sum-platform">
                     {PLATFORM_LABEL[platform]}
                 </span>
                 <span className="installer-summary__pill" data-testid="sum-managers">
-                    0 managers
+                    {selectedManagers.length} {selectedManagers.length === 1 ? 'manager' : 'managers'}
                 </span>
                 <span className="installer-summary__pill" data-testid="sum-apps">
                     0 apps
                 </span>
                 <span className="installer-summary__pref" data-testid="sum-pref">
-                    preferred-only
+                    {prefMode === 'preferred' ? 'preferred-only' : 'fallback on'}
                 </span>
                 <button className="btn primary" style={{ marginLeft: 'auto' }} disabled>
                     ⚙ Build Scripts
@@ -80,6 +123,58 @@ const IndexPage = (): React.JSX.Element => {
                 <div className="installer-step__label">
                     <span className="installer-step__number">2</span>
                     Preferred package managers
+                </div>
+                <p className="installer-hint">
+                    Pick one or more. Selection <strong>order = priority</strong> when an app supports several.
+                </p>
+                <div
+                    className="installer-chip-row"
+                    data-testid="mgr-chips"
+                    role="group"
+                    aria-label="Platform package managers"
+                >
+                    {platformManagers.map((mgr) => (
+                        <button
+                            key={mgr}
+                            type="button"
+                            className={`chip${selectedManagers.includes(mgr) ? ' on' : ''}`}
+                            aria-pressed={selectedManagers.includes(mgr)}
+                            onClick={() => toggleManager(mgr)}
+                        >
+                            {MANAGER_LABEL[mgr] ?? mgr}
+                        </button>
+                    ))}
+                </div>
+                <span className="installer-mgr-subheading">Language / dev managers</span>
+                <div
+                    className="installer-chip-row"
+                    data-testid="dev-chips"
+                    role="group"
+                    aria-label="Dev package managers"
+                >
+                    {APPS_CATALOG.managers.dev.map((mgr) => (
+                        <button
+                            key={mgr}
+                            type="button"
+                            className={`chip${selectedManagers.includes(mgr) ? ' on' : ''}`}
+                            aria-pressed={selectedManagers.includes(mgr)}
+                            onClick={() => toggleManager(mgr)}
+                        >
+                            {MANAGER_LABEL[mgr] ?? mgr}
+                        </button>
+                    ))}
+                </div>
+                <div className="installer-divider" />
+                <div className="installer-pref-row">
+                    <span className="installer-mgr-subheading">
+                        When an app isn&apos;t available via a preferred manager
+                    </span>
+                    <SegmentedControl
+                        options={PREF_OPTIONS}
+                        value={prefMode}
+                        onChange={(v) => setPrefMode(v as PrefMode)}
+                        aria-label="Fallback preference"
+                    />
                 </div>
             </div>
 
