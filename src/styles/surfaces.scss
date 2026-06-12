@@ -82,3 +82,80 @@
 .card.pad {
     padding: var(--s4);
 }
+
+/* ============================================================
+   Code block panel (terminal-style dark panel)
+   ============================================================ */
+.code-block {
+    background: var(--code-bg);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--code-line);
+    display: flex;
+    flex-direction: column;
+}
+
+.code-block-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--code-line);
+    color: #9fb4ae;
+    font-size: 12px;
+    font-family: var(--mono);
+}
+
+.code-block-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: 6px;
+}
+
+.code-block-dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: block;
+}
+
+.code-block-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.code-block-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.code-block-action-btn {
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cfe3dd;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.code-block-action-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 14px 16px;
+    overflow: auto;
+    color: var(--code-fg);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    flex: 1;
+}

@@ -15,7 +15,13 @@ const Chip: React.FC<ChipProps> = ({ text, selected = false, onClick, onRemove }
             role={onClick ? 'button' : undefined}
             aria-pressed={onClick ? selected : undefined}
             tabIndex={onClick ? 0 : undefined}
-            onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}
+            onKeyDown={
+                onClick
+                    ? (e): void => {
+                          if (e.key === 'Enter') onClick();
+                      }
+                    : undefined
+            }
         >
             {text}
             {onRemove && (
