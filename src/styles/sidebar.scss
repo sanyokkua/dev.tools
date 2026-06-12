@@ -1,8 +1,91 @@
-/* Vertical sidebar with themed background for navigation or secondary content */
-.side-bar {
-    width: var(--rail); /* 252px fixed; matches --rail token from Task 1.1 */
-    padding: 1rem; /* Adds 16px spacing inside the sidebar (1 × 16px default font size) */
-    box-sizing: border-box; /* Includes padding in width calculation (total width remains 12vw) */
-    background-color: var(--secondary-container-color); /* Uses theme-defined background color (e.g., light blue) */
-    color: var(--secondary-color-on); /* Applies contrasting text color (e.g., dark gray) */
+.nav-rail {
+    width: var(--rail);
+    flex: 0 0 var(--rail);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card);
+    border-right: 1px solid var(--outline-soft);
+    padding: var(--s3) var(--s2);
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.nav-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: var(--s3) var(--s3) var(--s1);
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    color: var(--on-surface-variant);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.4;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.nav-item:hover {
+    background-color: var(--card-2);
+    color: var(--on-surface);
+}
+
+.nav-item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.nav-item.active {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    font-weight: 650;
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 9px;
+    bottom: 9px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background-color: var(--primary);
+}
+
+.nav-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: var(--r-sm);
+    background-color: var(--tertiary-container);
+    color: var(--on-tertiary-container);
+}
+
+.nav-badge.new {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.nav-badge.soon {
+    background-color: var(--card-2);
+    color: var(--muted);
+    border: 1px solid var(--outline-soft);
+}
+
+@media (max-width: 920px) {
+    .nav-rail {
+        display: none;
+    }
 }

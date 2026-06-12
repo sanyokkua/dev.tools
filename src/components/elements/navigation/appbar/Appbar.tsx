@@ -1,47 +1,37 @@
 'use client';
-import React, { MouseEvent } from 'react';
+import Link from 'next/link';
+import React from 'react';
 
-export type AppBarProps = {
-    appTitle: string;
-    pageTitle: string;
-    theme?: 'light' | 'dark';
-    onAppTitleClick?: () => void;
-    onPageTitleClick?: () => void;
-    onThemeToggle?: () => void;
-};
+export type AppBarProps = { appTitle: string; pageTitle: string; theme?: 'light' | 'dark'; onThemeToggle?: () => void };
 
-const Appbar: React.FC<AppBarProps> = (props) => {
-    const onAppTitleClick = (event: MouseEvent): void => {
-        if (props.onAppTitleClick) {
-            event.preventDefault();
-            props.onAppTitleClick();
-        }
-    };
-    const onPageTitleClick = (event: MouseEvent): void => {
-        if (props.onPageTitleClick) {
-            event.preventDefault();
-            props.onPageTitleClick();
-        }
-    };
+const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle }) => {
     return (
-        <nav className="app-bar">
-            {/* Left Column: App Name */}
-            <a href="#" className="app-bar-title-link" onClick={onAppTitleClick}>
-                {props.appTitle}
-            </a>
-
-            {/* Center Column: Current Page Title */}
-            <div className="app-bar-page-title" onClick={onPageTitleClick}>
-                {props.pageTitle}
-            </div>
-
-            {/* Right Column: Theme toggle */}
-            <div className="app-bar-actions">
-                <button className="app-bar-theme-toggle" onClick={props.onThemeToggle} aria-label="Toggle theme">
-                    {props.theme === 'dark' ? '☀' : '☾'}
+        <header className="topbar">
+            <Link href="/" className="topbar-brand">
+                <div className="topbar-logo">⌘</div>
+                {appTitle}
+            </Link>
+            {pageTitle && (
+                <div className="topbar-crumb">
+                    <span>/</span>
+                    <b>{pageTitle}</b>
+                </div>
+            )}
+            <div className="topbar-actions">
+                <button className="icon-btn" onClick={onThemeToggle} aria-label="Toggle theme">
+                    {theme === 'dark' ? '☀' : '🌙'}
                 </button>
+                <a
+                    className="icon-btn"
+                    href="https://github.com/sanyokkua/dev.tools"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Source on GitHub"
+                >
+                    ↗
+                </a>
             </div>
-        </nav>
+        </header>
     );
 };
 
