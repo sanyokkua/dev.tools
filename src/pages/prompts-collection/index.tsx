@@ -16,18 +16,12 @@ const IndexPage: React.FC<Props> = ({ prompts }) => {
     }, [setPageTitle]);
 
     return (
-        <div>
-            <h1>Prompts Collection</h1>
-            <p>
-                Welcome to your Prompts Collection. Here you can find the prompt and copy it&#39;s template or open it
-                on the new page with details and additional functionality
-            </p>
+        <div className="prompts-page">
             <PromptsCollectionView prompts={prompts} />
         </div>
     );
 };
 
-// Fetch all prompts at build time
 export async function getStaticProps(): Promise<{ props: { prompts: Prompt[] } }> {
     return { props: { prompts: promptsLibraryList } };
 }

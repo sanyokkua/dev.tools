@@ -20,6 +20,7 @@ import '@/styles/mac-os-setup.scss';
 import '@/styles/markdown-tools.scss';
 import '@/styles/menubar.scss';
 import '@/styles/modal.scss';
+import '@/styles/prompts-collection.scss';
 import '@/styles/segmented-control.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
