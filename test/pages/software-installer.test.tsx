@@ -1,13 +1,16 @@
 // test/pages/software-installer.test.tsx
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { PageProvider } from '../../src/components/contexts/PageContext';
+import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/software-installer/index';
 
 function renderPage(): ReturnType<typeof render> {
     return render(
-        <PageProvider>
-            <IndexPage />
-        </PageProvider>,
+        <ToasterProvider>
+            <PageProvider>
+                <IndexPage />
+            </PageProvider>
+        </ToasterProvider>,
     );
 }
 
@@ -300,5 +303,137 @@ describe('Software Installer — Step 3: App catalog', () => {
         const search = screen.getByPlaceholderText('Search apps…');
         fireEvent.change(search, { target: { value: 'FIREFOX' } });
         expect(screen.getByLabelText('Select Firefox')).toBeInTheDocument();
+    });
+});
+
+describe('Software Installer — Step 4: Output', () => {
+    beforeEach(() => {
+        Object.defineProperty(navigator, 'clipboard', {
+            value: { writeText: jest.fn().mockResolvedValue(undefined) },
+            configurable: true,
+        });
+        global.URL.createObjectURL = jest.fn(() => 'blob:fake');
+        global.URL.revokeObjectURL = jest.fn();
+    });
+
+    it('renders the Output step label', () => {
+        renderPage();
+        expect(screen.getByText('Output')).toBeInTheDocument();
+    });
+
+    it('renders action segmented control with Install / Update / Remove', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Script action' });
+        expect(within(grp).getByText('Install')).toBeInTheDocument();
+        expect(within(grp).getByText('Update')).toBeInTheDocument();
+        expect(within(grp).getByText('Remove')).toBeInTheDocument();
+    });
+
+    it('Install is the default action', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Script action' });
+        expect(within(grp).getByText('Install').closest('button')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('renders scope segmented control with Combined / Per-app', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Script scope' });
+        expect(within(grp).getByText('Single combined')).toBeInTheDocument();
+        expect(within(grp).getByText('One per app')).toBeInTheDocument();
+    });
+
+    it('Combined is the default scope', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Script scope' });
+        expect(within(grp).getByText('Single combined').closest('button')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('shows empty-state placeholder when no apps are selected', () => {
+        renderPage();
+        expect(screen.getByTestId('output-empty')).toBeInTheDocument();
+    });
+
+    it('shows code panel when Homebrew and Firefox are selected', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.queryByTestId('output-empty')).not.toBeInTheDocument();
+        expect(screen.getByTestId('output-code')).toBeInTheDocument();
+    });
+
+    it('combined script filename is install.sh for macOS', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByTestId('output-filename')).toHaveTextContent('install.sh');
+    });
+
+    it('filename is install.ps1 on Windows', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Windows'));
+        fireEvent.click(screen.getByText('winget'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByTestId('output-filename')).toHaveTextContent('install.ps1');
+    });
+
+    it('Update action changes filename to update.sh', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
+        expect(screen.getByTestId('output-filename')).toHaveTextContent('update.sh');
+    });
+
+    it('Remove action changes filename to remove.sh', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Remove'));
+        expect(screen.getByTestId('output-filename')).toHaveTextContent('remove.sh');
+    });
+
+    it('Per-app scope changes filename to install-scripts.sh', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script scope' })).getByText('One per app'));
+        expect(screen.getByTestId('output-filename')).toHaveTextContent('install-scripts.sh');
+    });
+
+    it('combined bash script contains run_task boilerplate', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByTestId('output-code').textContent).toContain('run_task');
+    });
+
+    it('per-app preview contains PER-APP MODE header comment', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script scope' })).getByText('One per app'));
+        expect(screen.getByTestId('output-code').textContent).toContain('PER-APP MODE');
+    });
+
+    it('per-app preview shows skip comment for app with no preferred manager', () => {
+        renderPage();
+        // No managers selected, app is in basket — should emit skip comment
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script scope' })).getByText('One per app'));
+        expect(screen.getByTestId('output-code').textContent).toContain('skipped');
+    });
+
+    it('download button triggers URL.createObjectURL', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByTestId('output-code')).getByRole('button', { name: /download/i }));
+        expect(global.URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    it('Build Scripts button is enabled when apps are selected', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
     });
 });

@@ -11,6 +11,8 @@ const config: Config = {
     setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
     testMatch: ['**/test/**/*.test.ts', '**/test/**/*.test.tsx'],
     moduleNameMapper: {
+        // uuid v13 is pure ESM; Jest can't parse it — use a CJS shim
+        '^uuid$': '<rootDir>/test/__mocks__/uuid.js',
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@/common/(.*)$': '<rootDir>/src/common/$1',
         '^@/components/(.*)$': '<rootDir>/src/components/$1',

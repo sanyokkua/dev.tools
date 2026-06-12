@@ -6,7 +6,8 @@ import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import AppBasket from '@/page-specific/software-installer/AppBasket';
 import AppCatalog from '@/page-specific/software-installer/AppCatalog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import ScriptOutput from '@/page-specific/software-installer/ScriptOutput';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
     { value: 'macos', label: 'macOS' },
@@ -91,6 +92,7 @@ const IndexPage = (): React.JSX.Element => {
 
     const selectedAppCount = useMemo(() => Object.keys(selectedApps).length, [selectedApps]);
     const selectedAppIds = useMemo(() => new Set(Object.keys(selectedApps)), [selectedApps]);
+    const outputRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="installer-page">
@@ -108,7 +110,12 @@ const IndexPage = (): React.JSX.Element => {
                 <span className="installer-summary__pref" data-testid="sum-pref">
                     {prefMode === 'preferred' ? 'preferred-only' : 'fallback on'}
                 </span>
-                <button className="btn primary" style={{ marginLeft: 'auto' }} disabled={selectedAppCount === 0}>
+                <button
+                    className="btn primary"
+                    style={{ marginLeft: 'auto' }}
+                    disabled={selectedAppCount === 0}
+                    onClick={() => outputRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                >
                     ⚙ Build Scripts
                 </button>
             </section>
@@ -222,11 +229,19 @@ const IndexPage = (): React.JSX.Element => {
             </div>
 
             {/* Step 4 — Output (Task 3.4) */}
-            <div className="installer-step">
+            <div className="installer-step" ref={outputRef}>
                 <div className="installer-step__label">
                     <span className="installer-step__number">4</span>
                     Output
                 </div>
+                <ScriptOutput
+                    platform={platform}
+                    linuxDistro={linuxDistro}
+                    selectedManagers={selectedManagers}
+                    prefMode={prefMode}
+                    selectedApps={selectedApps}
+                    selectedVersions={selectedVersions}
+                />
             </div>
         </div>
     );
