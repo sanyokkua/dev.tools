@@ -13,6 +13,7 @@ import '@/styles/infopanel.scss';
 import '@/styles/input.scss';
 import '@/styles/installer.scss';
 import '@/styles/layout.scss';
+import '@/styles/mac-os-setup.scss';
 import '@/styles/menubar.scss';
 import '@/styles/modal.scss';
 import '@/styles/segmented-control.scss';
