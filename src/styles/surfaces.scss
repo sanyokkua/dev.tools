@@ -70,3 +70,15 @@
         0 2px 4px -1px rgba(0, 0, 0, 0.5),
         /* Concentrated shadow */ 0 1px 2px -1px rgba(0, 0, 0, 0.12); /* Inner shadow */
 }
+
+/* Flat card surface — lighter than .paper, no hover transform */
+.card {
+    background: var(--card);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.card.pad {
+    padding: var(--s4);
+}
