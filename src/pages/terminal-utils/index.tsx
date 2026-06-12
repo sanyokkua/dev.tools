@@ -11,12 +11,17 @@ import {
     setEditorContent,
 } from '@/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/elements/editor/types';
-import { MenuBuilder } from '@/elements/navigation/menubar/utils';
+import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import { StringUtils } from 'coreutilsts';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
-import Menubar from '../../components/elements/navigation/menubar/Menubar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
+
+const SYNTAX_OPTIONS: { value: EditorLanguage; label: string }[] = [
+    { value: 'shell', label: 'Unix bash' },
+    { value: 'bat', label: 'Windows bat' },
+    { value: 'powershell', label: 'PowerShell' },
+];
 
 const IndexPage: React.FC = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
@@ -28,28 +33,30 @@ const IndexPage: React.FC = (): React.JSX.Element => {
 
     const [languageId, setLanguageId] = useState<EditorLanguage>('shell');
 
-    // Editor ref
     const editorOriginalRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const editorResultRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     const handleOriginalEditorMount = useCallback((props: EditorProperties) => {
         editorOriginalRef.current = props.editor;
     }, []);
+
     const handleResultEditorMount = useCallback((props: EditorProperties) => {
         editorResultRef.current = props.editor;
     }, []);
 
-    // Handlers
     const handlePaste = useCallback((): void => {
         pasteFromClipboardToEditor(editorOriginalRef, () => {}, showToast);
-    }, []);
+    }, [showToast]);
 
     const handleCopy = useCallback((): void => {
         copyToClipboardFromEditor(editorResultRef, showToast);
+    }, [showToast]);
+
+    const handleClearInput = useCallback((): void => {
+        setEditorContent(editorOriginalRef, '');
     }, []);
 
-    const handleClear = useCallback((): void => {
-        setEditorContent(editorOriginalRef, '');
+    const handleClearResult = useCallback((): void => {
         setEditorContent(editorResultRef, '');
     }, []);
 
@@ -67,52 +74,100 @@ const IndexPage: React.FC = (): React.JSX.Element => {
         setEditorContent(editorResultRef, joined);
     }, []);
 
-    const handleShell = (): void => {
-        setLanguageId('shell');
-        showToast({ message: 'Changed Syntax to shell', type: ToastType.INFO });
+    const handleSyntaxChange = (lang: EditorLanguage): void => {
+        setLanguageId(lang);
+        showToast({ message: `Changed Syntax to ${lang}`, type: ToastType.INFO });
     };
-    const handleBat = (): void => {
-        setLanguageId('bat');
-        showToast({ message: 'Changed Syntax to bat', type: ToastType.INFO });
-    };
-    const handlePowershell = (): void => {
-        setLanguageId('powershell');
-        showToast({ message: 'Changed Syntax to powershell', type: ToastType.INFO });
-    };
-
-    const topMenuItems = MenuBuilder.newBuilder()
-        .addButton('paste-from-clipboard', 'Paste', handlePaste)
-        .addButton('clear', 'Clear', handleClear)
-        .addButton('joinWithOne', 'Join with &', handleJoinWithSingleAmp)
-        .addButton('joinWithTwo', 'Join with &&', handleJoinWithDoubleAmp)
-        .addButton('langBat', 'Syntax Windows Bash', handleBat)
-        .addButton('langPowershell', 'Syntax Windows Powershell', handlePowershell)
-        .addButton('langShell', 'Syntax (Unix) Bash', handleShell)
-        .build();
-
-    const bottomMenuItems = MenuBuilder.newBuilder()
-        .addButton('copy-to-clipboard', 'Copy', handleCopy)
-        .addButton('clear', 'Clear', handleClear)
-        .build();
 
     return (
-        <>
-            <Menubar menuItems={topMenuItems} />
-            <CodeEditor
-                minimap={false}
-                onEditorMounted={handleOriginalEditorMount}
-                languageId={languageId}
-                height="40vh"
-            />
-            <br />
-            <Menubar menuItems={bottomMenuItems} />
-            <CodeEditor
-                minimap={false}
-                onEditorMounted={handleResultEditorMount}
-                languageId={languageId}
-                height="40vh"
-            />
-        </>
+        <ContentContainerFlex>
+            <div className="terminal-utils">
+                <div>
+                    <h1>Terminal Utilities</h1>
+                    <p>Join multiple commands or lines into a single command using a chosen separator.</p>
+                </div>
+
+                <div className="terminal-utils__toolbar">
+                    <span className="terminal-utils__syntax-label">Syntax:</span>
+                    <div className="seg-control" role="group" aria-label="Syntax">
+                        {SYNTAX_OPTIONS.map((opt) => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => handleSyntaxChange(opt.value)}
+                                aria-pressed={languageId === opt.value}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="terminal-utils__pane">
+                    <div className="terminal-utils__pane-header">
+                        <span className="terminal-utils__pane-label">Input (one command per line)</span>
+                        <button type="button" className="button-base button-ghost button-small" onClick={handlePaste}>
+                            Paste
+                        </button>
+                        <button
+                            type="button"
+                            className="button-base button-ghost button-small"
+                            onClick={handleClearInput}
+                        >
+                            Clear
+                        </button>
+                        <span className="terminal-utils__pane-spacer" />
+                        <button
+                            type="button"
+                            className="button-base button-filled button-small"
+                            onClick={handleJoinWithSingleAmp}
+                        >
+                            Join with &amp;
+                        </button>
+                        <button
+                            type="button"
+                            className="button-base button-solid button-small"
+                            onClick={handleJoinWithDoubleAmp}
+                        >
+                            Join with &amp;&amp;
+                        </button>
+                    </div>
+                    <div className="terminal-utils__pane-editor">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleOriginalEditorMount}
+                            languageId={languageId}
+                            height="100%"
+                        />
+                    </div>
+                </div>
+
+                <div className="terminal-utils__pane">
+                    <div className="terminal-utils__pane-header">
+                        <span className="terminal-utils__pane-label">Result (single line)</span>
+                        <span className="terminal-utils__pane-spacer" />
+                        <button type="button" className="button-base button-ghost button-small" onClick={handleCopy}>
+                            Copy
+                        </button>
+                        <button
+                            type="button"
+                            className="button-base button-ghost button-small"
+                            onClick={handleClearResult}
+                        >
+                            Clear
+                        </button>
+                    </div>
+                    <div className="terminal-utils__pane-editor">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleResultEditorMount}
+                            languageId={languageId}
+                            height="100%"
+                        />
+                    </div>
+                </div>
+            </div>
+        </ContentContainerFlex>
     );
 };
 
