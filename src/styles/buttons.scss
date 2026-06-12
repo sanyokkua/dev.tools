@@ -48,8 +48,8 @@
 
 /* Visual feedback when hovering over solid button */
 .button-solid:hover {
-    filter: brightness(0.9); /* Darkens button by 10% to indicate interactivity */
-    box-shadow: 0 0 4px var(--md-shadow-color); /* Adds soft 4px shadow for depth perception */
+    opacity: 0.88;
+    box-shadow: 0 0 4px var(--md-shadow-color);
 }
 
 /* Visual feedback when clicking solid button */
@@ -63,9 +63,9 @@
     color: var(--bg-color); /* Text matches border color for visual consistency */
 }
 
-/* Brightening effect when hovering over outlined button */
+/* Overlay tint on hover for outlined button */
 .button-outlined:hover {
-    filter: brightness(1.5); /* Increases brightness by 50% for hover state */
+    background-color: var(--hover-overlay);
 }
 
 /* Visual feedback when clicking outlined button */
@@ -79,10 +79,10 @@
     color: var(--bg-color); /* Text matches border color */
 }
 
-/* Combined scale-up and brightening hover effect for dashed button */
+/* Overlay tint and scale on hover for dashed button */
 .button-dashed:hover {
-    filter: brightness(1.5); /* Same brightening as outlined buttons */
-    transform: scale(1.05); /* Slightly enlarges button to 105% size on hover */
+    background-color: var(--hover-overlay);
+    transform: scale(1.05);
 }
 
 /* Visual feedback when clicking dashed button */
@@ -120,7 +120,7 @@
 
 /* Visual feedback when clicking text button */
 .button-text:active {
-    filter: brightness(0.8); /* Darkens text by 20% during click */
+    opacity: 0.75;
 }
 
 /* LINK BUTTON = text with underline by default */
@@ -131,10 +131,10 @@
     border: none; /* Removes border for pure text link style */
 }
 
-/* Darkens text when hovering over link button */
+/* Dims text when hovering over link button */
 .button-link:hover {
-    color: var(--bg-color); /* Maintains same color */
-    filter: brightness(0.8); /* Darkens text by 20% */
+    color: var(--bg-color);
+    opacity: 0.75;
 }
 
 /* Visual feedback when clicking link button */
@@ -151,11 +151,11 @@
     --text-color: var(--error-color-on); /* Uses appropriate text color for error background */
 }
 
-/* GHOST STATE = white styling for dark backgrounds */
+/* GHOST STATE = on-primary styling for use on primary-colored backgrounds */
 .button-ghost {
-    background: none !important; /* Forces transparent background even if other rules apply */
-    color: #fff !important; /* White text */
-    border: 1px solid #fff !important; /* White border */
+    background: none !important;
+    color: var(--on-primary) !important;
+    border: 1px solid var(--on-primary) !important;
 }
 
 /* DISABLED STATE = visually indicates inactive button */

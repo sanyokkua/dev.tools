@@ -19,7 +19,7 @@
 
 /* UNDERLINED INPUT = bottom-only border, inspired by Material Design */
 .input-underlined {
-    border-bottom: 1px solid var(--input-border-color, #ccc); /* Bottom border with fallback color */
+    border-bottom: 1px solid var(--input-border-color, var(--outline));
 }
 
 /* HOVER STATE = subtle visual feedback when mouse is over input */
@@ -34,8 +34,8 @@
 
 /* DISABLED STATE = visual indication for inactive inputs */
 .input-base[disabled] {
-    --input-border-color: var(--input-disabled-border, #ddd); /* Light gray border for disabled state */
-    color: var(--input-disabled-color, #999); /* Gray text for disabled appearance */
+    --input-border-color: var(--input-disabled-border, var(--outline-soft));
+    color: var(--input-disabled-color, var(--muted));
     opacity: 0.5; /* Makes entire input appear faded */
     cursor: not-allowed; /* Shows "not allowed" cursor when hovering */
 }

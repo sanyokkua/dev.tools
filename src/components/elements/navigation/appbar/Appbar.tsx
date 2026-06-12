@@ -4,8 +4,10 @@ import React, { MouseEvent } from 'react';
 export type AppBarProps = {
     appTitle: string;
     pageTitle: string;
+    theme?: 'light' | 'dark';
     onAppTitleClick?: () => void;
     onPageTitleClick?: () => void;
+    onThemeToggle?: () => void;
 };
 
 const Appbar: React.FC<AppBarProps> = (props) => {
@@ -33,8 +35,12 @@ const Appbar: React.FC<AppBarProps> = (props) => {
                 {props.pageTitle}
             </div>
 
-            {/* Right Column: Empty element for spacing */}
-            <div className="app-bar-spacing-stub" />
+            {/* Right Column: Theme toggle */}
+            <div className="app-bar-actions">
+                <button className="app-bar-theme-toggle" onClick={props.onThemeToggle} aria-label="Toggle theme">
+                    {props.theme === 'dark' ? '☀' : '☾'}
+                </button>
+            </div>
         </nav>
     );
 };

@@ -8,7 +8,7 @@ export default class Document extends NextDocument {
 
     render(): React.JSX.Element {
         return (
-            <Html suppressHydrationWarning>
+            <Html lang="en" data-theme="light" suppressHydrationWarning>
                 <Head>
                     <link rel="icon" href="/favicon.ico" />
                     <link rel="icon" type="image/png" href="/favicon-16x16.png" />

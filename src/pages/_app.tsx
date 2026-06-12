@@ -1,6 +1,7 @@
 import { FileOpenProvider } from '@/contexts/FileOpenContext';
 import { FileSaveDialogProvider } from '@/contexts/FileSaveDialogContext';
 import { PageProvider } from '@/contexts/PageContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ToasterProvider } from '@/contexts/ToasterContext';
 import '@/styles/ai-tools-setup.scss';
 import '@/styles/appbar.scss';
@@ -29,17 +30,19 @@ export default function App({ Component, pageProps }: AppProps): React.JSX.Eleme
         <>
             <div id="modal-root"></div>
             <div id="toaster-root"></div>
-            <PageProvider>
-                <ToasterProvider>
-                    <FileOpenProvider>
-                        <FileSaveDialogProvider>
-                            <ApplicationLayout>
-                                <Component {...pageProps} />
-                            </ApplicationLayout>
-                        </FileSaveDialogProvider>
-                    </FileOpenProvider>
-                </ToasterProvider>
-            </PageProvider>
+            <ThemeProvider>
+                <PageProvider>
+                    <ToasterProvider>
+                        <FileOpenProvider>
+                            <FileSaveDialogProvider>
+                                <ApplicationLayout>
+                                    <Component {...pageProps} />
+                                </ApplicationLayout>
+                            </FileSaveDialogProvider>
+                        </FileOpenProvider>
+                    </ToasterProvider>
+                </PageProvider>
+            </ThemeProvider>
         </>
     );
 }

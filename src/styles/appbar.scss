@@ -25,7 +25,21 @@
     font-size: 1.25rem; /* Sets text to 20px (1.25×16px) for prominent display */
 }
 
-/* Fixed-size invisible element to create spacing in the app bar layout */
-.app-bar-spacing-stub {
-    width: 100px; /* Creates a 100px-wide empty space to separate UI elements (absolute measurement) */
+/* Right-side actions container, mirrors the left column width to keep layout balanced */
+.app-bar-actions {
+    width: 100px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Theme toggle button in the app bar */
+.app-bar-theme-toggle {
+    background: none;
+    border: none;
+    color: var(--on-primary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
 }

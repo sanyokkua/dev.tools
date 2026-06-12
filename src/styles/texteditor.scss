@@ -16,14 +16,12 @@
 }
 
 .text-editor:hover {
-    filter: brightness(1.01);
     background-color: color-mix(in srgb, var(--secondary-container-color) 70%, var(--white-color));
     box-shadow: 0 0 4px var(--primary-color);
 }
 
 .text-editor:focus {
     outline: none;
-    filter: brightness(1.05);
     box-shadow: 0 0 6px var(--primary-color);
 }
 

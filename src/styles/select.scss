@@ -16,9 +16,9 @@
     appearance: none; /* Removes default browser arrow styling for consistent cross-browser appearance */
 }
 
-/* Brightens select element on hover for visual feedback */
+/* Overlay tint on hover for visual feedback */
 .select-base:hover {
-    filter: brightness(1.5); /* Increases brightness by 50% during mouse hover */
+    background-color: var(--hover-overlay);
 }
 
 /* Visual feedback when clicking select element */
