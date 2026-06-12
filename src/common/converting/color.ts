@@ -79,15 +79,23 @@ function hslToRgb(h: number, s: number, l: number): Rgb {
 function hslStringToRgb(input: string): Rgb | null {
     const m = input.match(/^hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i);
     if (!m) return null;
-    return hslToRgb(+m[1], +m[2], +m[3]);
+    const h = +m[1],
+        s = +m[2],
+        l = +m[3];
+    if (h < 0 || h > 360 || s < 0 || s > 100 || l < 0 || l > 100) return null;
+    return hslToRgb(h, s, l);
 }
 
 function hsvStringToRgb(input: string): Rgb | null {
     const m = input.match(/^hsv\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i);
     if (!m) return null;
-    const h = +m[1],
-        s = +m[2] / 100,
-        v = +m[3] / 100;
+    const hRaw = +m[1],
+        sRaw = +m[2],
+        vRaw = +m[3];
+    if (hRaw < 0 || hRaw > 360 || sRaw < 0 || sRaw > 100 || vRaw < 0 || vRaw > 100) return null;
+    const h = hRaw,
+        s = sRaw / 100,
+        v = vRaw / 100;
     const c = v * s;
     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
     const m2 = v - c;
@@ -173,7 +181,7 @@ export const COLOR_FORMATS: ColorFormat[] = ['hex', 'rgb', 'hsl', 'hsv'];
 
 export function convertColor(input: string, fromFormat: ColorFormat): ColorConversion[] {
     const rgb = parseColor(input, fromFormat);
-    const errorSwatch = 'rgb(128,128,128)';
+    const errorSwatch = 'rgb(128, 128, 128)';
 
     if (!rgb) {
         return COLOR_FORMATS.map((f) => ({

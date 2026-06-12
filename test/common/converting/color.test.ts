@@ -89,3 +89,26 @@ describe('convertColor — swatchColor', () => {
         expect(results[0].swatchColor).toMatch(/^rgb\(\d+, \d+, \d+\)$/);
     });
 });
+
+describe('convertColor — hue branch coverage', () => {
+    it('#00FF00 green round-trips through hex', () => {
+        const results = convertColor('#00FF00', 'hex');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#00FF00');
+    });
+    it('#0000FF blue round-trips through hex', () => {
+        const results = convertColor('#0000FF', 'hex');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#0000FF');
+    });
+    it('#FFFF00 yellow round-trips through hex', () => {
+        const results = convertColor('#FFFF00', 'hex');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#FFFF00');
+    });
+    it('#FF00FF magenta round-trips through hex', () => {
+        const results = convertColor('#FF00FF', 'hex');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#FF00FF');
+    });
+    it('returns exactly 4 results', () => {
+        const results = convertColor('#FF0000', 'hex');
+        expect(results).toHaveLength(4);
+    });
+});
