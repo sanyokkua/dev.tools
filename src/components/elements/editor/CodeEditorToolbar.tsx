@@ -1,8 +1,10 @@
 'use client';
+import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
+import Switch from '@/controls/Switch';
 import { EditorLanguage } from '@/elements/editor/types';
 import React from 'react';
 
-const COMMON_LANGUAGES = [
+const COMMON_LANGUAGES: SegmentedOption[] = [
     { value: 'typescript', label: 'TS' },
     { value: 'javascript', label: 'JS' },
     { value: 'java', label: 'Java' },
@@ -13,7 +15,7 @@ const COMMON_LANGUAGES = [
     { value: 'yaml', label: 'YAML' },
     { value: 'json', label: 'JSON' },
     { value: 'xml', label: 'XML' },
-] as const;
+];
 
 const COMMON_LANGUAGE_IDS = new Set(COMMON_LANGUAGES.map((l) => l.value));
 
@@ -90,18 +92,12 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
 
             <div className="code-editor__toolbar-sep" aria-hidden="true" />
 
-            <div className="seg-control" role="group" aria-label="Common languages">
-                {COMMON_LANGUAGES.map((lang) => (
-                    <button
-                        key={lang.value}
-                        type="button"
-                        aria-pressed={currentLanguageId === lang.value}
-                        onClick={() => onLanguageSelected(lang.value)}
-                    >
-                        {lang.label}
-                    </button>
-                ))}
-            </div>
+            <SegmentedControl
+                options={COMMON_LANGUAGES}
+                value={currentLanguageId}
+                onChange={onLanguageSelected}
+                aria-label="Common languages"
+            />
 
             <select
                 className="code-editor__lang-select"
@@ -119,37 +115,8 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
 
             <div className="code-editor__toolbar-spacer" />
 
-            <div className="switch-row">
-                <span id="wrap-label" className="code-editor__switch-label">
-                    Wrap
-                </span>
-                <button
-                    type="button"
-                    role="switch"
-                    className="switch-track"
-                    aria-checked={wordWrap}
-                    aria-labelledby="wrap-label"
-                    onClick={onWordWrapToggle}
-                >
-                    <span className="switch-thumb" />
-                </button>
-            </div>
-
-            <div className="switch-row">
-                <span id="minimap-label" className="code-editor__switch-label">
-                    Minimap
-                </span>
-                <button
-                    type="button"
-                    role="switch"
-                    className="switch-track"
-                    aria-checked={minimap}
-                    aria-labelledby="minimap-label"
-                    onClick={onMinimapToggle}
-                >
-                    <span className="switch-thumb" />
-                </button>
-            </div>
+            <Switch label="Wrap" checked={wordWrap} onChange={() => onWordWrapToggle()} />
+            <Switch label="Minimap" checked={minimap} onChange={() => onMinimapToggle()} />
         </div>
     );
 };

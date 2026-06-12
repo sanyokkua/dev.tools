@@ -104,6 +104,7 @@ const IndexPage = (): React.JSX.Element => {
             editorPropsSupportedMimeTypes: editorProps.supportedMimeTypes,
             editorPropsSupportedExtensions: editorProps.supportedExtensions,
         }));
+        cursorDisposableRef.current?.dispose();
         cursorDisposableRef.current = editorProps.editor.onDidChangeCursorPosition((e) => {
             const model = editorProps.editor.getModel();
             const eol = model?.getEOL() === '\r\n' ? 'CRLF' : 'LF';
@@ -226,12 +227,12 @@ const IndexPage = (): React.JSX.Element => {
         setEditorState((prevState) => ({ ...prevState, fileSize: 0 }));
     }, []);
 
-    const onEditorContentChanged = (): void => {
+    const onEditorContentChanged = useCallback((): void => {
         setEditorState((prevState) => {
             const content = getEditorContent(editorRef);
             return { ...prevState, fileSize: content.length };
         });
-    };
+    }, []);
 
     const languageDisplayName = useMemo(() => {
         const lang = editorState.editorPropsLanguageIdMap.get(editorState.editorLanguageId);
