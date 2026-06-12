@@ -1,9 +1,12 @@
 // src/pages/software-installer/index.tsx
 import { APPS_CATALOG } from '@/common/apps-catalog';
-import type { CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
+import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
+import { MANAGER_LABEL } from '@/common/catalog-utils';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
-import React, { useEffect, useMemo, useState } from 'react';
+import AppBasket from '@/page-specific/software-installer/AppBasket';
+import AppCatalog from '@/page-specific/software-installer/AppCatalog';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
     { value: 'macos', label: 'macOS' },
@@ -28,32 +31,14 @@ const PREF_OPTIONS: SegmentedOption[] = [
     { value: 'fallback', label: 'Fall back to any available' },
 ];
 
-const MANAGER_LABEL: Partial<Record<CatalogManager, string>> = {
-    brew: 'Homebrew',
-    mas: 'Mac App Store',
-    winget: 'winget',
-    choco: 'Chocolatey',
-    scoop: 'Scoop',
-    apt: 'apt',
-    dnf: 'dnf',
-    pacman: 'pacman',
-    zypper: 'zypper',
-    flatpak: 'Flatpak',
-    snap: 'Snap',
-    appimage: 'AppImage',
-    npm: 'npm',
-    uv: 'uv',
-    pipx: 'pipx',
-    cargo: 'cargo',
-    go: 'go',
-};
-
 const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const [platform, setPlatform] = useState<CatalogPlatform>('macos');
     const [linuxDistro, setLinuxDistro] = useState<LinuxDistro>('debian');
     const [selectedManagers, setSelectedManagers] = useState<CatalogManager[]>([]);
     const [prefMode, setPrefMode] = useState<PrefMode>('preferred');
+    const [selectedApps, setSelectedApps] = useState<Record<string, CatalogManager | null>>({});
+    const [selectedVersions, setSelectedVersions] = useState<Record<string, string>>({});
 
     useEffect(() => {
         setPageTitle('Software Installer');
@@ -72,6 +57,41 @@ const IndexPage = (): React.JSX.Element => {
         setSelectedManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
     }
 
+    const toggleApp = useCallback((app: CatalogApp): void => {
+        setSelectedApps((prev) => {
+            if (app.id in prev) {
+                const next = { ...prev };
+                delete next[app.id];
+                return next;
+            }
+            return { ...prev, [app.id]: null };
+        });
+    }, []);
+
+    const removeApp = useCallback((appId: string): void => {
+        setSelectedApps((prev) => {
+            const next = { ...prev };
+            delete next[appId];
+            return next;
+        });
+    }, []);
+
+    const setOverride = useCallback((appId: string, mgr: CatalogManager | null): void => {
+        setSelectedApps((prev) => ({ ...prev, [appId]: mgr }));
+    }, []);
+
+    const setVersion = useCallback((appId: string, version: string): void => {
+        setSelectedVersions((prev) => ({ ...prev, [appId]: version }));
+    }, []);
+
+    const clearBasket = useCallback((): void => {
+        setSelectedApps({});
+        setSelectedVersions({});
+    }, []);
+
+    const selectedAppCount = useMemo(() => Object.keys(selectedApps).length, [selectedApps]);
+    const selectedAppIds = useMemo(() => new Set(Object.keys(selectedApps)), [selectedApps]);
+
     return (
         <div className="installer-page">
             {/* Sticky summary */}
@@ -83,12 +103,12 @@ const IndexPage = (): React.JSX.Element => {
                     {selectedManagers.length} {selectedManagers.length === 1 ? 'manager' : 'managers'}
                 </span>
                 <span className="installer-summary__pill" data-testid="sum-apps">
-                    0 apps
+                    {selectedAppCount} {selectedAppCount === 1 ? 'app' : 'apps'}
                 </span>
                 <span className="installer-summary__pref" data-testid="sum-pref">
                     {prefMode === 'preferred' ? 'preferred-only' : 'fallback on'}
                 </span>
-                <button className="btn primary" style={{ marginLeft: 'auto' }} disabled>
+                <button className="btn primary" style={{ marginLeft: 'auto' }} disabled={selectedAppCount === 0}>
                     ⚙ Build Scripts
                 </button>
             </section>
@@ -178,11 +198,26 @@ const IndexPage = (): React.JSX.Element => {
                 </div>
             </div>
 
-            {/* Step 3 — Applications (Task 3.3) */}
+            {/* Step 3 — Applications */}
             <div className="installer-step">
                 <div className="installer-step__label">
                     <span className="installer-step__number">3</span>
                     Applications
+                </div>
+                <div className="installer-apps-grid">
+                    <AppCatalog platform={platform} selectedAppIds={selectedAppIds} onToggle={toggleApp} />
+                    <AppBasket
+                        platform={platform}
+                        linuxDistro={linuxDistro}
+                        selectedManagers={selectedManagers}
+                        prefMode={prefMode}
+                        selectedApps={selectedApps}
+                        selectedVersions={selectedVersions}
+                        onRemove={removeApp}
+                        onOverride={setOverride}
+                        onVersionSelect={setVersion}
+                        onClear={clearBasket}
+                    />
                 </div>
             </div>
 
