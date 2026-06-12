@@ -112,3 +112,18 @@ describe('convertColor — hue branch coverage', () => {
         expect(results).toHaveLength(4);
     });
 });
+
+describe('convertColor — hsv input non-red hues', () => {
+    it('hsv(180, 100%, 100%) cyan → #00FFFF', () => {
+        const results = convertColor('hsv(180, 100%, 100%)', 'hsv');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#00FFFF');
+    });
+    it('hsv(240, 100%, 100%) blue → #0000FF', () => {
+        const results = convertColor('hsv(240, 100%, 100%)', 'hsv');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#0000FF');
+    });
+    it('hsv(300, 100%, 100%) magenta → #FF00FF', () => {
+        const results = convertColor('hsv(300, 100%, 100%)', 'hsv');
+        expect(results.find((r) => r.format === 'hex')?.value).toBe('#FF00FF');
+    });
+});
