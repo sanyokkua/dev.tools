@@ -9,6 +9,7 @@ import '@/styles/checkbox.scss';
 import '@/styles/chip.scss';
 import '@/styles/code-editor.scss';
 import '@/styles/colors.scss';
+import '@/styles/git-cheat-sheet.scss';
 import '@/styles/global.css';
 import '@/styles/infopanel.scss';
 import '@/styles/input.scss';

@@ -37,12 +37,23 @@ import {
 } from '@/common/git-utils';
 import { OSType } from '@/common/types';
 import { usePage } from '@/contexts/PageContext';
-import GuideChooser from '@/elements/GuideChooser';
+import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import { StringUtils } from 'coreutilsts';
 import { FC, useEffect, useState } from 'react';
 import CodeSnippet from '../../components/elements/CodeSnippet';
 import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 import GitForm, { FormData } from '../../components/page-specific/git-cheat-sheet/git-form';
+
+const MODE_OPTIONS: SegmentedOption[] = [
+    { value: 'interactive', label: 'Interactive (automatic)' },
+    { value: 'manual', label: 'Manual (step-by-step)' },
+];
+
+const MANUAL_OS_OPTIONS: SegmentedOption[] = [
+    { value: 'macos', label: 'macOS' },
+    { value: 'windows', label: 'Windows' },
+    { value: 'linux', label: 'Ubuntu/Debian' },
+];
 
 const GitCheatSheetPage: FC = () => {
     const { setPageTitle } = usePage();
@@ -51,13 +62,12 @@ const GitCheatSheetPage: FC = () => {
         setPageTitle('Git Cheat Sheet');
     }, [setPageTitle]);
 
-    const [chosenGuide, setChosenGuide] = useState<string>('');
+    const [chosenGuide, setChosenGuide] = useState<string>('interactive');
+    const [manualOs, setManualOs] = useState<OSType>('macos');
 
     const [nameValue, setNameValue] = useState<string>('Your Name');
     const [emailValue, setEmailValue] = useState<string>('your@example.com');
     const [osType, setOsType] = useState<OSType>('macos');
-
-    const [rawCommands, setRawCommands] = useState<string>('');
     const [singleLineCommands, setSingleLineCommands] = useState<string>('');
     const [detailedCommands, setDetailedCommands] = useState<{ description: string; command: string }[]>([]);
 
@@ -67,202 +77,223 @@ const GitCheatSheetPage: FC = () => {
         setEmailValue(email);
         setOsType(os);
         if (name.trim().length === 0 || email.trim().length === 0) {
-            setRawCommands('');
             setSingleLineCommands('');
             setDetailedCommands([]);
             return;
         }
-
         const commands = generateGitCommands(name, email, globalConfig, os);
-        const allText = commands.map((cmd) => cmd.command).join('\n');
-        const singleLine = commands.map((cmd) => cmd.command).join(' && ');
-
-        setRawCommands(allText);
-        setSingleLineCommands(singleLine);
+        setSingleLineCommands(commands.map((cmd) => cmd.command).join(' && '));
         setDetailedCommands(commands);
     };
 
     const codeLanguage = osType === 'windows' ? 'powershell' : 'bash';
 
     const interactiveGuide = (
-        <section>
-            <h2>Interactive Command Generator</h2>
-            <p>Fill in your details to generate customized Git setup commands:</p>
+        <div className="git-cheat-sheet__interactive">
             <GitForm onSubmit={handleGenerate} />
-
-            {rawCommands && (
-                <>
-                    <br />
-                    <CodeSnippet
-                        headerText="All Commands (replace placeholders)"
-                        content={rawCommands}
-                        language={codeLanguage}
-                    />
-                    {detailedCommands.map((cmd) => (
+            <div className="git-cheat-sheet__output-col">
+                {singleLineCommands ? (
+                    <>
                         <CodeSnippet
-                            key={StringUtils.slugifyString(cmd.description)}
-                            headerText={cmd.description}
-                            content={cmd.command}
+                            headerText="All commands (single-line, &&-chained)"
+                            content={singleLineCommands}
                             language={codeLanguage}
                         />
-                    ))}
-                    <CodeSnippet
-                        headerText="Single-Line Command (chain with &&)"
-                        content={singleLineCommands}
-                        language={codeLanguage}
-                    />
-                </>
-            )}
-        </section>
+                        {detailedCommands.map((cmd) => (
+                            <CodeSnippet
+                                key={StringUtils.slugifyString(cmd.description)}
+                                headerText={cmd.description}
+                                content={cmd.command}
+                                language={codeLanguage}
+                            />
+                        ))}
+                    </>
+                ) : (
+                    <p className="git-cheat-sheet__empty-hint">
+                        Fill in the form and click Generate to see your commands.
+                    </p>
+                )}
+            </div>
+        </div>
     );
+
     const manualGuide = (
-        <section>
-            <h2>Manual Setup Guide</h2>
+        <div className="git-cheat-sheet__manual">
+            {/* 1. Install Git */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>1. Install Git</h3>
+                <p>
+                    Download Git from{' '}
+                    <a href="https://git-scm.com/downloads" target="_blank" rel="noreferrer">
+                        git-scm.com/downloads
+                    </a>{' '}
+                    or use:
+                </p>
+                <div className="git-cheat-sheet__os-bar">
+                    <SegmentedControl
+                        options={MANUAL_OS_OPTIONS}
+                        value={manualOs}
+                        onChange={(v) => setManualOs(v as OSType)}
+                        aria-label="Install OS"
+                    />
+                </div>
+                {manualOs === 'macos' && (
+                    <CodeSnippet headerText="macOS (Homebrew)" content={GIT_INSTALL_MACOS} language="bash" />
+                )}
+                {manualOs === 'windows' && (
+                    <CodeSnippet headerText="Windows (Winget)" content={GIT_INSTALL_WINDOWS} language="powershell" />
+                )}
+                {manualOs === 'linux' && (
+                    <CodeSnippet headerText="Ubuntu/Debian" content={GIT_INSTALL_LINUX} language="bash" />
+                )}
+                <CodeSnippet headerText="Verify Installation" content={GIT_VERIFY_INSTALL} language="bash" />
+            </div>
 
-            <h3>1. Install Git</h3>
-            <p>
-                Download Git from <a href="https://git-scm.com/downloads">git-scm.com/downloads</a> or use:
-            </p>
-            <CodeSnippet headerText="macOS (Homebrew)" content={GIT_INSTALL_MACOS} language="bash" />
-            <CodeSnippet headerText="Windows (Winget)" content={GIT_INSTALL_WINDOWS} language="powershell" />
-            <CodeSnippet headerText="Ubuntu/Debian" content={GIT_INSTALL_LINUX} language="bash" />
-            <CodeSnippet headerText="Verify Installation" content={GIT_VERIFY_INSTALL} language="bash" />
+            {/* 2. Configure User Info */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>2. Configure User Info</h3>
+                <CodeSnippet
+                    headerText="Set Local Username"
+                    content={`${GIT_CONFIG_USER_NAME} "${nameValue}"`}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Set Global Username"
+                    content={`${GIT_CONFIG_GLOBAL_USER_NAME} "${nameValue}"`}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Set Local Email"
+                    content={`${GIT_CONFIG_USER_EMAIL} "${emailValue}"`}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Set Global Email"
+                    content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} "${emailValue}"`}
+                    language="bash"
+                />
+                <CodeSnippet headerText="List Local Config" content={GIT_CONFIG_VERIFY} language="bash" />
+                <CodeSnippet headerText="List Global Config" content={GIT_CONFIG_GLOBAL_VERIFY} language="bash" />
+            </div>
 
-            <h3>2. Configure User Info</h3>
-            <CodeSnippet
-                headerText="Set Local Username"
-                content={`${GIT_CONFIG_USER_NAME} "${nameValue}"`}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Set Global Username"
-                content={`${GIT_CONFIG_GLOBAL_USER_NAME} "${nameValue}"`}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Set Local Email"
-                content={`${GIT_CONFIG_USER_EMAIL} "${emailValue}"`}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Set Global Email"
-                content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} "${emailValue}"`}
-                language="bash"
-            />
-            <CodeSnippet headerText="List Local Config" content={GIT_CONFIG_VERIFY} language="bash" />
-            <CodeSnippet headerText="List Global Config" content={GIT_CONFIG_GLOBAL_VERIFY} language="bash" />
+            {/* 3. SSH Key Setup */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>3. Optional: SSH Key Setup</h3>
+                <CodeSnippet
+                    headerText="Generate SSH Key"
+                    content={`${SSH_KEY_GENERATE} "${emailValue}"`}
+                    language="bash"
+                />
+                <CodeSnippet headerText="Start SSH Agent &amp; Add Key" content={SSH_KEY_ADD_AGENT} language="bash" />
+                <CodeSnippet
+                    headerText="Copy Public Key (macOS)"
+                    content={SSH_KEY_COPY_PUBLIC_KEY_MACOS}
+                    language="bash"
+                />
+                <CodeSnippet headerText="Install xclip (Linux)" content={INSTALL_XCLIP} language="bash" />
+                <CodeSnippet
+                    headerText="Copy Public Key (Linux)"
+                    content={SSH_KEY_COPY_PUBLIC_KEY_LINUX}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Copy Public Key (Windows)"
+                    content={SSH_KEY_COPY_PUBLIC_KEY_WINDOWS}
+                    language="powershell"
+                />
+            </div>
 
-            <h3>3. Optional: SSH Key Setup</h3>
-            <CodeSnippet
-                headerText="Generate SSH Key"
-                content={`${SSH_KEY_GENERATE} "${emailValue}"`}
-                language="bash"
-            />
-            <CodeSnippet headerText="Start SSH Agent & Add Key" content={SSH_KEY_ADD_AGENT} language="bash" />
-            <CodeSnippet headerText="Copy Public Key (macOS)" content={SSH_KEY_COPY_PUBLIC_KEY_MACOS} language="bash" />
-            <CodeSnippet headerText="Install xclip (Linux)" content={INSTALL_XCLIP} language="bash" />
-            <CodeSnippet headerText="Copy Public Key (Linux)" content={SSH_KEY_COPY_PUBLIC_KEY_LINUX} language="bash" />
-            <CodeSnippet
-                headerText="Copy Public Key (Windows)"
-                content={SSH_KEY_COPY_PUBLIC_KEY_WINDOWS}
-                language="powershell"
-            />
+            {/* 4. GPG Commit Signing */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>4. Optional: GPG Commit Signing</h3>
+                <CodeSnippet headerText="Install GPG (macOS)" content={GPG_INSTALL_MACOS} language="bash" />
+                <CodeSnippet headerText="Install GPG (Linux)" content={GPG_INSTALL_LINUX} language="bash" />
+                <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
+                <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
+                <CodeSnippet
+                    headerText="List Secret Keys (and copy id, eg.: sec   rsa4096/YOUR_KEY_ID YYYY-MM-DD [SC])"
+                    content={GPG_GET_KEY_ID}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Configure Global Signing Key"
+                    content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Enable Global Commit Signing"
+                    content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Enable Global Tag Signing"
+                    content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Configure Local Signing Key"
+                    content={GPG_CONFIGURE_GIT_SIGNING_ADD_KEY}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Enable Local Commit Signing"
+                    content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Enable Local Tag Signing"
+                    content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING}
+                    language="bash"
+                />
+                <hr className="git-cheat-sheet__divider" />
+                <CodeSnippet
+                    headerText="(macOS) Install pinentry for visual GPG prompts"
+                    content={GPG_PINENTRY_INSTALL}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="(macOS) Create GPG config folder (if it doesn't exist)"
+                    content={GPG_PINENTRY_SETUP_MKDIR_GNUPG}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="(macOS) Add pinentry to gpg-agent config (if entry not present)"
+                    content={GPG_PINENTRY_SETUP_ADD_AGENT_RECORD}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="(macOS) Add 'use-agent' to GPG config (if missing)"
+                    content={GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="(macOS) Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)"
+                    content={GPG_PINENTRY_ADD_EXPORT_TO_PROFILE}
+                    language="bash"
+                />
+            </div>
 
-            <h3>4. Optional: GPG Commit Signing</h3>
-            <CodeSnippet headerText="Install GPG (macOS)" content={GPG_INSTALL_MACOS} language="bash" />
-            <CodeSnippet headerText="Install GPG (Linux)" content={GPG_INSTALL_LINUX} language="bash" />
-            <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
-            <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
-            <CodeSnippet
-                headerText="List Secret Keys (and copy id, eg.: sec   rsa4096/YOUR_KEY_ID YYYY-MM-DD [SC])"
-                content={GPG_GET_KEY_ID}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Configure Global Signing Key"
-                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Enable Global Commit Signing"
-                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Enable Global Tag Signing"
-                content={GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Configure Local Signing Key"
-                content={GPG_CONFIGURE_GIT_SIGNING_ADD_KEY}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Enable Local Commit Signing"
-                content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="Enable Local Tag Signing"
-                content={GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="(MacOS) To enable visual pass prompts for GPG signing, install pinentry"
-                content={GPG_PINENTRY_INSTALL}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="(MacOS) Create GPG config folder (if it doesn't exist)"
-                content={GPG_PINENTRY_SETUP_MKDIR_GNUPG}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="(MacOS) Add pinentry to gpg-agent config (if entry not present)"
-                content={GPG_PINENTRY_SETUP_ADD_AGENT_RECORD}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="(MacOS) Add 'use-agent' to GPG config (if missing)"
-                content={GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG}
-                language="bash"
-            />
-            <CodeSnippet
-                headerText="(MacOS) Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)"
-                content={GPG_PINENTRY_ADD_EXPORT_TO_PROFILE}
-                language="bash"
-            />
-
-            <h3>5. Verify Setup</h3>
-            <CodeSnippet headerText="Test SSH Connection" content={SSH_KEY_TEST} language="bash" />
-            <CodeSnippet headerText="Test GPG Setup" content={GPG_VERIFY_INSTALL} language="bash" />
-        </section>
+            {/* 5. Verify Setup */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>5. Verify Setup</h3>
+                <CodeSnippet headerText="Test SSH Connection" content={SSH_KEY_TEST} language="bash" />
+                <CodeSnippet headerText="Test GPG Setup" content={GPG_VERIFY_INSTALL} language="bash" />
+            </div>
+        </div>
     );
-
-    function handleGuideChosen(value: string): void {
-        setChosenGuide(value);
-    }
-
-    let guide = null;
-    if (chosenGuide === 'manual') {
-        guide = manualGuide;
-    } else if (chosenGuide === 'interactive') {
-        guide = interactiveGuide;
-    }
 
     return (
         <ContentContainerFlex>
-            <section>
-                <h1>Git Cheat Sheet</h1>
-                <div>
-                    <p>On this page you can find instruction on how to configure Git on your local machine</p>
-                    <p>Official Instructions can be found on the GitHub, GitLab and other Git Services. For example:</p>
+            <div className="git-cheat-sheet">
+                <div className="git-cheat-sheet__header">
+                    <h1>Git Cheat Sheet</h1>
+                    <p>Configure Git, SSH and GPG. Official docs:</p>
                     <ul>
                         <li>
                             <a
                                 href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
                                 target="_blank"
+                                rel="noreferrer"
                             >
                                 GitHub SSH
                             </a>
@@ -271,12 +302,13 @@ const GitCheatSheetPage: FC = () => {
                             <a
                                 href="https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key"
                                 target="_blank"
+                                rel="noreferrer"
                             >
                                 GitHub GPG
                             </a>
                         </li>
                         <li>
-                            <a href="https://docs.gitlab.com/user/ssh/" target="_blank">
+                            <a href="https://docs.gitlab.com/user/ssh/" target="_blank" rel="noreferrer">
                                 GitLab SSH
                             </a>
                         </li>
@@ -284,26 +316,26 @@ const GitCheatSheetPage: FC = () => {
                             <a
                                 href="https://docs.gitlab.com/user/project/repository/signed_commits/gpg/"
                                 target="_blank"
+                                rel="noreferrer"
                             >
                                 GitLab GPG
                             </a>
                         </li>
                     </ul>
-                    <p>Chose the version of the Guide you would like to see:</p>
-                    <br />
-                    <GuideChooser
-                        options={[
-                            { label: 'Interactive Guide', value: 'interactive' },
-                            { label: 'Manual Guide', value: 'manual' },
-                        ]}
-                        selectedValue={chosenGuide}
-                        onChange={handleGuideChosen}
+                </div>
+
+                <div className="git-cheat-sheet__mode-bar">
+                    <SegmentedControl
+                        options={MODE_OPTIONS}
+                        value={chosenGuide}
+                        onChange={setChosenGuide}
+                        aria-label="Guide mode"
                     />
                 </div>
 
-                <br />
-                {guide}
-            </section>
+                {chosenGuide === 'interactive' && interactiveGuide}
+                {chosenGuide === 'manual' && manualGuide}
+            </div>
         </ContentContainerFlex>
     );
 };

@@ -1,0 +1,134 @@
+.git-cheat-sheet {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    padding: 16px;
+    gap: 16px;
+    overflow-y: auto;
+
+    &__header {
+        h1 {
+            margin: 0 0 4px;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
+
+            a {
+                color: var(--primary);
+            }
+        }
+    }
+
+    &__mode-bar {
+        display: flex;
+        align-items: center;
+    }
+
+    // ── Interactive ───────────────────────────────────────────────────────
+    &__interactive {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 14px;
+        align-items: start;
+    }
+
+    &__form-card {
+        background: var(--card);
+        border: 1px solid var(--outline-soft);
+        border-radius: var(--r-md);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__step-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--primary);
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+        }
+    }
+
+    &__form-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__output-col {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    &__empty-hint {
+        color: var(--muted);
+        font-size: 13px;
+        padding: 12px 0;
+    }
+
+    // ── Manual ────────────────────────────────────────────────────────────
+    &__manual {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    &__manual-step {
+        background: var(--card);
+        border: 1px solid var(--outline-soft);
+        border-radius: var(--r-md);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+    }
+
+    &__os-bar {
+        display: flex;
+        align-items: center;
+    }
+
+    &__divider {
+        border: none;
+        border-top: 1px solid var(--outline-soft);
+        margin: 4px 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .git-cheat-sheet {
+        &__interactive {
+            grid-template-columns: 1fr;
+        }
+    }
+}
