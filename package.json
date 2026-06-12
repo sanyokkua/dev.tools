@@ -55,7 +55,8 @@
         "remark-gfm": "^4.0.1",
         "remark-math": "^6.0.0",
         "sass": "^1.97.3",
-        "uuid": "^13.0.0"
+        "uuid": "^13.0.0",
+        "yaml": "^2.9.0"
     },
     "prettier": {
         "printWidth": 120,
