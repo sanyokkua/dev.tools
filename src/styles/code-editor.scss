@@ -1,0 +1,110 @@
+.code-editor {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        background: var(--card-2);
+        border-bottom: 1px solid var(--outline-soft);
+        flex-wrap: wrap;
+    }
+
+    &__toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    &__toolbar-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--outline-soft);
+        flex: 0 0 auto;
+    }
+
+    &__toolbar-spacer {
+        flex: 1;
+    }
+
+    &__lang-select {
+        font: inherit;
+        font-size: 12px;
+        padding: 5px 8px;
+        border: 1px solid var(--outline-soft);
+        border-radius: var(--r-sm);
+        background: var(--card);
+        color: var(--on-surface);
+        cursor: pointer;
+        max-width: 160px;
+
+        &:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
+        }
+    }
+
+    &__switch-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--on-surface-variant);
+        white-space: nowrap;
+    }
+
+    &__editor {
+        flex: 1;
+        min-height: 0;
+    }
+
+    &__status-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 4px 12px;
+        border-top: 1px solid var(--outline-soft);
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--card-2);
+        flex-wrap: wrap;
+        user-select: none;
+    }
+
+    &__status-bar-end {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .code-editor {
+        &__toolbar {
+            gap: 4px;
+            padding: 6px 8px;
+        }
+
+        &__toolbar-sep {
+            display: none;
+        }
+
+        &__toolbar-spacer {
+            display: none;
+        }
+
+        &__lang-select {
+            max-width: 130px;
+        }
+
+        &__status-bar {
+            gap: 10px;
+            padding: 4px 8px;
+        }
+
+        &__status-bar-end {
+            margin-left: 0;
+        }
+    }
+}

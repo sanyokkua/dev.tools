@@ -7,6 +7,7 @@ import '@/styles/appbar.scss';
 import '@/styles/buttons.scss';
 import '@/styles/checkbox.scss';
 import '@/styles/chip.scss';
+import '@/styles/code-editor.scss';
 import '@/styles/colors.scss';
 import '@/styles/global.css';
 import '@/styles/infopanel.scss';
