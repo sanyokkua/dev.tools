@@ -5,18 +5,21 @@ import { useFileOpen } from '@/contexts/FileOpenContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
-import { getEditorContent, pasteFromClipboardToEditor, setEditorContent } from '@/elements/editor/code-editor-utils';
+import {
+    copyToClipboardFromEditor,
+    getEditorContent,
+    pasteFromClipboardToEditor,
+    setEditorContent,
+} from '@/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/elements/editor/types';
-import { MenuBuilder } from '@/elements/navigation/menubar/utils';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
-import Menubar from '../../components/elements/navigation/menubar/Menubar';
+import MarkdownToolbar from '../../components/elements/editor/MarkdownToolbar';
 
 import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { saveTextFile } from '@/common/file-utils';
 import { mapBoolean } from '@/common/formatting-tools';
 import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
-import 'highlight.js/styles/github.css';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
 import { useReactToPrint } from 'react-to-print';
@@ -24,9 +27,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import HorizontalContainer from '../../components/layouts/HorizontalContainer';
-import ScrollableContentContainer from '../../components/layouts/ScrollableContentContainer';
-import TextContainer from '../../components/layouts/TextContainer';
+import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 
 const markdownExtension = '.md';
 
@@ -42,7 +43,6 @@ const IndexPage: React.FC = () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
-    // State management
     const [isEditorVisible, setIsEditorVisible] = useState<boolean>(true);
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
     const [isWordWrapEnabled, setIsWordWrapEnabled] = useState<boolean>(false);
@@ -57,14 +57,10 @@ const IndexPage: React.FC = () => {
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-    // Event handlers with useCallback for optimization
-    const handleEditorMount = useCallback(
-        (props: EditorProperties) => {
-            leftEditorRef.current = props.editor;
-            setEditorContent(leftEditorRef, currentFileInfo.content);
-        },
-        [currentFileInfo.content],
-    );
+    const handleEditorMount = useCallback((props: EditorProperties) => {
+        leftEditorRef.current = props.editor;
+        setEditorContent(leftEditorRef, '');
+    }, []);
 
     const handleNewFile = useCallback(() => {
         const emptyContent = '';
@@ -107,11 +103,13 @@ const IndexPage: React.FC = () => {
         });
     }, [currentFileInfo]);
 
+    const handleCopy = useCallback(() => {
+        copyToClipboardFromEditor(leftEditorRef, showToast);
+    }, [showToast]);
+
     const handlePaste = useCallback(() => {
         pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
-        const updatedContent = getEditorContent(leftEditorRef);
-        setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
-    }, []);
+    }, [showToast]);
 
     const handleToggleEditor = useCallback(() => {
         setIsEditorVisible((prev) => !prev);
@@ -133,26 +131,11 @@ const IndexPage: React.FC = () => {
         reactToPrintFn();
     }, [reactToPrintFn]);
 
-    // Application menu items
-    const leftMenuItems = MenuBuilder.newBuilder()
-        .addButton('new-file', 'New File', handleNewFile)
-        .addButton('open-file', 'Open File', handleOpenFileDialog)
-        .addButton('save', 'Save File', handleSaveFile)
-        .addButton('paste-from-clipboard', 'Paste', handlePaste)
-        .addButton('show-editor', 'Show Editor', handleToggleEditor)
-        .addButton('show-preview', 'Show Preview', handleTogglePreview)
-        .addButton('word-wrap', 'Word Wrap', handleToggleWordWrap)
-        .addButton('mini-map', 'Mini Map', handleToggleMinimap)
-        .addButton('save-pdf', 'Print Markdown', handlePrint)
-        .build();
-
-    // Editor change handler
     const handleTextChange = useCallback(() => {
         const updatedContent = getEditorContent(leftEditorRef);
         setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
     }, []);
 
-    // Information panel data
     const infoPanelItems: InformationPanelItem[] = [
         `WordWrap: ${mapBoolean(isWordWrapEnabled)}`,
         `Minimap: ${mapBoolean(isMinimapEnabled)}`,
@@ -163,36 +146,55 @@ const IndexPage: React.FC = () => {
     ];
 
     return (
-        <>
-            <Menubar menuItems={leftMenuItems} />
-            <InformationPanel items={infoPanelItems} />
+        <ContentContainerFlex>
+            <div className="markdown-tools">
+                <MarkdownToolbar
+                    onFileNewClick={handleNewFile}
+                    onFileOpenClick={handleOpenFileDialog}
+                    onFileSaveClick={handleSaveFile}
+                    onCopyClick={handleCopy}
+                    onPasteClick={handlePaste}
+                    showEditor={isEditorVisible}
+                    onToggleEditor={handleToggleEditor}
+                    showPreview={isPreviewVisible}
+                    onTogglePreview={handleTogglePreview}
+                    wordWrap={isWordWrapEnabled}
+                    onWordWrapToggle={handleToggleWordWrap}
+                    minimap={isMinimapEnabled}
+                    onMinimapToggle={handleToggleMinimap}
+                    onPrintClick={handlePrint}
+                />
 
-            <HorizontalContainer>
-                {isEditorVisible && (
-                    <CodeEditor
-                        minimap={isMinimapEnabled}
-                        wordWrap={isWordWrapEnabled}
-                        onEditorMounted={handleEditorMount}
-                        languageId="markdown"
-                        onChange={handleTextChange}
-                        height="100vh"
-                    />
-                )}
+                <InformationPanel items={infoPanelItems} />
 
-                {isPreviewVisible && (
-                    <ScrollableContentContainer>
-                        <TextContainer ref={contentRef}>
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeKatex, rehypeHighlight]}
-                            >
-                                {currentFileInfo.content}
-                            </ReactMarkdown>
-                        </TextContainer>
-                    </ScrollableContentContainer>
-                )}
-            </HorizontalContainer>
-        </>
+                <div className="markdown-tools__body">
+                    {isEditorVisible && (
+                        <div className="markdown-tools__pane markdown-tools__pane--editor">
+                            <CodeEditor
+                                minimap={isMinimapEnabled}
+                                wordWrap={isWordWrapEnabled}
+                                onEditorMounted={handleEditorMount}
+                                languageId="markdown"
+                                onChange={handleTextChange}
+                                height="100%"
+                            />
+                        </div>
+                    )}
+                    {isPreviewVisible && (
+                        <div className="markdown-tools__pane">
+                            <div ref={contentRef} className="markdown-tools__preview">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm, remarkMath]}
+                                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                                >
+                                    {currentFileInfo.content}
+                                </ReactMarkdown>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </ContentContainerFlex>
     );
 };
 

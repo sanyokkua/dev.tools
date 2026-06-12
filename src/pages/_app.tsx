@@ -16,6 +16,7 @@ import '@/styles/installer.scss';
 import '@/styles/layout.scss';
 import '@/styles/linux-setup.scss';
 import '@/styles/mac-os-setup.scss';
+import '@/styles/markdown-tools.scss';
 import '@/styles/menubar.scss';
 import '@/styles/modal.scss';
 import '@/styles/segmented-control.scss';
