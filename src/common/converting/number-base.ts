@@ -12,6 +12,12 @@ const STANDARD_BASES = [
     { base: 8, label: 'Octal', prefix: '0o', groupSize: 0 },
 ] as const;
 
+function isValidForBase(cleaned: string, fromBase: number): boolean {
+    const validChars = '0123456789abcdefghijklmnopqrstuvwxyz'.slice(0, fromBase);
+    const pattern = new RegExp(`^[${validChars}]+$`, 'i');
+    return pattern.test(cleaned);
+}
+
 export function parseInputAsDecimal(input: string, fromBase: number): number | null {
     let cleaned = input.trim();
     if (!cleaned) return null;
@@ -20,6 +26,7 @@ export function parseInputAsDecimal(input: string, fromBase: number): number | n
     else if (fromBase === 8 && /^0[oO]/.test(cleaned)) cleaned = cleaned.slice(2);
     cleaned = cleaned.replace(/\s/g, '');
     if (!cleaned) return null;
+    if (!isValidForBase(cleaned, fromBase)) return null;
     const value = parseInt(cleaned, fromBase);
     return isNaN(value) ? null : value;
 }

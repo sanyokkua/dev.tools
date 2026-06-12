@@ -11,6 +11,8 @@ describe('parseInputAsDecimal', () => {
     it('returns null for invalid input', () => expect(parseInputAsDecimal('XYZ', 10)).toBeNull());
     it('returns null for hex chars in decimal context', () => expect(parseInputAsDecimal('FF', 10)).toBeNull());
     it('handles zero', () => expect(parseInputAsDecimal('0', 10)).toBe(0));
+    it('returns null for hex prefix in decimal context', () => expect(parseInputAsDecimal('0xFF', 10)).toBeNull());
+    it('returns null for partial-valid input like 123abc', () => expect(parseInputAsDecimal('123abc', 10)).toBeNull());
 });
 
 describe('convertNumberBase', () => {
