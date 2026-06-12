@@ -1,6 +1,6 @@
 /* Vertical sidebar with themed background for navigation or secondary content */
 .side-bar {
-    width: 12vw; /* Sets width to 12% of the viewport width (responsive to screen size) */
+    width: var(--rail); /* 252px fixed; matches --rail token from Task 1.1 */
     padding: 1rem; /* Adds 16px spacing inside the sidebar (1 × 16px default font size) */
     box-sizing: border-box; /* Includes padding in width calculation (total width remains 12vw) */
     background-color: var(--secondary-container-color); /* Uses theme-defined background color (e.g., light blue) */

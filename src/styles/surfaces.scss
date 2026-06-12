@@ -8,8 +8,8 @@
     ); /* Mixes 95% surface color with 5% primary color for depth */
     color: var(--surface-color-on); /* Text color that contrasts with surface */
     border-radius: 8px; /* Rounded corners with 8px radius */
-    padding: 1vh; /* Vertical padding equal to 1% of viewport height (responsive spacing) */
-    margin: 1vh; /* Adds 1% viewport height spacing around the paper */
+    padding: var(--s3);
+    margin: var(--s2);
     transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth shadow animation with Material Design timing */
 
     /* Default elevation level 1 - subtle shadow system */

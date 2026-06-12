@@ -14,7 +14,7 @@
     overflow: hidden; /* Cuts off any content that extends beyond panel boundaries */
 
     /* Fixed height based on screen size with responsive behavior */
-    height: 4vh; /* 4% of viewport height (adjusts automatically with screen size) */
+    height: var(--s6); /* 32px fixed status-bar height */
 
     /* Full-width horizontal panel */
     width: 100%; /* Stretches to fill entire container width */
