@@ -1,59 +1,73 @@
-/* Base styles shared by all input types - defines common appearance and behavior */
+/* ============================================================
+   Input base
+   ============================================================ */
 .input-base {
-    font-size: 1rem; /* Sets standard text size (16px) for readability */
-    padding: 0.6rem 1rem; /* Adds 9.6px vertical and 16px horizontal padding (based on 16px base size) */
-    border-radius: 4px; /* Creates slightly rounded corners (half the button's 8px radius) */
-    font-weight: 400; /* Uses normal font weight (lighter than buttons for better contrast) */
-    transition: all 0.2s ease-in-out; /* Smooth animation for all property changes over 0.2 seconds */
-    outline: none; /* Removes browser default focus outline */
-    background: transparent; /* Default transparent background for variant flexibility */
-    color: var(--Black); /* Sets text color using theme variable */
-    box-sizing: border-box; /* Ensures padding doesn't increase total width */
-    border: 0; /* Base border removed - added in variants */
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--on-surface);
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* OUTLINED INPUT = full border around the input field */
-.input-outlined {
-    border: 1px solid var(--md-outline-color); /* Adds 1px solid border using theme-defined outline color */
+.input-base::placeholder {
+    color: var(--muted);
 }
 
-/* UNDERLINED INPUT = bottom-only border, inspired by Material Design */
-.input-underlined {
-    border-bottom: 1px solid var(--input-border-color, var(--outline));
-}
-
-/* HOVER STATE = subtle visual feedback when mouse is over input */
 .input-base:hover {
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05); /* Adds 2px light gray shadow for hover effect */
+    border-color: var(--primary);
 }
 
-/* FOCUS STATE = indicates active input field */
 .input-base:focus {
-    box-shadow: 0 0 0 2px var(--input-focus-shadow, rgba(98, 0, 234, 0.2)); /* Purple-tinged focus indicator */
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-container);
 }
 
-/* DISABLED STATE = visual indication for inactive inputs */
+.input-base:disabled,
 .input-base[disabled] {
-    --input-border-color: var(--input-disabled-border, var(--outline-soft));
-    color: var(--input-disabled-color, var(--muted));
-    opacity: 0.5; /* Makes entire input appear faded */
-    cursor: not-allowed; /* Shows "not allowed" cursor when hovering */
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--card-2);
 }
 
-/* SMALL INPUT = compact size for space-constrained contexts */
+/* ---- Variants ---- */
+.input-outlined {
+    /* default style — no extra rules needed (all in base) */
+}
+
+.input-underlined {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--outline);
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.input-underlined:focus {
+    border-bottom-color: var(--primary);
+    box-shadow: 0 2px 0 0 var(--primary-container);
+}
+
+/* ---- Sizes ---- */
 .input-small {
-    font-size: 0.9rem; /* 14.4px text size (0.9 × 16px) */
-    padding: 0.4rem 0.8rem; /* 6.4px vertical and 12.8px horizontal padding */
+    font-size: 12px;
+    padding: 6px 10px;
 }
 
-/* LARGE INPUT = increased size for better visibility/tap targets */
 .input-large {
-    font-size: 1.1rem; /* 17.6px text size (1.1 × 16px) */
-    padding: 0.8rem 1.2rem; /* 12.8px vertical and 19.2px horizontal padding */
+    font-size: 15px;
+    padding: 11px 14px;
 }
 
-/* BLOCK INPUT = full-width input for form layouts */
 .input-block {
-    display: block; /* Makes element take full width of parent container */
-    width: 100%; /* Explicitly sets width to 100% for compatibility */
+    display: block;
+    width: 100%;
 }
