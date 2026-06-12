@@ -80,3 +80,10 @@ describe('UNITS_BY_CATEGORY', () => {
         expect(cats.every((u) => u.length >= 3)).toBe(true);
     });
 });
+
+describe('convertUnit — edge cases', () => {
+    it('NaN input produces NaN values', () => {
+        const results = convertUnit(NaN, 'c', 'temperature');
+        expect(results.every((r) => r.value === 'NaN')).toBe(true);
+    });
+});

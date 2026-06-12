@@ -68,7 +68,8 @@ export interface UnitConversion {
 }
 
 function formatNumber(n: number): string {
-    if (!isFinite(n)) return '∞';
+    if (isNaN(n)) return 'NaN';
+    if (!isFinite(n)) return n > 0 ? '∞' : '-∞';
     if (Math.abs(n) >= 1e15 || (Math.abs(n) < 1e-9 && n !== 0)) {
         return n.toExponential(6).replace(/\.?0+(e)/, '$1');
     }
