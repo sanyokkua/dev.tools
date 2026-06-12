@@ -73,3 +73,10 @@ describe('convertDataFormat — query-string input', () => {
         expect(results.find((r) => r.format === 'querystring')).toBeUndefined();
     });
 });
+
+describe('convertDataFormat — edge cases', () => {
+    it('empty YAML input returns errors on all rows', () => {
+        const results = convertDataFormat('', 'yaml');
+        expect(results.every((r) => r.error !== undefined)).toBe(true);
+    });
+});

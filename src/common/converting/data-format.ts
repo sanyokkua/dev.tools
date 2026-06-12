@@ -67,6 +67,10 @@ export function convertDataFormat(input: string, fromFormat: DataFormat): Format
         return targets.map((f) => ({ format: f, label: FORMAT_LABELS[f], error }));
     }
 
+    if (parsed === undefined || parsed === null) {
+        return targets.map((f) => ({ format: f, label: FORMAT_LABELS[f], error: 'Input is empty or null' }));
+    }
+
     return targets.map((f) => {
         try {
             return { format: f, label: FORMAT_LABELS[f], value: fromObject(parsed, f) };
