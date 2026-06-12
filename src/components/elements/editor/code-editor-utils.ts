@@ -5,7 +5,6 @@ import { ShowToastOptions, ToastType } from '@/controls/toaster/types';
 import { Monaco } from '@monaco-editor/react';
 import { editor, languages } from 'monaco-editor';
 import { RefObject } from 'react';
-import { OnMenuItemClick, SubmenuItemTypeless } from '../navigation/menubar/types';
 import { EditorLanguage, EditorProperties } from './types';
 
 export function getEditorContent(editor: RefObject<editor.IStandaloneCodeEditor | null>): string {
@@ -18,6 +17,12 @@ export function getEditorContent(editor: RefObject<editor.IStandaloneCodeEditor 
 export function setEditorContent(editor: RefObject<editor.IStandaloneCodeEditor | null>, value: string): void {
     if (editor.current) {
         editor.current.setValue(value);
+    }
+}
+
+export function clearEditorContent(editor: RefObject<editor.IStandaloneCodeEditor | null>): void {
+    if (editor.current) {
+        editor.current.setValue('');
     }
 }
 
@@ -170,10 +175,4 @@ export function getFileLanguage(fileInfo: FileInfo, extensionMap: Map<string, Ed
         aliases: [DEFAULT_LANGUAGE_ID],
         mimetypes: [DEFAULT_MIME_TYPE],
     };
-}
-
-export function mapEditorLanguagesToMenuItem(langs: EditorLanguage[], handler: OnMenuItemClick): SubmenuItemTypeless[] {
-    return langs.map((lang) => {
-        return { id: lang.id, text: lang.aliases[0], onItemClick: handler };
-    });
 }
