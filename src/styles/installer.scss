@@ -1,0 +1,112 @@
+// src/styles/installer.scss
+
+.installer-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s4);
+    padding: var(--s4);
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 100%;
+}
+
+.installer-summary {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--card);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    padding: var(--s3) var(--s4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2);
+    box-shadow: var(--shadow-sm);
+}
+
+.installer-summary__pill {
+    background: var(--card-2);
+    color: var(--on-surface-variant);
+    padding: 4px 12px;
+    border-radius: var(--r-pill);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.installer-summary__pref {
+    color: var(--muted);
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+.installer-step {
+    background: var(--card);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    padding: var(--s4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s3);
+}
+
+.installer-step__label {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--on-surface);
+}
+
+.installer-step__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--r-pill);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.installer-distro-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--outline-soft);
+}
+
+.installer-field-label {
+    font-size: 13px;
+    color: var(--on-surface-variant);
+    font-weight: 500;
+}
+
+@media (max-width: 900px) {
+    .installer-page {
+        padding: var(--s3);
+        gap: var(--s3);
+    }
+
+    .installer-summary {
+        padding: var(--s2) var(--s3);
+        gap: var(--s1);
+    }
+
+    .installer-summary__pill,
+    .installer-summary__pref {
+        font-size: 12px;
+    }
+
+    .seg-control {
+        flex-wrap: wrap;
+    }
+}
