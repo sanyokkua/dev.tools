@@ -25,6 +25,7 @@ import '@/styles/table.scss';
 import '@/styles/texteditor.scss';
 import '@/styles/toaster.scss';
 import '@/styles/vram-calculator.scss';
+import '@/styles/windows-setup.scss';
 import { AppProps } from 'next/app';
 import React from 'react';
 import ApplicationLayout from '../components/app-layout/ApplicationLayout';

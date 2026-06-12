@@ -1,0 +1,54 @@
+.windows-setup {
+    &__section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    &__step {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    &__hint {
+        font-size: 0.875rem;
+        color: var(--on-surface-variant);
+        margin-top: 8px;
+    }
+}
+
+.windows-setup-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+
+    button {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid var(--outline);
+        background: transparent;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition:
+            background 0.15s,
+            color 0.15s;
+
+        &.active {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-color: var(--primary);
+        }
+
+        &:hover:not(.active) {
+            background: var(--surface-variant);
+        }
+    }
+}
