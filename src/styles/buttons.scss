@@ -1,194 +1,196 @@
-/*-----------------------------------
-  1. Base + helpers
------------------------------------*/
-/* Base styles shared by all button types - defines common appearance and behavior */
+/* ============================================================
+   Button base
+   ============================================================ */
 .button-base {
-    font-size: 1rem; /* Sets base text size to 16px (1 × 16px default browser font size) */
-    padding: 0.6rem 1.2rem; /* Adds 9.6px vertical padding and 19.2px horizontal padding (0.6×16px, 1.2×16px) */
-    border-radius: 8px; /* Rounds corners with 8px radius (absolute measurement) */
-    font-weight: 500; /* Uses medium-bold font weight for prominence */
-    transition: all 0.2s ease-in-out; /* Animates all property changes over 0.2 seconds with acceleration/deceleration */
-    cursor: pointer; /* Shows hand cursor to indicate clickable element */
-    outline: none; /* Removes focus outline to prevent visual clutter */
-    background: transparent; /* Default transparent background */
-    border: none; /* Removes default border */
-    display: inline-block; /* Allows width/height control while sitting inline */
-    text-align: center; /* Centers text horizontally */
-    user-select: none; /* Prevents text selection when clicking */
-    margin: 1px; /* Tiny margin to prevent browser default spacing issues */
+    font: inherit;
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    padding: 9px 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition:
+        background 0.15s,
+        box-shadow 0.15s,
+        opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    user-select: none;
+    outline: none;
+    text-decoration: none;
 }
 
-/* Sizes */
-/* Smaller button variant with reduced text and padding */
+.button-base:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* ---- Sizes ---- */
 .button-small {
-    font-size: 0.9rem; /* 14.4px text size (0.9 × 16px) */
-    padding: 0.4rem 1rem; /* 6.4px vertical padding and 16px horizontal padding */
+    padding: 6px 11px;
+    font-size: 12.5px;
 }
 
-/* Larger button variant with increased text and padding */
 .button-large {
-    font-size: 1.1rem; /* 17.6px text size (1.1 × 16px) */
-    padding: 1rem 1.6rem; /* 16px vertical padding and 25.6px horizontal padding */
+    padding: 12px 22px;
+    font-size: 1.05rem;
 }
 
-/* Block-level button that takes full container width */
 .button-block {
-    display: block; /* Makes element take full width of parent container */
-    width: 100%; /* Explicitly sets width to 100% for compatibility */
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }
 
-/*-----------------------------------
-  2. Variants
------------------------------------*/
-/* SOLID BUTTON = filled background with contrasting text */
+/* ============================================================
+   Variants
+   ============================================================ */
+
+/* SOLID — filled primary (was "solid" with colorStyle="primary-color") */
 .button-solid {
-    background-color: var(--bg-color); /* Uses theme-defined background color from CSS variables */
-    color: var(--text-color); /* Uses theme-defined text color that contrasts with background */
+    background: var(--bg-color, var(--primary));
+    color: var(--text-color, var(--on-primary));
+    box-shadow: var(--shadow-sm);
 }
 
-/* Visual feedback when hovering over solid button */
 .button-solid:hover {
-    opacity: 0.88;
-    box-shadow: 0 0 4px var(--md-shadow-color);
+    background: var(--primary-hover);
 }
 
-/* Visual feedback when clicking solid button */
 .button-solid:active {
-    transform: scale(0.9); /* Temporarily shrinks button to 90% size during click */
+    opacity: 0.85;
 }
 
-/* OUTLINED BUTTON = transparent background with border and text color */
-.button-outlined {
-    border: 1px solid var(--bg-color); /* 1px solid border using theme background color */
-    color: var(--bg-color); /* Text matches border color for visual consistency */
-}
-
-/* Overlay tint on hover for outlined button */
-.button-outlined:hover {
-    background-color: var(--hover-overlay);
-}
-
-/* Visual feedback when clicking outlined button */
-.button-outlined:active {
-    transform: scale(0.9); /* Shrinks button during click for tactile feedback */
-}
-
-/* DASHED BUTTON = same as outlined but with dashed border style */
-.button-dashed {
-    border: 1px dashed var(--bg-color); /* 1px dashed border using theme background color */
-    color: var(--bg-color); /* Text matches border color */
-}
-
-/* Overlay tint and scale on hover for dashed button */
-.button-dashed:hover {
-    background-color: var(--hover-overlay);
-    transform: scale(1.05);
-}
-
-/* Visual feedback when clicking dashed button */
-.button-dashed:active {
-    transform: scale(0.9); /* Shrinks to 90% during click */
-}
-
-/* FILLED BUTTON = subtle background with colored text */
+/* FILLED — tonal / container (primary-container bg) */
 .button-filled {
-    background-color: var(--bg-color); /* Theme background color */
-    color: var(--text-color); /* Contrasting text color */
-    opacity: 0.15; /* Makes background semi-transparent (15% opacity) */
+    background: var(--primary-container);
+    color: var(--on-primary-container);
 }
 
-/* Increases visibility on hover for filled buttons */
 .button-filled:hover {
-    opacity: 0.3; /* Doubles transparency to 30% for hover state */
+    background: var(--secondary-container);
 }
 
-/* Visual feedback when clicking filled button */
 .button-filled:active {
-    opacity: 0.6; /* Further reduces transparency to 60% during click */
-    transform: scale(0.98); /* Slight 2% shrink for tactile feedback */
+    opacity: 0.85;
 }
 
-/* TEXT BUTTON = no background/border, just colored text */
+/* OUTLINED — transparent with border */
+.button-outlined {
+    background: transparent;
+    border-color: var(--outline);
+    color: var(--on-surface);
+}
+
+.button-outlined:hover {
+    background: var(--hover-overlay);
+}
+
+.button-outlined:active {
+    opacity: 0.8;
+}
+
+/* DASHED — same as outlined with dashed border */
+.button-dashed {
+    background: transparent;
+    border: 1px dashed var(--outline);
+    color: var(--on-surface);
+}
+
+.button-dashed:hover {
+    background: var(--hover-overlay);
+}
+
+.button-dashed:active {
+    opacity: 0.8;
+}
+
+/* TEXT — no background, no border */
 .button-text {
-    color: var(--bg-color); /* Uses theme background color for text */
+    background: transparent;
+    color: var(--primary);
+    border-color: transparent;
 }
 
-/* Underline effect when hovering over text button */
 .button-text:hover {
-    text-decoration: underline; /* Adds underline to indicate clickability */
+    background: var(--hover-overlay);
 }
 
-/* Visual feedback when clicking text button */
-.button-text:active {
-    opacity: 0.75;
-}
-
-/* LINK BUTTON = text with underline by default */
+/* LINK — text with underline */
 .button-link {
-    color: var(--bg-color); /* Theme background color for text */
-    text-decoration: underline; /* Always shows underline */
-    background: none; /* Explicitly removes background */
-    border: none; /* Removes border for pure text link style */
+    background: none;
+    border: none;
+    color: var(--primary);
+    text-decoration: underline;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-/* Dims text when hovering over link button */
 .button-link:hover {
-    color: var(--bg-color);
     opacity: 0.75;
 }
 
-/* Visual feedback when clicking link button */
-.button-link:active {
-    transform: scale(0.98); /* Subtle 2% shrink during click */
-}
+/* ============================================================
+   Extra states (composable)
+   ============================================================ */
 
-/*-----------------------------------
-  3. Extra states (mixable)
------------------------------------*/
-/* DANGER STATE = overrides colors for error actions */
+/* DANGER — destructive action */
 .button-danger {
-    --bg-color: var(--error-color); /* Changes background color to error red */
-    --text-color: var(--error-color-on); /* Uses appropriate text color for error background */
+    background: transparent;
+    border-color: var(--error);
+    color: var(--error);
 }
 
-/* GHOST STATE = on-primary styling for use on primary-colored backgrounds */
+.button-danger:hover {
+    background: var(--error-container);
+}
+
+/* GHOST — neutral transparent icon/text button (for use on any bg) */
 .button-ghost {
-    background: none !important;
-    color: var(--on-primary) !important;
-    border: 1px solid var(--on-primary) !important;
+    background: transparent;
+    border-color: transparent;
+    color: var(--on-surface-variant);
 }
 
-/* DISABLED STATE = visually indicates inactive button */
+.button-ghost:hover {
+    background: var(--card-2);
+}
+
+/* DISABLED */
 .button-disabled {
-    cursor: not-allowed; /* Shows "not allowed" cursor */
-    opacity: 0.5; /* Makes button semi-transparent */
-    pointer-events: none; /* Prevents any interactions */
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
-/* LOADING STATE = shows spinner while action is processing */
+/* LOADING — spinner prefix */
 .button-loading {
-    position: relative; /* Needed for absolutely positioned spinner */
-    pointer-events: none; /* Prevents multiple clicks */
-    opacity: 0.8; /* Slightly dimmed appearance */
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
 }
 
-/* Creates animated spinner before button text */
 .button-loading::before {
-    content: ''; /* Required for pseudo-element visibility */
-    display: inline-block; /* Makes spinner sit inline with text */
-    width: 12px; /* Fixed 12px width for spinner */
-    height: 12px; /* Fixed 12px height for spinner */
-    border-radius: 50%; /* Makes circular shape */
-    border: 2px solid rgba(255, 255, 255, 0.3); /* Subtle white border */
-    border-top-color: rgba(255, 255, 255, 0.8); /* Stronger white on top for animation effect */
-    animation: spin 0.8s linear infinite; /* Continuous 360° rotation */
-    margin-right: 0.5em; /* 8px spacing between spinner and text (0.5 × 16px) */
-    vertical-align: middle; /* Vertically centers spinner with text */
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.8);
+    animation: btn-spin 0.8s linear infinite;
+    margin-right: 0.5em;
+    vertical-align: middle;
 }
 
-/* Defines continuous rotation animation for loading spinner */
-@keyframes spin {
+@keyframes btn-spin {
     to {
-        transform: rotate(360deg); /* Completes one full rotation */
+        transform: rotate(360deg);
     }
 }
+
+/* ============================================================
+   Color utility classes (backward compat — set --bg-color / --text-color)
+   ============================================================ */
+/* These are generated by colors.scss @each loop. No changes needed here. */
