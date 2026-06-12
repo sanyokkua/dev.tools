@@ -32,13 +32,6 @@
     margin-top: 0.1rem;
 }
 
-.vram-form-section h3 {
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 0.3rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
 .vram-form-details {
     margin-top: 1rem;
     margin-bottom: 0.5rem;
@@ -165,14 +158,91 @@
     margin-top: 0.25rem;
 }
 
-.vram-form-columns {
+/* ── Page-level two-column layout ─────────────────────────────────── */
+.vram-page-header {
+    margin-bottom: 1rem;
+}
+
+.vram-page-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0 2rem;
+    gap: 14px;
+    align-items: start;
 }
 
 @media (min-width: 900px) {
-    .vram-form-columns {
-        grid-template-columns: 1fr 1fr 1fr;
+    .vram-page-layout {
+        grid-template-columns: 360px 1fr;
     }
+}
+
+/* ── Step labels (A / B / C circles on form sections) ─────────────── */
+.vram-step-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.vram-step-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: var(--primary-color-on, #fff);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── KPI summary cards ─────────────────────────────────────────────── */
+.vram-kpi-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.vram-kpi-card {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--surface-color);
+    border: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.vram-kpi-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+
+.vram-kpi-label {
+    font-size: 0.78rem;
+    color: var(--secondary-color);
+    margin-top: 4px;
+}
+
+/* ── Empty state (before first Calculate) ──────────────────────────── */
+.vram-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    gap: 0.5rem;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    text-align: center;
+    border: 2px dashed var(--divider-color, #e0e0e0);
+    border-radius: 8px;
 }

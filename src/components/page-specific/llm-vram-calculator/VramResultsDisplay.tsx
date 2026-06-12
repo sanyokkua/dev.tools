@@ -6,9 +6,8 @@ import QuantizationTable from './QuantizationTable';
 import RecommendationsSection from './RecommendationsSection';
 import SummarySection from './SummarySection';
 
-/** @description Props for the VramResultsDisplay component. */
 interface VramResultsDisplayProps {
-    result: Result<CalculatorOutput, ValidationError>;
+    result: Result<CalculatorOutput, ValidationError> | null;
 }
 
 const VALIDATION_ERROR_MESSAGES: Record<ValidationError, string> = {
@@ -28,12 +27,17 @@ const VALIDATION_ERROR_MESSAGES: Record<ValidationError, string> = {
     INVALID_BATCH_SIZE: 'Batch size must be a positive integer.',
 };
 
-/**
- * @description Orchestrates the display of VRAM calculation results. Shows validation errors
- * for failed calculations, or delegates to InputSummarySection, RecommendationsSection,
- * SummarySection, and QuantizationTable sub-components for successful results.
- */
 const VramResultsDisplay: React.FC<VramResultsDisplayProps> = ({ result }) => {
+    if (result === null) {
+        return (
+            <div className="vram-empty-state">
+                <span>Fill in the form and click</span>
+                <strong>Calculate</strong>
+                <span>to see results here.</span>
+            </div>
+        );
+    }
+
     if (!result.ok) {
         return (
             <div className="vram-results">
@@ -43,14 +47,36 @@ const VramResultsDisplay: React.FC<VramResultsDisplayProps> = ({ result }) => {
     }
 
     const output = result.value;
+    const primaryQuant = output.quantization_analysis[0];
 
-    // Find the first quantization that has any fitting context entry
+    const weightsGb = primaryQuant?.min_vram_no_cache_gb ?? 0;
+    const kvCacheGb = primaryQuant ? primaryQuant.min_vram_with_cache_gb - primaryQuant.min_vram_no_cache_gb : 0;
+    const osReservedGb = output.os_overhead.reserved_gb;
+    const totalGb = (primaryQuant?.min_vram_with_cache_gb ?? 0) + osReservedGb;
+    const quantLabel = primaryQuant?.quantization ?? '';
+    const contextLabel = primaryQuant?.context_table[0]?.context_label ?? '';
+
     const firstFittingIndex = output.quantization_analysis.findIndex((qa) =>
         qa.context_table.some((entry) => entry.fits_in_vram === true),
     );
 
     return (
         <div className="vram-results">
+            <div className="vram-kpi-row">
+                <div className="vram-kpi-card">
+                    <div className="vram-kpi-value">{weightsGb.toFixed(1)} GB</div>
+                    <div className="vram-kpi-label">Model weights ({quantLabel})</div>
+                </div>
+                <div className="vram-kpi-card">
+                    <div className="vram-kpi-value">{kvCacheGb.toFixed(1)} GB</div>
+                    <div className="vram-kpi-label">KV cache{contextLabel ? ` @ ${contextLabel}` : ''}</div>
+                </div>
+                <div className="vram-kpi-card">
+                    <div className="vram-kpi-value">{totalGb.toFixed(1)} GB</div>
+                    <div className="vram-kpi-label">Total (incl. OS)</div>
+                </div>
+            </div>
+
             <InputSummarySection inputSummary={output.input_summary} osOverhead={output.os_overhead} />
 
             {output.recommendations !== null && output.recommendations.length > 0 && (

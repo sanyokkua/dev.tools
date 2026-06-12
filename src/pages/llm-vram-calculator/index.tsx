@@ -80,31 +80,23 @@ const LlmVramCalculatorPage: FC = () => {
 
     return (
         <ContentContainerFlex>
-            <section>
+            <div className="vram-page-header">
                 <h1>LLM VRAM Calculator</h1>
-                <p>
-                    This tool estimates the VRAM/RAM needed to run Large Language Models in GGUF format. It provides
-                    approximate consumption figures and recommendations tailored to your hardware limitations. While
-                    aiming for accuracy, this calculation doesn't pinpoint exact memory usage; instead, it offers a
-                    close estimate. For instance, Gemma-3-27b quantized to 4bit (with a 16.5GB GGUF file size) was
-                    calculated to require 17.27GB of VRAM, closely matching LM Studio's reported 17.37GB. Important
-                    <br />
-                    <br />
-                    <b>Note</b>: Memory usage can increase during inference. This calculator helps determine the minimum
-                    required memory, but actual consumption will vary based on numerous factors including LLM parameters
-                    and the specific settings of your inference engine. Use this as a starting point, but be prepared
-                    for potential fluctuations.
-                </p>
-
-                <VramCalculatorForm
-                    formState={formState}
-                    onFormChange={setFormState}
-                    onCalculate={handleCalculate}
-                    onReset={handleReset}
-                />
-
-                {result !== null && <VramResultsDisplay result={result} />}
-            </section>
+                <p>Estimate GPU / unified memory for GGUF-quantized models, with full architecture and MoE controls.</p>
+            </div>
+            <div className="vram-page-layout">
+                <div>
+                    <VramCalculatorForm
+                        formState={formState}
+                        onFormChange={setFormState}
+                        onCalculate={handleCalculate}
+                        onReset={handleReset}
+                    />
+                </div>
+                <div>
+                    <VramResultsDisplay result={result} />
+                </div>
+            </div>
         </ContentContainerFlex>
     );
 };
