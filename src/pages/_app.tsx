@@ -18,6 +18,7 @@ import '@/styles/segmented-control.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
 import '@/styles/surfaces.scss';
+import '@/styles/switch.scss';
 import '@/styles/table.scss';
 import '@/styles/texteditor.scss';
 import '@/styles/toaster.scss';
