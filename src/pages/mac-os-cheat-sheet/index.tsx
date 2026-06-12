@@ -1,6 +1,5 @@
 import { usePage } from '@/contexts/PageContext';
 import GuideChooser from '@/elements/GuideChooser';
-import BrewInstallApplications from '@/page-specific/mac-os-cheat-sheet/BrewInstallApplications';
 import BrewInstallSteps from '@/page-specific/mac-os-cheat-sheet/BrewInstallSteps';
 import VramScriptSection from '@/page-specific/mac-os-cheat-sheet/VramScriptSection';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +16,6 @@ const IndexPage = (): React.JSX.Element => {
     const options = [
         { label: 'Homebrew Installation', value: 'homebrew' },
         { label: 'Apple Silicon VRAM Manager', value: 'vram' },
-        { label: 'Install Applications', value: 'apps' },
     ];
 
     return (
@@ -29,7 +27,6 @@ const IndexPage = (): React.JSX.Element => {
                 <br />
                 {chosenSection === 'homebrew' && <BrewInstallSteps />}
                 {chosenSection === 'vram' && <VramScriptSection />}
-                {chosenSection === 'apps' && <BrewInstallApplications />}
             </section>
         </ContentContainerFlex>
     );
