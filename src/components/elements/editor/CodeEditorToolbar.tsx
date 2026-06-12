@@ -119,31 +119,37 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
 
             <div className="code-editor__toolbar-spacer" />
 
-            <label className="switch-row">
-                <span className="code-editor__switch-label">Wrap</span>
+            <div className="switch-row">
+                <span id="wrap-label" className="code-editor__switch-label">
+                    Wrap
+                </span>
                 <button
                     type="button"
                     role="switch"
                     className="switch-track"
                     aria-checked={wordWrap}
+                    aria-labelledby="wrap-label"
                     onClick={onWordWrapToggle}
                 >
                     <span className="switch-thumb" />
                 </button>
-            </label>
+            </div>
 
-            <label className="switch-row">
-                <span className="code-editor__switch-label">Minimap</span>
+            <div className="switch-row">
+                <span id="minimap-label" className="code-editor__switch-label">
+                    Minimap
+                </span>
                 <button
                     type="button"
                     role="switch"
                     className="switch-track"
                     aria-checked={minimap}
+                    aria-labelledby="minimap-label"
                     onClick={onMinimapToggle}
                 >
                     <span className="switch-thumb" />
                 </button>
-            </label>
+            </div>
         </div>
     );
 };
