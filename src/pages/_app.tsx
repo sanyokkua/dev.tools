@@ -3,7 +3,6 @@ import { FileSaveDialogProvider } from '@/contexts/FileSaveDialogContext';
 import { PageProvider } from '@/contexts/PageContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ToasterProvider } from '@/contexts/ToasterContext';
-import '@/styles/ai-tools-setup.scss';
 import '@/styles/appbar.scss';
 import '@/styles/buttons.scss';
 import '@/styles/checkbox.scss';

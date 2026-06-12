@@ -1,19 +1,12 @@
-import { usePage } from '@/contexts/PageContext';
-import AiToolsSetup from '@/page-specific/ai-tools-setup/AiToolsSetup';
-import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
-const AiToolsSetupPage = (): React.JSX.Element => {
-    const { setPageTitle } = usePage();
+const AiToolsSetupRedirect = (): null => {
+    const router = useRouter();
     useEffect(() => {
-        setPageTitle('AI Tools Setup');
-    }, [setPageTitle]);
-
-    return (
-        <div>
-            <h1>AI Tools Setup</h1>
-            <AiToolsSetup />
-        </div>
-    );
+        void router.replace('/software-installer');
+    }, [router]);
+    return null;
 };
 
-export default AiToolsSetupPage;
+export default AiToolsSetupRedirect;
