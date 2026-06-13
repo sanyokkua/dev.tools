@@ -63,12 +63,11 @@ const JsonFormatterPage: React.FC = () => {
         updateValidation(props.editor.getValue());
     }, []);
 
-    useEffect(
-        () => () => {
+    useEffect((): (() => void) => {
+        return (): void => {
             contentListenerRef.current?.dispose();
-        },
-        [],
-    );
+        };
+    }, []);
 
     const handleRightMount = useCallback((props: EditorProperties) => {
         rightEditorRef.current = props.editor;
