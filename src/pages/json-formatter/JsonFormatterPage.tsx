@@ -245,7 +245,9 @@ const JsonFormatterPage: React.FC = () => {
                         {validState.line != null && ` (line ${validState.line}, col ${validState.column})`}
                     </p>
                 )}
-                <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId="json" />
+                <div className="editor-fill">
+                    <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId="json" height="100%" />
+                </div>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
@@ -289,13 +291,16 @@ const JsonFormatterPage: React.FC = () => {
 
             <ContentContainerGridChild>
                 <Menubar menuItems={rightMenu} />
-                <CodeEditor
-                    minimap={false}
-                    wordWrap={true}
-                    isReadOnly
-                    onEditorMounted={handleRightMount}
-                    languageId="json"
-                />
+                <div className="editor-fill">
+                    <CodeEditor
+                        minimap={false}
+                        wordWrap={true}
+                        isReadOnly
+                        onEditorMounted={handleRightMount}
+                        languageId="json"
+                        height="100%"
+                    />
+                </div>
             </ContentContainerGridChild>
         </ContentContainerGrid>
     );
