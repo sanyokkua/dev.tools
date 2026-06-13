@@ -10,7 +10,6 @@ export enum ToastType {
 
 /**
  * Configuration options for customizing toast notifications.
- * Defines parameters that control the appearance and behavior of toasts.
  */
 export interface ShowToastOptions {
     message: string;
@@ -20,11 +19,12 @@ export interface ShowToastOptions {
 }
 
 /**
- * Represents a notification toast with customizable content and styling
+ * Represents a notification toast with customizable content and styling.
  */
 export interface Toast {
     id: string;
     message: string;
     type: ToastType;
     title?: string;
+    exiting?: boolean;
 }
