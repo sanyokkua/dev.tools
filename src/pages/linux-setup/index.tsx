@@ -1,9 +1,9 @@
 import { LinuxDistro } from '@/common/linux-utils';
 import { usePage } from '@/contexts/PageContext';
-import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import EnvironmentVariablesSection from '@/page-specific/linux-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/linux-setup/PackageManagersSection';
 import React, { useEffect, useState } from 'react';
+import PageShell from '../../components/layouts/PageShell';
 
 type LinuxTab = 'managers' | 'env-vars';
 
@@ -29,7 +29,7 @@ const IndexPage = (): React.JSX.Element => {
     }, [setPageTitle]);
 
     return (
-        <ContentContainerFlex>
+        <PageShell>
             <section>
                 <h1>Linux Setup</h1>
                 <p>
@@ -69,7 +69,7 @@ const IndexPage = (): React.JSX.Element => {
                 {activeTab === 'managers' && <PackageManagersSection distro={selectedDistro} />}
                 {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
             </section>
-        </ContentContainerFlex>
+        </PageShell>
     );
 };
 

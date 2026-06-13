@@ -1,9 +1,9 @@
 import { usePage } from '@/contexts/PageContext';
-import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import BrewInstallSteps from '@/page-specific/mac-os-setup/BrewInstallSteps';
 import EnvironmentVariablesSection from '@/page-specific/mac-os-setup/EnvironmentVariablesSection';
 import VramManager from '@/page-specific/mac-os-setup/VramManager';
 import React, { useEffect, useState } from 'react';
+import PageShell from '../../components/layouts/PageShell';
 
 type MacOsTab = 'managers' | 'env-vars' | 'scripts';
 
@@ -22,7 +22,7 @@ const IndexPage = (): React.JSX.Element => {
     }, [setPageTitle]);
 
     return (
-        <ContentContainerFlex>
+        <PageShell>
             <section>
                 <h1>macOS Setup</h1>
                 <p>
@@ -65,7 +65,7 @@ const IndexPage = (): React.JSX.Element => {
                     </div>
                 )}
             </section>
-        </ContentContainerFlex>
+        </PageShell>
     );
 };
 

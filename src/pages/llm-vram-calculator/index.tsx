@@ -2,7 +2,7 @@ import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from 
 import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';
 import { FC, useEffect, useState } from 'react';
-import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
+import PageShell from '../../components/layouts/PageShell';
 import VramCalculatorForm, {
     INITIAL_FORM_STATE,
     VramFormState,
@@ -79,7 +79,7 @@ const LlmVramCalculatorPage: FC = () => {
     };
 
     return (
-        <ContentContainerFlex>
+        <PageShell>
             <div className="vram-page-header">
                 <h1>LLM VRAM Calculator</h1>
                 <p>Estimate GPU / unified memory for GGUF-quantized models, with full architecture and MoE controls.</p>
@@ -97,7 +97,7 @@ const LlmVramCalculatorPage: FC = () => {
                     <VramResultsDisplay result={result} />
                 </div>
             </div>
-        </ContentContainerFlex>
+        </PageShell>
     );
 };
 

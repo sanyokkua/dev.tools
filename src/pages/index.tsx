@@ -1,7 +1,7 @@
 import { usePage } from '@/contexts/PageContext';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import AppMainContainer from '../components/layouts/AppMainContainer';
+import PageShell from '../components/layouts/PageShell';
 
 interface ToolCard {
     name: string;
@@ -138,49 +138,44 @@ const Home = (): React.JSX.Element => {
     }, [setPageTitle]);
 
     return (
-        <AppMainContainer>
-            <div className="dashboard">
-                <div className="dashboard-hero">
-                    <h1>Welcome to dev.tools</h1>
-                    <p>
-                        A browser-based toolkit for developers. All operations run locally — no data leaves your
-                        browser.
-                    </p>
-                    <p>
-                        Source code available on{' '}
-                        <a target="_blank" rel="noreferrer" href="https://github.com/sanyokkua/dev.tools">
-                            GitHub
-                        </a>
-                        .
-                    </p>
-                    <div className="dashboard-pills">
-                        <span className="dashboard-pill dashboard-pill--ok">● Offline-ready</span>
-                        <span className="dashboard-pill">No tracking · No backend</span>
-                        <span className="dashboard-pill">Static export · GitHub Pages</span>
-                    </div>
+        <PageShell>
+            <div className="dashboard-hero">
+                <h1>Welcome to dev.tools</h1>
+                <p>A browser-based toolkit for developers. All operations run locally — no data leaves your browser.</p>
+                <p>
+                    Source code available on{' '}
+                    <a target="_blank" rel="noreferrer" href="https://github.com/sanyokkua/dev.tools">
+                        GitHub
+                    </a>
+                    .
+                </p>
+                <div className="dashboard-pills">
+                    <span className="dashboard-pill dashboard-pill--ok">● Offline-ready</span>
+                    <span className="dashboard-pill">No tracking · No backend</span>
+                    <span className="dashboard-pill">Static export · GitHub Pages</span>
                 </div>
-
-                {toolGroups.map((group) => (
-                    <section key={group.groupName} className="dashboard-group">
-                        <div className="dashboard-group-label">{group.groupName}</div>
-                        <div className="dashboard-grid">
-                            {group.tools.map((tool) => (
-                                <Link key={tool.route} href={tool.route} className="dashboard-card">
-                                    <span className="dashboard-card-icon">{tool.icon}</span>
-                                    <div className="dashboard-card-body">
-                                        <div className="dashboard-card-name">
-                                            {tool.name}
-                                            {tool.badge && <span className="dashboard-card-badge">{tool.badge}</span>}
-                                        </div>
-                                        <div className="dashboard-card-desc">{tool.description}</div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </section>
-                ))}
             </div>
-        </AppMainContainer>
+
+            {toolGroups.map((group) => (
+                <section key={group.groupName} className="dashboard-group">
+                    <div className="dashboard-group-label">{group.groupName}</div>
+                    <div className="dashboard-grid">
+                        {group.tools.map((tool) => (
+                            <Link key={tool.route} href={tool.route} className="dashboard-card">
+                                <span className="dashboard-card-icon">{tool.icon}</span>
+                                <div className="dashboard-card-body">
+                                    <div className="dashboard-card-name">
+                                        {tool.name}
+                                        {tool.badge && <span className="dashboard-card-badge">{tool.badge}</span>}
+                                    </div>
+                                    <div className="dashboard-card-desc">{tool.description}</div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            ))}
+        </PageShell>
     );
 };
 

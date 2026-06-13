@@ -1,8 +1,8 @@
 import { usePage } from '@/contexts/PageContext';
-import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import EnvironmentVariablesSection from '@/page-specific/windows-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/windows-setup/PackageManagersSection';
 import React, { useEffect, useState } from 'react';
+import PageShell from '../../components/layouts/PageShell';
 
 type WindowsTab = 'managers' | 'env-vars';
 
@@ -20,7 +20,7 @@ const IndexPage = (): React.JSX.Element => {
     }, [setPageTitle]);
 
     return (
-        <ContentContainerFlex>
+        <PageShell>
             <section>
                 <h1>Windows Setup</h1>
                 <p>
@@ -46,7 +46,7 @@ const IndexPage = (): React.JSX.Element => {
                 {activeTab === 'managers' && <PackageManagersSection />}
                 {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
             </section>
-        </ContentContainerFlex>
+        </PageShell>
     );
 };
 

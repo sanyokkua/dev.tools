@@ -81,4 +81,14 @@ describe('Dashboard page', () => {
         const vramCard = cards.find((el) => el.textContent?.includes('LLM VRAM Calculator'));
         expect(vramCard).toHaveAttribute('href', '/llm-vram-calculator');
     });
+
+    it('does not nest a second .app-main-container inside the page', () => {
+        const { container } = renderPage();
+        expect(container.querySelectorAll('.app-main-container')).toHaveLength(0);
+    });
+
+    it('wraps content in .page-shell', () => {
+        const { container } = renderPage();
+        expect(container.querySelector('.page-shell')).toBeInTheDocument();
+    });
 });

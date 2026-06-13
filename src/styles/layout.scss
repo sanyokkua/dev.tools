@@ -17,7 +17,8 @@
     flex: 1; /* Fills available space in parent container */
     padding: var(--s2);
     height: 100%; /* Stretches to fill parent container */
-    overflow: hidden; /* Prevents content from spilling outside boundaries */
+    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    overflow-y: auto; /* Allows document pages to scroll vertically */
     box-sizing: border-box; /* Includes padding in width/height calculations */
     background-color: var(--bg-color); /* Uses theme-defined background color */
     color: var(--text-color); /* Applies theme-defined text color */
@@ -237,4 +238,18 @@
 .json-formatter-field label {
     font-size: 13px;
     white-space: nowrap;
+}
+
+.page-shell {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: var(--s5);
+    box-sizing: border-box;
+}
+
+@media (max-width: 920px) {
+    .page-shell {
+        padding: 16px;
+    }
 }

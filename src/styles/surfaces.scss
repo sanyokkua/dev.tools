@@ -159,3 +159,48 @@
     line-height: 1.65;
     flex: 1;
 }
+
+/* ============================================================
+   Highlight.js syntax token colours (prototype palette)
+   Scoped to .code-block so markdown preview is unaffected.
+   ============================================================ */
+.code-block {
+    .hljs-keyword,
+    .hljs-type,
+    .hljs-built_in,
+    .hljs-selector-tag {
+        color: #7fd1bf;
+    }
+
+    .hljs-string,
+    .hljs-addition,
+    .hljs-code {
+        color: #e6c07b;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+        color: #5f7d75;
+        font-style: italic;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attr,
+    .hljs-number,
+    .hljs-literal,
+    .hljs-link {
+        color: #9cdcfe;
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.function_ {
+        color: #d7e7e2;
+    }
+
+    .hljs-meta,
+    .hljs-meta .hljs-keyword {
+        color: #8ab4ae;
+    }
+}

@@ -5,8 +5,11 @@
     flex-direction: column;
     height: 100%;
     gap: 14px;
-    padding: 16px;
+    padding: var(--s5);
     box-sizing: border-box;
+    max-width: 1180px;
+    margin-inline: auto;
+    width: 100%;
 }
 
 // Filter toolbar card
