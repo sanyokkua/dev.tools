@@ -6,13 +6,8 @@
  * @returns {string} The formatted JSON string with proper indentation.
  */
 export function formatJson(jsonStr: string, spaces: number | string = 4): string {
-    try {
-        const jsonObj: unknown = JSON.parse(jsonStr);
-        return JSON.stringify(jsonObj, null, spaces as number);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    const jsonObj: unknown = JSON.parse(jsonStr);
+    return JSON.stringify(jsonObj, null, spaces);
 }
 
 /**
@@ -39,7 +34,7 @@ function sortKeysDeep(val: unknown): unknown {
  * @returns {string} JSON string with keys sorted at every level.
  */
 export function sortJsonKeys(jsonStr: string, spaces: number | string = 2): string {
-    return JSON.stringify(sortKeysDeep(JSON.parse(jsonStr)), null, spaces as number);
+    return JSON.stringify(sortKeysDeep(JSON.parse(jsonStr)), null, spaces);
 }
 
 /**
