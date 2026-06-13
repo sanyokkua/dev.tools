@@ -181,6 +181,7 @@
     --success-container-color-on: #89d382;
     --warning-container-color-on: #d4c84f;
     --error-container-color-on: #ffb4ab;
+    --info-container-color-on: var(--info); /* #6ab0c5 in dark — contrasts against #004f67 */
     --error-container-color: var(--error-container);
     --info-container-color: var(--info-container);
     --success-container-color: var(--success-container);
