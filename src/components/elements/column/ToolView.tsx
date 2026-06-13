@@ -313,7 +313,14 @@ const ToolView: React.FC<ToolViewProps> = ({
                 ) : (
                     <Menubar menuItems={leftMenu} />
                 )}
-                <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId={toolEditorsLangId} />
+                <div className="editor-fill">
+                    <CodeEditor
+                        minimap={false}
+                        onEditorMounted={handleLeftMount}
+                        languageId={toolEditorsLangId}
+                        height="100%"
+                    />
+                </div>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
@@ -346,13 +353,16 @@ const ToolView: React.FC<ToolViewProps> = ({
 
             <ContentContainerGridChild>
                 <Menubar menuItems={rightMenu} />
-                <CodeEditor
-                    minimap={false}
-                    wordWrap={true}
-                    isReadOnly
-                    onEditorMounted={handleRightMount}
-                    languageId={toolEditorsLangId}
-                />
+                <div className="editor-fill">
+                    <CodeEditor
+                        minimap={false}
+                        wordWrap={true}
+                        isReadOnly
+                        onEditorMounted={handleRightMount}
+                        languageId={toolEditorsLangId}
+                        height="100%"
+                    />
+                </div>
             </ContentContainerGridChild>
         </ContentContainerGrid>
     );
