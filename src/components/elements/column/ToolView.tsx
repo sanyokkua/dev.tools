@@ -1,5 +1,5 @@
 'use client';
-import { editor } from 'monaco-editor';
+import { type IDisposable, editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
@@ -175,6 +175,7 @@ const ToolView: React.FC<ToolViewProps> = ({
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const contentListenerRef = useRef<IDisposable | null>(null);
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [charCount, setCharCount] = useState<{ chars: number; words: number } | null>(null);
@@ -187,26 +188,28 @@ const ToolView: React.FC<ToolViewProps> = ({
         setToolState(createInitialState(toolViewFunctionGroups, leftEditorRef, rightEditorRef, showToast));
     }, [toolViewFunctionGroups]);
 
+    /** Dispose content listener on unmount */
+    useEffect(() => {
+        return (): void => {
+            contentListenerRef.current?.dispose();
+        };
+    }, []);
+
     /** Menubar callbacks for left editor */
-    const handleLeftMount = useCallback(
-        (props: EditorProperties) => {
-            leftEditorRef.current = props.editor;
-            setSupportedExtensions(props.supportedExtensions);
-            if (showCharCount) {
-                const updateCount = (text: string): void => {
-                    setCharCount({
-                        chars: text.length,
-                        words: text.trim() === '' ? 0 : text.trim().split(/\s+/).length,
-                    });
-                };
-                props.editor.onDidChangeModelContent(() => {
-                    updateCount(props.editor.getValue());
-                });
+    const handleLeftMount = useCallback((props: EditorProperties): void => {
+        leftEditorRef.current = props.editor;
+        setSupportedExtensions(props.supportedExtensions);
+        if (showCharCount) {
+            const updateCount = (text: string): void => {
+                setCharCount({ chars: text.length, words: text.trim() === '' ? 0 : text.trim().split(/\s+/).length });
+            };
+            contentListenerRef.current?.dispose();
+            contentListenerRef.current = props.editor.onDidChangeModelContent(() => {
                 updateCount(props.editor.getValue());
-            }
-        },
-        [showCharCount],
-    );
+            });
+            updateCount(props.editor.getValue());
+        }
+    }, []);
     const handleLeftOpen = (): void => {
         showFileOpenDialog({
             supportedFiles: supportedExtensions,
@@ -274,8 +277,9 @@ const ToolView: React.FC<ToolViewProps> = ({
         .addButton('use-input', 'Use as Input', handleUseAsInput)
         .build();
 
-    /** When the user picks a new function‐group */
+    /** When the user picks a new function-group */
     const onSelect = (item: SelectItem): void => {
+        setSearchQuery('');
         setToolState((prev) => {
             const grp = toolViewFunctionGroups.get(item.itemId);
             return {
@@ -288,22 +292,27 @@ const ToolView: React.FC<ToolViewProps> = ({
 
     const isMoreThanOneGroup = toolViewFunctionGroups.size > 1;
 
+    const lowerQuery = searchQuery.toLowerCase();
     const filteredFunctions =
         searchable && searchQuery.trim()
-            ? toolState.availableFunctions.filter((fn) => fn.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            ? toolState.availableFunctions.filter((fn) => fn.name.toLowerCase().includes(lowerQuery))
             : toolState.availableFunctions;
 
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                <div className="menubar-with-count">
+                {showCharCount ? (
+                    <div className="menubar-with-count">
+                        <Menubar menuItems={leftMenu} />
+                        {charCount !== null && (
+                            <span className="char-count-badge">
+                                {charCount.chars} chars · {charCount.words} words
+                            </span>
+                        )}
+                    </div>
+                ) : (
                     <Menubar menuItems={leftMenu} />
-                    {showCharCount && charCount !== null && (
-                        <span className="char-count-badge">
-                            {charCount.chars} chars · {charCount.words} words
-                        </span>
-                    )}
-                </div>
+                )}
                 <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId={toolEditorsLangId} />
             </ContentContainerGridChild>
 
