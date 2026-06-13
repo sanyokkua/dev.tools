@@ -13,6 +13,7 @@ import '@/styles/converting-tools.scss';
 import '@/styles/date-tools.scss';
 import '@/styles/git-cheat-sheet.scss';
 import '@/styles/global.css';
+import '@/styles/hashing-tools.scss';
 import '@/styles/infopanel.scss';
 import '@/styles/input.scss';
 import '@/styles/installer.scss';
