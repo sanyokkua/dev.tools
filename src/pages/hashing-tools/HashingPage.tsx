@@ -148,7 +148,9 @@ const HashingPage: React.FC = () => {
                     <Switch checked={upperHex} onChange={setUpperHex} label="UPPERCASE" />
                     <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleFileSelect} />
                 </div>
-                <CodeEditor minimap={false} onEditorMounted={handleMount} />
+                <div className="editor-fill">
+                    <CodeEditor minimap={false} onEditorMounted={handleMount} height="100%" />
+                </div>
             </div>
 
             {/* Results pane */}
