@@ -15,7 +15,7 @@ import Button from '@/controls/Button';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import { editor, type IDisposable } from 'monaco-editor';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
@@ -50,6 +50,14 @@ const JsonFormatterPage: React.FC = () => {
     const { showFileSaveDialog } = useFileSaveDialog();
     const { showToast } = useToast();
 
+    // Fix 4: Reusable error toast helper
+    const toastError = useCallback(
+        (e: unknown): void => {
+            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+        },
+        [showToast],
+    );
+
     const handleLeftMount = useCallback((props: EditorProperties) => {
         leftEditorRef.current = props.editor;
         setSupportedExtensions(props.supportedExtensions);
@@ -73,74 +81,91 @@ const JsonFormatterPage: React.FC = () => {
         rightEditorRef.current = props.editor;
     }, []);
 
-    const getIndentValue = (): number | string => (indent === '\t' ? '\t' : Number(indent));
+    const getIndentValue = useCallback((): number | string => (indent === '\t' ? '\t' : Number(indent)), [indent]);
 
-    const handleBeautify = (): void => {
+    // Fix 3: Wrap operation handlers in useCallback
+    const handleBeautify = useCallback((): void => {
         try {
             const result = formatJson(getEditorContent(leftEditorRef), getIndentValue());
             setEditorContent(rightEditorRef, result);
             showToast({ message: 'Beautified', type: ToastType.INFO });
         } catch (e) {
-            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+            toastError(e);
         }
-    };
+    }, [getIndentValue, showToast, toastError]);
 
-    const handleMinify = (): void => {
+    const handleMinify = useCallback((): void => {
         try {
             const result = formatJson(getEditorContent(leftEditorRef), 0);
             setEditorContent(rightEditorRef, result);
             showToast({ message: 'Minified', type: ToastType.INFO });
         } catch (e) {
-            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+            toastError(e);
         }
-    };
+    }, [showToast, toastError]);
 
-    const handleSortKeys = (): void => {
+    const handleSortKeys = useCallback((): void => {
         try {
             const result = sortJsonKeys(getEditorContent(leftEditorRef), getIndentValue());
             setEditorContent(rightEditorRef, result);
             showToast({ message: 'Keys sorted', type: ToastType.INFO });
         } catch (e) {
-            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+            toastError(e);
         }
-    };
+    }, [getIndentValue, showToast, toastError]);
 
-    const handleValidate = (): void => {
+    // Fix 1 & 2: Output valid JSON and guard empty input
+    const handleValidate = useCallback((): void => {
         const input = getEditorContent(leftEditorRef);
+        if (!input.trim()) {
+            showToast({ message: 'Nothing to validate', type: ToastType.WARNING });
+            return;
+        }
         const result = validateJson(input);
         if (result.valid) {
-            setEditorContent(rightEditorRef, 'Valid JSON');
+            setEditorContent(rightEditorRef, JSON.stringify({ valid: true }, null, 2));
         } else {
-            const detail = result.line != null ? ` (line ${result.line}, col ${result.column})` : '';
-            setEditorContent(rightEditorRef, `Invalid JSON: ${result.error}${detail}`);
+            setEditorContent(
+                rightEditorRef,
+                JSON.stringify(
+                    {
+                        valid: false,
+                        error: result.error,
+                        ...(result.line != null && { line: result.line, column: result.column }),
+                    },
+                    null,
+                    2,
+                ),
+            );
         }
         showToast({
             message: result.valid ? 'Valid JSON' : 'Invalid JSON',
             type: result.valid ? ToastType.SUCCESS : ToastType.ERROR,
         });
-    };
+    }, [showToast]);
 
-    const handleEscape = (): void => {
+    const handleEscape = useCallback((): void => {
         try {
             const result = escapeJsonString(getEditorContent(leftEditorRef));
             setEditorContent(rightEditorRef, result);
             showToast({ message: 'Escaped', type: ToastType.INFO });
         } catch (e) {
-            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+            toastError(e);
         }
-    };
+    }, [showToast, toastError]);
 
-    const handleUnescape = (): void => {
+    const handleUnescape = useCallback((): void => {
         try {
             const result = unescapeJsonString(getEditorContent(leftEditorRef));
             setEditorContent(rightEditorRef, result);
             showToast({ message: 'Unescaped', type: ToastType.INFO });
         } catch (e) {
-            showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
+            toastError(e);
         }
-    };
+    }, [showToast, toastError]);
 
-    const handleLeftOpen = (): void => {
+    // Fix 3: Wrap menu handlers in useCallback
+    const handleLeftOpen = useCallback((): void => {
         showFileOpenDialog({
             supportedFiles: supportedExtensions,
             onSuccess: (fileInfo) => {
@@ -156,12 +181,15 @@ const JsonFormatterPage: React.FC = () => {
                 showToast({ message: 'Could not open file', type: ToastType.ERROR });
             },
         });
-    };
+    }, [showFileOpenDialog, showToast, supportedExtensions]);
 
-    const handleLeftPaste = (): void => pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
-    const handleLeftClear = (): void => setEditorContent(leftEditorRef, '');
+    const handleLeftPaste = useCallback(
+        (): void => pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast),
+        [showToast],
+    );
+    const handleLeftClear = useCallback((): void => setEditorContent(leftEditorRef, ''), []);
 
-    const handleRightSave = (): void => {
+    const handleRightSave = useCallback((): void => {
         showFileSaveDialog({
             fileContent: getEditorContent(rightEditorRef),
             fileName: 'output',
@@ -169,29 +197,38 @@ const JsonFormatterPage: React.FC = () => {
             mimeType: DEFAULT_MIME_TYPE,
             availableExtensions: supportedExtensions,
         });
-    };
+    }, [showFileSaveDialog, supportedExtensions]);
 
-    const handleRightCopy = (): void => copyToClipboardFromEditor(rightEditorRef, showToast);
-    const handleRightClear = (): void => setEditorContent(rightEditorRef, '');
+    const handleRightCopy = useCallback((): void => copyToClipboardFromEditor(rightEditorRef, showToast), [showToast]);
+    const handleRightClear = useCallback((): void => setEditorContent(rightEditorRef, ''), []);
 
-    const handleUseAsInput = (): void => {
+    const handleUseAsInput = useCallback((): void => {
         const out = getEditorContent(rightEditorRef);
         setEditorContent(leftEditorRef, out);
         setEditorContent(rightEditorRef, '');
-    };
+    }, []);
 
-    const leftMenu = MenuBuilder.newBuilder()
-        .addButton('open-file', 'Open', handleLeftOpen)
-        .addButton('paste', 'Paste', handleLeftPaste)
-        .addButton('clear', 'Clear', handleLeftClear)
-        .build();
+    // Fix 3: Memoize menu arrays
+    const leftMenu = useMemo(
+        () =>
+            MenuBuilder.newBuilder()
+                .addButton('open-file', 'Open', handleLeftOpen)
+                .addButton('paste', 'Paste', handleLeftPaste)
+                .addButton('clear', 'Clear', handleLeftClear)
+                .build(),
+        [handleLeftOpen, handleLeftPaste, handleLeftClear],
+    );
 
-    const rightMenu = MenuBuilder.newBuilder()
-        .addButton('save', 'Save', handleRightSave)
-        .addButton('copy', 'Copy', handleRightCopy)
-        .addButton('clear', 'Clear', handleRightClear)
-        .addButton('use-input', 'Use as Input', handleUseAsInput)
-        .build();
+    const rightMenu = useMemo(
+        () =>
+            MenuBuilder.newBuilder()
+                .addButton('save', 'Save', handleRightSave)
+                .addButton('copy', 'Copy', handleRightCopy)
+                .addButton('clear', 'Clear', handleRightClear)
+                .addButton('use-input', 'Use as Input', handleUseAsInput)
+                .build(),
+        [handleRightSave, handleRightCopy, handleRightClear, handleUseAsInput],
+    );
 
     return (
         <ContentContainerGrid>
