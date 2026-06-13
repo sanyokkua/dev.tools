@@ -10,6 +10,7 @@ import '@/styles/chip.scss';
 import '@/styles/code-editor.scss';
 import '@/styles/colors.scss';
 import '@/styles/converting-tools.scss';
+import '@/styles/dashboard.scss';
 import '@/styles/date-tools.scss';
 import '@/styles/git-cheat-sheet.scss';
 import '@/styles/global.css';
