@@ -170,14 +170,16 @@ const IndexPage: React.FC = () => {
                 <div className="markdown-tools__body">
                     {isEditorVisible && (
                         <div className="markdown-tools__pane markdown-tools__pane--editor">
-                            <CodeEditor
-                                minimap={isMinimapEnabled}
-                                wordWrap={isWordWrapEnabled}
-                                onEditorMounted={handleEditorMount}
-                                languageId="markdown"
-                                onChange={handleTextChange}
-                                height="100%"
-                            />
+                            <div className="editor-fill">
+                                <CodeEditor
+                                    minimap={isMinimapEnabled}
+                                    wordWrap={isWordWrapEnabled}
+                                    onEditorMounted={handleEditorMount}
+                                    languageId="markdown"
+                                    onChange={handleTextChange}
+                                    height="100%"
+                                />
+                            </div>
                         </div>
                     )}
                     {isPreviewVisible && (

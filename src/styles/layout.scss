@@ -201,6 +201,37 @@
     border-color: var(--primary);
 }
 
+.func-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--outline-soft);
+    background: var(--card);
+    color: var(--on-surface);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: 0.12s;
+    box-sizing: border-box;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.func-btn:hover {
+    background: var(--primary-container);
+    border-color: transparent;
+    color: var(--on-primary-container);
+}
+
+.func-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
 .menubar-with-count {
     display: flex;
     align-items: center;

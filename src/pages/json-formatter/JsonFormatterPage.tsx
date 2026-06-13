@@ -11,7 +11,6 @@ import {
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
-import Button from '@/controls/Button';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import { editor, type IDisposable } from 'monaco-editor';
@@ -262,30 +261,24 @@ const JsonFormatterPage: React.FC = () => {
                     />
                 </div>
                 <ScrollableContentContainer>
-                    <Button text="Beautify" variant="solid" colorStyle="primary-color" block onClick={handleBeautify} />
-                    <Button text="Minify" variant="solid" colorStyle="primary-color" block onClick={handleMinify} />
-                    <Button
-                        text="Sort Keys (A→Z)"
-                        variant="solid"
-                        colorStyle="primary-color"
-                        block
-                        onClick={handleSortKeys}
-                    />
-                    <Button text="Validate" variant="solid" colorStyle="primary-color" block onClick={handleValidate} />
-                    <Button
-                        text="Escape String"
-                        variant="solid"
-                        colorStyle="primary-color"
-                        block
-                        onClick={handleEscape}
-                    />
-                    <Button
-                        text="Unescape String"
-                        variant="solid"
-                        colorStyle="primary-color"
-                        block
-                        onClick={handleUnescape}
-                    />
+                    <button className="func-btn" onClick={handleBeautify}>
+                        Beautify
+                    </button>
+                    <button className="func-btn" onClick={handleMinify}>
+                        Minify
+                    </button>
+                    <button className="func-btn" onClick={handleSortKeys}>
+                        Sort Keys (A→Z)
+                    </button>
+                    <button className="func-btn" onClick={handleValidate}>
+                        Validate
+                    </button>
+                    <button className="func-btn" onClick={handleEscape}>
+                        Escape String
+                    </button>
+                    <button className="func-btn" onClick={handleUnescape}>
+                        Unescape String
+                    </button>
                 </ScrollableContentContainer>
             </ContentContainerGridChild>
 

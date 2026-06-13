@@ -1,5 +1,4 @@
 'use client';
-import Button from '@/controls/Button';
 import React, { JSX } from 'react';
 
 export type AvailableFunction = { name: string; onClick: () => void };
@@ -7,21 +6,11 @@ export type AvailableFunction = { name: string; onClick: () => void };
 type FunctionActionButtonProps = { availableFunction: AvailableFunction };
 
 const FunctionActionButton: React.FC<FunctionActionButtonProps> = ({ availableFunction }) => {
-    const handleClick = (): void => {
-        console.log('FunctionActionButton click');
-        availableFunction.onClick();
-    };
     const builtId = availableFunction.name.toLowerCase().replace(/\s/g, '-');
     return (
-        <Button
-            text={availableFunction.name}
-            onClick={handleClick}
-            key={builtId}
-            variant={'solid'}
-            block={true}
-            size={'default'}
-            colorStyle={'primary-color'}
-        />
+        <button className="func-btn" id={builtId} onClick={availableFunction.onClick}>
+            {availableFunction.name}
+        </button>
     );
 };
 

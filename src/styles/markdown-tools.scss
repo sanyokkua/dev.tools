@@ -140,10 +140,13 @@
             flex-direction: column;
         }
 
+        &__pane {
+            min-height: 250px;
+        }
+
         &__pane--editor {
             border-right: none;
             border-bottom: 1px solid var(--outline-soft);
-            max-height: 45vh;
         }
 
         &__toolbar {
