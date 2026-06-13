@@ -38,7 +38,7 @@ const IndexPage = (): React.JSX.Element => {
         return groupsMap;
     }, []);
 
-    return <ToolView toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />;
+    return <ToolView searchable showCharCount toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />;
 };
 
 export default IndexPage;

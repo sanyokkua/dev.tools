@@ -79,11 +79,17 @@ export type ToolViewFunctionGroups = Map<string, ToolViewGroup>;
  * @property {(ToolViewFunctionGroups)} toolViewFunctionGroups - Required object that contains all function groups
  *     associated with the tools view. This property is essential for rendering and managing tool functions within the
  *     component.
+ *
+ * @property {boolean} [searchable] - When true, adds a search filter input above the function buttons.
+ *
+ * @property {boolean} [showCharCount] - When true, displays character and word count in the input toolbar.
  */
 type ToolViewProps = {
     toolChoseHeader?: string;
     toolViewFunctionGroups: ToolViewFunctionGroups;
     toolEditorsLangId?: string;
+    searchable?: boolean;
+    showCharCount?: boolean;
 };
 
 type ToolViewState = { selectItems: SelectItem[]; selectedItem: SelectItem; availableFunctions: AvailableFunction[] };
@@ -160,6 +166,8 @@ const ToolView: React.FC<ToolViewProps> = ({
     toolChoseHeader,
     toolViewFunctionGroups,
     toolEditorsLangId = DEFAULT_LANGUAGE_ID,
+    searchable,
+    showCharCount,
 }) => {
     const { showFileOpenDialog } = useFileOpen();
     const { showFileSaveDialog } = useFileSaveDialog();
@@ -168,6 +176,8 @@ const ToolView: React.FC<ToolViewProps> = ({
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [charCount, setCharCount] = useState<{ chars: number; words: number } | null>(null);
 
     /** Reset state if groups ever change */
     const [toolState, setToolState] = useState<ToolViewState>(() =>
@@ -178,10 +188,25 @@ const ToolView: React.FC<ToolViewProps> = ({
     }, [toolViewFunctionGroups]);
 
     /** Menubar callbacks for left editor */
-    const handleLeftMount = useCallback((props: EditorProperties) => {
-        leftEditorRef.current = props.editor;
-        setSupportedExtensions(props.supportedExtensions);
-    }, []);
+    const handleLeftMount = useCallback(
+        (props: EditorProperties) => {
+            leftEditorRef.current = props.editor;
+            setSupportedExtensions(props.supportedExtensions);
+            if (showCharCount) {
+                const updateCount = (text: string): void => {
+                    setCharCount({
+                        chars: text.length,
+                        words: text.trim() === '' ? 0 : text.trim().split(/\s+/).length,
+                    });
+                };
+                props.editor.onDidChangeModelContent(() => {
+                    updateCount(props.editor.getValue());
+                });
+                updateCount(props.editor.getValue());
+            }
+        },
+        [showCharCount],
+    );
     const handleLeftOpen = (): void => {
         showFileOpenDialog({
             supportedFiles: supportedExtensions,
@@ -263,10 +288,22 @@ const ToolView: React.FC<ToolViewProps> = ({
 
     const isMoreThanOneGroup = toolViewFunctionGroups.size > 1;
 
+    const filteredFunctions =
+        searchable && searchQuery.trim()
+            ? toolState.availableFunctions.filter((fn) => fn.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            : toolState.availableFunctions;
+
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                <Menubar menuItems={leftMenu} />
+                <div className="menubar-with-count">
+                    <Menubar menuItems={leftMenu} />
+                    {showCharCount && charCount !== null && (
+                        <span className="char-count-badge">
+                            {charCount.chars} chars · {charCount.words} words
+                        </span>
+                    )}
+                </div>
                 <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId={toolEditorsLangId} />
             </ContentContainerGridChild>
 
@@ -283,8 +320,18 @@ const ToolView: React.FC<ToolViewProps> = ({
                         <br />
                     </>
                 )}
+                {searchable && (
+                    <input
+                        type="text"
+                        placeholder="Filter actions…"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="func-search-input"
+                        aria-label="Filter functions"
+                    />
+                )}
                 <ScrollableContentContainer>
-                    <ColumnMenu availableFunctions={toolState.availableFunctions} />
+                    <ColumnMenu availableFunctions={filteredFunctions} />
                 </ScrollableContentContainer>
             </ContentContainerGridChild>
 
