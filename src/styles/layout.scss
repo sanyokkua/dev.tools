@@ -2,7 +2,7 @@
 .app-main-container {
     display: flex; /* Enables flexible box layout for child elements */
     flex-direction: column; /* Stacks children vertically (top-to-bottom) */
-    min-height: 100vh; /* Minimum height equals 100% of viewport height */
+    height: 100vh; /* Fixed viewport height so flex descendants can resolve % heights */
     max-width: 100%; /* prevents scrollbar-width overflow on some browsers */
 }
 
@@ -10,11 +10,15 @@
 .app-sidebar-and-content-container {
     display: flex; /* Creates horizontal layout for sidebar + content */
     flex: 1; /* Takes remaining space in parent container */
+    min-height: 0; /* Allows flex child to shrink below content size */
 }
 
 /* Main content area with responsive padding and theme-based styling */
 .app-main-content-container {
     flex: 1; /* Fills available space in parent container */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Allows flex child to shrink below content size */
     padding: var(--s2);
     height: 100%; /* Stretches to fill parent container */
     overflow-x: hidden; /* Prevents horizontal scrollbar */
@@ -29,6 +33,7 @@
     display: flex; /* Creates flexible layout for children */
     flex: 1; /* Expands to fill available space */
     flex-direction: column; /* Arranges children vertically */
+    min-height: 0; /* Allows flex child to shrink below content size */
 }
 
 /* Three-column grid layout with responsive column widths */
@@ -49,6 +54,15 @@
     flex-direction: column; /* Stacks content vertically */
     align-items: stretch; /* Makes children fill column width */
     justify-content: flex-start; /* Aligns content to top of column */
+    min-height: 0; /* Prevents grid item from expanding beyond cell */
+}
+
+/* Flex-fill wrapper for Monaco editors inside grid/flex columns.
+   min-height: 300px guarantees the >200px verify:ui gate on mobile
+   where the grid row becomes height:auto. */
+.editor-fill {
+    flex: 1;
+    min-height: 300px;
 }
 
 /* Scrollable area for content that exceeds container height */
