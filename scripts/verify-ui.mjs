@@ -1,0 +1,106 @@
+import { mkdirSync } from 'node:fs';
+import { chromium } from 'playwright';
+
+const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+
+const ROUTES = [
+    '/',
+    '/string-utils',
+    '/json-formatter',
+    '/hashing-tools',
+    '/encoding-tools',
+    '/terminal-utils',
+    '/code-editor',
+    '/markdown-tools',
+    '/converting-tools',
+    '/date-tools',
+    '/software-installer',
+    '/mac-os-setup',
+    '/windows-setup',
+    '/linux-setup',
+    '/git-cheat-sheet',
+    '/llm-vram-calculator',
+    '/prompts-collection',
+];
+
+// Routes that must have a Monaco editor with height > 200px
+const MONACO_ROUTES = new Set([
+    '/string-utils',
+    '/json-formatter',
+    '/encoding-tools',
+    '/terminal-utils',
+    '/code-editor',
+    '/markdown-tools',
+]);
+
+const WIDTHS = [375, 768, 1280];
+const THEMES = ['light', 'dark'];
+const OUT = '.tmp/verify-screens';
+mkdirSync(OUT, { recursive: true });
+
+const failures = [];
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+
+for (const theme of THEMES) {
+    for (const width of WIDTHS) {
+        const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+        const page = await ctx.newPage();
+
+        for (const route of ROUTES) {
+            const errors = [];
+            page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+            page.on('pageerror', (e) => errors.push(String(e)));
+
+            await page.goto(BASE + route, { waitUntil: 'networkidle' });
+
+            // Apply theme via data-theme attribute
+            await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+            await page.waitForTimeout(300);
+
+            // Gate 1: No horizontal overflow (allow ±1px rounding)
+            const overflow = await page.evaluate(() => {
+                const d = document.documentElement;
+                return d.scrollWidth - d.clientWidth > 1;
+            });
+
+            // Gate 2: Base font must be sans (not serif/Times)
+            const bodyFont = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
+
+            // Gate 3: Monaco height > 200px on editor pages
+            let monacoCollapsed = false;
+            if (MONACO_ROUTES.has(route)) {
+                const monacoHeight = await page.evaluate(() => {
+                    const el = document.querySelector('.monaco-editor');
+                    return el ? el.getBoundingClientRect().height : -1;
+                });
+                if (monacoHeight >= 0 && monacoHeight <= 200) {
+                    monacoCollapsed = true;
+                }
+            }
+
+            const slug = route.replace(/\W+/g, '_') || 'home';
+            const screenshotPath = `${OUT}/${slug}__${theme}__${width}.png`;
+
+            if (overflow) failures.push(`OVERFLOW   ${theme} ${width}px ${route}`);
+            if (/serif|times/i.test(bodyFont)) failures.push(`SERIF-FONT ${theme} ${width}px ${route} -> ${bodyFont}`);
+            if (errors.length)
+                failures.push(`CONSOLE    ${theme} ${width}px ${route}: ${errors.slice(0, 3).join(' | ')}`);
+            if (monacoCollapsed) failures.push(`MONACO-HT  ${theme} ${width}px ${route} (height ≤ 200px)`);
+
+            await page.screenshot({ path: screenshotPath, fullPage: true });
+        }
+
+        await ctx.close();
+    }
+}
+
+await browser.close();
+
+if (failures.length) {
+    console.error('\nVERIFY FAILED — ' + failures.length + ' issue(s):\n');
+    failures.forEach((f) => console.error('  ✗ ' + f));
+    console.error('');
+    process.exit(1);
+}
+
+console.log('VERIFY OK — all routes, widths, themes clean. Screenshots in ' + OUT);

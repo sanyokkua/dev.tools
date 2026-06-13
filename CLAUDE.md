@@ -22,6 +22,27 @@ Run a single test file:
 npx jest test/path/to/file.test.ts
 ```
 
+## Live-Chrome Verification (required for every fix task)
+
+With `npm run dev` running in a separate terminal:
+
+```bash
+npm run verify:ui              # Run all 17 routes × 3 widths × 2 themes
+BASE_URL=http://localhost:3000 npm run verify:ui  # explicit base (same as default)
+```
+
+The script saves screenshots to `.tmp/verify-screens/` and exits 1 on any:
+
+- Horizontal overflow (`scrollWidth > clientWidth + 1px`)
+- Console errors / page errors
+- Serif font detected on `document.body`
+- Monaco editor height ≤ 200px on editor pages
+
+**Chrome DevTools MCP** (interactive debugging, already globally available in Claude Code):
+Use `mcp__plugin_chrome-devtools-mcp_chrome-devtools__*` tools for step-by-step inspection —
+navigate pages, read console, take screenshots, inspect computed styles. Pairs with `verify:ui`
+for root-cause debugging.
+
 ## Architecture
 
 **Stack**: Next.js 16 (Pages Router), React 19, TypeScript, SCSS, Monaco Editor. Deployed as static export to GitHub Pages.
