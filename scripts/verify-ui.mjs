@@ -82,7 +82,9 @@ for (const theme of THEMES) {
             const screenshotPath = `${OUT}/${slug}__${theme}__${width}.png`;
 
             if (overflow) failures.push(`OVERFLOW   ${theme} ${width}px ${route}`);
-            if (/serif|times/i.test(bodyFont)) failures.push(`SERIF-FONT ${theme} ${width}px ${route} -> ${bodyFont}`);
+            const sansStripped = bodyFont.replace(/sans-serif/gi, '');
+            if (/serif|times/i.test(sansStripped))
+                failures.push(`SERIF-FONT ${theme} ${width}px ${route} -> ${bodyFont}`);
             if (errors.length)
                 failures.push(`CONSOLE    ${theme} ${width}px ${route}: ${errors.slice(0, 3).join(' | ')}`);
             if (monacoCollapsed) failures.push(`MONACO-HT  ${theme} ${width}px ${route} (height ≤ 200px)`);
