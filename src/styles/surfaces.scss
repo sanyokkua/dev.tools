@@ -93,6 +93,8 @@
     border: 1px solid var(--code-line);
     display: flex;
     flex-direction: column;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .code-block-bar {
