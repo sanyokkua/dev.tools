@@ -108,11 +108,6 @@ export const ALL_CATEGORIES: { id: string; text: Category }[] = [
     { id: 'gaming_apps', text: Category.GAMING },
 ];
 
-export enum BrewType {
-    COMMAND = 'command',
-    CASK = 'CASK',
-}
-
 /**
  * Represents a software application with core metadata.
  *
@@ -126,7 +121,6 @@ export interface Application {
     name: string;
     description: string;
     category: Category;
-    brewType?: BrewType; // Only for MacOS
 }
 
 /**

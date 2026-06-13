@@ -124,6 +124,8 @@
     --md-outline-color: var(--outline);
     --md-shadow-color: #000000;
     --hover-color: var(--card);
+
+    --divider-color: #e0e0e0;
 }
 
 /* ============================================================
@@ -164,6 +166,27 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 14px 30px rgba(0, 0, 0, 0.55);
+
+    /* State colours — dark tier */
+    --success: #89d382;
+    --success-container: #1e4a1e;
+    --warning: #d4c84f;
+    --warning-container: #3c3500;
+    --error: #ffb4ab;
+    --error-container: #690005;
+    --info: #6ab0c5;
+    --info-container: #004f67;
+
+    /* Compat aliases — override the light-only hardcoded values */
+    --success-container-color-on: #89d382;
+    --warning-container-color-on: #d4c84f;
+    --error-container-color-on: #ffb4ab;
+    --error-container-color: var(--error-container);
+    --info-container-color: var(--info-container);
+    --success-container-color: var(--success-container);
+    --warning-container-color: var(--warning-container);
+
+    --divider-color: var(--outline-soft);
 }
 
 /* ============================================================

@@ -186,7 +186,8 @@
             color: var(--muted);
         }
         &:focus {
-            outline: none;
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
         }
     }
 }
@@ -296,22 +297,22 @@
 
     &.ok {
         background: var(--success-container);
-        color: #235024;
+        color: var(--success-container-color-on);
     }
 
     &.fallback {
         background: var(--warning-container);
-        color: #4f4800;
+        color: var(--warning-container-color-on);
     }
 
     &.skip {
         background: var(--warning-container);
-        color: #4f4800;
+        color: var(--warning-container-color-on);
     }
 
     &.error {
         background: var(--error-container);
-        color: #93000a;
+        color: var(--error-container-color-on);
     }
 }
 
