@@ -1,5 +1,6 @@
 import { md5 } from 'js-md5';
-import React, { useCallback, useRef, useState } from 'react';
+import { editor, type IDisposable } from 'monaco-editor';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { copyToClipboard } from '@/common/clipboard-utils';
 import { useToast } from '@/contexts/ToasterContext';
@@ -7,6 +8,7 @@ import Button from '@/controls/Button';
 import Switch from '@/controls/Switch';
 import { ToastType } from '@/controls/toaster/types';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
+import { pasteFromClipboardToEditor, setEditorContent } from '../../components/elements/editor/code-editor-utils';
 import { EditorProperties } from '../../components/elements/editor/types';
 
 type HashRow = { alg: string; subtleAlg?: string; digest: string | null; loading: boolean };
@@ -22,10 +24,17 @@ const ALGORITHMS: HashRow[] = [
 const HashingPage: React.FC = () => {
     const [rows, setRows] = useState<HashRow[]>(ALGORITHMS);
     const [upperHex, setUpperHex] = useState(false);
-    const editorRef = useRef<import('monaco-editor').editor.IStandaloneCodeEditor | null>(null);
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const contentListenerRef = useRef<IDisposable | null>(null);
     const { showToast } = useToast();
+
+    useEffect((): (() => void) => {
+        return (): void => {
+            contentListenerRef.current?.dispose();
+        };
+    }, []);
 
     const computeHashes = useCallback(async (input: string | ArrayBuffer): Promise<void> => {
         setRows(ALGORITHMS.map((r) => ({ ...r, digest: null, loading: true })));
@@ -56,11 +65,11 @@ const HashingPage: React.FC = () => {
     const handleMount = useCallback(
         (props: EditorProperties): void => {
             editorRef.current = props.editor;
-            props.editor.onDidChangeModelContent(() => {
+            contentListenerRef.current?.dispose();
+            contentListenerRef.current = props.editor.onDidChangeModelContent(() => {
                 if (debounceRef.current) clearTimeout(debounceRef.current);
                 debounceRef.current = setTimeout(() => {
-                    const text = props.editor.getValue();
-                    void computeHashes(text);
+                    void computeHashes(props.editor.getValue());
                 }, 300);
             });
         },
@@ -83,18 +92,12 @@ const HashingPage: React.FC = () => {
     }, []);
 
     const handlePaste = useCallback((): void => {
-        navigator.clipboard
-            .readText()
-            .then((text) => {
-                editorRef.current?.setValue(text);
-            })
-            .catch(() => {
-                showToast({ message: 'Failed to paste from clipboard', type: ToastType.ERROR });
-            });
+        pasteFromClipboardToEditor(editorRef, () => {}, showToast);
     }, [showToast]);
 
     const handleClear = useCallback((): void => {
-        editorRef.current?.setValue('');
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        setEditorContent(editorRef, '');
         setRows(ALGORITHMS.map((r) => ({ ...r, digest: null, loading: false })));
     }, []);
 
