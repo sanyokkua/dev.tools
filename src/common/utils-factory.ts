@@ -229,6 +229,21 @@ export function createStringUtilList(): UtilList[] {
     ];
 }
 
+function encodeHtmlEntities(input: string): string {
+    return input
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function decodeHtmlEntities(input: string): string {
+    // DOMParser runs in the browser (fine for static export — never called server-side)
+    const doc = new DOMParser().parseFromString(`<!doctype html><body>${input}`, 'text/html');
+    return doc.body.textContent ?? '';
+}
+
 /**
  * Creates an array of utility objects for encoding different data formats.
  * @returns Array of string utility tools with their respective encoding functions.
@@ -246,6 +261,7 @@ export function createEncodingUtils(): IStringUtil[] {
             textToDisplay: 'Encode Base64Url',
             toolFunction: (input) => EncodingUtils.encodeBase64Url(input),
         },
+        { toolId: 'encode-html-entities', textToDisplay: 'HTML Entities encode', toolFunction: encodeHtmlEntities },
     ];
 }
 
@@ -261,6 +277,7 @@ export function createDecodingUtils(): IStringUtil[] {
             textToDisplay: 'Decode Base64',
             toolFunction: (input) => EncodingUtils.decodeBase64(input),
         },
+        { toolId: 'decode-html-entities', textToDisplay: 'HTML Entities decode', toolFunction: decodeHtmlEntities },
     ];
 }
 
