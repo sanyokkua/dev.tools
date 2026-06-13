@@ -199,3 +199,42 @@
     margin-left: auto;
     padding-right: var(--s1);
 }
+
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin: var(--s1) 0;
+}
+
+.badge-ok {
+    background: color-mix(in srgb, var(--success-color) 15%, transparent);
+    color: var(--success-color);
+}
+
+.badge-err {
+    background: color-mix(in srgb, var(--error-color) 15%, transparent);
+    color: var(--error-color);
+}
+
+.json-error-msg {
+    font-size: 12px;
+    color: var(--error-color);
+    margin: 0 0 var(--s1);
+    padding: 0;
+    word-break: break-word;
+}
+
+.json-formatter-field {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    margin-bottom: var(--s2);
+}
+
+.json-formatter-field label {
+    font-size: 13px;
+    white-space: nowrap;
+}
