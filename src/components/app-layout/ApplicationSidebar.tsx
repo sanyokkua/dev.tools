@@ -17,7 +17,7 @@ const navGroups: NavGroup[] = [
             { itemName: 'Code Editor', itemLink: '/code-editor', icon: '‹›' },
             { itemName: 'Markdown Tools', itemLink: '/markdown-tools', icon: '¶' },
             { itemName: 'Converting Tools', itemLink: '/converting-tools', icon: '⇆' },
-            { itemName: 'Date Tools', itemLink: '/date-tools', icon: '◷', badge: 'SOON' },
+            { itemName: 'Date Tools', itemLink: '/date-tools', icon: '◷' },
         ],
     },
     {
