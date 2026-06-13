@@ -84,8 +84,31 @@
     border: 1px solid var(--outline-soft);
 }
 
+/* Backdrop — invisible on desktop; appears behind drawer on mobile */
+.nav-backdrop {
+    display: none;
+}
+
 @media (max-width: 920px) {
+    .nav-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 29;
+    }
+
     .nav-rail {
         display: none;
+    }
+
+    .nav-rail.open {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 30;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
     }
 }

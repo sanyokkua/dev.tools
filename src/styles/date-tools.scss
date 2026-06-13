@@ -12,8 +12,12 @@
 
 @media (min-width: 900px) {
     .date-page-layout {
-        grid-template-columns: 320px 1fr;
+        grid-template-columns: 320px minmax(0, 1fr);
     }
+}
+
+.date-page-layout > * {
+    min-width: 0;
 }
 
 .date-toolbar {

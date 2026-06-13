@@ -171,39 +171,41 @@ const ConvertingToolsPage: React.FC = () => {
                     </div>
                     <div className="card pad">
                         <StepLabel letter="B" title="Result" />
-                        <table className="converting-results-table">
-                            <thead>
-                                <tr>
-                                    <th>Format</th>
-                                    <th>Value</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {nbResults.map((r) => (
-                                    <tr key={r.base}>
-                                        <td>{r.label}</td>
-                                        <td>
-                                            {r.error ? (
-                                                <span className="converting-error-cell">{r.error}</span>
-                                            ) : (
-                                                <span className="converting-value-mono">{r.value}</span>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <button
-                                                className="button-base button-text converting-copy-btn"
-                                                disabled={!!r.error}
-                                                onClick={() => r.value && handleCopy(r.value)}
-                                                aria-label={`Copy ${r.label}`}
-                                            >
-                                                ⧉
-                                            </button>
-                                        </td>
+                        <div className="converting-results-scroll">
+                            <table className="converting-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Format</th>
+                                        <th>Value</th>
+                                        <th></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {nbResults.map((r) => (
+                                        <tr key={r.base}>
+                                            <td>{r.label}</td>
+                                            <td>
+                                                {r.error ? (
+                                                    <span className="converting-error-cell">{r.error}</span>
+                                                ) : (
+                                                    <span className="converting-value-mono">{r.value}</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="button-base button-text converting-copy-btn"
+                                                    disabled={!!r.error}
+                                                    onClick={() => r.value && handleCopy(r.value)}
+                                                    aria-label={`Copy ${r.label}`}
+                                                >
+                                                    ⧉
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -232,44 +234,46 @@ const ConvertingToolsPage: React.FC = () => {
                     </div>
                     <div className="card pad">
                         <StepLabel letter="B" title="Result" />
-                        <table className="converting-results-table">
-                            <thead>
-                                <tr>
-                                    <th>Format</th>
-                                    <th>Value</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {dfResults.map((r) => (
-                                    <tr key={r.format}>
-                                        <td>{r.label}</td>
-                                        <td>
-                                            {r.error ? (
-                                                <span className="converting-error-cell">{r.error}</span>
-                                            ) : (
-                                                <span
-                                                    className="converting-value-mono"
-                                                    style={{ whiteSpace: 'pre-wrap' }}
-                                                >
-                                                    {r.value}
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <button
-                                                className="button-base button-text converting-copy-btn"
-                                                disabled={!!r.error || !r.value}
-                                                onClick={() => r.value && handleCopy(r.value)}
-                                                aria-label={`Copy ${r.label}`}
-                                            >
-                                                ⧉
-                                            </button>
-                                        </td>
+                        <div className="converting-results-scroll">
+                            <table className="converting-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Format</th>
+                                        <th>Value</th>
+                                        <th></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {dfResults.map((r) => (
+                                        <tr key={r.format}>
+                                            <td>{r.label}</td>
+                                            <td>
+                                                {r.error ? (
+                                                    <span className="converting-error-cell">{r.error}</span>
+                                                ) : (
+                                                    <span
+                                                        className="converting-value-mono"
+                                                        style={{ whiteSpace: 'pre-wrap' }}
+                                                    >
+                                                        {r.value}
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="button-base button-text converting-copy-btn"
+                                                    disabled={!!r.error || !r.value}
+                                                    onClick={() => r.value && handleCopy(r.value)}
+                                                    aria-label={`Copy ${r.label}`}
+                                                >
+                                                    ⧉
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -309,39 +313,41 @@ const ConvertingToolsPage: React.FC = () => {
                     </div>
                     <div className="card pad">
                         <StepLabel letter="B" title="Result" />
-                        <table className="converting-results-table">
-                            <thead>
-                                <tr>
-                                    <th>Format</th>
-                                    <th>Value</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {colorResults.map((r) => (
-                                    <tr key={r.format}>
-                                        <td>{r.label}</td>
-                                        <td>
-                                            {r.error ? (
-                                                <span className="converting-error-cell">{r.error}</span>
-                                            ) : (
-                                                <span className="converting-value-mono">{r.value}</span>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <button
-                                                className="button-base button-text converting-copy-btn"
-                                                disabled={!!r.error}
-                                                onClick={() => r.value && handleCopy(r.value)}
-                                                aria-label={`Copy ${r.label}`}
-                                            >
-                                                ⧉
-                                            </button>
-                                        </td>
+                        <div className="converting-results-scroll">
+                            <table className="converting-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Format</th>
+                                        <th>Value</th>
+                                        <th></th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {colorResults.map((r) => (
+                                        <tr key={r.format}>
+                                            <td>{r.label}</td>
+                                            <td>
+                                                {r.error ? (
+                                                    <span className="converting-error-cell">{r.error}</span>
+                                                ) : (
+                                                    <span className="converting-value-mono">{r.value}</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="button-base button-text converting-copy-btn"
+                                                    disabled={!!r.error}
+                                                    onClick={() => r.value && handleCopy(r.value)}
+                                                    aria-label={`Copy ${r.label}`}
+                                                >
+                                                    ⧉
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -381,34 +387,36 @@ const ConvertingToolsPage: React.FC = () => {
                         {unitsResults.length === 0 ? (
                             <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Enter a value to see conversions.</p>
                         ) : (
-                            <table className="converting-results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Unit</th>
-                                        <th>Value</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {unitsResults.map((r) => (
-                                        <tr key={r.id}>
-                                            <td>{r.label}</td>
-                                            <td>
-                                                <span className="converting-value-mono">{r.value}</span>
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="button-base button-text converting-copy-btn"
-                                                    onClick={() => handleCopy(r.value)}
-                                                    aria-label={`Copy ${r.label}`}
-                                                >
-                                                    ⧉
-                                                </button>
-                                            </td>
+                            <div className="converting-results-scroll">
+                                <table className="converting-results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit</th>
+                                            <th>Value</th>
+                                            <th></th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {unitsResults.map((r) => (
+                                            <tr key={r.id}>
+                                                <td>{r.label}</td>
+                                                <td>
+                                                    <span className="converting-value-mono">{r.value}</span>
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className="button-base button-text converting-copy-btn"
+                                                        onClick={() => handleCopy(r.value)}
+                                                        aria-label={`Copy ${r.label}`}
+                                                    >
+                                                        ⧉
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>

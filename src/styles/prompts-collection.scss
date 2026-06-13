@@ -49,10 +49,14 @@
 // Two-column split layout
 .prompts-split {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 300px minmax(0, 1fr);
     gap: 14px;
     flex: 1;
     min-height: 0;
+}
+
+.prompts-split > * {
+    min-width: 0;
 }
 
 // Left: compact prompt list

@@ -39,9 +39,14 @@ const navGroups: NavGroup[] = [
     },
 ];
 
-const ApplicationSidebar: React.FC = () => {
+interface SidebarWrapperProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+const ApplicationSidebar: React.FC<SidebarWrapperProps> = ({ isOpen, onClose }) => {
     const router = useRouter();
-    return <Sidebar groups={navGroups} activeLink={router.pathname} />;
+    return <Sidebar groups={navGroups} activeLink={router.pathname} isOpen={isOpen} onClose={onClose} />;
 };
 
 export default ApplicationSidebar;

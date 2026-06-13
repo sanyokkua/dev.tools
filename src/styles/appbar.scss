@@ -84,3 +84,15 @@
     outline: 2px solid var(--primary);
     outline-offset: 2px;
 }
+
+/* Mobile nav trigger — hidden on desktop, visible ≤920px */
+.menu-btn {
+    display: none;
+}
+
+@media (max-width: 920px) {
+    .menu-btn {
+        display: grid;
+        flex-shrink: 0;
+    }
+}

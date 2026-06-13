@@ -2,11 +2,20 @@
 import Link from 'next/link';
 import React from 'react';
 
-export type AppBarProps = { appTitle: string; pageTitle: string; theme?: 'light' | 'dark'; onThemeToggle?: () => void };
+export type AppBarProps = {
+    appTitle: string;
+    pageTitle: string;
+    theme?: 'light' | 'dark';
+    onThemeToggle?: () => void;
+    onMenuOpen?: () => void;
+};
 
-const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle }) => {
+const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle, onMenuOpen }) => {
     return (
         <header className="topbar">
+            <button className="icon-btn menu-btn" onClick={onMenuOpen} aria-label="Open navigation">
+                ☰
+            </button>
             <Link href="/" className="topbar-brand">
                 <div className="topbar-logo">⌘</div>
                 {appTitle}
