@@ -5,49 +5,6 @@
     height: 100%;
 }
 
-.hashing-results-pane {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    background: var(--card);
-    border-radius: 8px;
-    padding: var(--s2);
-}
-
-.hashing-results-pane h3 {
-    margin: 0 0 var(--s2);
-    font-size: 14px;
-}
-
-.hash-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.hash-table th,
-.hash-table td {
-    padding: var(--s2);
-    border-bottom: 1px solid var(--outline-soft);
-    text-align: left;
-    vertical-align: middle;
-}
-
-.hash-table thead th {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-}
-
-.hash-digest {
-    font-family: monospace;
-    font-size: 11.5px;
-    word-break: break-all;
-    color: var(--on-surface-variant);
-}
-
 .spinner {
     display: inline-block;
     width: 12px;
