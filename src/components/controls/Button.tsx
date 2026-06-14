@@ -18,6 +18,7 @@ interface ButtonProps {
     block?: boolean;
     type?: 'button' | 'submit' | 'reset';
     icon?: React.ReactNode;
+    ariaLabel?: string;
 }
 
 const VARIANT_CLASS: Record<Variant, string> = {
@@ -42,6 +43,7 @@ const Button: React.FC<ButtonProps> = ({
     block = false,
     type = 'button',
     icon,
+    ariaLabel,
 }) => {
     const handle = (e: React.MouseEvent<HTMLButtonElement>): void => {
         if (!disabled && !loading && onClick) {
@@ -65,7 +67,7 @@ const Button: React.FC<ButtonProps> = ({
         .join(' ');
 
     return (
-        <button type={type} onClick={handle} disabled={disabled || loading} className={classes}>
+        <button type={type} onClick={handle} disabled={disabled || loading} className={classes} aria-label={ariaLabel}>
             {icon}
             {text}
         </button>

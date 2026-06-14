@@ -100,4 +100,11 @@ describe('Button', () => {
         render(<Button text="Submit" type="submit" />);
         expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
     });
+
+    it('passes ariaLabel as aria-label attribute', () => {
+        render(<Button text="⧉" ariaLabel="Copy" onClick={jest.fn()} />);
+        const btn = screen.getByRole('button', { name: /copy/i });
+        expect(btn).toHaveAttribute('aria-label', 'Copy');
+        expect(btn).toHaveTextContent('⧉');
+    });
 });
