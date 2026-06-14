@@ -114,6 +114,12 @@ describe('Markdown Tools page', () => {
         expect(screen.getByText(/FileName:/)).toBeInTheDocument();
     });
 
+    it('info row uses .card element not InformationPanel chips', () => {
+        const { container } = renderPage();
+        expect(container.querySelector('.info-panel')).toBeNull();
+        expect(container.querySelector('.markdown-tools__info.card')).toBeInTheDocument();
+    });
+
     it('renders the page heading "Markdown Tools"', () => {
         renderPage();
         expect(screen.getByRole('heading', { name: /markdown tools/i })).toBeInTheDocument();
