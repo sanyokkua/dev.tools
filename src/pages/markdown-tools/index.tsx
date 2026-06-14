@@ -19,7 +19,6 @@ import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { saveTextFile } from '@/common/file-utils';
 import { mapBoolean } from '@/common/formatting-tools';
-import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
 import { useReactToPrint } from 'react-to-print';
@@ -136,15 +135,6 @@ const IndexPage: React.FC = () => {
         setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
     }, []);
 
-    const infoPanelItems: InformationPanelItem[] = [
-        `WordWrap: ${mapBoolean(isWordWrapEnabled)}`,
-        `Minimap: ${mapBoolean(isMinimapEnabled)}`,
-        `MD Editor: ${mapBoolean(isEditorVisible)}`,
-        `MD Preview: ${mapBoolean(isPreviewVisible)}`,
-        `FileName: ${currentFileInfo.name}`,
-        `TextLength: ${currentFileInfo.content.length}`,
-    ];
-
     return (
         <ContentContainerFlex>
             <div className="markdown-tools">
@@ -169,24 +159,38 @@ const IndexPage: React.FC = () => {
                     onPrintClick={handlePrint}
                 />
 
-                <InformationPanel items={infoPanelItems} />
+                <div className="markdown-tools__info card pad">
+                    <span>WordWrap: {mapBoolean(isWordWrapEnabled)}</span>
+                    <span>Minimap: {mapBoolean(isMinimapEnabled)}</span>
+                    <span>MD Editor: {mapBoolean(isEditorVisible)}</span>
+                    <span>MD Preview: {mapBoolean(isPreviewVisible)}</span>
+                    <span>FileName: {currentFileInfo.name}</span>
+                    <span>TextLength: {currentFileInfo.content.length}</span>
+                </div>
 
                 <div className="markdown-tools__body">
                     {isEditorVisible && (
                         <div className="markdown-tools__pane editorpane">
-                            <CodeEditor
-                                minimap={isMinimapEnabled}
-                                wordWrap={isWordWrapEnabled}
-                                onEditorMounted={handleEditorMount}
-                                languageId="markdown"
-                                onChange={handleTextChange}
-                                height="100%"
-                            />
+                            <div className="eh">
+                                <span className="markdown-tools__filename">
+                                    {currentFileInfo.fullName || `${currentFileInfo.name}${currentFileInfo.extension}`}
+                                </span>
+                            </div>
+                            <div className="eb">
+                                <CodeEditor
+                                    minimap={isMinimapEnabled}
+                                    wordWrap={isWordWrapEnabled}
+                                    onEditorMounted={handleEditorMount}
+                                    languageId="markdown"
+                                    onChange={handleTextChange}
+                                    height="100%"
+                                />
+                            </div>
                         </div>
                     )}
                     {isPreviewVisible && (
-                        <div className="markdown-tools__pane">
-                            <div ref={contentRef} className="markdown-tools__preview">
+                        <div ref={contentRef} className="markdown-tools__pane card pad">
+                            <div className="markdown-tools__preview">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm, remarkMath]}
                                     rehypePlugins={[rehypeKatex, rehypeHighlight]}
