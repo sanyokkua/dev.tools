@@ -24,7 +24,7 @@ const navGroups: NavGroup[] = [
         groupName: 'Install & Setup',
         items: [
             { itemName: 'Software Installer', itemLink: '/software-installer', icon: '⚙', badge: 'NEW' },
-            { itemName: 'macOS Setup', itemLink: '/mac-os-setup', icon: '' },
+            { itemName: 'macOS Setup', itemLink: '/mac-os-setup', icon: '⌘' },
             { itemName: 'Windows Setup', itemLink: '/windows-setup', icon: '⊞' },
             { itemName: 'Linux Setup', itemLink: '/linux-setup', icon: '🐧' },
             { itemName: 'Git Cheat-sheet', itemLink: '/git-cheat-sheet', icon: '⎇' },

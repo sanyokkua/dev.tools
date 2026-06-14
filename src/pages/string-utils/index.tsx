@@ -7,7 +7,7 @@ const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('String Utilities');
+        setPageTitle('String Utils');
     }, [setPageTitle]);
 
     // Memoize the tool groups to prevent recreation on every render

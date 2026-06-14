@@ -9,7 +9,7 @@ const Home: React.FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('Encoding Utilities');
+        setPageTitle('Encoding Tools');
     }, [setPageTitle]);
 
     // Memoize the tool groups to prevent recreation on every render
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
         return groupsMap;
     }, []);
 
-    return <ToolView toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />;
+    return <ToolView searchable toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />;
 };
 
 export default Home;

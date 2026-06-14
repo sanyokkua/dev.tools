@@ -59,7 +59,7 @@ const GitCheatSheetPage: FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('Git Cheat Sheet');
+        setPageTitle('Git Cheat-sheet');
     }, [setPageTitle]);
 
     const [chosenGuide, setChosenGuide] = useState<string>('interactive');

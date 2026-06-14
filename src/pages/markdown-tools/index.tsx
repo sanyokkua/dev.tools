@@ -37,7 +37,7 @@ const IndexPage: React.FC = () => {
     const { showToast } = useToast();
 
     useEffect(() => {
-        setPageTitle('Markdown Utilities');
+        setPageTitle('Markdown Tools');
     }, [setPageTitle]);
 
     const contentRef = useRef<HTMLDivElement>(null);
