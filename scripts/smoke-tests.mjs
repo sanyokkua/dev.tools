@@ -92,7 +92,7 @@ await runSmoke('hashing', async (page) => {
     // Wait until at least one digest cell has non-empty text and no spinner
     await page.waitForFunction(
         () =>
-            Array.from(document.querySelectorAll('.hash-digest')).some(
+            Array.from(document.querySelectorAll('table.t td.mono')).some(
                 (td) => td.textContent?.trim() && !td.querySelector('.spinner'),
             ),
         { timeout: 8000 },
