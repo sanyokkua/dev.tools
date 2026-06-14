@@ -11,6 +11,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [theme, setTheme] = useState<Theme>('light');
 
     useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(mq.matches ? 'dark' : 'light');
+    }, []);
+
+    useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 

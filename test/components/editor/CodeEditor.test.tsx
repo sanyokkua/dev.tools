@@ -32,6 +32,9 @@ function renderWithTheme(): ReturnType<typeof render> {
 describe('CodeEditor — theme sync', () => {
     beforeEach(() => {
         document.documentElement.removeAttribute('data-theme');
+        window.matchMedia = jest
+            .fn()
+            .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
     });
 
     it('uses "vs" (light) Monaco theme by default', () => {
