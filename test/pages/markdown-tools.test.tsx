@@ -113,4 +113,39 @@ describe('Markdown Tools page', () => {
         expect(screen.getByText(/MD Preview:/)).toBeInTheDocument();
         expect(screen.getByText(/FileName:/)).toBeInTheDocument();
     });
+
+    it('renders the page heading "Markdown Tools"', () => {
+        renderPage();
+        expect(screen.getByRole('heading', { name: /markdown tools/i })).toBeInTheDocument();
+    });
+
+    it('hides the Monaco editor when the Editor switch is toggled off', () => {
+        renderPage();
+        expect(screen.getByTestId('code-editor')).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('switch', { name: /editor/i }));
+        expect(screen.queryByTestId('code-editor')).not.toBeInTheDocument();
+    });
+
+    it('shows the Monaco editor when the Editor switch is toggled back on', () => {
+        renderPage();
+        const editorSwitch = screen.getByRole('switch', { name: /editor/i });
+        fireEvent.click(editorSwitch); // off
+        fireEvent.click(editorSwitch); // on
+        expect(screen.getByTestId('code-editor')).toBeInTheDocument();
+    });
+
+    it('hides the preview pane when the Preview switch is toggled off', () => {
+        renderPage();
+        expect(screen.getByTestId('react-markdown')).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('switch', { name: /preview/i }));
+        expect(screen.queryByTestId('react-markdown')).not.toBeInTheDocument();
+    });
+
+    it('shows the preview pane when the Preview switch is toggled back on', () => {
+        renderPage();
+        const previewSwitch = screen.getByRole('switch', { name: /preview/i });
+        fireEvent.click(previewSwitch); // off
+        fireEvent.click(previewSwitch); // on
+        expect(screen.getByTestId('react-markdown')).toBeInTheDocument();
+    });
 });
