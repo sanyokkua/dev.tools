@@ -137,14 +137,18 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
         }
 
         if (isWindows) {
-            lines.push(`Write-Host "${action} ${app.name}"; ${cmd}`);
+            lines.push(
+                `try { Write-Host "▶ ${action} ${app.name}"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} failed: $_"; $fail++ }`,
+            );
         } else {
             lines.push(`run_task "${action} ${app.name} (${manager})" ${cmd}`);
         }
     }
 
-    if (!isWindows) {
-        lines.push('');
+    lines.push('');
+    if (isWindows) {
+        lines.push('Write-Host "✔ $ok ok / ✖ $fail failed"');
+    } else {
         lines.push('echo "✔ $SUCCESS ok / ✖ $FAILED failed"');
     }
 

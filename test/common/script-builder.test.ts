@@ -392,19 +392,39 @@ describe('buildCombinedScript', () => {
             expect(script).toContain('$ok=0;$fail=0');
         });
 
-        it('emits Write-Host line with command for install', () => {
+        it('emits try/catch block with Write-Host for install', () => {
             const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
-            expect(script).toContain('Write-Host "install Firefox"; winget install --id Mozilla.Firefox -e');
+            expect(script).toContain('try { Write-Host "▶ install Firefox"; winget install --id Mozilla.Firefox -e;');
         });
 
-        it('emits Write-Host line with command for update', () => {
+        it('emits try/catch block with Write-Host for update', () => {
             const script = buildCombinedScript([FIREFOX], 'update', windowsConfig);
-            expect(script).toContain('Write-Host "update Firefox"; winget upgrade --id Mozilla.Firefox -e');
+            expect(script).toContain('try { Write-Host "▶ update Firefox"; winget upgrade --id Mozilla.Firefox -e;');
         });
 
-        it('emits Write-Host line with command for remove', () => {
+        it('emits try/catch block with Write-Host for remove', () => {
             const script = buildCombinedScript([FIREFOX], 'remove', windowsConfig);
-            expect(script).toContain('Write-Host "remove Firefox"; winget uninstall --id Mozilla.Firefox -e');
+            expect(script).toContain('try { Write-Host "▶ remove Firefox"; winget uninstall --id Mozilla.Firefox -e;');
+        });
+
+        it('increments $ok on success via try block', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+            expect(script).toContain('$ok++');
+        });
+
+        it('increments $fail on failure via catch block', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+            expect(script).toContain('$fail++');
+        });
+
+        it('throws on non-zero $LASTEXITCODE', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+            expect(script).toContain('if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }');
+        });
+
+        it('ends with success/failure summary', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+            expect(script).toContain('Write-Host "✔ $ok ok / ✖ $fail failed"');
         });
     });
 
