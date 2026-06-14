@@ -7,6 +7,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
+import Switch from '@/controls/Switch';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -33,6 +34,8 @@ const DATA_FORMAT_OPTIONS: SegmentedOption[] = [
     { value: 'json', label: 'JSON' },
     { value: 'yaml', label: 'YAML' },
     { value: 'querystring', label: 'Query-string' },
+    { value: 'toml', label: 'TOML' },
+    { value: 'csv', label: 'CSV' },
 ];
 
 const COLOR_FORMAT_OPTIONS: SegmentedOption[] = [
@@ -72,6 +75,7 @@ const ConvertingToolsPage: React.FC = () => {
     const [nbInput, setNbInput] = useState('255');
     const [nbFromBase, setNbFromBase] = useState<NumberBaseId>('dec');
     const [nbCustomBase, setNbCustomBase] = useState(36);
+    const [showCustomBase, setShowCustomBase] = useState(false);
 
     // Data format state
     const [dfInput, setDfInput] = useState('{"name":"Alice","age":30}');
@@ -102,9 +106,9 @@ const ConvertingToolsPage: React.FC = () => {
             convertNumberBase(
                 nbInput,
                 BASE_MAP[nbFromBase],
-                nbCustomBase >= 2 && nbCustomBase <= 36 ? nbCustomBase : undefined,
+                showCustomBase && nbCustomBase >= 2 && nbCustomBase <= 36 ? nbCustomBase : undefined,
             ),
-        [nbInput, nbFromBase, nbCustomBase],
+        [nbInput, nbFromBase, nbCustomBase, showCustomBase],
     );
 
     // --- Data format results ---
@@ -156,18 +160,28 @@ const ConvertingToolsPage: React.FC = () => {
                             />
                         </div>
                         <div className="converting-base-input">
-                            <div className="converting-base-field">
-                                <label htmlFor="custom-base">Base (2–36):</label>
-                                <Input
-                                    id="custom-base"
-                                    type="number"
-                                    value={String(nbCustomBase)}
-                                    onChange={(v) => setNbCustomBase(parseInt(v, 10) || 36)}
-                                    min={2}
-                                    max={36}
-                                />
-                            </div>
+                            <Switch
+                                checked={showCustomBase}
+                                onChange={setShowCustomBase}
+                                label="Show custom base"
+                                id="show-custom-base"
+                            />
                         </div>
+                        {showCustomBase && (
+                            <div className="converting-base-input">
+                                <div className="converting-base-field">
+                                    <label htmlFor="custom-base">Base (2–36):</label>
+                                    <Input
+                                        id="custom-base"
+                                        type="number"
+                                        value={String(nbCustomBase)}
+                                        onChange={(v) => setNbCustomBase(parseInt(v, 10) || 36)}
+                                        min={2}
+                                        max={36}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="card pad">
                         <StepLabel letter="B" title="Result" />
