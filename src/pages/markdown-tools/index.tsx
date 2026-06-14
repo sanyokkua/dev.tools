@@ -148,6 +148,10 @@ const IndexPage: React.FC = () => {
     return (
         <ContentContainerFlex>
             <div className="markdown-tools">
+                <div className="markdown-tools__header">
+                    <h2>Markdown Tools</h2>
+                    <p>Write, live-preview and print/export Markdown. Editor and preview can each be toggled.</p>
+                </div>
                 <MarkdownToolbar
                     onFileNewClick={handleNewFile}
                     onFileOpenClick={handleOpenFileDialog}
@@ -170,16 +174,14 @@ const IndexPage: React.FC = () => {
                 <div className="markdown-tools__body">
                     {isEditorVisible && (
                         <div className="markdown-tools__pane markdown-tools__pane--editor">
-                            <div className="editor-fill">
-                                <CodeEditor
-                                    minimap={isMinimapEnabled}
-                                    wordWrap={isWordWrapEnabled}
-                                    onEditorMounted={handleEditorMount}
-                                    languageId="markdown"
-                                    onChange={handleTextChange}
-                                    height="100%"
-                                />
-                            </div>
+                            <CodeEditor
+                                minimap={isMinimapEnabled}
+                                wordWrap={isWordWrapEnabled}
+                                onEditorMounted={handleEditorMount}
+                                languageId="markdown"
+                                onChange={handleTextChange}
+                                height="100%"
+                            />
                         </div>
                     )}
                     {isPreviewVisible && (
