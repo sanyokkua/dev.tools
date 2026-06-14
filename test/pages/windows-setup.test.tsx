@@ -19,27 +19,27 @@ describe('Windows Setup page', () => {
         expect(screen.getByRole('heading', { name: 'Windows Setup' })).toBeInTheDocument();
     });
 
-    it('renders both tab buttons', () => {
+    it('renders both section buttons in the segmented control', () => {
         renderPage();
-        expect(screen.getByRole('tab', { name: 'Package managers' })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: 'Environment variables' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Package managers' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Environment variables' })).toBeInTheDocument();
     });
 
     it('shows Package managers content by default', () => {
         renderPage();
-        expect(screen.getByText(/winget \(built-in\)/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'winget (built-in)' })).toBeInTheDocument();
     });
 
-    it('switches to Environment variables tab on click', () => {
+    it('switches to Environment variables section on click', () => {
         renderPage();
-        fireEvent.click(screen.getByRole('tab', { name: 'Environment variables' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Environment variables' }));
         expect(screen.getAllByText(/SetEnvironmentVariable/).length).toBeGreaterThan(0);
     });
 
-    it('Package managers tab is aria-pressed when active', () => {
+    it('Package managers button is aria-pressed when active', () => {
         renderPage();
-        const managersTab = screen.getByRole('tab', { name: 'Package managers' });
-        expect(managersTab).toHaveAttribute('aria-pressed', 'true');
+        const managersBtn = screen.getByRole('button', { name: 'Package managers' });
+        expect(managersBtn).toHaveAttribute('aria-pressed', 'true');
     });
 
     it('switching manager chips shows relevant install content', () => {

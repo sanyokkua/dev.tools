@@ -1,5 +1,6 @@
 import { LinuxDistro } from '@/common/linux-utils';
 import { usePage } from '@/contexts/PageContext';
+import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import EnvironmentVariablesSection from '@/page-specific/linux-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/linux-setup/PackageManagersSection';
 import React, { useEffect, useState } from 'react';
@@ -7,12 +8,12 @@ import PageShell from '../../components/layouts/PageShell';
 
 type LinuxTab = 'managers' | 'env-vars';
 
-const TABS: { value: LinuxTab; label: string }[] = [
+const TABS: SegmentedOption[] = [
     { value: 'managers', label: 'Package managers' },
     { value: 'env-vars', label: 'Environment variables' },
 ];
 
-const DISTROS: { value: LinuxDistro; label: string }[] = [
+const DISTROS: SegmentedOption[] = [
     { value: 'debian', label: 'Debian / Ubuntu' },
     { value: 'fedora', label: 'Fedora / RHEL' },
     { value: 'arch', label: 'Arch' },
@@ -37,37 +38,26 @@ const IndexPage = (): React.JSX.Element => {
                     <a href="/software-installer">Software Installer</a>.
                 </p>
 
-                <div className="linux-setup-distro" role="group" aria-label="Distro family">
-                    {DISTROS.map((d) => (
-                        <button
-                            key={d.value}
-                            type="button"
-                            className={selectedDistro === d.value ? 'active' : ''}
-                            onClick={() => setSelectedDistro(d.value)}
-                            aria-pressed={selectedDistro === d.value}
-                        >
-                            {d.label}
-                        </button>
-                    ))}
+                <SegmentedControl
+                    options={DISTROS}
+                    value={selectedDistro}
+                    onChange={(v) => setSelectedDistro(v as LinuxDistro)}
+                    aria-label="Distro family"
+                />
+
+                <div style={{ marginTop: 12 }}>
+                    <SegmentedControl
+                        options={TABS}
+                        value={activeTab}
+                        onChange={(v) => setActiveTab(v as LinuxTab)}
+                        aria-label="Linux Setup sections"
+                    />
                 </div>
 
-                <div className="linux-setup-tabs" role="tablist">
-                    {TABS.map((tab) => (
-                        <button
-                            key={tab.value}
-                            type="button"
-                            className={activeTab === tab.value ? 'active' : ''}
-                            onClick={() => setActiveTab(tab.value)}
-                            aria-pressed={activeTab === tab.value}
-                            role="tab"
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                <div style={{ marginTop: 20 }}>
+                    {activeTab === 'managers' && <PackageManagersSection distro={selectedDistro} />}
+                    {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
                 </div>
-
-                {activeTab === 'managers' && <PackageManagersSection distro={selectedDistro} />}
-                {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
             </section>
         </PageShell>
     );

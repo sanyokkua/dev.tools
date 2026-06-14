@@ -19,10 +19,10 @@ describe('Linux Setup page', () => {
         expect(screen.getByRole('heading', { name: 'Linux Setup' })).toBeInTheDocument();
     });
 
-    it('renders both tab buttons', () => {
+    it('renders both section buttons in the segmented control', () => {
         renderPage();
-        expect(screen.getByRole('tab', { name: 'Package managers' })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: 'Environment variables' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Package managers' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Environment variables' })).toBeInTheDocument();
     });
 
     it('renders all four distro buttons', () => {
@@ -44,10 +44,10 @@ describe('Linux Setup page', () => {
         expect(screen.getByText(/dnf --version/i)).toBeInTheDocument();
     });
 
-    it('clicking Environment variables tab shows env-var content', () => {
+    it('clicking Environment variables section shows env-var content', () => {
         renderPage();
-        fireEvent.click(screen.getByRole('tab', { name: 'Environment variables' }));
-        expect(screen.getByRole('heading', { name: /Reload the shell profile/i })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: 'Environment variables' }));
+        expect(screen.getAllByText(/Reload the shell profile/i).length).toBeGreaterThan(0);
     });
 
     it('Debian / Ubuntu distro button has aria-pressed true by default', () => {

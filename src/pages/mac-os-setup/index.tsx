@@ -1,4 +1,5 @@
 import { usePage } from '@/contexts/PageContext';
+import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import BrewInstallSteps from '@/page-specific/mac-os-setup/BrewInstallSteps';
 import EnvironmentVariablesSection from '@/page-specific/mac-os-setup/EnvironmentVariablesSection';
 import VramManager from '@/page-specific/mac-os-setup/VramManager';
@@ -7,7 +8,7 @@ import PageShell from '../../components/layouts/PageShell';
 
 type MacOsTab = 'managers' | 'env-vars' | 'scripts';
 
-const TABS: { value: MacOsTab; label: string }[] = [
+const TABS: SegmentedOption[] = [
     { value: 'managers', label: 'Package managers' },
     { value: 'env-vars', label: 'Environment variables' },
     { value: 'scripts', label: 'Platform scripts' },
@@ -30,40 +31,34 @@ const IndexPage = (): React.JSX.Element => {
                     installation lives in <a href="/software-installer">Software Installer</a>.
                 </p>
 
-                <div className="mac-os-tabs" role="tablist">
-                    {TABS.map((tab) => (
-                        <button
-                            key={tab.value}
-                            type="button"
-                            className={activeTab === tab.value ? 'active' : ''}
-                            onClick={() => setActiveTab(tab.value)}
-                            aria-pressed={activeTab === tab.value}
-                            role="tab"
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+                <SegmentedControl
+                    options={TABS}
+                    value={activeTab}
+                    onChange={(v) => setActiveTab(v as MacOsTab)}
+                    aria-label="macOS Setup sections"
+                />
 
-                {activeTab === 'managers' && <BrewInstallSteps />}
-                {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
-                {activeTab === 'scripts' && (
-                    <div>
-                        <div className="mac-os-script-header">
-                            <strong>Apple Silicon VRAM Manager</strong>
-                            <span className="pill">platform-specific</span>
+                <div style={{ marginTop: 20 }}>
+                    {activeTab === 'managers' && <BrewInstallSteps />}
+                    {activeTab === 'env-vars' && <EnvironmentVariablesSection />}
+                    {activeTab === 'scripts' && (
+                        <div>
+                            <div className="mac-os-script-header">
+                                <strong>Apple Silicon VRAM Manager</strong>
+                                <span className="pill">platform-specific</span>
+                            </div>
+                            <p>
+                                Raises the unified-memory (<code>iogpu.wired_limit_mb</code>) limit so larger local LLMs
+                                fit. Apple Silicon only. Pairs with the{' '}
+                                <a href="/llm-vram-calculator">LLM VRAM Calculator</a>.
+                            </p>
+                            <VramManager />
+                            <p style={{ marginTop: 16, fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>
+                                Future platform-specific scripts can be added here as additional cards.
+                            </p>
                         </div>
-                        <p>
-                            Raises the unified-memory (<code>iogpu.wired_limit_mb</code>) limit so larger local LLMs
-                            fit. Apple Silicon only. Pairs with the{' '}
-                            <a href="/llm-vram-calculator">LLM VRAM Calculator</a>.
-                        </p>
-                        <VramManager />
-                        <p style={{ marginTop: 16, fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>
-                            Future platform-specific scripts can be added here as additional cards.
-                        </p>
-                    </div>
-                )}
+                    )}
+                </div>
             </section>
         </PageShell>
     );
