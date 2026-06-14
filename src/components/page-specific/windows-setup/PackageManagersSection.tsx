@@ -24,15 +24,17 @@ const PackageManagersSection: React.FC = () => {
     const [selected, setSelected] = useState<Manager>('winget');
 
     return (
-        <section className="windows-setup__section">
-            <div className="windows-setup__step">
-                <h2>1. Choose a package manager</h2>
-                <div className="windows-setup__chips">
+        <section>
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">1</span> Choose a package manager
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                     {MANAGERS.map((m) => (
                         <button
                             key={m.value}
                             type="button"
-                            className={`chip${selected === m.value ? ' chip-selected' : ''}`}
+                            className={`chip${selected === m.value ? ' on' : ''}`}
                             onClick={() => setSelected(m.value)}
                             aria-pressed={selected === m.value}
                         >
@@ -43,7 +45,10 @@ const PackageManagersSection: React.FC = () => {
             </div>
 
             {selected === 'winget' && (
-                <div className="windows-setup__step">
+                <div className="card pad" style={{ marginBottom: 16 }}>
+                    <div className="steplabel">
+                        <span className="n">2</span> winget
+                    </div>
                     <p>
                         <strong>winget</strong> ships with Windows 11 and Windows 10 (1809+) via the App Installer
                         package. No installation required — just verify it works.
@@ -53,7 +58,7 @@ const PackageManagersSection: React.FC = () => {
                         content={WINDOWS_WINGET_VERIFY}
                         language="powershell"
                     />
-                    <p className="windows-setup__hint">
+                    <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-variant)', marginTop: 8 }}>
                         If winget is missing or outdated, update App Installer through the Microsoft Store, or run:
                     </p>
                     <CodeSnippet
@@ -70,7 +75,10 @@ const PackageManagersSection: React.FC = () => {
             )}
 
             {selected === 'chocolatey' && (
-                <div className="windows-setup__step">
+                <div className="card pad" style={{ marginBottom: 16 }}>
+                    <div className="steplabel">
+                        <span className="n">2</span> Chocolatey
+                    </div>
                     <p>
                         <strong>Chocolatey</strong> requires an <em>admin</em> PowerShell session and .NET Framework
                         4.8+. Opens a new shell after install.
@@ -94,7 +102,10 @@ const PackageManagersSection: React.FC = () => {
             )}
 
             {selected === 'scoop' && (
-                <div className="windows-setup__step">
+                <div className="card pad" style={{ marginBottom: 16 }}>
+                    <div className="steplabel">
+                        <span className="n">2</span> Scoop
+                    </div>
                     <p>
                         <strong>Scoop</strong> runs as a <em>regular user</em> — no admin required. Installs tools to{' '}
                         <code>~\scoop\</code> and manages its own PATH entries.

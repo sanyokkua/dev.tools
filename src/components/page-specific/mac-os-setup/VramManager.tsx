@@ -45,7 +45,7 @@ const VramManager: React.FC = () => {
                                 <button
                                     key={p}
                                     type="button"
-                                    className={`chip${preset === p ? ' chip-selected' : ''}`}
+                                    className={`chip${preset === p ? ' on' : ''}`}
                                     onClick={() => setPreset(p)}
                                     aria-pressed={preset === p}
                                 >
@@ -63,7 +63,7 @@ const VramManager: React.FC = () => {
                             <button
                                 key={m.value}
                                 type="button"
-                                className={`chip${mode === m.value ? ' chip-selected' : ''}`}
+                                className={`chip${mode === m.value ? ' on' : ''}`}
                                 onClick={() => setMode(m.value)}
                                 aria-pressed={mode === m.value}
                             >
