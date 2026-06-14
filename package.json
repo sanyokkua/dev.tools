@@ -16,7 +16,8 @@
         "check:lint": "eslint",
         "format": "prettier --write .",
         "verify": "npm run clean && npm run format && git add . && npm run check:format && npm run check:lint && npm run test && npm run clean",
-        "verify:ui": "node scripts/verify-ui.mjs"
+        "verify:smoke": "node scripts/smoke-tests.mjs",
+        "verify:ui": "node scripts/verify-ui.mjs && node scripts/smoke-tests.mjs"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.3",

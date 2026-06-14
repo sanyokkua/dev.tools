@@ -27,7 +27,8 @@ npx jest test/path/to/file.test.ts
 With `npm run dev` running in a separate terminal:
 
 ```bash
-npm run verify:ui              # Run all 17 routes × 3 widths × 2 themes
+npm run verify:ui              # Static pass (17 routes × 3 widths × 2 themes) + interaction smoke tests
+npm run verify:smoke           # Interaction smoke tests only (6 key flows)
 BASE_URL=http://localhost:3000 npm run verify:ui  # explicit base (same as default)
 ```
 
