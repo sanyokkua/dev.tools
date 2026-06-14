@@ -137,6 +137,7 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
         }
 
         if (isWindows) {
+            // $LASTEXITCODE is only set by external executables; winget/choco are CLIs so this is correct
             lines.push(
                 `try { Write-Host "▶ ${action} ${app.name}"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} failed: $_"; $fail++ }`,
             );

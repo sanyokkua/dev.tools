@@ -417,6 +417,11 @@ describe('buildCombinedScript', () => {
             expect(script).toContain('$fail++');
         });
 
+        it('includes error message in catch block', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+            expect(script).toContain('catch { Write-Host "✖ Firefox failed: $_"');
+        });
+
         it('throws on non-zero $LASTEXITCODE', () => {
             const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
             expect(script).toContain('if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }');
