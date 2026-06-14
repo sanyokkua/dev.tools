@@ -72,16 +72,20 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
     const snapHint = SNAP_HINT[distro];
 
     return (
-        <section className="linux-setup__section">
-            <div className="linux-setup__step">
-                <h2>1. Native package manager ({native.name})</h2>
+        <section>
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">1</span> Native package manager ({native.name})
+                </div>
                 <p>Verify and update all packages with the distro&apos;s built-in manager.</p>
                 <CodeSnippet headerText={`bash — verify ${native.name}`} content={native.verify} language="bash" />
-                <CodeSnippet headerText={`bash — update & upgrade`} content={native.update} language="bash" />
+                <CodeSnippet headerText="bash — update &amp; upgrade" content={native.update} language="bash" />
             </div>
 
-            <div className="linux-setup__step">
-                <h2>2. Flatpak</h2>
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">2</span> Flatpak
+                </div>
                 <p>
                     <strong>Flatpak</strong> provides sandboxed applications from Flathub and other remotes — works
                     across all major distros.
@@ -91,9 +95,11 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
                 <CodeSnippet headerText="bash — verify" content={LINUX_FLATPAK_VERIFY} language="bash" />
             </div>
 
-            <div className="linux-setup__step">
-                <h2>3. Snap</h2>
-                {snapHint && <p className="linux-setup__hint">{snapHint}</p>}
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">3</span> Snap
+                </div>
+                {snapHint && <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>{snapHint}</p>}
                 <p>
                     <strong>Snap</strong> packages from Canonical run in a confined environment and auto-update.
                 </p>
@@ -101,8 +107,10 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
                 <CodeSnippet headerText="bash — verify" content={LINUX_SNAP_VERIFY} language="bash" />
             </div>
 
-            <div className="linux-setup__step">
-                <h2>4. Homebrew on Linux</h2>
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">4</span> Homebrew on Linux
+                </div>
                 <p>
                     <strong>Homebrew</strong> runs on Linux and gives access to thousands of formulae not packaged for
                     your distro. Installs to <code>/home/linuxbrew/.linuxbrew/</code>.

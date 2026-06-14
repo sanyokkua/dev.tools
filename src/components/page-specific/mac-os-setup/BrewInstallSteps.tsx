@@ -10,14 +10,17 @@ import CodeSnippet from '@/elements/CodeSnippet';
 import React from 'react';
 
 interface StepProps {
+    n: number;
     title: string;
     description: React.ReactNode;
     snippets: { header: string; content: string }[];
 }
 
-const Step: React.FC<StepProps> = ({ title, description, snippets }) => (
-    <div>
-        <h2>{title}</h2>
+const Step: React.FC<StepProps> = ({ n, title, description, snippets }) => (
+    <div className="card pad" style={{ marginBottom: 16 }}>
+        <div className="steplabel">
+            <span className="n">{n}</span> {title}
+        </div>
         <p>{description}</p>
         {snippets.map((s) => (
             <CodeSnippet key={s.header} headerText={s.header} content={s.content} language="bash" />
@@ -28,7 +31,8 @@ const Step: React.FC<StepProps> = ({ title, description, snippets }) => (
 const BrewInstallSteps: React.FC = () => (
     <section>
         <Step
-            title="1. Install Homebrew"
+            n={1}
+            title="Install Homebrew"
             description={
                 <>
                     Visit the official docs:{' '}
@@ -41,7 +45,8 @@ const BrewInstallSteps: React.FC = () => (
         />
 
         <Step
-            title="2. Configure Shell Environment"
+            n={2}
+            title="Configure Shell Environment"
             description="Ensure you have a .zprofile, then add Homebrew to your PATH."
             snippets={[
                 { header: 'Create .zprofile', content: MAC_OS_CREATE_ZPROFILE },
@@ -50,13 +55,15 @@ const BrewInstallSteps: React.FC = () => (
         />
 
         <Step
-            title="3. Verify Installation"
+            n={3}
+            title="Verify Installation"
             description="Diagnose any issues with your Homebrew setup."
             snippets={[{ header: 'brew doctor', content: MAC_OS_BREW_VERIFY_INSTALLATION }]}
         />
 
         <Step
-            title="4. Update & Maintenance"
+            n={4}
+            title="Update & Maintenance"
             description="Keep everything up-to-date and clean."
             snippets={[{ header: 'Update & Upgrade', content: MAC_OS_BREW_UPDATE_UPGRADE }]}
         />
