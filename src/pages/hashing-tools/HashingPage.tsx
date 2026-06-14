@@ -166,14 +166,13 @@ const HashingPage: React.FC = () => {
             </div>
 
             {/* Results pane */}
-            <div className="hashing-results-pane">
-                <h3>Hash Results</h3>
-                <table className="hash-table">
+            <div className="card" style={{ overflow: 'hidden' }}>
+                <table className="t">
                     <thead>
                         <tr>
                             <th>Algorithm</th>
                             <th>Digest</th>
-                            <th style={{ width: 64 }}></th>
+                            <th style={{ width: 48 }}></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -182,7 +181,7 @@ const HashingPage: React.FC = () => {
                                 <td>
                                     <strong>{r.alg}</strong>
                                 </td>
-                                <td className="hash-digest">
+                                <td className="mono" style={{ fontSize: '11.5px', wordBreak: 'break-all' }}>
                                     {r.loading ? (
                                         <span className="spinner" aria-label="Computing…" />
                                     ) : (
@@ -191,10 +190,10 @@ const HashingPage: React.FC = () => {
                                 </td>
                                 <td>
                                     <Button
-                                        text="Copy"
-                                        variant="outlined"
+                                        text="⧉"
+                                        ariaLabel="Copy"
+                                        variant="text"
                                         size="small"
-                                        colorStyle="secondary-color"
                                         disabled={!r.digest || r.loading}
                                         onClick={() => handleCopy(r.digest)}
                                     />
