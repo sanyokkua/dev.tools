@@ -17,7 +17,7 @@ const QuantizationTable: React.FC<QuantizationTableProps> = ({ analysis, default
     const totalCount = analysis.context_table.length;
 
     return (
-        <details open={defaultOpen || undefined}>
+        <details className="detailsbox" open={defaultOpen || undefined}>
             <summary>
                 <span className="vram-quant-header">
                     <strong>{analysis.quantization}</strong>
@@ -30,32 +30,34 @@ const QuantizationTable: React.FC<QuantizationTableProps> = ({ analysis, default
                     </span>
                 </span>
             </summary>
-            <table className="transfer-table">
-                <thead>
-                    <tr>
-                        <th className="transfer-th-td">Context</th>
-                        <th className="transfer-th-td">KV Cache (GB)</th>
-                        <th className="transfer-th-td">VRAM w/ Cache</th>
-                        <th className="transfer-th-td">VRAM w/o Cache</th>
-                        <th className="transfer-th-td">Fits?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {analysis.context_table.map((entry) => (
-                        <tr key={entry.context_size}>
-                            <td className="transfer-th-td">{entry.context_label}</td>
-                            <td className="transfer-th-td">{entry.kv_cache_gb.toFixed(2)}</td>
-                            <td className="transfer-th-td">{entry.vram_with_cache_gb.toFixed(2)} GB</td>
-                            <td className="transfer-th-td">{entry.vram_without_cache_gb.toFixed(2)} GB</td>
-                            <td className="transfer-th-td">
-                                {entry.fits_in_vram === true && <span className="vram-fits-yes">Yes</span>}
-                                {entry.fits_in_vram === false && <span className="vram-fits-no">No</span>}
-                                {entry.fits_in_vram === null && <span className="vram-fits-unknown">—</span>}
-                            </td>
+            <div className="dc">
+                <table className="t">
+                    <thead>
+                        <tr>
+                            <th>Context</th>
+                            <th>KV Cache (GB)</th>
+                            <th>VRAM w/ Cache</th>
+                            <th>VRAM w/o Cache</th>
+                            <th>Fits?</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {analysis.context_table.map((entry) => (
+                            <tr key={entry.context_size}>
+                                <td>{entry.context_label}</td>
+                                <td>{entry.kv_cache_gb.toFixed(2)}</td>
+                                <td>{entry.vram_with_cache_gb.toFixed(2)} GB</td>
+                                <td>{entry.vram_without_cache_gb.toFixed(2)} GB</td>
+                                <td>
+                                    {entry.fits_in_vram === true && <span className="pill ok">Yes</span>}
+                                    {entry.fits_in_vram === false && <span className="pill no">No</span>}
+                                    {entry.fits_in_vram === null && <span>—</span>}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </details>
     );
 };

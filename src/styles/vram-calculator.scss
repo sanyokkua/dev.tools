@@ -1,54 +1,10 @@
 /* VRAM Calculator page-specific styles */
 
-.vram-form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-field label {
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.vram-form-field-inline {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-field-inline label {
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
 .vram-form-hint {
     font-size: 0.78rem;
     font-style: italic;
     color: var(--secondary-color);
     margin-top: 0.1rem;
-}
-
-.vram-form-details {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.vram-form-details summary {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--primary-color);
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--primary-color);
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-details summary:hover {
-    opacity: 0.8;
 }
 
 .vram-form-actions {
@@ -103,20 +59,6 @@
     color: var(--info-color-on);
 }
 
-.vram-fits-yes {
-    color: var(--success-color);
-    font-weight: 600;
-}
-
-.vram-fits-no {
-    color: var(--error-color);
-    font-weight: 600;
-}
-
-.vram-fits-unknown {
-    color: var(--secondary-color);
-}
-
 .vram-error-message {
     background-color: var(--error-container-color);
     color: var(--error-container-color-on);
@@ -146,11 +88,6 @@
     font-size: 0.9rem;
 }
 
-.vram-form-field select,
-.vram-form-field-inline select {
-    color: var(--surface-color-on);
-}
-
 .vram-preset-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -178,32 +115,6 @@
 
 .vram-page-layout > * {
     min-width: 0;
-}
-
-/* ── Step labels (A / B / C circles on form sections) ─────────────── */
-.vram-step-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 1px solid var(--divider-color, #e0e0e0);
-}
-
-.vram-step-circle {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: var(--primary-color-on, #fff);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    flex-shrink: 0;
 }
 
 /* ── KPI summary cards ─────────────────────────────────────────────── */

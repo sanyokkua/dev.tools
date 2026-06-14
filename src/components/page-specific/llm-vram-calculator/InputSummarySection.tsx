@@ -1,7 +1,6 @@
 'use client';
 import type { InputSummary, OSOverhead } from '@/common/llm-vram-calc';
 import React from 'react';
-import PaperContainer from '../../layouts/PaperContainer';
 
 /** @description Props for the InputSummarySection component. */
 interface InputSummarySectionProps {
@@ -28,7 +27,7 @@ function formatOsLabel(os: string | null): string {
 /** @description Displays the resolved input parameters and OS memory overhead from the calculation result. */
 const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary, osOverhead }) => {
     return (
-        <PaperContainer elevation={1}>
+        <div className="card pad">
             <h2>Input Summary</h2>
             <dl className="vram-kv-grid">
                 <dt>Parameters</dt>
@@ -85,7 +84,7 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                     </dl>
                 </>
             )}
-        </PaperContainer>
+        </div>
     );
 };
 
