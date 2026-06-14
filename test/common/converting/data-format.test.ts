@@ -165,4 +165,18 @@ describe('convertDataFormat — CSV input', () => {
         const results = convertDataFormat('name,age\nAlice,30\n', 'csv');
         expect(results.find((r) => r.format === 'csv')).toBeUndefined();
     });
+
+    it('CSV with trailing comma preserves final empty field', () => {
+        const results = convertDataFormat('name,value,extra\nAlice,30,\n', 'csv');
+        const json = results.find((r) => r.format === 'json');
+        expect(json?.error).toBeUndefined();
+        const parsed = JSON.parse(json!.value!);
+        expect(parsed[0].extra).toBe('');
+    });
+
+    it('JSON mixed-type array → CSV returns error', () => {
+        const results = convertDataFormat('[{"name":"Alice"},"oops"]', 'json');
+        const csv = results.find((r) => r.format === 'csv');
+        expect(csv?.error).toBeDefined();
+    });
 });

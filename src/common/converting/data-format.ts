@@ -20,7 +20,7 @@ const FORMAT_LABELS: Record<DataFormat, string> = {
 
 export const DATA_FORMATS: DataFormat[] = ['json', 'yaml', 'querystring', 'toml', 'csv'];
 
-// --- CSV helpers (RFC 4180) ---
+// --- CSV helpers (RFC 4180 subset; no multi-line fields) ---
 
 function csvQuoteField(value: string): string {
     if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
@@ -32,8 +32,7 @@ function csvQuoteField(value: string): string {
 function csvParseRow(line: string): string[] {
     const fields: string[] = [];
     let i = 0;
-    while (i <= line.length) {
-        if (i === line.length) break;
+    while (i < line.length) {
         if (line[i] === '"') {
             let field = '';
             i++;
@@ -64,6 +63,10 @@ function csvParseRow(line: string): string[] {
             }
         }
     }
+    // RFC 4180: trailing comma means final empty field
+    if (line.length > 0 && line[line.length - 1] === ',') {
+        fields.push('');
+    }
     return fields;
 }
 
@@ -86,9 +89,10 @@ function csvParse(input: string): unknown {
 function csvStringify(obj: unknown): string {
     if (Array.isArray(obj)) {
         if (obj.length === 0) return '';
-        const first = obj[0];
-        if (typeof first !== 'object' || first === null || Array.isArray(first)) {
-            throw new Error('CSV only supports arrays of flat objects');
+        for (const item of obj) {
+            if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+                throw new Error('CSV only supports arrays of flat objects');
+            }
         }
         const allKeys = Array.from(new Set(obj.flatMap((row) => Object.keys(row as Record<string, unknown>))));
         for (const row of obj) {
