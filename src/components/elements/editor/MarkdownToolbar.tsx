@@ -1,4 +1,5 @@
 'use client';
+import Button from '@/controls/Button';
 import Switch from '@/controls/Switch';
 import React from 'react';
 
@@ -40,26 +41,16 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = (props) => {
     return (
         <div className="markdown-tools__toolbar">
             <div className="markdown-tools__toolbar-group">
-                <button type="button" className="button-base button-outlined button-small" onClick={onFileNewClick}>
-                    New
-                </button>
-                <button type="button" className="button-base button-outlined button-small" onClick={onFileOpenClick}>
-                    Open
-                </button>
-                <button type="button" className="button-base button-outlined button-small" onClick={onFileSaveClick}>
-                    Save
-                </button>
+                <Button text="New" variant="outlined" size="small" onClick={onFileNewClick} />
+                <Button text="Open" variant="outlined" size="small" onClick={onFileOpenClick} />
+                <Button text="Save" variant="outlined" size="small" onClick={onFileSaveClick} />
             </div>
 
             <div className="markdown-tools__toolbar-sep" aria-hidden="true" />
 
             <div className="markdown-tools__toolbar-group">
-                <button type="button" className="button-base button-ghost button-small" onClick={onCopyClick}>
-                    Copy
-                </button>
-                <button type="button" className="button-base button-ghost button-small" onClick={onPasteClick}>
-                    Paste
-                </button>
+                <Button text="Copy" variant="text" size="small" onClick={onCopyClick} />
+                <Button text="Paste" variant="text" size="small" onClick={onPasteClick} />
             </div>
 
             <div className="markdown-tools__toolbar-sep" aria-hidden="true" />
@@ -73,9 +64,7 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = (props) => {
 
             <div className="markdown-tools__toolbar-spacer" />
 
-            <button type="button" className="button-base button-filled button-small" onClick={onPrintClick}>
-                Print / Export PDF
-            </button>
+            <Button text="Print / Export PDF" variant="solid" size="small" onClick={onPrintClick} />
         </div>
     );
 };
