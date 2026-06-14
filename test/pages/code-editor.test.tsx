@@ -106,6 +106,6 @@ describe('Code Editor page', () => {
         renderPage();
         expect(screen.getByText('Ln 1, Col 1')).toBeInTheDocument();
         expect(screen.getByText('LF')).toBeInTheDocument();
-        expect(screen.getByText('UTF-8')).toBeInTheDocument();
+        expect(screen.getByText(/Spaces: 2/)).toBeInTheDocument();
     });
 });

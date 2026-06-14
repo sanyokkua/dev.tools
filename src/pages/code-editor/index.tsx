@@ -32,6 +32,7 @@ interface CodeEditorState {
     cursorColumn: number;
     cursorEol: string;
     cursorTabSize: number;
+    cursorInsertSpaces: boolean;
 
     fileFullName: string;
     fileSize: number;
@@ -58,6 +59,7 @@ function createDefaultState(): CodeEditorState {
         cursorColumn: 1,
         cursorEol: 'LF',
         cursorTabSize: 2,
+        cursorInsertSpaces: true,
         fileFullName: fileInfo.fullName,
         fileSize: fileInfo.size,
         fileContent: fileInfo.content,
@@ -109,12 +111,14 @@ const IndexPage = (): React.JSX.Element => {
             const model = editorProps.editor.getModel();
             const eol = model?.getEOL() === '\r\n' ? 'CRLF' : 'LF';
             const tabSize = model?.getOptions().tabSize ?? 2;
+            const insertSpaces = model?.getOptions().insertSpaces ?? true;
             setEditorState((prevState) => ({
                 ...prevState,
                 cursorLine: e.position.lineNumber,
                 cursorColumn: e.position.column,
                 cursorEol: eol,
                 cursorTabSize: tabSize,
+                cursorInsertSpaces: insertSpaces,
             }));
         });
     }, []);
@@ -275,6 +279,7 @@ const IndexPage = (): React.JSX.Element => {
                     languageDisplayName={languageDisplayName}
                     eol={editorState.cursorEol}
                     tabSize={editorState.cursorTabSize}
+                    insertSpaces={editorState.cursorInsertSpaces}
                     charCount={editorState.fileSize}
                 />
             </div>
