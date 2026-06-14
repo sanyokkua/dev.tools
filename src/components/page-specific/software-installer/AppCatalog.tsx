@@ -9,10 +9,10 @@ interface AppCatalogProps {
     onToggle: (app: CatalogApp) => void;
 }
 
-const PLATFORM_DOTS: CatalogPlatform[] = ['macos', 'windows', 'linux'];
+const ALL_PLATFORMS: CatalogPlatform[] = ['macos', 'windows', 'linux'];
 const PLATFORM_TITLE: Record<CatalogPlatform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' };
 
-const AppCatalog = ({ selectedAppIds, onToggle }: AppCatalogProps): React.JSX.Element => {
+const AppCatalog = ({ platform, selectedAppIds, onToggle }: AppCatalogProps): React.JSX.Element => {
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -72,7 +72,12 @@ const AppCatalog = ({ selectedAppIds, onToggle }: AppCatalogProps): React.JSX.El
                     </thead>
                     <tbody>
                         {filtered.map((app) => (
-                            <tr key={app.id} onClick={() => onToggle(app)} style={{ cursor: 'pointer' }}>
+                            <tr
+                                key={app.id}
+                                onClick={() => onToggle(app)}
+                                style={{ cursor: 'pointer' }}
+                                className={!app.platforms[platform] ? 'installer-catalog-row--unavailable' : ''}
+                            >
                                 <td>
                                     <input
                                         type="checkbox"
@@ -87,12 +92,14 @@ const AppCatalog = ({ selectedAppIds, onToggle }: AppCatalogProps): React.JSX.El
                                 <td style={{ color: 'var(--muted)', fontSize: 12 }}>{app.category}</td>
                                 <td>
                                     <div className="installer-avail">
-                                        {PLATFORM_DOTS.map((p) => (
+                                        {ALL_PLATFORMS.map((p) => (
                                             <span
                                                 key={p}
-                                                className={`installer-avail__dot${app.platforms[p] ? ' on' : ''}`}
+                                                className={`installer-avail__pill${app.platforms[p] ? ' ok' : ' no'}`}
                                                 title={`${PLATFORM_TITLE[p]}: ${app.platforms[p] ? 'available' : 'unavailable'}`}
-                                            />
+                                            >
+                                                {p === 'macos' ? 'mac' : p === 'windows' ? 'win' : 'linux'}
+                                            </span>
                                         ))}
                                     </div>
                                 </td>

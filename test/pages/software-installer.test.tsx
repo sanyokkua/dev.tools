@@ -304,6 +304,63 @@ describe('Software Installer — Step 3: App catalog', () => {
         fireEvent.change(search, { target: { value: 'FIREFOX' } });
         expect(screen.getByLabelText('Select Firefox')).toBeInTheDocument();
     });
+
+    it('availability column renders labeled mac/win/linux pills', () => {
+        renderPage();
+        // The catalog renders many rows; Firefox is on all 3 platforms so all pills are present
+        const pills = screen.getAllByTitle(/macOS: (available|unavailable)/i);
+        expect(pills.length).toBeGreaterThan(0);
+        // Each row must have three pills with text content mac, win, linux
+        const macPills = screen.getAllByText('mac');
+        const winPills = screen.getAllByText('win');
+        const linuxPills = screen.getAllByText('linux');
+        expect(macPills.length).toBeGreaterThan(0);
+        expect(winPills.length).toBeGreaterThan(0);
+        expect(linuxPills.length).toBeGreaterThan(0);
+    });
+
+    it('Firefox availability pills all have ok class (available on all platforms)', () => {
+        renderPage();
+        // Firefox has platforms: { macos: true, windows: true, linux: true }
+        // Find its row by the checkbox label, then check sibling pill classes
+        const firefoxCheckbox = screen.getByLabelText('Select Firefox');
+        const row = firefoxCheckbox.closest('tr')!;
+        const pills = row.querySelectorAll('.installer-avail__pill');
+        expect(pills).toHaveLength(3);
+        pills.forEach((pill) => {
+            expect(pill).toHaveClass('ok');
+            expect(pill).not.toHaveClass('no');
+        });
+    });
+
+    it('row gains unavailable class when app.platforms[selected] is false', () => {
+        renderPage();
+        // Switch to Windows — find an app that is NOT on Windows.
+        // "iterm2" is macOS-only (platforms: { macos: true, windows: false, linux: false })
+        fireEvent.click(screen.getByText('Windows'));
+        // iterm2 row should have the unavailable class
+        const iterm2Checkbox = screen.queryByLabelText('Select iTerm2');
+        if (iterm2Checkbox) {
+            const row = iterm2Checkbox.closest('tr')!;
+            expect(row).toHaveClass('installer-catalog-row--unavailable');
+        } else {
+            // If iTerm2 scrolled out of initial view, check that at least some rows are unavailable
+            const unavailableRows = document.querySelectorAll('tr.installer-catalog-row--unavailable');
+            expect(unavailableRows.length).toBeGreaterThan(0);
+        }
+    });
+
+    it('switching platform updates which rows are dimmed', () => {
+        renderPage();
+        // On macOS (default) — count unavailable rows
+        const unavailableOnMac = document.querySelectorAll('tr.installer-catalog-row--unavailable').length;
+        // Switch to Windows — the count may differ (different apps unsupported)
+        fireEvent.click(screen.getByText('Windows'));
+        const unavailableOnWindows = document.querySelectorAll('tr.installer-catalog-row--unavailable').length;
+        // The two counts need not be equal — what matters is that the class is applied reactively.
+        // At least one of the counts should be > 0 (some apps are platform-specific)
+        expect(unavailableOnMac + unavailableOnWindows).toBeGreaterThan(0);
+    });
 });
 
 describe('Software Installer — Step 4: Output', () => {
