@@ -1,9 +1,27 @@
 .markdown-tools {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+    /* Grid rows: page-heading | toolbar | info-panel | body(fills rest) */
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    flex: 1; /* still a flex-item in ContentContainerFlex */
     min-height: 0;
-    height: 100%;
+    /* no height:100% needed — grid 1fr handles it */
+
+    &__header {
+        padding: 16px 20px 4px;
+
+        h2 {
+            font-size: 20px;
+            font-weight: 650;
+            color: var(--on-surface);
+            margin: 0 0 4px;
+        }
+
+        p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+    }
 
     &__toolbar {
         display: flex;
@@ -33,17 +51,20 @@
     }
 
     &__body {
-        display: flex;
-        flex: 1;
+        /*
+         * auto-fit: when one pane is hidden (React conditional), the remaining
+         * pane expands to full width automatically — no JS needed.
+         */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
         min-height: 0;
     }
 
     &__pane {
-        flex: 1;
-        min-width: 0;
-        min-height: 0;
         display: flex;
         flex-direction: column;
+        min-height: 0;
+        overflow: hidden; /* prevent content from pushing pane dimensions */
 
         &--editor {
             border-right: 1px solid var(--outline-soft);
@@ -137,16 +158,16 @@
 @media (max-width: 900px) {
     .markdown-tools {
         &__body {
-            flex-direction: column;
+            grid-template-columns: 1fr; /* stack panes vertically */
         }
 
         &__pane {
-            min-height: 250px;
-        }
+            min-height: 250px; /* Monaco verify:ui gate (>200px) */
 
-        &__pane--editor {
-            border-right: none;
-            border-bottom: 1px solid var(--outline-soft);
+            &--editor {
+                border-right: none;
+                border-bottom: 1px solid var(--outline-soft);
+            }
         }
 
         &__toolbar {
