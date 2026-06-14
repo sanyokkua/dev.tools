@@ -139,17 +139,13 @@ const DateToolsPage: React.FC = () => {
                         )}
                         <div style={{ display: 'flex', gap: 'var(--s2)' }}>
                             <button
-                                className="button-base button-filled button-primary"
+                                className="btn primary"
                                 onClick={() => setTsInput(tsInput.trim())}
                                 aria-label="Convert timestamp"
                             >
                                 Convert
                             </button>
-                            <button
-                                className="button-base button-outlined"
-                                onClick={handleNow}
-                                aria-label="Use current timestamp"
-                            >
+                            <button className="btn ghost" onClick={handleNow} aria-label="Use current timestamp">
                                 Now
                             </button>
                         </div>
@@ -184,7 +180,7 @@ const DateToolsPage: React.FC = () => {
                                                 <td>
                                                     {tsResult.localFormatted}
                                                     <button
-                                                        className="button-base button-text date-copy-btn"
+                                                        className="btn ghost date-copy-btn"
                                                         onClick={() => handleCopy(tsResult.localFormatted)}
                                                         aria-label="Copy local time"
                                                         style={{ marginLeft: 'var(--s2)' }}
@@ -198,7 +194,7 @@ const DateToolsPage: React.FC = () => {
                                                 <td>
                                                     {tsResult.rfc2822}
                                                     <button
-                                                        className="button-base button-text date-copy-btn"
+                                                        className="btn ghost date-copy-btn"
                                                         onClick={() => handleCopy(tsResult.rfc2822)}
                                                         aria-label="Copy RFC 2822"
                                                         style={{ marginLeft: 'var(--s2)' }}
