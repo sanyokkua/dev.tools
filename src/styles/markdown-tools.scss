@@ -1,5 +1,5 @@
 .markdown-tools {
-    /* Grid rows: page-heading | toolbar | info-panel | body(fills rest) */
+    /* Grid rows: page-heading | toolbar | __info | body(fills rest) */
     display: grid;
     grid-template-rows: auto auto auto 1fr;
     flex: 1; /* still a flex-item in ContentContainerFlex */
