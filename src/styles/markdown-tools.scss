@@ -28,8 +28,6 @@
         align-items: center;
         gap: 6px;
         padding: 7px 10px;
-        background: var(--card-2);
-        border-bottom: 1px solid var(--outline-soft);
         flex-wrap: wrap;
     }
 
@@ -48,6 +46,25 @@
 
     &__toolbar-spacer {
         flex: 1;
+    }
+
+    &__info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 6px 10px;
+
+        &.card.pad {
+            padding: 8px 14px;
+        }
+    }
+
+    &__filename {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: var(--mono);
     }
 
     &__body {
@@ -70,8 +87,6 @@
     &__preview {
         flex: 1;
         overflow-y: auto;
-        padding: 16px 20px;
-        background: var(--card);
         color: var(--on-surface);
         line-height: 1.6;
 
