@@ -20,48 +20,10 @@
         white-space: nowrap;
     }
 
-    &__pane {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        border: 1px solid var(--outline-soft);
-        border-radius: var(--r-sm);
-        overflow: hidden;
-    }
-
-    &__pane-header {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        background: var(--card-2);
-        border-bottom: 1px solid var(--outline-soft);
-        flex-wrap: wrap;
-    }
-
     &__pane-label {
         font-size: 12px;
         font-weight: 600;
         margin-right: 4px;
         white-space: nowrap;
-    }
-
-    &__pane-spacer {
-        flex: 1;
-    }
-
-    &__pane-editor {
-        flex: 1;
-        min-height: 200px;
-    }
-}
-
-@media (max-width: 900px) {
-    .terminal-utils {
-        &__pane-header {
-            gap: 4px;
-            padding: 6px 8px;
-        }
     }
 }

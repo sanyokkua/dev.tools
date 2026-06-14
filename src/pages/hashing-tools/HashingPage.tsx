@@ -8,6 +8,7 @@ import Button from '@/controls/Button';
 import Switch from '@/controls/Switch';
 import { ToastType } from '@/controls/toaster/types';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
+import EditorToolbar from '../../components/elements/editor/EditorToolbar';
 import { pasteFromClipboardToEditor, setEditorContent } from '../../components/elements/editor/code-editor-utils';
 import { EditorProperties } from '../../components/elements/editor/types';
 
@@ -146,38 +147,20 @@ const HashingPage: React.FC = () => {
         <div className="hashing-layout">
             {/* Input pane */}
             <div
-                className={`hashing-input-pane${isDragOver ? ' hashing-input-pane--drag-over' : ''}`}
+                className={`editorpane${isDragOver ? ' hashing-input-pane--drag-over' : ''}`}
                 data-testid="hashing-input-pane"
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
-                <div className="hashing-toolbar">
-                    <Button
-                        text="Open File"
-                        variant="outlined"
-                        size="small"
-                        colorStyle="secondary-color"
-                        onClick={handleOpenFile}
-                    />
-                    <Button
-                        text="Paste"
-                        variant="outlined"
-                        size="small"
-                        colorStyle="secondary-color"
-                        onClick={handlePaste}
-                    />
-                    <Button
-                        text="Clear"
-                        variant="outlined"
-                        size="small"
-                        colorStyle="secondary-color"
-                        onClick={handleClear}
-                    />
+                <EditorToolbar>
+                    <Button text="Open File" variant="text" size="small" onClick={handleOpenFile} />
+                    <Button text="Paste" variant="text" size="small" onClick={handlePaste} />
+                    <Button text="Clear" variant="text" size="small" onClick={handleClear} />
                     <Switch checked={upperHex} onChange={setUpperHex} label="UPPERCASE" />
                     <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleFileSelect} />
-                </div>
-                <div className="editor-fill">
+                </EditorToolbar>
+                <div className="eb">
                     <CodeEditor minimap={false} onEditorMounted={handleMount} height="100%" />
                 </div>
             </div>

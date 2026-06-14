@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
+import Button from '@/controls/Button';
 import { ToastType } from '@/controls/toaster/types';
 import {
     copyToClipboardFromEditor,
@@ -14,6 +15,7 @@ import { EditorProperties } from '@/elements/editor/types';
 import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import { StringUtils } from 'coreutilsts';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
+import EditorToolbar from '../../components/elements/editor/EditorToolbar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
 
@@ -103,36 +105,16 @@ const IndexPage: React.FC = (): React.JSX.Element => {
                     </div>
                 </div>
 
-                <div className="terminal-utils__pane">
-                    <div className="terminal-utils__pane-header">
+                <div className="editorpane">
+                    <EditorToolbar>
                         <span className="terminal-utils__pane-label">Input (one command per line)</span>
-                        <button type="button" className="button-base button-ghost button-small" onClick={handlePaste}>
-                            Paste
-                        </button>
-                        <button
-                            type="button"
-                            className="button-base button-ghost button-small"
-                            onClick={handleClearInput}
-                        >
-                            Clear
-                        </button>
-                        <span className="terminal-utils__pane-spacer" />
-                        <button
-                            type="button"
-                            className="button-base button-filled button-small"
-                            onClick={handleJoinWithSingleAmp}
-                        >
-                            Join with &amp;
-                        </button>
-                        <button
-                            type="button"
-                            className="button-base button-solid button-small"
-                            onClick={handleJoinWithDoubleAmp}
-                        >
-                            Join with &amp;&amp;
-                        </button>
-                    </div>
-                    <div className="terminal-utils__pane-editor">
+                        <Button text="Paste" variant="text" size="small" onClick={handlePaste} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleClearInput} />
+                        <span style={{ flex: 1 }} />
+                        <Button text="Join with &" variant="filled" size="small" onClick={handleJoinWithSingleAmp} />
+                        <Button text="Join with &&" variant="solid" size="small" onClick={handleJoinWithDoubleAmp} />
+                    </EditorToolbar>
+                    <div className="eb">
                         <CodeEditor
                             minimap={false}
                             onEditorMounted={handleOriginalEditorMount}
@@ -142,22 +124,14 @@ const IndexPage: React.FC = (): React.JSX.Element => {
                     </div>
                 </div>
 
-                <div className="terminal-utils__pane">
-                    <div className="terminal-utils__pane-header">
+                <div className="editorpane">
+                    <EditorToolbar>
                         <span className="terminal-utils__pane-label">Result (single line)</span>
-                        <span className="terminal-utils__pane-spacer" />
-                        <button type="button" className="button-base button-ghost button-small" onClick={handleCopy}>
-                            Copy
-                        </button>
-                        <button
-                            type="button"
-                            className="button-base button-ghost button-small"
-                            onClick={handleClearResult}
-                        >
-                            Clear
-                        </button>
-                    </div>
-                    <div className="terminal-utils__pane-editor">
+                        <span style={{ flex: 1 }} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleClearResult} />
+                    </EditorToolbar>
+                    <div className="eb">
                         <CodeEditor
                             minimap={false}
                             onEditorMounted={handleResultEditorMount}

@@ -95,7 +95,7 @@
         }
 
         &:hover:not(.active) {
-            background: var(--surface-variant);
+            background: var(--card-2);
         }
     }
 }
@@ -110,7 +110,7 @@
         padding: 2px 8px;
         border-radius: 10px;
         font-size: 0.75rem;
-        background: var(--surface-variant);
+        background: var(--card-2);
         color: var(--on-surface-variant);
     }
 }

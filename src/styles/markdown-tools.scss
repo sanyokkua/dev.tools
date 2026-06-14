@@ -65,10 +65,6 @@
         flex-direction: column;
         min-height: 0;
         overflow: hidden; /* prevent content from pushing pane dimensions */
-
-        &--editor {
-            border-right: 1px solid var(--outline-soft);
-        }
     }
 
     &__preview {
@@ -163,11 +159,6 @@
 
         &__pane {
             min-height: 250px; /* Monaco verify:ui gate (>200px) */
-
-            &--editor {
-                border-right: none;
-                border-bottom: 1px solid var(--outline-soft);
-            }
         }
 
         &__toolbar {

@@ -173,7 +173,7 @@ const IndexPage: React.FC = () => {
 
                 <div className="markdown-tools__body">
                     {isEditorVisible && (
-                        <div className="markdown-tools__pane markdown-tools__pane--editor">
+                        <div className="markdown-tools__pane editorpane">
                             <CodeEditor
                                 minimap={isMinimapEnabled}
                                 wordWrap={isWordWrapEnabled}

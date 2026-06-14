@@ -6,21 +6,21 @@ import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/com
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
+import Button from '@/controls/Button';
 import Select, { SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import ContentContainerGrid from '../../layouts/ContentContainerGrid';
 import ContentContainerGridChild from '../../layouts/ContentContainerGridChild';
 import ScrollableContentContainer from '../../layouts/ScrollableContentContainer';
-import CodeEditor from '../editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
 } from '../editor/code-editor-utils';
+import CodeEditor from '../editor/CodeEditor';
+import EditorToolbar from '../editor/EditorToolbar';
 import { EditorProperties } from '../editor/types';
-import Menubar from '../navigation/menubar/Menubar';
-import { MenuBuilder } from '../navigation/menubar/utils';
 import ColumnMenu, { AvailableFunction } from './ColumnMenu';
 
 /**
@@ -237,7 +237,7 @@ const ToolView: React.FC<ToolViewProps> = ({
         setEditorContent(leftEditorRef, '');
     };
 
-    /** Menubar callbacks for right editor */
+    /** Right editor callbacks */
     const handleRightMount = useCallback((props: EditorProperties) => {
         rightEditorRef.current = props.editor;
     }, []);
@@ -263,20 +263,6 @@ const ToolView: React.FC<ToolViewProps> = ({
         setEditorContent(rightEditorRef, '');
     };
 
-    /** Build Menubars */
-    const leftMenu = MenuBuilder.newBuilder()
-        .addButton('open-file', 'Open', handleLeftOpen)
-        .addButton('paste', 'Paste', handleLeftPaste)
-        .addButton('copy', 'Copy', handleLeftCopy)
-        .addButton('clear', 'Clear', handleLeftClear)
-        .build();
-    const rightMenu = MenuBuilder.newBuilder()
-        .addButton('save', 'Save', handleRightSave)
-        .addButton('copy', 'Copy', handleRightCopy)
-        .addButton('clear', 'Clear', handleRightClear)
-        .addButton('use-input', 'Use as Input', handleUseAsInput)
-        .build();
-
     /** When the user picks a new function-group */
     const onSelect = (item: SelectItem): void => {
         setSearchQuery('');
@@ -301,25 +287,26 @@ const ToolView: React.FC<ToolViewProps> = ({
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                {showCharCount ? (
-                    <div className="menubar-with-count">
-                        <Menubar menuItems={leftMenu} />
-                        {charCount !== null && (
-                            <span className="char-count-badge">
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Open" variant="text" size="small" onClick={handleLeftOpen} />
+                        <Button text="Paste" variant="text" size="small" onClick={handleLeftPaste} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleLeftCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleLeftClear} />
+                        {showCharCount && charCount !== null && (
+                            <span style={{ marginLeft: 'auto' }} className="char-count-badge">
                                 {charCount.chars} chars · {charCount.words} words
                             </span>
                         )}
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleLeftMount}
+                            languageId={toolEditorsLangId}
+                            height="100%"
+                        />
                     </div>
-                ) : (
-                    <Menubar menuItems={leftMenu} />
-                )}
-                <div className="editor-fill">
-                    <CodeEditor
-                        minimap={false}
-                        onEditorMounted={handleLeftMount}
-                        languageId={toolEditorsLangId}
-                        height="100%"
-                    />
                 </div>
             </ContentContainerGridChild>
 
@@ -352,16 +339,23 @@ const ToolView: React.FC<ToolViewProps> = ({
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                <Menubar menuItems={rightMenu} />
-                <div className="editor-fill">
-                    <CodeEditor
-                        minimap={false}
-                        wordWrap={true}
-                        isReadOnly
-                        onEditorMounted={handleRightMount}
-                        languageId={toolEditorsLangId}
-                        height="100%"
-                    />
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Save" variant="text" size="small" onClick={handleRightSave} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleRightCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleRightClear} />
+                        <Button text="Use as Input" variant="text" size="small" icon="⇄" onClick={handleUseAsInput} />
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            wordWrap={true}
+                            isReadOnly
+                            onEditorMounted={handleRightMount}
+                            languageId={toolEditorsLangId}
+                            height="100%"
+                        />
+                    </div>
                 </div>
             </ContentContainerGridChild>
         </ContentContainerGrid>

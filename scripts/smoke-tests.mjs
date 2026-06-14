@@ -65,7 +65,7 @@ await runSmoke('terminal', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__terminal__before.png` });
 
     // Focus the input pane editor and type commands (click .view-lines — .inputarea has z-index:-10)
-    await page.locator('.terminal-utils__pane-editor').first().locator('.monaco-editor .view-lines').click();
+    await page.locator('.terminal-utils .eb').first().locator('.monaco-editor .view-lines').click();
     await page.keyboard.type('echo hello\necho world');
 
     // Click the "Join with &&" button
@@ -73,7 +73,7 @@ await runSmoke('terminal', async (page) => {
     await page.waitForTimeout(500);
 
     // Result editor must have content
-    const resultText = await page.locator('.terminal-utils__pane-editor').last().locator('.view-lines').textContent();
+    const resultText = await page.locator('.terminal-utils .eb').last().locator('.view-lines').textContent();
     if (!resultText?.trim()) throw new Error('Result editor is empty after Join with &&');
 
     await page.screenshot({ path: `${OUT}/smoke__terminal__after.png` });
@@ -86,7 +86,7 @@ await runSmoke('hashing', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__hashing__before.png` });
 
     // Type text into Monaco editor — hash computation debounces 300ms (.view-lines: .inputarea has z-index:-10)
-    await page.locator('.editor-fill .monaco-editor .view-lines').first().click();
+    await page.locator('.editorpane .eb .monaco-editor .view-lines').first().click();
     await page.keyboard.type('hello world');
 
     // Wait until at least one digest cell has non-empty text and no spinner
@@ -151,7 +151,7 @@ await runSmoke('markdown', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__markdown__before.png` });
 
     // Type markdown into the editor pane (.view-lines: .inputarea has z-index:-10)
-    await page.locator('.markdown-tools__pane--editor .monaco-editor .view-lines').click();
+    await page.locator('.markdown-tools__pane.editorpane .monaco-editor .view-lines').click();
     await page.keyboard.type('# Hello\n\nWorld');
 
     // Wait for preview to reflect the typed content

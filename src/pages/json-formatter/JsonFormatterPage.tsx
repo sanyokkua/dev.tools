@@ -11,11 +11,13 @@ import {
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
+import Button from '@/controls/Button';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import { editor, type IDisposable } from 'monaco-editor';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
+import EditorToolbar from '../../components/elements/editor/EditorToolbar';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -23,8 +25,6 @@ import {
     setEditorContent,
 } from '../../components/elements/editor/code-editor-utils';
 import { EditorProperties } from '../../components/elements/editor/types';
-import Menubar from '../../components/elements/navigation/menubar/Menubar';
-import { MenuBuilder } from '../../components/elements/navigation/menubar/utils';
 import ContentContainerGrid from '../../components/layouts/ContentContainerGrid';
 import ContentContainerGridChild from '../../components/layouts/ContentContainerGridChild';
 import ScrollableContentContainer from '../../components/layouts/ScrollableContentContainer';
@@ -207,32 +207,14 @@ const JsonFormatterPage: React.FC = () => {
         setEditorContent(rightEditorRef, '');
     }, []);
 
-    // Fix 3: Memoize menu arrays
-    const leftMenu = useMemo(
-        () =>
-            MenuBuilder.newBuilder()
-                .addButton('open-file', 'Open', handleLeftOpen)
-                .addButton('paste', 'Paste', handleLeftPaste)
-                .addButton('clear', 'Clear', handleLeftClear)
-                .build(),
-        [handleLeftOpen, handleLeftPaste, handleLeftClear],
-    );
-
-    const rightMenu = useMemo(
-        () =>
-            MenuBuilder.newBuilder()
-                .addButton('save', 'Save', handleRightSave)
-                .addButton('copy', 'Copy', handleRightCopy)
-                .addButton('clear', 'Clear', handleRightClear)
-                .addButton('use-input', 'Use as Input', handleUseAsInput)
-                .build(),
-        [handleRightSave, handleRightCopy, handleRightClear, handleUseAsInput],
-    );
-
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                <Menubar menuItems={leftMenu} />
+                <EditorToolbar>
+                    <Button text="Open" variant="text" size="small" onClick={handleLeftOpen} />
+                    <Button text="Paste" variant="text" size="small" onClick={handleLeftPaste} />
+                    <Button text="Clear" variant="text" size="small" onClick={handleLeftClear} />
+                </EditorToolbar>
                 {validState !== null && (
                     <span className={validState.valid ? 'badge badge-ok' : 'badge badge-err'}>
                         {validState.valid ? 'Valid JSON' : 'Invalid JSON'}
@@ -283,7 +265,12 @@ const JsonFormatterPage: React.FC = () => {
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                <Menubar menuItems={rightMenu} />
+                <EditorToolbar>
+                    <Button text="Save" variant="text" size="small" onClick={handleRightSave} />
+                    <Button text="Copy" variant="text" size="small" onClick={handleRightCopy} />
+                    <Button text="Clear" variant="text" size="small" onClick={handleRightClear} />
+                    <Button text="Use as Input" variant="text" size="small" icon="⇄" onClick={handleUseAsInput} />
+                </EditorToolbar>
                 <div className="editor-fill">
                     <CodeEditor
                         minimap={false}
