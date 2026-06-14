@@ -44,6 +44,8 @@ Use `mcp__plugin_chrome-devtools-mcp_chrome-devtools__*` tools for step-by-step 
 navigate pages, read console, take screenshots, inspect computed styles. Pairs with `verify:ui`
 for root-cause debugging.
 
+ALWAYS USE CHROME LIVE APP TESTING AFTER EACH ACCOMPLISHED TASK
+
 ## Architecture
 
 **Stack**: Next.js 16 (Pages Router), React 19, TypeScript, SCSS, Monaco Editor. Deployed as static export to GitHub Pages.

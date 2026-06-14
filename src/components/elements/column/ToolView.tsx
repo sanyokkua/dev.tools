@@ -7,7 +7,7 @@ import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
-import Select, { SelectItem } from '@/controls/Select';
+import { SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import ContentContainerGrid from '../../layouts/ContentContainerGrid';
 import ContentContainerGridChild from '../../layouts/ContentContainerGridChild';
@@ -311,31 +311,43 @@ const ToolView: React.FC<ToolViewProps> = ({
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                {toolChoseHeader && <h3>{toolChoseHeader}</h3>}
-                {isMoreThanOneGroup && (
-                    <>
-                        <Select
-                            items={toolState.selectItems}
-                            selectedItem={toolState.selectedItem}
-                            onSelect={onSelect}
-                            colorStyle="tertiary-color"
+                <div
+                    className="card pad"
+                    style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+                >
+                    {toolChoseHeader && <h3>{toolChoseHeader}</h3>}
+                    {isMoreThanOneGroup && (
+                        <select
+                            className="input"
+                            value={toolState.selectedItem.itemId}
+                            style={{ marginBottom: 'var(--s2)' }}
+                            onChange={(e) => {
+                                const item = toolState.selectItems.find((i) => i.itemId === e.target.value);
+                                if (item) onSelect(item);
+                            }}
+                        >
+                            {toolState.selectItems.map((item) => (
+                                <option key={item.itemId} value={item.itemId}>
+                                    {item.displayText}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                    {searchable && (
+                        <input
+                            type="text"
+                            placeholder="Filter actions…"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="input"
+                            style={{ marginBottom: 'var(--s2)' }}
+                            aria-label="Filter functions"
                         />
-                        <br />
-                    </>
-                )}
-                {searchable && (
-                    <input
-                        type="text"
-                        placeholder="Filter actions…"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="func-search-input"
-                        aria-label="Filter functions"
-                    />
-                )}
-                <ScrollableContentContainer>
-                    <ColumnMenu availableFunctions={filteredFunctions} />
-                </ScrollableContentContainer>
+                    )}
+                    <ScrollableContentContainer>
+                        <ColumnMenu availableFunctions={filteredFunctions} />
+                    </ScrollableContentContainer>
+                </div>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>

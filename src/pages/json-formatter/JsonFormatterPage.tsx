@@ -210,76 +210,85 @@ const JsonFormatterPage: React.FC = () => {
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                <EditorToolbar>
-                    <Button text="Open" variant="text" size="small" onClick={handleLeftOpen} />
-                    <Button text="Paste" variant="text" size="small" onClick={handleLeftPaste} />
-                    <Button text="Clear" variant="text" size="small" onClick={handleLeftClear} />
-                </EditorToolbar>
-                {validState !== null && (
-                    <span className={validState.valid ? 'badge badge-ok' : 'badge badge-err'}>
-                        {validState.valid ? 'Valid JSON' : 'Invalid JSON'}
-                    </span>
-                )}
-                {validState && !validState.valid && (
-                    <p className="json-error-msg">
-                        {validState.error}
-                        {validState.line != null && ` (line ${validState.line}, col ${validState.column})`}
-                    </p>
-                )}
-                <div className="editor-fill">
-                    <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId="json" height="100%" />
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Open" variant="text" size="small" onClick={handleLeftOpen} />
+                        <Button text="Paste" variant="text" size="small" onClick={handleLeftPaste} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleLeftClear} />
+                        {validState !== null && (
+                            <span className={`pill ${validState.valid ? 'ok' : 'no'}`} style={{ marginLeft: 'auto' }}>
+                                {validState.valid ? 'Valid JSON' : 'Invalid JSON'}
+                            </span>
+                        )}
+                    </EditorToolbar>
+                    {validState && !validState.valid && (
+                        <p className="json-error-msg">
+                            {validState.error}
+                            {validState.line != null && ` (line ${validState.line}, col ${validState.column})`}
+                        </p>
+                    )}
+                    <div className="eb">
+                        <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId="json" height="100%" />
+                    </div>
                 </div>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                <h3>JSON Formatter</h3>
-                <div className="json-formatter-field">
-                    <label>Indent</label>
-                    <SegmentedControl
-                        options={INDENT_OPTIONS}
-                        value={indent}
-                        onChange={(v) => setIndent(v as IndentValue)}
-                        aria-label="Indent"
-                    />
+                <div
+                    className="card pad"
+                    style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+                >
+                    <h3>JSON Formatter</h3>
+                    <div className="json-formatter-field">
+                        <label>Indent</label>
+                        <SegmentedControl
+                            options={INDENT_OPTIONS}
+                            value={indent}
+                            onChange={(v) => setIndent(v as IndentValue)}
+                            aria-label="Indent"
+                        />
+                    </div>
+                    <ScrollableContentContainer>
+                        <button className="func-btn" onClick={handleBeautify}>
+                            Beautify
+                        </button>
+                        <button className="func-btn" onClick={handleMinify}>
+                            Minify
+                        </button>
+                        <button className="func-btn" onClick={handleSortKeys}>
+                            Sort Keys (A→Z)
+                        </button>
+                        <button className="func-btn" onClick={handleValidate}>
+                            Validate
+                        </button>
+                        <button className="func-btn" onClick={handleEscape}>
+                            Escape String
+                        </button>
+                        <button className="func-btn" onClick={handleUnescape}>
+                            Unescape String
+                        </button>
+                    </ScrollableContentContainer>
                 </div>
-                <ScrollableContentContainer>
-                    <button className="func-btn" onClick={handleBeautify}>
-                        Beautify
-                    </button>
-                    <button className="func-btn" onClick={handleMinify}>
-                        Minify
-                    </button>
-                    <button className="func-btn" onClick={handleSortKeys}>
-                        Sort Keys (A→Z)
-                    </button>
-                    <button className="func-btn" onClick={handleValidate}>
-                        Validate
-                    </button>
-                    <button className="func-btn" onClick={handleEscape}>
-                        Escape String
-                    </button>
-                    <button className="func-btn" onClick={handleUnescape}>
-                        Unescape String
-                    </button>
-                </ScrollableContentContainer>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                <EditorToolbar>
-                    <Button text="Save" variant="text" size="small" onClick={handleRightSave} />
-                    <Button text="Copy" variant="text" size="small" onClick={handleRightCopy} />
-                    <Button text="Clear" variant="text" size="small" onClick={handleRightClear} />
-                    <Button text="Use as Input" variant="text" size="small" icon="⇄" onClick={handleUseAsInput} />
-                </EditorToolbar>
-                <div className="editor-fill">
-                    <CodeEditor
-                        minimap={false}
-                        wordWrap={true}
-                        isReadOnly
-                        onEditorMounted={handleRightMount}
-                        languageId="json"
-                        height="100%"
-                    />
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Save" variant="text" size="small" onClick={handleRightSave} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleRightCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleRightClear} />
+                        <Button text="Use as Input" variant="text" size="small" icon="⇄" onClick={handleUseAsInput} />
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            wordWrap={true}
+                            isReadOnly
+                            onEditorMounted={handleRightMount}
+                            languageId="json"
+                            height="100%"
+                        />
+                    </div>
                 </div>
             </ContentContainerGridChild>
         </ContentContainerGrid>
