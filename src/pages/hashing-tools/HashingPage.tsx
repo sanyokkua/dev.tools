@@ -101,6 +101,29 @@ const HashingPage: React.FC = () => {
         setRows(ALGORITHMS.map((r) => ({ ...r, digest: null, loading: false })));
     }, []);
 
+    const [isDragOver, setIsDragOver] = useState(false);
+
+    const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+        e.preventDefault();
+        setIsDragOver(true);
+    }, []);
+
+    const handleDragLeave = useCallback((): void => {
+        setIsDragOver(false);
+    }, []);
+
+    const handleDrop = useCallback(
+        async (e: React.DragEvent<HTMLDivElement>): Promise<void> => {
+            e.preventDefault();
+            setIsDragOver(false);
+            const file = e.dataTransfer.files[0];
+            if (!file) return;
+            const buffer = await file.arrayBuffer();
+            void computeHashes(buffer);
+        },
+        [computeHashes],
+    );
+
     const display = useCallback(
         (digest: string | null): string => {
             if (!digest) return '';
@@ -122,7 +145,13 @@ const HashingPage: React.FC = () => {
     return (
         <div className="hashing-layout">
             {/* Input pane */}
-            <div className="hashing-input-pane">
+            <div
+                className={`hashing-input-pane${isDragOver ? ' hashing-input-pane--drag-over' : ''}`}
+                data-testid="hashing-input-pane"
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
                 <div className="hashing-toolbar">
                     <Button
                         text="Open File"

@@ -78,6 +78,12 @@
     }
 }
 
+.hashing-input-pane--drag-over {
+    outline: 2px dashed var(--primary);
+    outline-offset: -4px;
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
 @media (max-width: 900px) {
     .hashing-layout {
         grid-template-columns: 1fr;
