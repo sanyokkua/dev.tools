@@ -140,7 +140,7 @@ const DateToolsPage: React.FC = () => {
                         <div style={{ display: 'flex', gap: 'var(--s2)' }}>
                             <button
                                 className="button-base button-filled button-primary"
-                                onClick={() => setTsInput(tsInput)}
+                                onClick={() => setTsInput(tsInput.trim())}
                                 aria-label="Convert timestamp"
                             >
                                 Convert

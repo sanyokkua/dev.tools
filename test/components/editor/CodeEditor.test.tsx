@@ -31,6 +31,7 @@ function renderWithTheme(): ReturnType<typeof render> {
 
 describe('CodeEditor — theme sync', () => {
     beforeEach(() => {
+        localStorage.clear();
         document.documentElement.removeAttribute('data-theme');
         window.matchMedia = jest
             .fn()

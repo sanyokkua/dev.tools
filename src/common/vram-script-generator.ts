@@ -15,7 +15,7 @@ function applyBody(presetGb: VramPresetGb): string {
 
 TOTAL_RAM_MB=$(( $(sysctl -n hw.memsize) / 1024 / 1024 ))
 SAFE_LIMIT_MB=$(( TOTAL_RAM_MB - 4096 ))
-if (( ${limitMb} >= SAFE_LIMIT_MB )); then
+if (( ${limitMb} > SAFE_LIMIT_MB )); then
   echo "Error: ${presetGb} GB exceeds safe limit for this Mac (needs >= 4 GB for macOS)"
   exit 1
 fi
@@ -39,7 +39,7 @@ function dryRunBody(presetGb: VramPresetGb): string {
 
 TOTAL_RAM_MB=$(( $(sysctl -n hw.memsize) / 1024 / 1024 ))
 SAFE_LIMIT_MB=$(( TOTAL_RAM_MB - 4096 ))
-if (( ${limitMb} >= SAFE_LIMIT_MB )); then
+if (( ${limitMb} > SAFE_LIMIT_MB )); then
   echo "Warning: ${presetGb} GB may exceed safe limit on this Mac"
 fi
 

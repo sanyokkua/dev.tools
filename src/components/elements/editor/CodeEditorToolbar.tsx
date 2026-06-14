@@ -108,7 +108,7 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
                 <option value="">More languages…</option>
                 {moreLanguages.map((lang) => (
                     <option key={lang.id} value={lang.id}>
-                        {lang.aliases[0]}
+                        {lang.aliases[0] ?? lang.id}
                     </option>
                 ))}
             </select>

@@ -30,6 +30,7 @@ function hexToRgb(hex: string): Rgb | null {
                   .join('')
             : cleaned;
     if (full.length !== 6) return null;
+    if (!/^[0-9a-fA-F]{6}$/.test(full)) return null;
     const n = parseInt(full, 16);
     if (isNaN(n)) return null;
     return { r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff };

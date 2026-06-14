@@ -11,12 +11,14 @@ describe('ThemeProvider', () => {
     let originalMatchMedia: typeof window.matchMedia;
 
     beforeEach(() => {
+        localStorage.clear();
         originalMatchMedia = window.matchMedia;
     });
 
     afterEach(() => {
         window.matchMedia = originalMatchMedia;
         document.documentElement.removeAttribute('data-theme');
+        localStorage.clear();
     });
 
     it('initializes to dark when prefers-color-scheme is dark', async () => {

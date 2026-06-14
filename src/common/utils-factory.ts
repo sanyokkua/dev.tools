@@ -276,6 +276,15 @@ export function createDecodingUtils(): IStringUtil[] {
             textToDisplay: 'Decode Base64',
             toolFunction: (input) => EncodingUtils.decodeBase64(input),
         },
+        {
+            toolId: 'decode-base-64-url',
+            textToDisplay: 'Decode Base64Url',
+            toolFunction: (input: string): string => {
+                const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                return atob(padded);
+            },
+        },
         { toolId: 'decode-html-entities', textToDisplay: 'HTML Entities decode', toolFunction: decodeHtmlEntities },
     ];
 }

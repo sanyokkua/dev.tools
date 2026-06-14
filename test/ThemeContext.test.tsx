@@ -10,6 +10,7 @@ describe('ThemeContext', () => {
     let originalMatchMedia: typeof window.matchMedia;
 
     beforeEach(() => {
+        localStorage.clear();
         originalMatchMedia = window.matchMedia;
         window.matchMedia = jest
             .fn()
@@ -19,6 +20,7 @@ describe('ThemeContext', () => {
 
     afterEach(() => {
         window.matchMedia = originalMatchMedia;
+        localStorage.clear();
     });
 
     it('throws when used outside ThemeProvider', () => {
