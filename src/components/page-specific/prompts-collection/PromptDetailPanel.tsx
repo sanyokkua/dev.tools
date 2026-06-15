@@ -1,9 +1,9 @@
 import { copyToClipboard } from '@/common/clipboard-utils';
 import { Prompt, replaceParams } from '@/common/prompts/prompts';
 import { useToast } from '@/contexts/ToasterContext';
+import AutoTextarea from '@/controls/AutoTextarea';
 import Button from '@/controls/Button';
 import Chip from '@/controls/Chip';
-import TextEditor, { TextEditorSize } from '@/controls/TextEditor';
 import { ToastType } from '@/controls/toaster/types';
 import LabeledTextEditor from '@/elements/prompt/LabeledTextEditor';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
@@ -70,8 +70,8 @@ const PromptDetailPanel: FC<Props> = ({ prompt }) => {
 
             {/* Parameters editor */}
             <div className="prompt-params-card">
-                <div className="prompt-step-label">
-                    <span className="step-n">1</span>
+                <div className="steplabel">
+                    <span className="n">1</span>
                     Parameters
                 </div>
                 {parameterKeys.length > 0 ? (
@@ -109,37 +109,13 @@ const PromptDetailPanel: FC<Props> = ({ prompt }) => {
                 <div className="prompt-template-header">
                     <span className="template-title">Template</span>
                     <div className="template-actions">
-                        <Button
-                            text="Reset"
-                            variant="outlined"
-                            colorStyle="error-color"
-                            size="small"
-                            onClick={handleReset}
-                        />
-                        <Button
-                            text="Copy raw"
-                            variant="outlined"
-                            colorStyle="primary-color"
-                            size="small"
-                            onClick={handleCopyRaw}
-                        />
-                        <Button
-                            text="Copy edited"
-                            variant="solid"
-                            colorStyle="primary-color"
-                            size="small"
-                            onClick={handleCopyEdited}
-                        />
+                        <Button text="Reset" variant="text" size="small" onClick={handleReset} />
+                        <Button text="Copy raw" variant="outlined" size="small" onClick={handleCopyRaw} />
+                        <Button text="Copy edited" variant="filled" size="small" onClick={handleCopyEdited} />
                     </div>
                 </div>
                 <div className="prompt-template-body">
-                    <TextEditor
-                        content={template}
-                        onContentChange={setTemplate}
-                        rows={12}
-                        mono
-                        size={TextEditorSize.Medium}
-                    />
+                    <AutoTextarea value={template} onChange={setTemplate} />
                 </div>
             </div>
         </>

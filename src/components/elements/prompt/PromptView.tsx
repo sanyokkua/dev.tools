@@ -3,7 +3,6 @@ import { Prompt, replaceParams } from '@/common/prompts/prompts';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
 import Chip from '@/controls/Chip';
-import TextEditor, { TextEditorSize } from '@/controls/TextEditor';
 import { ToastType } from '@/controls/toaster/types';
 import LabeledTextEditor from '@/elements/prompt/LabeledTextEditor';
 import ContentContainerFlex from '@/layouts/ContentContainerFlex';
@@ -122,17 +121,11 @@ interface TemplateEditorProps {
 
 const TemplateEditor: FC<TemplateEditorProps> = ({ content, onEdit, onReset, onCopyRaw, onCopyEdited }) => (
     <Section title="Template">
-        <TextEditor content={content} onContentChange={onEdit} rows={15} mono size={TextEditorSize.Medium} />
+        <AutoTextarea value={content} onChange={onEdit} />
         <HorizontalContainer centerItems={true}>
-            <Button text="Reset" variant="outlined" colorStyle="error-color" size="default" onClick={onReset} />
-            <Button text="Copy Raw" variant="outlined" colorStyle="primary-color" size="default" onClick={onCopyRaw} />
-            <Button
-                text="Copy Edited"
-                variant="solid"
-                colorStyle="primary-color"
-                size="default"
-                onClick={onCopyEdited}
-            />
+            <Button text="Reset" variant="text" size="default" onClick={onReset} />
+            <Button text="Copy Raw" variant="outlined" size="default" onClick={onCopyRaw} />
+            <Button text="Copy Edited" variant="filled" size="default" onClick={onCopyEdited} />
         </HorizontalContainer>
     </Section>
 );
