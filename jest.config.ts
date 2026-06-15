@@ -10,6 +10,7 @@ const config: Config = {
     // setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
     setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
     testMatch: ['**/test/**/*.test.ts', '**/test/**/*.test.tsx'],
+    coverageThreshold: { global: { lines: 93, functions: 73, branches: 87, statements: 93 } },
     moduleNameMapper: {
         // uuid v13 is pure ESM; Jest can't parse it — use a CJS shim
         '^uuid$': '<rootDir>/test/__mocks__/uuid.js',
