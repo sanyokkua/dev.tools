@@ -18,6 +18,13 @@ export default class Document extends NextDocument {
                     <link rel="icon" type="image/png" sizes="192x192" href={`${bp}/android-chrome-192x192.png`} />
                     <link rel="icon" type="image/png" sizes="512x512" href={`${bp}/android-chrome-512x512.png`} />
                     <link rel="manifest" href={`${bp}/site.webmanifest`} />
+                    <meta name="application-name" content="dev.tools" />
+                    <meta name="apple-mobile-web-app-capable" content="yes" />
+                    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                    <meta name="apple-mobile-web-app-title" content="dev.tools" />
+                    <meta name="format-detection" content="telephone=no" />
+                    <meta name="mobile-web-app-capable" content="yes" />
+                    <meta name="theme-color" content="#1c1c1e" />
                 </Head>
 
                 <body>
