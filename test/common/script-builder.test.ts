@@ -178,6 +178,72 @@ const INSTALL_ONLY_PARAMETERIZED: CatalogApp = {
     },
 };
 
+// Fixture with explicit upgrade command (brew cask greedy semantics)
+const CHROME_BREW_CASK: CatalogApp = {
+    id: 'google-chrome',
+    name: 'Google Chrome',
+    category: 'browsers',
+    description: 'Web browser from Google',
+    platforms: { macos: true, windows: false, linux: false },
+    methods: {
+        macos: [
+            {
+                manager: 'brew',
+                id: 'google-chrome',
+                kind: 'cask',
+                install: 'brew install --cask google-chrome',
+                update: 'brew upgrade --cask google-chrome',
+                upgrade: 'brew upgrade --greedy --cask google-chrome',
+                remove: 'brew uninstall --cask google-chrome',
+            },
+        ],
+    },
+};
+
+// Fixture with explicit upgrade command (apt full-upgrade semantics)
+const CURL_APT: CatalogApp = {
+    id: 'curl',
+    name: 'curl',
+    category: 'tools',
+    description: 'Command-line HTTP tool',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'curl',
+                    install: 'sudo apt install -y curl',
+                    update: 'sudo apt update && sudo apt upgrade curl',
+                    upgrade: 'sudo apt update && sudo apt full-upgrade curl',
+                    remove: 'sudo apt remove curl',
+                },
+            ],
+        },
+    },
+};
+
+// Fixture for manager with no upgrade distinction (winget falls back to update)
+const WINGET_APP: CatalogApp = {
+    id: 'notepad-plus-plus',
+    name: 'Notepad++',
+    category: 'editors',
+    description: 'Text editor',
+    platforms: { macos: false, windows: true, linux: false },
+    methods: {
+        windows: [
+            {
+                manager: 'winget',
+                id: 'Notepad.Notepad++',
+                install: 'winget install --id Notepad.Notepad++ -e',
+                update: 'winget upgrade --id Notepad.Notepad++ -e',
+                remove: 'winget uninstall --id Notepad.Notepad++ -e',
+                // no upgrade key — should fall back to update
+            },
+        ],
+    },
+};
+
 // ─── Base configs ─────────────────────────────────────────────────────────────
 
 const macosConfig: BuilderConfig = {
@@ -361,6 +427,103 @@ describe('getCommand', () => {
 
         it('does not substitute when version is undefined', () => {
             expect(getCommand(correttoBrewMethod, 'install', undefined)).toBe('brew install --cask corretto@{version}');
+        });
+    });
+});
+
+// ─── upgrade action ───────────────────────────────────────────────────────────
+
+describe('upgrade action', () => {
+    describe('getCommand with upgrade semantics', () => {
+        it('returns explicit upgrade command for brew cask (greedy)', () => {
+            const method = CHROME_BREW_CASK.methods.macos![0];
+            expect(getCommand(method, 'upgrade')).toBe('brew upgrade --greedy --cask google-chrome');
+        });
+
+        it('returns explicit upgrade command for apt (full-upgrade)', () => {
+            const method = CURL_APT.methods.linux!.debian![0];
+            expect(getCommand(method, 'upgrade')).toBe('sudo apt update && sudo apt full-upgrade curl');
+        });
+
+        it('falls back to update when no explicit upgrade key (winget/no-distinction manager)', () => {
+            const method = WINGET_APP.methods.windows![0];
+            expect(getCommand(method, 'upgrade')).toBe('winget upgrade --id Notepad.Notepad++ -e');
+        });
+
+        it('returns null when both upgrade and update are absent', () => {
+            const installOnly = SNAP_ONLY_APP.methods.linux!.universal![0];
+            expect(getCommand(installOnly, 'upgrade')).toBeNull();
+        });
+    });
+
+    describe('buildCombinedScript with upgrade action', () => {
+        it('uses greedy brew upgrade command for cask app', () => {
+            const script = buildCombinedScript([CHROME_BREW_CASK], 'upgrade', macosConfig);
+            expect(script).toContain('brew upgrade --greedy --cask google-chrome');
+        });
+
+        it('uses apt full-upgrade command for apt app', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['apt'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([CURL_APT], 'upgrade', config);
+            expect(script).toContain('apt full-upgrade curl');
+        });
+
+        it('falls back to update command for winget (no upgrade distinction)', () => {
+            const config: BuilderConfig = {
+                platform: 'windows',
+                managers: ['winget'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([WINGET_APP], 'upgrade', config);
+            expect(script).toContain('winget upgrade --id Notepad.Notepad++ -e');
+        });
+
+        it('emits skip comment when both upgrade and update are absent', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'universal',
+                managers: ['snap'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([SNAP_ONLY_APP], 'upgrade', config);
+            expect(script).toContain('# SnapOnly: no upgrade command — skipped');
+        });
+    });
+
+    describe('buildPerAppScripts with upgrade action', () => {
+        it('includes greedy upgrade command for brew cask', () => {
+            const result = buildPerAppScripts([CHROME_BREW_CASK], 'upgrade', macosConfig);
+            expect(result).toHaveProperty('google-chrome');
+            expect(result['google-chrome']).toContain('brew upgrade --greedy --cask google-chrome');
+        });
+
+        it('includes filename header with upgrade action', () => {
+            const result = buildPerAppScripts([CHROME_BREW_CASK], 'upgrade', macosConfig);
+            expect(result['google-chrome']).toContain('# ===== upgrade-google-chrome.sh =====');
+        });
+
+        it('omits key when both upgrade and update are absent', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'universal',
+                managers: ['snap'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const result = buildPerAppScripts([SNAP_ONLY_APP], 'upgrade', config);
+            expect(result).not.toHaveProperty('snap-only');
         });
     });
 });

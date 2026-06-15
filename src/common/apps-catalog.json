@@ -34,7 +34,8 @@
                         "install": "brew install --cask firefox",
                         "update": "brew upgrade --cask firefox",
                         "remove": "brew uninstall --cask firefox",
-                        "verify": "open -a \"Firefox\" --args --version"
+                        "verify": "open -a \"Firefox\" --args --version",
+                        "upgrade": "brew upgrade --greedy --cask firefox"
                     }
                 ],
                 "windows": [
@@ -69,7 +70,8 @@
                             "install": "sudo install -d -m 0755 /etc/apt/keyrings && wget -qO- https://packages.mozilla.org/apt/repo-signing-key.gpg | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null && echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | sudo tee /etc/apt/sources.list.d/mozilla.list && sudo apt update && sudo apt install -y firefox",
                             "update": "sudo apt update && sudo apt upgrade firefox",
                             "remove": "sudo apt remove firefox",
-                            "verify": "firefox --version"
+                            "verify": "firefox --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade firefox"
                         }
                     ],
                     "fedora": [
@@ -120,7 +122,8 @@
                         "install": "brew install --cask google-chrome",
                         "update": "brew upgrade --cask google-chrome",
                         "remove": "brew uninstall --cask google-chrome",
-                        "verify": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version"
+                        "verify": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version",
+                        "upgrade": "brew upgrade --greedy --cask google-chrome"
                     }
                 ],
                 "windows": [
@@ -155,7 +158,8 @@
                             "install": "wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main\" | sudo tee /etc/apt/sources.list.d/google-chrome.list && sudo apt update && sudo apt install -y google-chrome-stable",
                             "update": "sudo apt update && sudo apt upgrade google-chrome-stable",
                             "remove": "sudo apt remove google-chrome-stable",
-                            "verify": "google-chrome --version"
+                            "verify": "google-chrome --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade google-chrome-stable"
                         }
                     ],
                     "fedora": [
@@ -188,7 +192,8 @@
                         "install": "brew install --cask microsoft-edge",
                         "update": "brew upgrade --cask microsoft-edge",
                         "remove": "brew uninstall --cask microsoft-edge",
-                        "verify": "/Applications/Microsoft\\ Edge.app/Contents/MacOS/Microsoft\\ Edge --version"
+                        "verify": "/Applications/Microsoft\\ Edge.app/Contents/MacOS/Microsoft\\ Edge --version",
+                        "upgrade": "brew upgrade --greedy --cask microsoft-edge"
                     }
                 ],
                 "windows": [
@@ -216,7 +221,8 @@
                             "install": "curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main\" | sudo tee /etc/apt/sources.list.d/microsoft-edge.list && sudo apt update && sudo apt install -y microsoft-edge-stable",
                             "update": "sudo apt update && sudo apt upgrade microsoft-edge-stable",
                             "remove": "sudo apt remove microsoft-edge-stable",
-                            "verify": "microsoft-edge --version"
+                            "verify": "microsoft-edge --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade microsoft-edge-stable"
                         }
                     ],
                     "fedora": [
@@ -249,7 +255,8 @@
                         "install": "brew install --cask opera",
                         "update": "brew upgrade --cask opera",
                         "remove": "brew uninstall --cask opera",
-                        "verify": "/Applications/Opera.app/Contents/MacOS/Opera --version"
+                        "verify": "/Applications/Opera.app/Contents/MacOS/Opera --version",
+                        "upgrade": "brew upgrade --greedy --cask opera"
                     }
                 ],
                 "windows": [
@@ -284,7 +291,8 @@
                             "install": "wget -qO- https://deb.opera.com/archive.key | sudo gpg --dearmor -o /etc/apt/keyrings/opera.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/opera.gpg] https://deb.opera.com/opera-stable/ stable non-free\" | sudo tee /etc/apt/sources.list.d/opera-stable.list && sudo apt update && sudo apt install -y opera-stable",
                             "update": "sudo apt update && sudo apt upgrade opera-stable",
                             "remove": "sudo apt remove opera-stable",
-                            "verify": "opera --version"
+                            "verify": "opera --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade opera-stable"
                         }
                     ],
                     "fedora": [
@@ -334,7 +342,8 @@
                         "kind": "cask",
                         "install": "brew install --cask tor-browser",
                         "update": "brew upgrade --cask tor-browser",
-                        "remove": "brew uninstall --cask tor-browser"
+                        "remove": "brew uninstall --cask tor-browser",
+                        "upgrade": "brew upgrade --greedy --cask tor-browser"
                     }
                 ],
                 "windows": [
@@ -414,7 +423,8 @@
                         "install": "brew install --cask brave-browser",
                         "update": "brew upgrade --cask brave-browser",
                         "remove": "brew uninstall --cask brave-browser",
-                        "verify": "/Applications/Brave\\ Browser.app/Contents/MacOS/Brave\\ Browser --version"
+                        "verify": "/Applications/Brave\\ Browser.app/Contents/MacOS/Brave\\ Browser --version",
+                        "upgrade": "brew upgrade --greedy --cask brave-browser"
                     }
                 ],
                 "windows": [
@@ -449,7 +459,8 @@
                             "install": "sudo curl -fsSLo /etc/apt/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main\" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list && sudo apt update && sudo apt install -y brave-browser",
                             "update": "sudo apt update && sudo apt upgrade brave-browser",
                             "remove": "sudo apt remove brave-browser",
-                            "verify": "brave-browser --version"
+                            "verify": "brave-browser --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade brave-browser"
                         }
                     ],
                     "fedora": [
@@ -492,7 +503,8 @@
                         "install": "brew install --cask vivaldi",
                         "update": "brew upgrade --cask vivaldi",
                         "remove": "brew uninstall --cask vivaldi",
-                        "verify": "/Applications/Vivaldi.app/Contents/MacOS/Vivaldi --version"
+                        "verify": "/Applications/Vivaldi.app/Contents/MacOS/Vivaldi --version",
+                        "upgrade": "brew upgrade --greedy --cask vivaldi"
                     }
                 ],
                 "windows": [
@@ -527,7 +539,8 @@
                             "install": "wget -qO- https://repo.vivaldi.com/archive/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/vivaldi.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/vivaldi.gpg] https://repo.vivaldi.com/archive/deb/ stable main\" | sudo tee /etc/apt/sources.list.d/vivaldi.list && sudo apt update && sudo apt install -y vivaldi-stable",
                             "update": "sudo apt update && sudo apt upgrade vivaldi-stable",
                             "remove": "sudo apt remove vivaldi-stable",
-                            "verify": "vivaldi --version"
+                            "verify": "vivaldi --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade vivaldi-stable"
                         }
                     ],
                     "fedora": [
@@ -578,7 +591,8 @@
                         "install": "brew install --cask waterfox",
                         "update": "brew upgrade --cask waterfox",
                         "remove": "brew uninstall --cask waterfox",
-                        "verify": "/Applications/Waterfox.app/Contents/MacOS/waterfox --version"
+                        "verify": "/Applications/Waterfox.app/Contents/MacOS/waterfox --version",
+                        "upgrade": "brew upgrade --greedy --cask waterfox"
                     }
                 ],
                 "windows": [
@@ -617,7 +631,8 @@
                         "kind": "cask",
                         "install": "brew install --cask microsoft-teams",
                         "update": "brew upgrade --cask microsoft-teams",
-                        "remove": "brew uninstall --cask microsoft-teams"
+                        "remove": "brew uninstall --cask microsoft-teams",
+                        "upgrade": "brew upgrade --greedy --cask microsoft-teams"
                     }
                 ],
                 "windows": [
@@ -656,7 +671,8 @@
                         "kind": "cask",
                         "install": "brew install --cask signal",
                         "update": "brew upgrade --cask signal",
-                        "remove": "brew uninstall --cask signal"
+                        "remove": "brew uninstall --cask signal",
+                        "upgrade": "brew upgrade --greedy --cask signal"
                     }
                 ],
                 "windows": [
@@ -691,7 +707,8 @@
                             "install": "wget -qO- https://updates.signal.org/desktop/apt/keys.asc | sudo gpg --dearmor -o /etc/apt/keyrings/signal-desktop-keyring.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main\" | sudo tee /etc/apt/sources.list.d/signal-xenial.list && sudo apt update && sudo apt install -y signal-desktop",
                             "update": "sudo apt update && sudo apt upgrade signal-desktop",
                             "remove": "sudo apt remove signal-desktop",
-                            "verify": "signal-desktop --version"
+                            "verify": "signal-desktop --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade signal-desktop"
                         }
                     ],
                     "universal": [
@@ -731,7 +748,8 @@
                         "kind": "cask",
                         "install": "brew install --cask telegram",
                         "update": "brew upgrade --cask telegram",
-                        "remove": "brew uninstall --cask telegram"
+                        "remove": "brew uninstall --cask telegram",
+                        "upgrade": "brew upgrade --greedy --cask telegram"
                     }
                 ],
                 "windows": [
@@ -813,7 +831,8 @@
                         "install": "brew install --cask thunderbird",
                         "update": "brew upgrade --cask thunderbird",
                         "remove": "brew uninstall --cask thunderbird",
-                        "verify": "/Applications/Thunderbird.app/Contents/MacOS/thunderbird --version"
+                        "verify": "/Applications/Thunderbird.app/Contents/MacOS/thunderbird --version",
+                        "upgrade": "brew upgrade --greedy --cask thunderbird"
                     }
                 ],
                 "windows": [
@@ -848,7 +867,8 @@
                             "install": "sudo apt install -y thunderbird",
                             "update": "sudo apt update && sudo apt upgrade thunderbird",
                             "remove": "sudo apt remove thunderbird",
-                            "verify": "thunderbird --version"
+                            "verify": "thunderbird --version",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade thunderbird"
                         }
                     ],
                     "fedora": [
@@ -898,7 +918,8 @@
                         "kind": "cask",
                         "install": "brew install --cask whatsapp",
                         "update": "brew upgrade --cask whatsapp",
-                        "remove": "brew uninstall --cask whatsapp"
+                        "remove": "brew uninstall --cask whatsapp",
+                        "upgrade": "brew upgrade --greedy --cask whatsapp"
                     }
                 ],
                 "windows": [
@@ -937,7 +958,8 @@
                         "kind": "cask",
                         "install": "brew install --cask slack",
                         "update": "brew upgrade --cask slack",
-                        "remove": "brew uninstall --cask slack"
+                        "remove": "brew uninstall --cask slack",
+                        "upgrade": "brew upgrade --greedy --cask slack"
                     }
                 ],
                 "windows": [
@@ -1020,7 +1042,8 @@
                         "kind": "cask",
                         "install": "brew install --cask google-drive",
                         "update": "brew upgrade --cask google-drive",
-                        "remove": "brew uninstall --cask google-drive"
+                        "remove": "brew uninstall --cask google-drive",
+                        "upgrade": "brew upgrade --greedy --cask google-drive"
                     }
                 ],
                 "windows": [
@@ -1059,7 +1082,8 @@
                         "kind": "cask",
                         "install": "brew install --cask dropbox",
                         "update": "brew upgrade --cask dropbox",
-                        "remove": "brew uninstall --cask dropbox"
+                        "remove": "brew uninstall --cask dropbox",
+                        "upgrade": "brew upgrade --greedy --cask dropbox"
                     }
                 ],
                 "windows": [
@@ -1087,7 +1111,8 @@
                             "install": "sudo apt install -y nautilus-dropbox",
                             "update": "sudo apt update && sudo apt upgrade nautilus-dropbox",
                             "remove": "sudo apt remove nautilus-dropbox",
-                            "verify": "dropbox status"
+                            "verify": "dropbox status",
+                            "upgrade": "sudo apt update && sudo apt full-upgrade nautilus-dropbox"
                         }
                     ],
                     "fedora": [
@@ -1120,7 +1145,8 @@
                         "install": "brew install --cask intellij-idea",
                         "update": "brew upgrade --cask intellij-idea",
                         "remove": "brew uninstall --cask intellij-idea",
-                        "verify": "open -a \"IntelliJ IDEA\""
+                        "verify": "open -a \"IntelliJ IDEA\"",
+                        "upgrade": "brew upgrade --greedy --cask intellij-idea"
                     }
                 ],
                 "windows": [
@@ -1178,7 +1204,8 @@
                         "install": "brew install --cask pycharm",
                         "update": "brew upgrade --cask pycharm",
                         "remove": "brew uninstall --cask pycharm",
-                        "verify": "open -a \"PyCharm\""
+                        "verify": "open -a \"PyCharm\"",
+                        "upgrade": "brew upgrade --greedy --cask pycharm"
                     }
                 ],
                 "windows": [
@@ -1236,7 +1263,8 @@
                         "install": "brew install --cask phpstorm",
                         "update": "brew upgrade --cask phpstorm",
                         "remove": "brew uninstall --cask phpstorm",
-                        "verify": "open -a \"PhpStorm\""
+                        "verify": "open -a \"PhpStorm\"",
+                        "upgrade": "brew upgrade --greedy --cask phpstorm"
                     }
                 ],
                 "windows": [
@@ -1294,7 +1322,8 @@
                         "install": "brew install --cask goland",
                         "update": "brew upgrade --cask goland",
                         "remove": "brew uninstall --cask goland",
-                        "verify": "open -a \"GoLand\""
+                        "verify": "open -a \"GoLand\"",
+                        "upgrade": "brew upgrade --greedy --cask goland"
                     }
                 ],
                 "windows": [
@@ -1352,7 +1381,8 @@
                         "install": "brew install --cask rider",
                         "update": "brew upgrade --cask rider",
                         "remove": "brew uninstall --cask rider",
-                        "verify": "open -a \"Rider\""
+                        "verify": "open -a \"Rider\"",
+                        "upgrade": "brew upgrade --greedy --cask rider"
                     }
                 ],
                 "windows": [
@@ -1410,7 +1440,8 @@
                         "install": "brew install --cask clion",
                         "update": "brew upgrade --cask clion",
                         "remove": "brew uninstall --cask clion",
-                        "verify": "open -a \"CLion\""
+                        "verify": "open -a \"CLion\"",
+                        "upgrade": "brew upgrade --greedy --cask clion"
                     }
                 ],
                 "windows": [
@@ -1468,7 +1499,8 @@
                         "install": "brew install --cask rustrover",
                         "update": "brew upgrade --cask rustrover",
                         "remove": "brew uninstall --cask rustrover",
-                        "verify": "open -a \"RustRover\""
+                        "verify": "open -a \"RustRover\"",
+                        "upgrade": "brew upgrade --greedy --cask rustrover"
                     }
                 ],
                 "windows": [
@@ -1519,7 +1551,8 @@
                         "install": "brew install --cask rubymine",
                         "update": "brew upgrade --cask rubymine",
                         "remove": "brew uninstall --cask rubymine",
-                        "verify": "open -a \"RubyMine\""
+                        "verify": "open -a \"RubyMine\"",
+                        "upgrade": "brew upgrade --greedy --cask rubymine"
                     }
                 ],
                 "windows": [
@@ -1577,7 +1610,8 @@
                         "install": "brew install --cask visual-studio-code",
                         "update": "brew upgrade --cask visual-studio-code",
                         "remove": "brew uninstall --cask visual-studio-code",
-                        "verify": "code --version"
+                        "verify": "code --version",
+                        "upgrade": "brew upgrade --greedy --cask visual-studio-code"
                     }
                 ],
                 "windows": [
@@ -1663,7 +1697,8 @@
                         "install": "brew install --cask visual-studio-code@insiders",
                         "update": "brew upgrade --cask visual-studio-code@insiders",
                         "remove": "brew uninstall --cask visual-studio-code@insiders",
-                        "verify": "code-insiders --version"
+                        "verify": "code-insiders --version",
+                        "upgrade": "brew upgrade --greedy --cask visual-studio-code@insiders"
                     }
                 ],
                 "windows": [
@@ -1741,7 +1776,8 @@
                         "install": "brew install --cask vscodium",
                         "update": "brew upgrade --cask vscodium",
                         "remove": "brew uninstall --cask vscodium",
-                        "verify": "codium --version"
+                        "verify": "codium --version",
+                        "upgrade": "brew upgrade --greedy --cask vscodium"
                     }
                 ],
                 "windows": [
@@ -1827,7 +1863,8 @@
                         "install": "brew install --cask vscodium@insiders",
                         "update": "brew upgrade --cask vscodium@insiders",
                         "remove": "brew uninstall --cask vscodium@insiders",
-                        "verify": "codium-insiders --version"
+                        "verify": "codium-insiders --version",
+                        "upgrade": "brew upgrade --greedy --cask vscodium@insiders"
                     }
                 ],
                 "windows": [],
@@ -1851,7 +1888,8 @@
                         "install": "brew install --cask cursor",
                         "update": "brew upgrade --cask cursor",
                         "remove": "brew uninstall --cask cursor",
-                        "verify": "open -a \"Cursor\""
+                        "verify": "open -a \"Cursor\"",
+                        "upgrade": "brew upgrade --greedy --cask cursor"
                     }
                 ],
                 "windows": [
@@ -1899,7 +1937,8 @@
                         "install": "brew install --cask zed",
                         "update": "brew upgrade --cask zed",
                         "remove": "brew uninstall --cask zed",
-                        "verify": "zed --version"
+                        "verify": "zed --version",
+                        "upgrade": "brew upgrade --greedy --cask zed"
                     }
                 ],
                 "windows": [
@@ -1947,7 +1986,8 @@
                         "install": "brew install --cask antigravity",
                         "update": "brew upgrade --cask antigravity",
                         "remove": "brew uninstall --cask antigravity",
-                        "verify": "open -a \"Antigravity\""
+                        "verify": "open -a \"Antigravity\"",
+                        "upgrade": "brew upgrade --greedy --cask antigravity"
                     }
                 ],
                 "windows": [
@@ -1996,7 +2036,8 @@
                         "install": "brew install --cask antigravity-ide",
                         "update": "brew upgrade --cask antigravity-ide",
                         "remove": "brew uninstall --cask antigravity-ide",
-                        "verify": "open -a \"Antigravity\""
+                        "verify": "open -a \"Antigravity\"",
+                        "upgrade": "brew upgrade --greedy --cask antigravity-ide"
                     }
                 ],
                 "windows": [{ "manager": "installer", "install": "download from https://antigravity.google/download" }],
@@ -2040,7 +2081,8 @@
                         "install": "brew install --cask devin-desktop@next",
                         "update": "brew upgrade --cask devin-desktop@next",
                         "remove": "brew uninstall --cask devin-desktop@next",
-                        "verify": "open -a \"Devin\""
+                        "verify": "open -a \"Devin\"",
+                        "upgrade": "brew upgrade --greedy --cask devin-desktop@next"
                     }
                 ],
                 "windows": [
@@ -2077,7 +2119,8 @@
                         "install": "brew install --cask kiro",
                         "update": "brew upgrade --cask kiro",
                         "remove": "brew uninstall --cask kiro",
-                        "verify": "open -a \"Kiro\""
+                        "verify": "open -a \"Kiro\"",
+                        "upgrade": "brew upgrade --greedy --cask kiro"
                     }
                 ],
                 "windows": [
@@ -2117,7 +2160,8 @@
                         "install": "brew install --cask sublime-text",
                         "update": "brew upgrade --cask sublime-text",
                         "remove": "brew uninstall --cask sublime-text",
-                        "verify": "subl --version"
+                        "verify": "subl --version",
+                        "upgrade": "brew upgrade --greedy --cask sublime-text"
                     }
                 ],
                 "windows": [
@@ -2268,7 +2312,8 @@
                         "install": "brew install --cask lapce",
                         "update": "brew upgrade --cask lapce",
                         "remove": "brew uninstall --cask lapce",
-                        "verify": "open -a \"Lapce\""
+                        "verify": "open -a \"Lapce\"",
+                        "upgrade": "brew upgrade --greedy --cask lapce"
                     }
                 ],
                 "windows": [
@@ -2318,7 +2363,8 @@
                         "install": "brew install --cask kate",
                         "update": "brew upgrade --cask kate",
                         "remove": "brew uninstall --cask kate",
-                        "verify": "open -a \"Kate\""
+                        "verify": "open -a \"Kate\"",
+                        "upgrade": "brew upgrade --greedy --cask kate"
                     }
                 ],
                 "windows": [
@@ -2381,7 +2427,8 @@
                         "install": "brew install --cask coteditor",
                         "update": "brew upgrade --cask coteditor",
                         "remove": "brew uninstall --cask coteditor",
-                        "verify": "open -a \"CotEditor\""
+                        "verify": "open -a \"CotEditor\"",
+                        "upgrade": "brew upgrade --greedy --cask coteditor"
                     },
                     { "manager": "mas", "id": "1024640650", "install": "mas install 1024640650" }
                 ],
@@ -2406,7 +2453,8 @@
                         "install": "brew install --cask codeedit",
                         "update": "brew upgrade --cask codeedit",
                         "remove": "brew uninstall --cask codeedit",
-                        "verify": "open -a \"CodeEdit\""
+                        "verify": "open -a \"CodeEdit\"",
+                        "upgrade": "brew upgrade --greedy --cask codeedit"
                     }
                 ],
                 "windows": [],
@@ -2430,7 +2478,8 @@
                         "install": "brew install --cask eclipse-ide",
                         "update": "brew upgrade --cask eclipse-ide",
                         "remove": "brew uninstall --cask eclipse-ide",
-                        "verify": "open -a \"Eclipse\""
+                        "verify": "open -a \"Eclipse\"",
+                        "upgrade": "brew upgrade --greedy --cask eclipse-ide"
                     }
                 ],
                 "windows": [
@@ -2495,7 +2544,8 @@
                         "install": "brew install --cask netbeans",
                         "update": "brew upgrade --cask netbeans",
                         "remove": "brew uninstall --cask netbeans",
-                        "verify": "open -a \"NetBeans\""
+                        "verify": "open -a \"NetBeans\"",
+                        "upgrade": "brew upgrade --greedy --cask netbeans"
                     }
                 ],
                 "windows": [
@@ -2560,7 +2610,8 @@
                         "install": "brew install --cask android-studio",
                         "update": "brew upgrade --cask android-studio",
                         "remove": "brew uninstall --cask android-studio",
-                        "verify": "open -a \"Android Studio\""
+                        "verify": "open -a \"Android Studio\"",
+                        "upgrade": "brew upgrade --greedy --cask android-studio"
                     }
                 ],
                 "windows": [
@@ -2659,7 +2710,8 @@
                         "install": "brew install --cask springtoolsforeclipse",
                         "update": "brew upgrade --cask springtoolsforeclipse",
                         "remove": "brew uninstall --cask springtoolsforeclipse",
-                        "verify": "open -a \"Spring Tool Suite 4\""
+                        "verify": "open -a \"Spring Tool Suite 4\"",
+                        "upgrade": "brew upgrade --greedy --cask springtoolsforeclipse"
                     }
                 ],
                 "windows": [],
@@ -2684,7 +2736,8 @@
                         "install": "brew install --cask claude-code",
                         "update": "brew upgrade --cask claude-code",
                         "remove": "brew uninstall --cask claude-code",
-                        "verify": "claude --version"
+                        "verify": "claude --version",
+                        "upgrade": "brew upgrade --greedy --cask claude-code"
                     },
                     {
                         "manager": "script",
@@ -2761,7 +2814,8 @@
                         "install": "brew install --cask claude",
                         "update": "brew upgrade --cask claude",
                         "remove": "brew uninstall --cask claude",
-                        "verify": "open -a \"Claude\""
+                        "verify": "open -a \"Claude\"",
+                        "upgrade": "brew upgrade --greedy --cask claude"
                     },
                     {
                         "manager": "installer",
@@ -2803,7 +2857,8 @@
                         "install": "brew install --cask codex",
                         "update": "brew upgrade --cask codex",
                         "remove": "brew uninstall --cask codex",
-                        "verify": "codex --version"
+                        "verify": "codex --version",
+                        "upgrade": "brew upgrade --greedy --cask codex"
                     },
                     {
                         "manager": "script",
@@ -2878,7 +2933,8 @@
                         "install": "brew install --cask codex-app",
                         "update": "brew upgrade --cask codex-app",
                         "remove": "brew uninstall --cask codex-app",
-                        "verify": "open -a \"Codex\""
+                        "verify": "open -a \"Codex\"",
+                        "upgrade": "brew upgrade --greedy --cask codex-app"
                     },
                     {
                         "manager": "installer",
@@ -3176,7 +3232,8 @@
                         "install": "brew install --cask opencode-desktop",
                         "update": "brew upgrade --cask opencode-desktop",
                         "remove": "brew uninstall --cask opencode-desktop",
-                        "verify": "open -a \"OpenCode\""
+                        "verify": "open -a \"OpenCode\"",
+                        "upgrade": "brew upgrade --greedy --cask opencode-desktop"
                     },
                     { "manager": "installer", "install": "Direct download (.dmg): https://opencode.ai/download" }
                 ],
@@ -3446,7 +3503,8 @@
                         "install": "brew install --cask cursor-cli",
                         "update": "brew upgrade --cask cursor-cli",
                         "remove": "brew uninstall --cask cursor-cli",
-                        "verify": "cursor-agent --version"
+                        "verify": "cursor-agent --version",
+                        "upgrade": "brew upgrade --greedy --cask cursor-cli"
                     },
                     {
                         "manager": "script",
@@ -3527,7 +3585,8 @@
                         "install": "brew install --cask iina",
                         "update": "brew upgrade --cask iina",
                         "remove": "brew uninstall --cask iina",
-                        "verify": "open -a IINA"
+                        "verify": "open -a IINA",
+                        "upgrade": "brew upgrade --greedy --cask iina"
                     },
                     { "manager": "installer", "install": "https://iina.io (direct .dmg)", "verify": "open -a IINA" }
                 ]
@@ -3550,7 +3609,8 @@
                         "install": "brew install --cask spotify",
                         "update": "brew upgrade --cask spotify",
                         "remove": "brew uninstall --cask spotify",
-                        "verify": "open -a Spotify"
+                        "verify": "open -a Spotify",
+                        "upgrade": "brew upgrade --greedy --cask spotify"
                     },
                     {
                         "manager": "installer",
@@ -3622,7 +3682,8 @@
                         "install": "brew install --cask vlc",
                         "update": "brew upgrade --cask vlc",
                         "remove": "brew uninstall --cask vlc",
-                        "verify": "open -a VLC"
+                        "verify": "open -a VLC",
+                        "upgrade": "brew upgrade --greedy --cask vlc"
                     },
                     {
                         "manager": "installer",
@@ -3709,7 +3770,8 @@
                         "install": "brew install --cask jellyfin",
                         "update": "brew upgrade --cask jellyfin",
                         "remove": "brew uninstall --cask jellyfin",
-                        "verify": "jellyfin --version"
+                        "verify": "jellyfin --version",
+                        "upgrade": "brew upgrade --greedy --cask jellyfin"
                     },
                     { "manager": "installer", "install": "https://jellyfin.org/downloads" }
                 ],
@@ -3857,7 +3919,8 @@
                         "install": "brew install --cask foobar2000",
                         "update": "brew upgrade --cask foobar2000",
                         "remove": "brew uninstall --cask foobar2000",
-                        "verify": "open -a foobar2000"
+                        "verify": "open -a foobar2000",
+                        "upgrade": "brew upgrade --greedy --cask foobar2000"
                     },
                     {
                         "manager": "installer",
@@ -4129,7 +4192,8 @@
                         "install": "brew install --cask libreoffice",
                         "update": "brew upgrade --cask libreoffice",
                         "remove": "brew uninstall --cask libreoffice",
-                        "verify": "open -a LibreOffice"
+                        "verify": "open -a LibreOffice",
+                        "upgrade": "brew upgrade --greedy --cask libreoffice"
                     },
                     {
                         "manager": "installer",
@@ -4216,7 +4280,8 @@
                         "install": "brew install --cask openoffice",
                         "update": "brew upgrade --cask openoffice",
                         "remove": "brew uninstall --cask openoffice",
-                        "verify": "open -a OpenOffice"
+                        "verify": "open -a OpenOffice",
+                        "upgrade": "brew upgrade --greedy --cask openoffice"
                     },
                     {
                         "manager": "installer",
@@ -4269,7 +4334,8 @@
                         "install": "brew install --cask softmaker-freeoffice",
                         "update": "brew upgrade --cask softmaker-freeoffice",
                         "remove": "brew uninstall --cask softmaker-freeoffice",
-                        "verify": "open -a FreeOffice"
+                        "verify": "open -a FreeOffice",
+                        "upgrade": "brew upgrade --greedy --cask softmaker-freeoffice"
                     },
                     {
                         "manager": "installer",
@@ -4333,7 +4399,8 @@
                         "install": "brew install --cask wpsoffice",
                         "update": "brew upgrade --cask wpsoffice",
                         "remove": "brew uninstall --cask wpsoffice",
-                        "verify": "open -a \"wpsoffice\""
+                        "verify": "open -a \"wpsoffice\"",
+                        "upgrade": "brew upgrade --greedy --cask wpsoffice"
                     },
                     {
                         "manager": "installer",
@@ -4451,7 +4518,8 @@
                         "install": "brew install --cask blender",
                         "update": "brew upgrade --cask blender",
                         "remove": "brew uninstall --cask blender",
-                        "verify": "open -a Blender"
+                        "verify": "open -a Blender",
+                        "upgrade": "brew upgrade --greedy --cask blender"
                     },
                     {
                         "manager": "installer",
@@ -4538,7 +4606,8 @@
                         "install": "brew install --cask upscayl",
                         "update": "brew upgrade --cask upscayl",
                         "remove": "brew uninstall --cask upscayl",
-                        "verify": "open -a Upscayl"
+                        "verify": "open -a Upscayl",
+                        "upgrade": "brew upgrade --greedy --cask upscayl"
                     },
                     {
                         "manager": "installer",
@@ -4608,7 +4677,8 @@
                         "install": "brew install --cask mochi-diffusion",
                         "update": "brew upgrade --cask mochi-diffusion",
                         "remove": "brew uninstall --cask mochi-diffusion",
-                        "verify": "open -a \"Mochi Diffusion\""
+                        "verify": "open -a \"Mochi Diffusion\"",
+                        "upgrade": "brew upgrade --greedy --cask mochi-diffusion"
                     },
                     {
                         "manager": "installer",
@@ -4635,7 +4705,8 @@
                         "install": "brew install --cask diffusionbee",
                         "update": "brew upgrade --cask diffusionbee",
                         "remove": "brew uninstall --cask diffusionbee",
-                        "verify": "open -a DiffusionBee"
+                        "verify": "open -a DiffusionBee",
+                        "upgrade": "brew upgrade --greedy --cask diffusionbee"
                     },
                     {
                         "manager": "installer",
@@ -4662,7 +4733,8 @@
                         "install": "brew install --cask draw-things",
                         "update": "brew upgrade --cask draw-things",
                         "remove": "brew uninstall --cask draw-things",
-                        "verify": "open -a \"Draw Things\""
+                        "verify": "open -a \"Draw Things\"",
+                        "upgrade": "brew upgrade --greedy --cask draw-things"
                     },
                     {
                         "manager": "mas",
@@ -4691,7 +4763,8 @@
                         "install": "brew install --cask pcsx2",
                         "update": "brew upgrade --cask pcsx2",
                         "remove": "brew uninstall --cask pcsx2",
-                        "verify": "open -a PCSX2"
+                        "verify": "open -a PCSX2",
+                        "upgrade": "brew upgrade --greedy --cask pcsx2"
                     },
                     {
                         "manager": "installer",
@@ -6229,7 +6302,8 @@
                         "install": "brew install --cask postman",
                         "update": "brew upgrade --cask postman",
                         "remove": "brew uninstall --cask postman",
-                        "verify": "open -a \"Postman\""
+                        "verify": "open -a \"Postman\"",
+                        "upgrade": "brew upgrade --greedy --cask postman"
                     }
                 ],
                 "windows": [
@@ -6292,7 +6366,8 @@
                         "install": "brew install --cask bruno",
                         "update": "brew upgrade --cask bruno",
                         "remove": "brew uninstall --cask bruno",
-                        "verify": "open -a \"Bruno\""
+                        "verify": "open -a \"Bruno\"",
+                        "upgrade": "brew upgrade --greedy --cask bruno"
                     }
                 ],
                 "windows": [
@@ -6370,7 +6445,8 @@
                         "install": "brew install --cask transmission",
                         "update": "brew upgrade --cask transmission",
                         "remove": "brew uninstall --cask transmission",
-                        "verify": "open -a \"Transmission\""
+                        "verify": "open -a \"Transmission\"",
+                        "upgrade": "brew upgrade --greedy --cask transmission"
                     }
                 ],
                 "windows": [
@@ -6593,7 +6669,8 @@
                         "install": "brew install --cask android-file-transfer",
                         "update": "brew upgrade --cask android-file-transfer",
                         "remove": "brew uninstall --cask android-file-transfer",
-                        "verify": "open -a \"Android File Transfer\""
+                        "verify": "open -a \"Android File Transfer\"",
+                        "upgrade": "brew upgrade --greedy --cask android-file-transfer"
                     }
                 ],
                 "windows": [],
@@ -6617,7 +6694,8 @@
                         "install": "brew install --cask openmtp",
                         "update": "brew upgrade --cask openmtp",
                         "remove": "brew uninstall --cask openmtp",
-                        "verify": "open -a OpenMTP"
+                        "verify": "open -a OpenMTP",
+                        "upgrade": "brew upgrade --greedy --cask openmtp"
                     }
                 ],
                 "windows": [],
@@ -6641,7 +6719,8 @@
                         "install": "brew install --cask appcleaner",
                         "update": "brew upgrade --cask appcleaner",
                         "remove": "brew uninstall --cask appcleaner",
-                        "verify": "open -a AppCleaner"
+                        "verify": "open -a AppCleaner",
+                        "upgrade": "brew upgrade --greedy --cask appcleaner"
                     }
                 ],
                 "windows": [],
@@ -6665,7 +6744,8 @@
                         "install": "brew install --cask keka",
                         "update": "brew upgrade --cask keka",
                         "remove": "brew uninstall --cask keka",
-                        "verify": "open -a Keka"
+                        "verify": "open -a Keka",
+                        "upgrade": "brew upgrade --greedy --cask keka"
                     }
                 ],
                 "windows": [],
@@ -6783,7 +6863,8 @@
                         "install": "brew install --cask pearcleaner",
                         "update": "brew upgrade --cask pearcleaner",
                         "remove": "brew uninstall --cask pearcleaner",
-                        "verify": "open -a Pearcleaner"
+                        "verify": "open -a Pearcleaner",
+                        "upgrade": "brew upgrade --greedy --cask pearcleaner"
                     }
                 ],
                 "windows": [],
@@ -6897,7 +6978,8 @@
                         "install": "brew install --cask iterm2",
                         "update": "brew upgrade --cask iterm2",
                         "remove": "brew uninstall --cask iterm2",
-                        "verify": "open -a iTerm"
+                        "verify": "open -a iTerm",
+                        "upgrade": "brew upgrade --greedy --cask iterm2"
                     }
                 ],
                 "windows": [],
@@ -6921,7 +7003,8 @@
                         "install": "brew install --cask qlmarkdown",
                         "update": "brew upgrade --cask qlmarkdown",
                         "remove": "brew uninstall --cask qlmarkdown",
-                        "verify": "open -a QLMarkdown"
+                        "verify": "open -a QLMarkdown",
+                        "upgrade": "brew upgrade --greedy --cask qlmarkdown"
                     }
                 ],
                 "windows": [],
@@ -6945,7 +7028,8 @@
                         "install": "brew install --cask onyx",
                         "update": "brew upgrade --cask onyx",
                         "remove": "brew uninstall --cask onyx",
-                        "verify": "open -a OnyX"
+                        "verify": "open -a OnyX",
+                        "upgrade": "brew upgrade --greedy --cask onyx"
                     }
                 ],
                 "windows": [],
@@ -6969,7 +7053,8 @@
                         "install": "brew install --cask maintenance",
                         "update": "brew upgrade --cask maintenance",
                         "remove": "brew uninstall --cask maintenance",
-                        "verify": "open -a Maintenance"
+                        "verify": "open -a Maintenance",
+                        "upgrade": "brew upgrade --greedy --cask maintenance"
                     }
                 ],
                 "windows": [],
@@ -6993,7 +7078,8 @@
                         "install": "brew install --cask deeper",
                         "update": "brew upgrade --cask deeper",
                         "remove": "brew uninstall --cask deeper",
-                        "verify": "open -a Deeper"
+                        "verify": "open -a Deeper",
+                        "upgrade": "brew upgrade --greedy --cask deeper"
                     }
                 ],
                 "windows": [],
@@ -7017,7 +7103,8 @@
                         "install": "brew install --cask calhash",
                         "update": "brew upgrade --cask calhash",
                         "remove": "brew uninstall --cask calhash",
-                        "verify": "open -a CalHash"
+                        "verify": "open -a CalHash",
+                        "upgrade": "brew upgrade --greedy --cask calhash"
                     }
                 ],
                 "windows": [],
@@ -7108,7 +7195,8 @@
                         "install": "brew install --cask topnotch",
                         "update": "brew upgrade --cask topnotch",
                         "remove": "brew uninstall --cask topnotch",
-                        "verify": "open -a TopNotch"
+                        "verify": "open -a TopNotch",
+                        "upgrade": "brew upgrade --greedy --cask topnotch"
                     }
                 ],
                 "windows": [],
@@ -7132,7 +7220,8 @@
                         "install": "brew install --cask docker-desktop",
                         "update": "brew upgrade --cask docker-desktop",
                         "remove": "brew uninstall --cask docker-desktop",
-                        "verify": "docker --version"
+                        "verify": "docker --version",
+                        "upgrade": "brew upgrade --greedy --cask docker-desktop"
                     }
                 ],
                 "windows": [
@@ -7451,7 +7540,8 @@
                         "install": "brew install --cask utm",
                         "update": "brew upgrade --cask utm",
                         "remove": "brew uninstall --cask utm",
-                        "verify": "open -a UTM"
+                        "verify": "open -a UTM",
+                        "upgrade": "brew upgrade --greedy --cask utm"
                     }
                 ],
                 "windows": [],
@@ -7475,7 +7565,8 @@
                         "install": "brew install --cask dbeaver-community",
                         "update": "brew upgrade --cask dbeaver-community",
                         "remove": "brew uninstall --cask dbeaver-community",
-                        "verify": "open -a DBeaver"
+                        "verify": "open -a DBeaver",
+                        "upgrade": "brew upgrade --greedy --cask dbeaver-community"
                     }
                 ],
                 "windows": [
@@ -7561,7 +7652,8 @@
                         "install": "brew install --cask datagrip",
                         "update": "brew upgrade --cask datagrip",
                         "remove": "brew uninstall --cask datagrip",
-                        "verify": "open -a DataGrip"
+                        "verify": "open -a DataGrip",
+                        "upgrade": "brew upgrade --greedy --cask datagrip"
                     }
                 ],
                 "windows": [
@@ -7621,7 +7713,8 @@
                         "install": "brew install --cask drawio",
                         "update": "brew upgrade --cask drawio",
                         "remove": "brew uninstall --cask drawio",
-                        "verify": "open -a draw.io"
+                        "verify": "open -a draw.io",
+                        "upgrade": "brew upgrade --greedy --cask drawio"
                     }
                 ],
                 "windows": [
@@ -7703,7 +7796,8 @@
                         "install": "brew install --cask tad",
                         "update": "brew upgrade --cask tad",
                         "remove": "brew uninstall --cask tad",
-                        "verify": "open -a Tad"
+                        "verify": "open -a Tad",
+                        "upgrade": "brew upgrade --greedy --cask tad"
                     }
                 ],
                 "windows": [
@@ -7752,7 +7846,8 @@
                         "install": "brew install --cask protonvpn",
                         "update": "brew upgrade --cask protonvpn",
                         "remove": "brew uninstall --cask protonvpn",
-                        "verify": "open -a \"Proton VPN\""
+                        "verify": "open -a \"Proton VPN\"",
+                        "upgrade": "brew upgrade --greedy --cask protonvpn"
                     }
                 ],
                 "windows": [
@@ -7822,7 +7917,8 @@
                         "install": "brew install --cask lm-studio",
                         "update": "brew upgrade --cask lm-studio",
                         "remove": "brew uninstall --cask lm-studio",
-                        "verify": "open -a \"LM Studio\""
+                        "verify": "open -a \"LM Studio\"",
+                        "upgrade": "brew upgrade --greedy --cask lm-studio"
                     }
                 ],
                 "windows": [
@@ -7867,7 +7963,8 @@
                         "install": "brew install --cask ollama-app",
                         "update": "brew upgrade --cask ollama-app",
                         "remove": "brew uninstall --cask ollama-app",
-                        "verify": "open -a \"Ollama\""
+                        "verify": "open -a \"Ollama\"",
+                        "upgrade": "brew upgrade --greedy --cask ollama-app"
                     }
                 ],
                 "windows": [
@@ -7992,7 +8089,8 @@
                         "install": "brew install --cask joplin",
                         "update": "brew upgrade --cask joplin",
                         "remove": "brew uninstall --cask joplin",
-                        "verify": "open -a \"Joplin\""
+                        "verify": "open -a \"Joplin\"",
+                        "upgrade": "brew upgrade --greedy --cask joplin"
                     }
                 ],
                 "windows": [
@@ -8058,7 +8156,8 @@
                         "install": "brew install --cask markedit",
                         "update": "brew upgrade --cask markedit",
                         "remove": "brew uninstall --cask markedit",
-                        "verify": "open -a \"MarkEdit\""
+                        "verify": "open -a \"MarkEdit\"",
+                        "upgrade": "brew upgrade --greedy --cask markedit"
                     }
                 ],
                 "windows": [],
@@ -8084,7 +8183,8 @@
                         "install": "brew install --cask corretto@{version}",
                         "update": "brew upgrade --cask corretto@{version}",
                         "remove": "brew uninstall --cask corretto@{version}",
-                        "verify": "java -version"
+                        "verify": "java -version",
+                        "upgrade": "brew upgrade --greedy --cask corretto@{version}"
                     }
                 ],
                 "windows": [
@@ -8157,7 +8257,8 @@
                         "install": "brew install --cask temurin@{version}",
                         "update": "brew upgrade --cask temurin@{version}",
                         "remove": "brew uninstall --cask temurin@{version}",
-                        "verify": "java -version"
+                        "verify": "java -version",
+                        "upgrade": "brew upgrade --greedy --cask temurin@{version}"
                     }
                 ],
                 "windows": [
@@ -8230,7 +8331,8 @@
                         "install": "brew install --cask microsoft-openjdk@{version}",
                         "update": "brew upgrade --cask microsoft-openjdk@{version}",
                         "remove": "brew uninstall --cask microsoft-openjdk@{version}",
-                        "verify": "java -version"
+                        "verify": "java -version",
+                        "upgrade": "brew upgrade --greedy --cask microsoft-openjdk@{version}"
                     }
                 ],
                 "windows": [
@@ -8304,7 +8406,8 @@
                         "install": "brew install --cask zulu@{version}",
                         "update": "brew upgrade --cask zulu@{version}",
                         "remove": "brew uninstall --cask zulu@{version}",
-                        "verify": "java -version"
+                        "verify": "java -version",
+                        "upgrade": "brew upgrade --greedy --cask zulu@{version}"
                     }
                 ],
                 "windows": [

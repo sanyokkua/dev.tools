@@ -21,6 +21,7 @@ export interface ScriptOutputProps {
 const ACTION_OPTIONS: SegmentedOption[] = [
     { value: 'install', label: 'Install' },
     { value: 'update', label: 'Update' },
+    { value: 'upgrade', label: 'Upgrade' },
     { value: 'remove', label: 'Remove' },
 ];
 

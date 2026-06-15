@@ -29,6 +29,7 @@ export interface CatalogMethod {
     kind?: 'cask' | 'formula';
     install: string;
     update?: string;
+    upgrade?: string;
     remove?: string;
     verify?: string;
 }

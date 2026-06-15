@@ -2,7 +2,7 @@ import type { CatalogApp, CatalogManager, CatalogMethod, CatalogPlatform, LinuxD
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
-export type ScriptAction = 'install' | 'update' | 'remove';
+export type ScriptAction = 'install' | 'update' | 'upgrade' | 'remove';
 
 export type FallbackMode = 'preferred-only' | 'fallback';
 
@@ -78,7 +78,17 @@ export function resolveManager(app: CatalogApp, config: BuilderConfig): CatalogM
  * Returns null when the method has no command for that action.
  */
 export function getCommand(method: CatalogMethod, action: ScriptAction, version?: string): string | null {
-    const raw = action === 'install' ? method.install : action === 'update' ? method.update : method.remove;
+    let raw: string | undefined;
+    if (action === 'install') {
+        raw = method.install;
+    } else if (action === 'update') {
+        raw = method.update;
+    } else if (action === 'upgrade') {
+        // Use explicit upgrade command if defined; fall back to update (managers with no greedy distinction)
+        raw = method.upgrade ?? method.update;
+    } else {
+        raw = method.remove;
+    }
     if (!raw) return null;
     return version !== undefined ? raw.replaceAll('{version}', version) : raw;
 }
