@@ -1,3 +1,4 @@
+import ToolAbout from '@/controls/ToolAbout';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -143,6 +144,9 @@ const IndexPage: React.FC = () => {
 
     return (
         <ContentContainerFlex>
+            <ToolAbout routeKey="markdown-tools" title="Markdown Tools">
+                Write Markdown and preview the rendered output side-by-side.
+            </ToolAbout>
             <div className="markdown-tools">
                 <div className="markdown-tools__header">
                     <h1>Markdown Tools</h1>

@@ -5,6 +5,7 @@ import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
+import ToolAbout from '@/controls/ToolAbout';
 import { ToastType } from '@/controls/toaster/types';
 import {
     clearEditorContent,
@@ -245,6 +246,10 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <ContentContainerFlex>
+            <ToolAbout routeKey="code-editor" title="Code Editor">
+                A Monaco-powered editor with syntax highlighting for many languages. Open local files or write code
+                directly.
+            </ToolAbout>
             <div className="code-editor">
                 <CodeEditorToolbar
                     onFileNewClick={handleFileNew}

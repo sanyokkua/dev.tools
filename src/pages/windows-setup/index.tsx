@@ -1,5 +1,6 @@
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
+import ToolAbout from '@/controls/ToolAbout';
 import EnvironmentVariablesSection from '@/page-specific/windows-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/windows-setup/PackageManagersSection';
 import Link from 'next/link';
@@ -23,6 +24,9 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
+            <ToolAbout routeKey="windows-setup" title="Windows Setup">
+                Step-by-step guide to setting up a Windows development environment.
+            </ToolAbout>
             <section>
                 <h1>Windows Setup</h1>
                 <p>

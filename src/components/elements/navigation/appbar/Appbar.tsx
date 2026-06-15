@@ -8,10 +8,19 @@ export type AppBarProps = {
     theme?: 'light' | 'dark';
     onThemeToggle?: () => void;
     onMenuOpen?: () => void;
+    onLogoClick?: () => void;
     sidebarCollapsed?: boolean;
 };
 
-const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle, onMenuOpen, sidebarCollapsed }) => {
+const Appbar: React.FC<AppBarProps> = ({
+    appTitle,
+    pageTitle,
+    theme,
+    onThemeToggle,
+    onMenuOpen,
+    onLogoClick,
+    sidebarCollapsed,
+}) => {
     return (
         <header className="topbar">
             <button
@@ -21,8 +30,10 @@ const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeTogg
             >
                 ☰
             </button>
+            <button className="topbar-logo icon-btn" onClick={onLogoClick} aria-label="Toggle sidebar">
+                ⌘
+            </button>
             <Link href="/" className="topbar-brand">
-                <div className="topbar-logo">⌘</div>
                 {appTitle}
             </Link>
             {pageTitle && (
@@ -42,7 +53,7 @@ const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeTogg
                     rel="noopener noreferrer"
                     aria-label="Source on GitHub"
                 >
-                    ↗
+                    GitHub ↗
                 </a>
             </div>
         </header>

@@ -1,6 +1,7 @@
 import { createStringUtilList } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
-import { useEffect, useMemo } from 'react';
+import ToolAbout from '@/controls/ToolAbout';
+import React, { useEffect, useMemo } from 'react';
 import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const IndexPage = (): React.JSX.Element => {
@@ -38,7 +39,15 @@ const IndexPage = (): React.JSX.Element => {
         return groupsMap;
     }, []);
 
-    return <ToolView searchable showCharCount toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="string-utils" title="String Utilities">
+                A collection of string manipulation tools: case conversion, URL slugify, line and whitespace operations,
+                and more.
+            </ToolAbout>
+            <ToolView searchable showCharCount toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />
+        </div>
+    );
 };
 
 export default IndexPage;

@@ -28,12 +28,13 @@
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    background: linear-gradient(135deg, var(--primary), #00897b);
-    color: #fff;
+    background: linear-gradient(135deg, var(--primary), #00897b) !important;
+    color: #fff !important;
     font-size: 15px;
     display: grid;
     place-items: center;
     flex-shrink: 0;
+    border: none !important;
 }
 
 .topbar-crumb {
@@ -59,8 +60,9 @@
 }
 
 .icon-btn {
-    width: 36px;
     height: 36px;
+    min-width: 36px;
+    padding: 0 8px;
     border-radius: 10px;
     border: 1px solid var(--outline-soft);
     background-color: var(--card);
@@ -70,6 +72,7 @@
     place-items: center;
     font-size: 16px;
     text-decoration: none;
+    white-space: nowrap;
     transition:
         background-color 0.15s ease,
         color 0.15s ease;

@@ -4,7 +4,7 @@ import Button from '@/controls/Button';
 import Input from '@/controls/Input';
 import Select, { SelectItem } from '@/controls/Select';
 import Switch from '@/controls/Switch';
-import React from 'react';
+import React, { useState } from 'react';
 
 /** @description Form state for the VRAM calculator, with all values stored as strings for controlled inputs. */
 export interface VramFormState {
@@ -75,12 +75,19 @@ const osItems: SelectItem[] = [
     { itemId: OperatingSystem.LINUX_HEADLESS, displayText: 'Linux Headless' },
 ];
 
+const VRAM_PRESETS = [4, 8, 12, 16, 32, 64, 96, 128];
+const CUSTOM_GB_MIN = 4;
+const CUSTOM_GB_MAX = 256;
+const CUSTOM_GB_DEFAULT = 64;
+
 /**
  * @description Multi-section input form for the LLM VRAM calculator. Includes model parameters,
  * context/KV cache settings, hardware configuration, collapsible advanced architecture and MoE
  * sections, and VRAM preset buttons for common GPU sizes.
  */
 const VramCalculatorForm: React.FC<VramCalculatorFormProps> = ({ formState, onFormChange, onCalculate, onReset }) => {
+    const [customMode, setCustomMode] = useState(false);
+
     const updateField = (field: keyof VramFormState, value: string | boolean): void => {
         onFormChange({ ...formState, [field]: value });
     };
@@ -88,6 +95,24 @@ const VramCalculatorForm: React.FC<VramCalculatorFormProps> = ({ formState, onFo
     const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         onCalculate();
+    };
+
+    const handleCustomChipClick = (): void => {
+        setCustomMode(true);
+        if (!formState.vram_gb || VRAM_PRESETS.includes(Number(formState.vram_gb))) {
+            updateField('vram_gb', String(CUSTOM_GB_DEFAULT));
+        }
+    };
+
+    const handlePresetChipClick = (gb: number): void => {
+        setCustomMode(false);
+        updateField('vram_gb', String(gb));
+    };
+
+    const handleCustomInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const raw = Number(e.target.value);
+        const clamped = Math.max(CUSTOM_GB_MIN, Math.min(CUSTOM_GB_MAX, raw));
+        updateField('vram_gb', String(clamped));
     };
 
     return (
@@ -229,17 +254,39 @@ const VramCalculatorForm: React.FC<VramCalculatorFormProps> = ({ formState, onFo
                         </div>
                     </div>
                     <div className="vram-preset-buttons">
-                        {[4, 8, 12, 16, 32, 64, 96, 128].map((gb) => (
+                        {VRAM_PRESETS.map((gb) => (
                             <button
                                 key={gb}
                                 type="button"
-                                className={`chip${formState.vram_gb === String(gb) ? ' on' : ''}`}
-                                onClick={() => updateField('vram_gb', String(gb))}
+                                className={`chip${!customMode && formState.vram_gb === String(gb) ? ' on' : ''}`}
+                                onClick={() => handlePresetChipClick(gb)}
                             >
                                 {gb}
                             </button>
                         ))}
+                        <button
+                            type="button"
+                            className={`chip${customMode ? ' on' : ''}`}
+                            onClick={handleCustomChipClick}
+                        >
+                            Custom
+                        </button>
                     </div>
+                    {customMode && (
+                        <div className="field" style={{ marginTop: 8, maxWidth: 160 }}>
+                            <label htmlFor="vram_custom">Custom VRAM (GB)</label>
+                            <input
+                                id="vram_custom"
+                                type="number"
+                                min={CUSTOM_GB_MIN}
+                                max={CUSTOM_GB_MAX}
+                                step={4}
+                                value={formState.vram_gb}
+                                onChange={handleCustomInputChange}
+                                className="input"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <details className="detailsbox">

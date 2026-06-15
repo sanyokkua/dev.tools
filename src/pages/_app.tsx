@@ -32,6 +32,7 @@ import '@/styles/switch.scss';
 import '@/styles/table.scss';
 import '@/styles/terminal-utils.scss';
 import '@/styles/toaster.scss';
+import '@/styles/tool-about.scss';
 import '@/styles/vram-calculator.scss';
 import '@/styles/windows-setup.scss';
 import { AppProps } from 'next/app';

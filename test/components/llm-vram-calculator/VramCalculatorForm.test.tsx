@@ -50,13 +50,15 @@ describe('VramCalculatorForm', () => {
         expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ kv_cache_enabled: false }));
     });
 
-    it('renders VRAM preset chips', () => {
+    it('renders VRAM preset chips plus Custom chip', () => {
         const { container } = render(
             <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
         );
         const chips = container.querySelectorAll('.chip');
-        expect(chips.length).toBe(8);
+        // 8 presets (4,8,12,16,32,64,96,128) + 1 Custom = 9
+        expect(chips.length).toBe(9);
         expect(chips[0].textContent).toBe('4');
+        expect(chips[chips.length - 1].textContent).toBe('Custom');
     });
 
     it('marks preset chip as .on when value matches vram_gb', () => {
@@ -103,5 +105,82 @@ describe('VramCalculatorForm', () => {
         );
         fireEvent.submit(container.querySelector('form')!);
         expect(onCalculate).toHaveBeenCalledTimes(1);
+    });
+
+    it('clicking Custom chip shows custom VRAM input and marks chip as .on', () => {
+        const onChange = jest.fn();
+        const { container } = render(
+            <VramCalculatorForm
+                formState={INITIAL_FORM_STATE}
+                onFormChange={onChange}
+                onCalculate={noop}
+                onReset={noop}
+            />,
+        );
+        const chips = container.querySelectorAll('.chip');
+        const customChip = chips[chips.length - 1];
+        expect(customChip.textContent).toBe('Custom');
+
+        fireEvent.click(customChip);
+
+        // Custom chip becomes active
+        expect(customChip.classList.contains('on')).toBe(true);
+        // Custom number input appears
+        expect(container.querySelector('#vram_custom')).toBeTruthy();
+        // onFormChange called with a vram_gb value (default 64)
+        expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ vram_gb: '64' }));
+    });
+
+    it('clicking a preset chip after Custom hides the custom input', () => {
+        const onChange = jest.fn();
+        const { container } = render(
+            <VramCalculatorForm
+                formState={{ ...INITIAL_FORM_STATE, vram_gb: '64' }}
+                onFormChange={onChange}
+                onCalculate={noop}
+                onReset={noop}
+            />,
+        );
+        const chips = container.querySelectorAll('.chip');
+        const customChip = chips[chips.length - 1];
+
+        // Activate custom mode
+        fireEvent.click(customChip);
+        expect(container.querySelector('#vram_custom')).toBeTruthy();
+
+        // Click preset chip to exit custom mode
+        fireEvent.click(chips[0]); // 4 GB preset
+        expect(container.querySelector('#vram_custom')).toBeNull();
+        expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ vram_gb: '4' }));
+    });
+
+    it('custom VRAM input clamps value to [4, 256]', () => {
+        const onChange = jest.fn();
+        const { container } = render(
+            <VramCalculatorForm
+                formState={{ ...INITIAL_FORM_STATE, vram_gb: '64' }}
+                onFormChange={onChange}
+                onCalculate={noop}
+                onReset={noop}
+            />,
+        );
+        const chips = container.querySelectorAll('.chip');
+        const customChip = chips[chips.length - 1];
+        fireEvent.click(customChip);
+
+        const input = container.querySelector('#vram_custom') as HTMLInputElement;
+        expect(input).toBeTruthy();
+
+        // Value below min should clamp to 4
+        fireEvent.change(input, { target: { value: '1' } });
+        expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ vram_gb: '4' }));
+
+        // Value above max should clamp to 256
+        fireEvent.change(input, { target: { value: '999' } });
+        expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ vram_gb: '256' }));
+
+        // Value within range should pass through
+        fireEvent.change(input, { target: { value: '48' } });
+        expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ vram_gb: '48' }));
     });
 });

@@ -38,6 +38,7 @@ import {
 import { OSType } from '@/common/types';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
+import ToolAbout from '@/controls/ToolAbout';
 import { StringUtils } from 'coreutilsts';
 import { FC, useEffect, useState } from 'react';
 import CodeSnippet from '../../components/elements/CodeSnippet';
@@ -284,6 +285,9 @@ const GitCheatSheetPage: FC = () => {
 
     return (
         <ContentContainerFlex>
+            <ToolAbout routeKey="git-cheat-sheet" title="Git Cheat Sheet">
+                A searchable reference of essential Git commands, organized by workflow.
+            </ToolAbout>
             <div className="git-cheat-sheet">
                 <div className="git-cheat-sheet__header">
                     <h1>Git Cheat Sheet</h1>

@@ -9,6 +9,7 @@ import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import Switch from '@/controls/Switch';
 import { ToastType } from '@/controls/toaster/types';
+import ToolAbout from '@/controls/ToolAbout';
 import React, { useEffect, useMemo, useState } from 'react';
 
 type ConverterMode = 'number-base' | 'data-format' | 'color' | 'units';
@@ -132,6 +133,9 @@ const ConvertingToolsPage: React.FC = () => {
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
+            <ToolAbout routeKey="converting-tools" title="Converting Tools">
+                Convert data between formats: JSON↔YAML, JSON↔TOML, and more.
+            </ToolAbout>
             <div className="converting-toolbar">
                 <SegmentedControl
                     options={MODE_OPTIONS}

@@ -1,6 +1,7 @@
 import { LinuxDistro } from '@/common/linux-utils';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
+import ToolAbout from '@/controls/ToolAbout';
 import EnvironmentVariablesSection from '@/page-specific/linux-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/linux-setup/PackageManagersSection';
 import Link from 'next/link';
@@ -32,6 +33,9 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
+            <ToolAbout routeKey="linux-setup" title="Linux Setup">
+                Step-by-step guide to setting up a Linux development environment.
+            </ToolAbout>
             <section>
                 <h1>Linux Setup</h1>
                 <p>

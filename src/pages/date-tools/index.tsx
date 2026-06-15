@@ -14,6 +14,7 @@ import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import Select, { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
+import ToolAbout from '@/controls/ToolAbout';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type DateMode = 'timestamp' | 'duration';
@@ -81,6 +82,9 @@ const DateToolsPage: React.FC = () => {
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
+            <ToolAbout routeKey="date-tools" title="Date Tools">
+                Convert between Unix timestamps and human-readable dates, and calculate durations.
+            </ToolAbout>
             <div className="date-toolbar">
                 <SegmentedControl
                     options={MODE_OPTIONS}

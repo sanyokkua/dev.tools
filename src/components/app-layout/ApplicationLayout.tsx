@@ -38,7 +38,11 @@ const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <AppMainContainer>
-            <ApplicationTopBar onMenuOpen={handleMenuOpen} sidebarCollapsed={sidebarCollapsed} />
+            <ApplicationTopBar
+                onMenuOpen={handleMenuOpen}
+                onLogoClick={toggleSidebarCollapsed}
+                sidebarCollapsed={sidebarCollapsed}
+            />
             <AppSideBarAndContentContainer>
                 <ApplicationSidebar
                     isOpen={sidebarOpen}

@@ -68,4 +68,32 @@ describe('ThemeContext', () => {
         });
         expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
     });
+
+    it('reads saved theme from localStorage on init', async () => {
+        localStorage.setItem('theme', 'dark');
+        const { result } = renderHook(() => useTheme(), { wrapper });
+        await act(async () => {});
+        expect(result.current.theme).toBe('dark');
+    });
+
+    it('writes theme to localStorage on change', async () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+        await act(async () => {});
+        act(() => {
+            result.current.toggleTheme();
+        });
+        expect(localStorage.getItem('theme')).toBe('dark');
+    });
+
+    it('writes theme back to light in localStorage after two toggles', async () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+        await act(async () => {});
+        act(() => {
+            result.current.toggleTheme();
+        });
+        act(() => {
+            result.current.toggleTheme();
+        });
+        expect(localStorage.getItem('theme')).toBe('light');
+    });
 });

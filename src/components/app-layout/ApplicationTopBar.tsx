@@ -6,10 +6,11 @@ import Appbar from '../elements/navigation/appbar/Appbar';
 
 interface TopBarProps {
     onMenuOpen: () => void;
+    onLogoClick?: () => void;
     sidebarCollapsed?: boolean;
 }
 
-const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, sidebarCollapsed }) => {
+const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, onLogoClick, sidebarCollapsed }) => {
     const { pageTitle } = usePage();
     const { theme, toggleTheme } = useTheme();
 
@@ -20,6 +21,7 @@ const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, sidebarCollapsed
             theme={theme}
             onThemeToggle={toggleTheme}
             onMenuOpen={onMenuOpen}
+            onLogoClick={onLogoClick}
             sidebarCollapsed={sidebarCollapsed}
         />
     );

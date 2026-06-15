@@ -89,6 +89,11 @@
     flex: 1;
 }
 
+/* Consistent gap between stacked code blocks (matches git-cheat-sheet gap of 10px) */
+.code-block + .code-block {
+    margin-top: 10px;
+}
+
 /* ============================================================
    Highlight.js syntax token colours (prototype palette)
    Scoped to .code-block so markdown preview is unaffected.

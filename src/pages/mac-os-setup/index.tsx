@@ -1,5 +1,6 @@
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
+import ToolAbout from '@/controls/ToolAbout';
 import BrewInstallSteps from '@/page-specific/mac-os-setup/BrewInstallSteps';
 import EnvironmentVariablesSection from '@/page-specific/mac-os-setup/EnvironmentVariablesSection';
 import VramManager from '@/page-specific/mac-os-setup/VramManager';
@@ -25,6 +26,9 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
+            <ToolAbout routeKey="mac-os-setup" title="macOS Setup">
+                Step-by-step guide to setting up a fresh macOS development environment.
+            </ToolAbout>
             <section>
                 <h1>macOS Setup</h1>
                 <p>

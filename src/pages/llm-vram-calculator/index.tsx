@@ -1,6 +1,7 @@
 import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from '@/common/llm-vram-calc';
 import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';
+import ToolAbout from '@/controls/ToolAbout';
 import { FC, useEffect, useState } from 'react';
 import PageShell from '../../components/layouts/PageShell';
 import VramCalculatorForm, {
@@ -80,6 +81,9 @@ const LlmVramCalculatorPage: FC = () => {
 
     return (
         <PageShell>
+            <ToolAbout routeKey="llm-vram-calculator" title="LLM VRAM Calculator">
+                Estimate GPU memory requirements for running large language models locally.
+            </ToolAbout>
             <div className="vram-page-header">
                 <h1>LLM VRAM Calculator</h1>
                 <p>Estimate GPU / unified memory for GGUF-quantized models, with full architecture and MoE controls.</p>

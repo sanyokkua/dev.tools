@@ -4,6 +4,7 @@ import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@
 import { getAvailableManagers, MANAGER_LABEL } from '@/common/catalog-utils';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
+import ToolAbout from '@/controls/ToolAbout';
 import AppBasket from '@/page-specific/software-installer/AppBasket';
 import AppCatalog from '@/page-specific/software-installer/AppCatalog';
 import ScriptOutput from '@/page-specific/software-installer/ScriptOutput';
@@ -133,6 +134,9 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <div className="installer-page">
+            <ToolAbout routeKey="software-installer" title="Software Installer">
+                Generate install/update/upgrade/remove scripts for your apps across macOS, Windows, and Linux.
+            </ToolAbout>
             {/* Sticky summary */}
             <section className="installer-summary" aria-label="Selection summary">
                 <span className="installer-summary__pill" data-testid="sum-platform">

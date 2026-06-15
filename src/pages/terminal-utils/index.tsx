@@ -6,6 +6,7 @@ import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
+import ToolAbout from '@/controls/ToolAbout';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -84,6 +85,9 @@ const IndexPage: React.FC = (): React.JSX.Element => {
 
     return (
         <ContentContainerFlex>
+            <ToolAbout routeKey="terminal-utils" title="Terminal Utils">
+                Quick-reference for common shell commands and terminal shortcuts.
+            </ToolAbout>
             <div className="terminal-utils">
                 <div>
                     <h1>Terminal Utilities</h1>

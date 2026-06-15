@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import { usePage } from '@/contexts/PageContext';
 
 import { createEncodingDecodingUtilList } from '@/common/utils-factory';
+import ToolAbout from '@/controls/ToolAbout';
 import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const Home: React.FC = () => {
@@ -40,7 +41,14 @@ const Home: React.FC = () => {
         return groupsMap;
     }, []);
 
-    return <ToolView searchable toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="encoding-tools" title="Encoding Tools">
+                Encode and decode text using Base64, URL encoding, and HTML entities.
+            </ToolAbout>
+            <ToolView searchable toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />
+        </div>
+    );
 };
 
 export default Home;
