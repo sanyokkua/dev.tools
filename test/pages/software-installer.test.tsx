@@ -392,6 +392,16 @@ describe('platform icons, method default, unavailability guard', () => {
         fireEvent.click(firstUnavailableRow);
         expect(checkbox).not.toBeChecked();
     });
+
+    it('changing per-app method override select updates the method to Auto', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        const methodSelect = screen.getByLabelText('Install method for Firefox') as HTMLSelectElement;
+        expect(methodSelect.value).toBe('brew');
+        fireEvent.change(methodSelect, { target: { value: '' } });
+        expect(methodSelect.value).toBe('');
+    });
 });
 
 describe('Software Installer — Step 4: Output', () => {

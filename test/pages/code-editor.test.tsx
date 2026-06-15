@@ -3,7 +3,10 @@ import { FileOpenProvider } from '../../src/components/contexts/FileOpenContext'
 import { FileSaveDialogProvider } from '../../src/components/contexts/FileSaveDialogContext';
 import { PageProvider } from '../../src/components/contexts/PageContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
+import CodeEditorToolbar from '../../src/components/elements/editor/CodeEditorToolbar';
 import IndexPage from '../../src/pages/code-editor/index';
+
+const noop = () => {};
 
 jest.mock('../../src/components/elements/editor/CodeEditor', () => ({
     __esModule: true,
@@ -107,5 +110,45 @@ describe('Code Editor page', () => {
         expect(screen.getByText('Ln 1, Col 1')).toBeInTheDocument();
         expect(screen.getByText('LF')).toBeInTheDocument();
         expect(screen.getByText(/Spaces: 2/)).toBeInTheDocument();
+    });
+});
+
+const RUST_LANG = { id: 'rust', extensions: ['.rs'], aliases: ['Rust'], mimetypes: ['text/rust'] };
+
+function renderToolbar(onLanguageSelected: (id: string) => void) {
+    return render(
+        <CodeEditorToolbar
+            onFileNewClick={noop}
+            onFileOpenClick={noop}
+            onFileSaveClick={noop}
+            onCopyClick={noop}
+            onPasteClick={noop}
+            onClearClick={noop}
+            currentLanguageId="typescript"
+            mappedLanguages={[RUST_LANG]}
+            onLanguageSelected={onLanguageSelected}
+            wordWrap={false}
+            onWordWrapToggle={noop}
+            minimap={false}
+            onMinimapToggle={noop}
+        />,
+    );
+}
+
+describe('CodeEditorToolbar — handleSelectChange', () => {
+    it('selecting a non-empty value from "More languages" select calls onLanguageSelected', () => {
+        const onLanguageSelected = jest.fn();
+        renderToolbar(onLanguageSelected);
+        const select = screen.getByRole('combobox', { name: 'More languages' });
+        fireEvent.change(select, { target: { value: 'rust' } });
+        expect(onLanguageSelected).toHaveBeenCalledWith('rust');
+    });
+
+    it('selecting empty string from "More languages" select does not call onLanguageSelected', () => {
+        const onLanguageSelected = jest.fn();
+        renderToolbar(onLanguageSelected);
+        const select = screen.getByRole('combobox', { name: 'More languages' });
+        fireEvent.change(select, { target: { value: '' } });
+        expect(onLanguageSelected).not.toHaveBeenCalled();
     });
 });

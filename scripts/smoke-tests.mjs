@@ -58,6 +58,38 @@ await runSmoke('installer', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__installer__after.png` });
 });
 
+// ── 1b. Software Installer — multi-JDK (Corretto) ────────────────────────────
+await runSmoke('installer-multi-jdk', async (page) => {
+    await page.goto(BASE + '/software-installer', { waitUntil: 'networkidle' });
+
+    // Select Homebrew manager
+    await page.locator('.installer-chip-row button', { hasText: 'Homebrew' }).click();
+
+    // Add Amazon Corretto
+    await page.waitForSelector('[aria-label="Select Amazon Corretto"]', { timeout: 5000 });
+    await page.locator('[aria-label="Select Amazon Corretto"]').click();
+
+    // Wait for version chip group to appear
+    await page.waitForSelector('[aria-label="Versions for Amazon Corretto"]', { timeout: 5000 });
+
+    // Click an unselected version chip to select a second version
+    const versionGroup = page.locator('[aria-label="Versions for Amazon Corretto"]');
+    const unselected = versionGroup.locator('button[aria-pressed="false"]').first();
+    await unselected.click();
+
+    // Output panel should contain at least 2 corretto@ references
+    await page.waitForSelector('[data-testid="output-code"]', { timeout: 5000 });
+    const outputText = await page.locator('[data-testid="output-code"]').innerText();
+    const matches = outputText.match(/corretto@\d+/g) ?? [];
+    if (matches.length < 2) {
+        throw new Error(
+            `Expected ≥2 corretto@ commands in output, got: ${matches.length}\n${outputText.slice(0, 300)}`,
+        );
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__installer_multi_jdk__after.png` });
+});
+
 // ── 2. Terminal Utils ─────────────────────────────────────────────────────────
 await runSmoke('terminal', async (page) => {
     await page.goto(BASE + '/terminal-utils', { waitUntil: 'networkidle' });
@@ -170,6 +202,37 @@ await runSmoke('markdown', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__markdown__after.png` });
 });
 
+// ── 7. Prompts Collection — AutoTextarea auto-grow ───────────────────────────
+await runSmoke('prompts-autogrow', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__prompts__before.png` });
+
+    // Click the first prompt item that mentions params (parametrized prompts show "N params" hint)
+    await page.waitForSelector('.prompt-list-item', { timeout: 5000 });
+    const paramItem = page.locator('.prompt-list-item').filter({ hasText: /param/ }).first();
+    await paramItem.click();
+
+    // Wait for the detail panel with an AutoTextarea
+    await page.waitForSelector('.textarea-auto', { timeout: 5000 });
+
+    const textarea = page.locator('.field .textarea-auto').first();
+    const initialHeight = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+
+    // Type a multi-line value to trigger JS auto-grow (scrollHeight > initialHeight)
+    await textarea.click();
+    await textarea.fill(
+        'This is a sufficiently long value to trigger the AutoTextarea auto-grow behavior.\nLine two adds more content.\nLine three makes it taller.',
+    );
+    await page.waitForTimeout(200);
+
+    const newHeight = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+    if (initialHeight > 0 && newHeight <= initialHeight) {
+        throw new Error(`AutoTextarea did not grow: was ${initialHeight}px, now ${newHeight}px`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__after.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -179,4 +242,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 6 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 8 interaction flows passed. Screenshots in ' + OUT);

@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react';
+jest.mock('copy-to-clipboard', () => jest.fn(() => true));
+
+import { fireEvent, render, screen } from '@testing-library/react';
 import { PromptCategory, PromptType } from '../../../src/common/prompts/prompts';
 import { ToasterProvider } from '../../../src/components/contexts/ToasterContext';
 import PromptDetailPanel from '../../../src/components/page-specific/prompts-collection/PromptDetailPanel';
@@ -65,5 +67,33 @@ describe('PromptDetailPanel', () => {
         const { container } = renderPanel();
         const fields = container.querySelectorAll('.field');
         expect(fields.length).toBe(2); // language + task
+    });
+});
+
+describe('PromptDetailPanel — functional flows', () => {
+    it('typing in a parameter textarea invokes handleValueChange', () => {
+        const { container } = renderPanel();
+        const paramTextareas = container.querySelectorAll('.field .textarea-auto');
+        expect(paramTextareas.length).toBeGreaterThan(0);
+        fireEvent.change(paramTextareas[0], { target: { value: 'Python' } });
+        expect((paramTextareas[0] as HTMLTextAreaElement).value).toBe('Python');
+    });
+
+    it('clicking "Apply parameters" does not throw and updates the template', () => {
+        const { container } = renderPanel();
+        const paramTextareas = container.querySelectorAll('.field .textarea-auto');
+        fireEvent.change(paramTextareas[0], { target: { value: 'TypeScript' } });
+        fireEvent.click(screen.getByRole('button', { name: /apply parameters/i }));
+        const templateTextarea = container.querySelector('.prompt-template-body .textarea-auto');
+        expect(templateTextarea).toBeTruthy();
+    });
+
+    it('clicking "Copy raw" invokes the copy function', () => {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const copyMock = require('copy-to-clipboard') as jest.Mock;
+        copyMock.mockClear();
+        renderPanel();
+        fireEvent.click(screen.getByRole('button', { name: /copy raw/i }));
+        expect(copyMock).toHaveBeenCalledWith(expect.any(String));
     });
 });

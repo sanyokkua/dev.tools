@@ -90,4 +90,18 @@ describe('VramCalculatorForm', () => {
         const grids = container.querySelectorAll('.formgrid');
         expect(grids.length).toBeGreaterThanOrEqual(4);
     });
+
+    it('submitting the form calls onCalculate', () => {
+        const onCalculate = jest.fn();
+        const { container } = render(
+            <VramCalculatorForm
+                formState={INITIAL_FORM_STATE}
+                onFormChange={noop}
+                onCalculate={onCalculate}
+                onReset={noop}
+            />,
+        );
+        fireEvent.submit(container.querySelector('form')!);
+        expect(onCalculate).toHaveBeenCalledTimes(1);
+    });
 });

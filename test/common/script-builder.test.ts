@@ -158,6 +158,26 @@ const CORRETTO: CatalogApp = {
     },
 };
 
+const INSTALL_ONLY_PARAMETERIZED: CatalogApp = {
+    id: 'install-only-param',
+    name: 'InstallOnlyParam',
+    category: 'test',
+    description: 'Parameterized app with install-only method (no update/remove)',
+    parameterized: true,
+    versions: ['1', '2'],
+    platforms: { macos: true, windows: false, linux: false },
+    methods: {
+        macos: [
+            {
+                manager: 'brew',
+                id: 'foo@{version}',
+                install: 'brew install foo@{version}',
+                // deliberately no update or remove
+            },
+        ],
+    },
+};
+
 // ─── Base configs ─────────────────────────────────────────────────────────────
 
 const macosConfig: BuilderConfig = {
@@ -698,6 +718,14 @@ describe('multi-version parameterized apps', () => {
             const script = buildCombinedScript([CORRETTO], 'remove', config);
             expect(script).toContain('brew uninstall --cask corretto@17');
             expect(script).toContain('brew uninstall --cask corretto@21');
+        });
+
+        it('emits per-version skip comment when action command is missing for a version', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { 'install-only-param': ['1', '2'] } };
+            const script = buildCombinedScript([INSTALL_ONLY_PARAMETERIZED], 'update', config);
+            expect(script).toContain('# InstallOnlyParam 1: no update command — skipped');
+            expect(script).toContain('# InstallOnlyParam 2: no update command — skipped');
+            expect(script).not.toContain('run_task "');
         });
     });
 
