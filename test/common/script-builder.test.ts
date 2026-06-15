@@ -268,7 +268,7 @@ describe('resolveManager', () => {
         });
 
         it('returns the manager when a version is selected', () => {
-            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: '17' } };
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17'] } };
             expect(resolveManager(CORRETTO, config)).toBe('brew');
         });
     });
@@ -486,14 +486,14 @@ describe('buildCombinedScript', () => {
 
     describe('parameterized version substitution', () => {
         it('substitutes version in combined .sh script', () => {
-            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: '17' } };
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17'] } };
             const script = buildCombinedScript([CORRETTO], 'install', config);
             expect(script).toContain('brew install --cask corretto@17');
             expect(script).not.toContain('{version}');
         });
 
         it('substitutes version in combined .ps1 script', () => {
-            const config: BuilderConfig = { ...windowsConfig, selectedVersions: { corretto: '21' } };
+            const config: BuilderConfig = { ...windowsConfig, selectedVersions: { corretto: ['21'] } };
             const script = buildCombinedScript([CORRETTO], 'install', config);
             expect(script).toContain('winget install --id Amazon.Corretto.21.JDK -e');
             expect(script).not.toContain('{version}');
@@ -612,20 +612,20 @@ describe('buildPerAppScripts', () => {
 
     describe('parameterized version substitution', () => {
         it('substitutes {version} in per-app .sh', () => {
-            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: '17' } };
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17'] } };
             const result = buildPerAppScripts([CORRETTO], 'install', config);
             expect(result['corretto']).toContain('brew install --cask corretto@17');
             expect(result['corretto']).not.toContain('{version}');
         });
 
         it('uses the exact selected version (not default)', () => {
-            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: '21' } };
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['21'] } };
             const result = buildPerAppScripts([CORRETTO], 'install', config);
             expect(result['corretto']).toContain('corretto@21');
         });
 
         it('substitutes {version} in per-app .ps1', () => {
-            const config: BuilderConfig = { ...windowsConfig, selectedVersions: { corretto: '11' } };
+            const config: BuilderConfig = { ...windowsConfig, selectedVersions: { corretto: ['11'] } };
             const result = buildPerAppScripts([CORRETTO], 'install', config);
             expect(result['corretto']).toContain('winget install --id Amazon.Corretto.11.JDK -e');
         });
@@ -637,6 +637,97 @@ describe('buildPerAppScripts', () => {
             expect(Object.keys(result)).toHaveLength(1);
             expect(result).toHaveProperty('firefox');
             expect(result).not.toHaveProperty('iina');
+        });
+    });
+});
+
+// ─── Multi-version parameterized apps ────────────────────────────────────────
+
+describe('multi-version parameterized apps', () => {
+    describe('resolveManager with version arrays', () => {
+        it('returns null when versions array is empty', () => {
+            expect(resolveManager(CORRETTO, { ...macosConfig, selectedVersions: { corretto: [] } })).toBeNull();
+        });
+
+        it('returns manager when multiple versions are selected', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['11', '17', '21'] } };
+            expect(resolveManager(CORRETTO, config)).toBe('brew');
+        });
+    });
+
+    describe('buildCombinedScript multi-version', () => {
+        it('emits one run_task per selected version', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['11', '17', '21'] } };
+            const script = buildCombinedScript([CORRETTO], 'install', config);
+            expect(script).toContain('corretto@11');
+            expect(script).toContain('corretto@17');
+            expect(script).toContain('corretto@21');
+        });
+
+        it('emits exactly N run_task lines for N versions', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17', '21'] } };
+            const script = buildCombinedScript([CORRETTO], 'install', config);
+            const matches = script.match(/run_task "install Amazon Corretto \d+/g) ?? [];
+            expect(matches).toHaveLength(2);
+        });
+
+        it('emits skip comment when version array is empty', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: [] } };
+            const script = buildCombinedScript([CORRETTO], 'install', config);
+            expect(script).toContain('no version selected — skipped');
+            expect(script).not.toContain('run_task "');
+        });
+
+        it('substitutes version correctly in each emitted command', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['8', '11'] } };
+            const script = buildCombinedScript([CORRETTO], 'install', config);
+            expect(script).toContain('brew install --cask corretto@8');
+            expect(script).toContain('brew install --cask corretto@11');
+            expect(script).not.toContain('{version}');
+        });
+
+        it('update action emits upgrade commands for all versions', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17', '21'] } };
+            const script = buildCombinedScript([CORRETTO], 'update', config);
+            expect(script).toContain('brew upgrade --cask corretto@17');
+            expect(script).toContain('brew upgrade --cask corretto@21');
+        });
+
+        it('remove action emits uninstall commands for all versions', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17', '21'] } };
+            const script = buildCombinedScript([CORRETTO], 'remove', config);
+            expect(script).toContain('brew uninstall --cask corretto@17');
+            expect(script).toContain('brew uninstall --cask corretto@21');
+        });
+    });
+
+    describe('buildPerAppScripts multi-version', () => {
+        it('includes all version commands in one per-app script', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['11', '17'] } };
+            const result = buildPerAppScripts([CORRETTO], 'install', config);
+            expect(result).toHaveProperty('corretto');
+            expect(result['corretto']).toContain('corretto@11');
+            expect(result['corretto']).toContain('corretto@17');
+        });
+
+        it('omits key when version array is empty', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: [] } };
+            const result = buildPerAppScripts([CORRETTO], 'install', config);
+            expect(result).not.toHaveProperty('corretto');
+        });
+
+        it('single-version per-app script still works', () => {
+            const config: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['21'] } };
+            const result = buildPerAppScripts([CORRETTO], 'install', config);
+            expect(result['corretto']).toContain('corretto@21');
+            expect(result['corretto']).not.toContain('{version}');
+        });
+
+        it('multi-version Windows ps1 script contains all commands', () => {
+            const config: BuilderConfig = { ...windowsConfig, selectedVersions: { corretto: ['17', '21'] } };
+            const result = buildPerAppScripts([CORRETTO], 'install', config);
+            expect(result['corretto']).toContain('Amazon.Corretto.17.JDK');
+            expect(result['corretto']).toContain('Amazon.Corretto.21.JDK');
         });
     });
 });

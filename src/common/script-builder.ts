@@ -12,7 +12,7 @@ export interface BuilderConfig {
     managers: CatalogManager[];
     overrides: Record<string, CatalogManager>;
     fallbackMode: FallbackMode;
-    selectedVersions: Record<string, string>;
+    selectedVersions: Record<string, string[]>;
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ function findMethodByManager(methods: CatalogMethod[], manager: CatalogManager):
 export function resolveManager(app: CatalogApp, config: BuilderConfig): CatalogManager | null {
     if (!app.platforms[config.platform]) return null;
 
-    if (app.parameterized && !config.selectedVersions[app.id]) return null;
+    if (app.parameterized && !config.selectedVersions[app.id]?.length) return null;
 
     const methods = getMethodsForPlatform(app, config);
     if (!methods) return null;
@@ -89,7 +89,7 @@ function skipReason(app: CatalogApp, config: BuilderConfig): string {
     if (!app.platforms[config.platform]) {
         return `# ${app.name}: no platform build — skipped`;
     }
-    if (app.parameterized && !config.selectedVersions[app.id]) {
+    if (app.parameterized && !config.selectedVersions[app.id]?.length) {
         return `# ${app.name}: no version selected — skipped`;
     }
     return `# ${app.name}: no preferred manager (fallback off) — skipped`;
@@ -128,21 +128,37 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
 
         const methods = getMethodsForPlatform(app, config)!;
         const method = findMethodByManager(methods, manager)!;
-        const version = app.parameterized ? config.selectedVersions[app.id] : undefined;
-        const cmd = getCommand(method, action, version);
 
-        if (!cmd) {
-            lines.push(`# ${app.name}: no ${action} command — skipped`);
-            continue;
-        }
-
-        if (isWindows) {
-            // $LASTEXITCODE is only set by external executables; winget/choco are CLIs so this is correct
-            lines.push(
-                `try { Write-Host "▶ ${action} ${app.name}"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} failed: $_"; $fail++ }`,
-            );
+        if (app.parameterized) {
+            const versions = config.selectedVersions[app.id] ?? [];
+            for (const v of versions) {
+                const cmd = getCommand(method, action, v);
+                if (!cmd) {
+                    lines.push(`# ${app.name} ${v}: no ${action} command — skipped`);
+                    continue;
+                }
+                if (isWindows) {
+                    lines.push(
+                        `try { Write-Host "▶ ${action} ${app.name} ${v} (${manager})"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} ${v} failed: $_"; $fail++ }`,
+                    );
+                } else {
+                    lines.push(`run_task "${action} ${app.name} ${v} (${manager})" ${cmd}`);
+                }
+            }
         } else {
-            lines.push(`run_task "${action} ${app.name} (${manager})" ${cmd}`);
+            const cmd = getCommand(method, action, undefined);
+            if (!cmd) {
+                lines.push(`# ${app.name}: no ${action} command — skipped`);
+                continue;
+            }
+            if (isWindows) {
+                // $LASTEXITCODE is only set by external executables; winget/choco are CLIs so this is correct
+                lines.push(
+                    `try { Write-Host "▶ ${action} ${app.name}"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} failed: $_"; $fail++ }`,
+                );
+            } else {
+                lines.push(`run_task "${action} ${app.name} (${manager})" ${cmd}`);
+            }
         }
     }
 
@@ -178,14 +194,21 @@ export function buildPerAppScripts(
 
         const methods = getMethodsForPlatform(app, config)!;
         const method = findMethodByManager(methods, manager)!;
-        const version = app.parameterized ? config.selectedVersions[app.id] : undefined;
-        const cmd = getCommand(method, action, version);
-        if (!cmd) continue;
-
         const filename = `${action}-${app.id}.${ext}`;
         const header = `# ===== ${filename} =====`;
 
-        result[app.id] = isWindows ? [header, cmd].join('\n') : ['#!/usr/bin/env bash', header, cmd].join('\n');
+        if (app.parameterized) {
+            const versions = config.selectedVersions[app.id] ?? [];
+            const cmds = versions.map((v) => getCommand(method, action, v)).filter((c): c is string => c !== null);
+            if (cmds.length === 0) continue;
+            result[app.id] = isWindows
+                ? [header, ...cmds].join('\n')
+                : ['#!/usr/bin/env bash', header, ...cmds].join('\n');
+        } else {
+            const cmd = getCommand(method, action, undefined);
+            if (!cmd) continue;
+            result[app.id] = isWindows ? [header, cmd].join('\n') : ['#!/usr/bin/env bash', header, cmd].join('\n');
+        }
     }
 
     return result;
