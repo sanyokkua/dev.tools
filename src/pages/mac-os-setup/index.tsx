@@ -3,6 +3,7 @@ import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import BrewInstallSteps from '@/page-specific/mac-os-setup/BrewInstallSteps';
 import EnvironmentVariablesSection from '@/page-specific/mac-os-setup/EnvironmentVariablesSection';
 import VramManager from '@/page-specific/mac-os-setup/VramManager';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import PageShell from '../../components/layouts/PageShell';
 
@@ -28,7 +29,7 @@ const IndexPage = (): React.JSX.Element => {
                 <h1>macOS Setup</h1>
                 <p>
                     Install package managers, configure environment variables, and run platform-specific scripts. App
-                    installation lives in <a href="/software-installer">Software Installer</a>.
+                    installation lives in <Link href="/software-installer">Software Installer</Link>.
                 </p>
 
                 <SegmentedControl
@@ -50,7 +51,7 @@ const IndexPage = (): React.JSX.Element => {
                             <p>
                                 Raises the unified-memory (<code>iogpu.wired_limit_mb</code>) limit so larger local LLMs
                                 fit. Apple Silicon only. Pairs with the{' '}
-                                <a href="/llm-vram-calculator">LLM VRAM Calculator</a>.
+                                <Link href="/llm-vram-calculator">LLM VRAM Calculator</Link>.
                             </p>
                             <VramManager />
                             <p style={{ marginTop: 16, fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>

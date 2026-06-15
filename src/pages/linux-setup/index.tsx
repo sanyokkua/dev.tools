@@ -3,6 +3,7 @@ import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import EnvironmentVariablesSection from '@/page-specific/linux-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/linux-setup/PackageManagersSection';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import PageShell from '../../components/layouts/PageShell';
 
@@ -35,7 +36,7 @@ const IndexPage = (): React.JSX.Element => {
                 <h1>Linux Setup</h1>
                 <p>
                     Install package managers and configure environment variables. App installation lives in{' '}
-                    <a href="/software-installer">Software Installer</a>.
+                    <Link href="/software-installer">Software Installer</Link>.
                 </p>
 
                 <SegmentedControl
