@@ -32,7 +32,6 @@ import '@/styles/surfaces.scss';
 import '@/styles/switch.scss';
 import '@/styles/table.scss';
 import '@/styles/terminal-utils.scss';
-import '@/styles/texteditor.scss';
 import '@/styles/toaster.scss';
 import '@/styles/vram-calculator.scss';
 import '@/styles/windows-setup.scss';
