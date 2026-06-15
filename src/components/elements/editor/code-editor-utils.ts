@@ -38,7 +38,7 @@ export function pasteFromClipboardToEditor(
         }
     };
     const onError = (errMsg: string): void => {
-        console.log(`Failed to paste to editor: ${errMsg}`);
+        console.error(`Failed to paste to editor: ${errMsg}`);
         if (onErrorCallback) {
             onErrorCallback(errMsg);
         }

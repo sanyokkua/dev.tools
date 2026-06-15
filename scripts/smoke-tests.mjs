@@ -207,9 +207,12 @@ await runSmoke('prompts-autogrow', async (page) => {
     await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
     await page.screenshot({ path: `${OUT}/smoke__prompts__before.png` });
 
-    // Click the first prompt item that mentions params (parametrized prompts show "N params" hint)
+    // Click the first prompt item whose hint shows "N params" (parametrized prompts only)
     await page.waitForSelector('.prompt-list-item', { timeout: 5000 });
-    const paramItem = page.locator('.prompt-list-item').filter({ hasText: /param/ }).first();
+    const paramItem = page
+        .locator('.prompt-list-item')
+        .filter({ has: page.locator('.prompt-list-hint', { hasText: /\d+ param/ }) })
+        .first();
     await paramItem.click();
 
     // Wait for the detail panel with an AutoTextarea

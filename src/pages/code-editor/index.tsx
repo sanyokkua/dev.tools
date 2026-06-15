@@ -187,7 +187,7 @@ const IndexPage = (): React.JSX.Element => {
                 showToast({ message: 'File opened', type: ToastType.SUCCESS });
             },
             onFailure: (err): void => {
-                console.log(err);
+                console.error(err);
                 showToast({ message: 'Failed to open file', type: ToastType.ERROR });
             },
         });
