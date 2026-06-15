@@ -34,4 +34,5 @@ const nextConfig = {
     env: { NEXT_PUBLIC_BASE_PATH: basePath },
 };
 
-export default withPWA(nextConfig);
+const isProd = process.env.NODE_ENV === 'production';
+export default isProd ? withPWA(nextConfig) : nextConfig;
