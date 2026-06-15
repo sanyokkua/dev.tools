@@ -115,7 +115,7 @@ const SNAP_ONLY_APP: CatalogApp = {
     platforms: { macos: false, windows: false, linux: true },
     methods: {
         linux: {
-            universal: [
+            debian: [
                 {
                     manager: 'snap',
                     id: 'snaponly',
@@ -123,6 +123,9 @@ const SNAP_ONLY_APP: CatalogApp = {
                     // no update, no remove
                 },
             ],
+            fedora: [{ manager: 'snap', id: 'snaponly', install: 'sudo snap install snaponly' }],
+            arch: [{ manager: 'snap', id: 'snaponly', install: 'sudo snap install snaponly' }],
+            suse: [{ manager: 'snap', id: 'snaponly', install: 'sudo snap install snaponly' }],
         },
     },
 };
@@ -396,12 +399,12 @@ describe('getCommand', () => {
     });
 
     it('returns null for update when method has none', () => {
-        const installOnly = SNAP_ONLY_APP.methods.linux!.universal![0];
+        const installOnly = SNAP_ONLY_APP.methods.linux!.debian![0];
         expect(getCommand(installOnly, 'update')).toBeNull();
     });
 
     it('returns null for remove when method has none', () => {
-        const installOnly = SNAP_ONLY_APP.methods.linux!.universal![0];
+        const installOnly = SNAP_ONLY_APP.methods.linux!.debian![0];
         expect(getCommand(installOnly, 'remove')).toBeNull();
     });
 
@@ -451,7 +454,7 @@ describe('upgrade action', () => {
         });
 
         it('returns null when both upgrade and update are absent', () => {
-            const installOnly = SNAP_ONLY_APP.methods.linux!.universal![0];
+            const installOnly = SNAP_ONLY_APP.methods.linux!.debian![0];
             expect(getCommand(installOnly, 'upgrade')).toBeNull();
         });
     });
@@ -490,7 +493,7 @@ describe('upgrade action', () => {
         it('emits skip comment when both upgrade and update are absent', () => {
             const config: BuilderConfig = {
                 platform: 'linux',
-                linuxDistro: 'universal',
+                linuxDistro: 'debian',
                 managers: ['snap'],
                 overrides: {},
                 fallbackMode: 'preferred-only',
@@ -516,7 +519,7 @@ describe('upgrade action', () => {
         it('omits key when both upgrade and update are absent', () => {
             const config: BuilderConfig = {
                 platform: 'linux',
-                linuxDistro: 'universal',
+                linuxDistro: 'debian',
                 managers: ['snap'],
                 overrides: {},
                 fallbackMode: 'preferred-only',
@@ -631,7 +634,7 @@ describe('buildCombinedScript', () => {
         it('emits no-action-command comment when method lacks update', () => {
             const config: BuilderConfig = {
                 platform: 'linux',
-                linuxDistro: 'universal',
+                linuxDistro: 'debian',
                 managers: ['snap'],
                 overrides: {},
                 fallbackMode: 'preferred-only',
@@ -720,7 +723,7 @@ describe('buildPerAppScripts', () => {
         it('omits key when action command is missing from method', () => {
             const config: BuilderConfig = {
                 platform: 'linux',
-                linuxDistro: 'universal',
+                linuxDistro: 'debian',
                 managers: ['snap'],
                 overrides: {},
                 fallbackMode: 'preferred-only',
@@ -923,6 +926,210 @@ describe('multi-version parameterized apps', () => {
             const result = buildPerAppScripts([CORRETTO], 'install', config);
             expect(result['corretto']).toContain('Amazon.Corretto.17.JDK');
             expect(result['corretto']).toContain('Amazon.Corretto.21.JDK');
+        });
+    });
+});
+
+// ─── Universal-merged flatpak/snap/appimage on distro families ───────────────
+
+const FLATPAK_ONLY_APP: CatalogApp = {
+    id: 'flatpak-app',
+    name: 'FlatpakApp',
+    category: 'test',
+    description: 'App available only via Flatpak (was universal-only)',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'flatpak',
+                    id: 'org.example.FlatpakApp',
+                    install: 'flatpak install -y flathub org.example.FlatpakApp',
+                },
+            ],
+            fedora: [
+                {
+                    manager: 'flatpak',
+                    id: 'org.example.FlatpakApp',
+                    install: 'flatpak install -y flathub org.example.FlatpakApp',
+                },
+            ],
+            arch: [
+                {
+                    manager: 'flatpak',
+                    id: 'org.example.FlatpakApp',
+                    install: 'flatpak install -y flathub org.example.FlatpakApp',
+                },
+            ],
+            suse: [
+                {
+                    manager: 'flatpak',
+                    id: 'org.example.FlatpakApp',
+                    install: 'flatpak install -y flathub org.example.FlatpakApp',
+                },
+            ],
+        },
+    },
+};
+
+const APPIMAGE_ONLY_APP: CatalogApp = {
+    id: 'appimage-app',
+    name: 'AppImageApp',
+    category: 'test',
+    description: 'App available only via AppImage (install-only, no update/remove)',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'appimage',
+                    id: 'appimageapp',
+                    install:
+                        'wget -O ~/Apps/appimageapp.AppImage https://example.com/app.AppImage && chmod +x ~/Apps/appimageapp.AppImage',
+                },
+            ],
+            fedora: [
+                {
+                    manager: 'appimage',
+                    id: 'appimageapp',
+                    install:
+                        'wget -O ~/Apps/appimageapp.AppImage https://example.com/app.AppImage && chmod +x ~/Apps/appimageapp.AppImage',
+                },
+            ],
+            arch: [
+                {
+                    manager: 'appimage',
+                    id: 'appimageapp',
+                    install:
+                        'wget -O ~/Apps/appimageapp.AppImage https://example.com/app.AppImage && chmod +x ~/Apps/appimageapp.AppImage',
+                },
+            ],
+            suse: [
+                {
+                    manager: 'appimage',
+                    id: 'appimageapp',
+                    install:
+                        'wget -O ~/Apps/appimageapp.AppImage https://example.com/app.AppImage && chmod +x ~/Apps/appimageapp.AppImage',
+                },
+            ],
+        },
+    },
+};
+
+describe('universal-merged managers on distro families', () => {
+    describe('flatpak on debian (formerly universal-only)', () => {
+        it('resolves flatpak on debian when flatpak is in the preferred manager list', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['apt', 'flatpak'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            expect(resolveManager(FLATPAK_ONLY_APP, config)).toBe('flatpak');
+        });
+
+        it('emits flatpak install command on debian via buildCombinedScript', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['flatpak'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([FLATPAK_ONLY_APP], 'install', config);
+            expect(script).toContain('flatpak install -y flathub org.example.FlatpakApp');
+        });
+
+        it('resolves flatpak on fedora', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'fedora',
+                managers: ['dnf', 'flatpak'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            expect(resolveManager(FLATPAK_ONLY_APP, config)).toBe('flatpak');
+        });
+
+        it('resolves flatpak on arch', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'arch',
+                managers: ['pacman', 'flatpak'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            expect(resolveManager(FLATPAK_ONLY_APP, config)).toBe('flatpak');
+        });
+
+        it('resolves flatpak on suse', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'suse',
+                managers: ['zypper', 'flatpak'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            expect(resolveManager(FLATPAK_ONLY_APP, config)).toBe('flatpak');
+        });
+    });
+
+    describe('appimage (install-only) on distro families', () => {
+        it('resolves appimage on debian', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['appimage'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            expect(resolveManager(APPIMAGE_ONLY_APP, config)).toBe('appimage');
+        });
+
+        it('emits install command for appimage', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['appimage'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([APPIMAGE_ONLY_APP], 'install', config);
+            expect(script).toContain('wget -O ~/Apps/appimageapp.AppImage');
+        });
+
+        it('emits skip comment for appimage update (no update key)', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['appimage'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([APPIMAGE_ONLY_APP], 'update', config);
+            expect(script).toContain('# AppImageApp: no update command — skipped');
+        });
+
+        it('emits skip comment for appimage remove (no remove key)', () => {
+            const config: BuilderConfig = {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['appimage'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            };
+            const script = buildCombinedScript([APPIMAGE_ONLY_APP], 'remove', config);
+            expect(script).toContain('# AppImageApp: no remove command — skipped');
         });
     });
 });

@@ -20,7 +20,6 @@ const DISTRO_OPTIONS: SegmentedOption[] = [
     { value: 'fedora', label: 'Fedora / RHEL · dnf' },
     { value: 'arch', label: 'Arch · pacman' },
     { value: 'suse', label: 'openSUSE · zypper' },
-    { value: 'universal', label: 'Universal' },
 ];
 
 const PLATFORM_LABEL: Record<CatalogPlatform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' };

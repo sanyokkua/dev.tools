@@ -1,6 +1,6 @@
 export type CatalogPlatform = 'macos' | 'windows' | 'linux';
 
-export type LinuxDistro = 'debian' | 'fedora' | 'arch' | 'suse' | 'universal';
+export type LinuxDistro = 'debian' | 'fedora' | 'arch' | 'suse';
 
 export type CatalogManager =
     | 'brew'
