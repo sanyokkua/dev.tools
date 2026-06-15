@@ -2,6 +2,7 @@ import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useFileOpen } from '@/contexts/FileOpenContext';
+import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
@@ -17,7 +18,6 @@ import MarkdownToolbar from '../../components/elements/editor/MarkdownToolbar';
 
 import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
-import { saveTextFile } from '@/common/file-utils';
 import { mapBoolean } from '@/common/formatting-tools';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
@@ -33,6 +33,7 @@ const markdownExtension = '.md';
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
     const { showFileOpenDialog } = useFileOpen();
+    const { showFileSaveDialog } = useFileSaveDialog();
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -95,12 +96,13 @@ const IndexPage: React.FC = () => {
 
     const handleSaveFile = useCallback(() => {
         const content = getEditorContent(leftEditorRef);
-        saveTextFile({
+        showFileSaveDialog({
             fileName: currentFileInfo.name,
             fileExtension: currentFileInfo.extension,
             fileContent: content,
+            availableExtensions: ['.md', '.txt'],
         });
-    }, [currentFileInfo]);
+    }, [currentFileInfo, showFileSaveDialog]);
 
     const handleCopy = useCallback(() => {
         copyToClipboardFromEditor(leftEditorRef, showToast);

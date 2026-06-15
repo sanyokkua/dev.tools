@@ -65,7 +65,7 @@ function createDefaultState(): CodeEditorState {
         fileContent: fileInfo.content,
         fileName: fileInfo.name,
         fileExtension: fileInfo.extension,
-        fileSaveExtensions: [],
+        fileSaveExtensions: createSelectItemsFromStringArray([fileInfo.extension]),
         editorPropsOriginalEditorLangs: [],
         editorPropsMappedLanguages: [],
         editorPropsSupportedExtensions: [],

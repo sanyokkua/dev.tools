@@ -5,7 +5,6 @@ import Modal from '@/controls/Modal';
 import Select, { SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { saveTextFile } from '@/common/file-utils';
 
@@ -42,13 +41,18 @@ export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) =>
     const [name, setName] = useState(fileName);
     const [ext, setExt] = useState(fileExtension);
 
-    // Reset when reopened
+    // Reset when reopened; resolve extension to a valid choice
     useEffect(() => {
         if (isOpen) {
             setName(fileName);
-            setExt(fileExtension);
+            const resolved = availableExtensions.includes(fileExtension)
+                ? fileExtension
+                : availableExtensions.includes('.txt')
+                  ? '.txt'
+                  : (availableExtensions[0] ?? fileExtension);
+            setExt(resolved);
         }
-    }, [isOpen, fileName, fileExtension]);
+    }, [isOpen, fileName, fileExtension, availableExtensions]);
 
     const handleConfirm = (): void => {
         try {
@@ -63,7 +67,7 @@ export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) =>
 
     const selectItems: SelectItem[] = availableExtensions.map((e) => ({ itemId: e, displayText: e }));
 
-    return createPortal(
+    return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
@@ -73,9 +77,9 @@ export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) =>
             cancelText="Cancel"
         >
             <p>Please choose a file name and extension:</p>
-            <div className="flex gap-2 items-center">
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 <Input
-                    defaultValue={name}
+                    value={name}
                     onChange={(value) => {
                         setName(value);
                     }}
@@ -92,7 +96,6 @@ export const FileSaveDialog: React.FC<Props> = ({ isOpen, options, onClose }) =>
                     colorStyle="black-color"
                 />
             </div>
-        </Modal>,
-        document.getElementById('modal-root') || document.body,
+        </Modal>
     );
 };

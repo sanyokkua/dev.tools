@@ -154,4 +154,20 @@ describe('Markdown Tools page', () => {
         fireEvent.click(previewSwitch); // on
         expect(screen.getByTestId('react-markdown')).toBeInTheDocument();
     });
+
+    it('clicking Save opens the Save File dialog', () => {
+        renderPage();
+        expect(screen.queryByText('Save File As')).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(screen.getByText('Save File As')).toBeInTheDocument();
+    });
+
+    it('Save dialog offers .md and .txt extensions', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const select = screen.getByRole<HTMLSelectElement>('combobox');
+        const opts = Array.from(select.options).map((o) => o.value);
+        expect(opts).toContain('.md');
+        expect(opts).toContain('.txt');
+    });
 });
