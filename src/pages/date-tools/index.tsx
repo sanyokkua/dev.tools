@@ -12,7 +12,7 @@ import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
-import Select, { createSelectItemsFromStringArray } from '@/controls/Select';
+import Select, { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -23,11 +23,11 @@ const MODE_OPTIONS: SegmentedOption[] = [
     { value: 'duration', label: 'Duration between dates' },
 ];
 
-const FORMAT_OPTIONS: SegmentedOption[] = [
-    { value: 'iso', label: 'ISO 8601' },
-    { value: 'rfc2822', label: 'RFC 2822' },
-    { value: 'relative', label: 'Relative' },
-    { value: 'custom', label: 'Custom…' },
+const SELECT_FORMAT_ITEMS: SelectItem[] = [
+    { itemId: 'iso', displayText: 'ISO 8601' },
+    { itemId: 'rfc2822', displayText: 'RFC 2822' },
+    { itemId: 'relative', displayText: 'Relative' },
+    { itemId: 'custom', displayText: 'Custom…' },
 ];
 
 const TIMEZONE_ITEMS = createSelectItemsFromStringArray([...TIMEZONES]);
@@ -119,11 +119,11 @@ const DateToolsPage: React.FC = () => {
                         </div>
                         <div className="field">
                             <label>Format</label>
-                            <SegmentedControl
-                                options={FORMAT_OPTIONS}
-                                value={format}
-                                onChange={(v) => setFormat(v as FormatOption)}
-                                aria-label="Output format"
+                            <Select
+                                items={SELECT_FORMAT_ITEMS}
+                                selectedItem={format}
+                                onSelect={(item) => setFormat(item.itemId as FormatOption)}
+                                block
                             />
                         </div>
                         {format === 'custom' && (
@@ -162,7 +162,8 @@ const DateToolsPage: React.FC = () => {
                                     <div className="date-kpi-card">
                                         <div className="date-kpi-value">{tsResult.primaryFormatted}</div>
                                         <div className="date-kpi-label">
-                                            {FORMAT_OPTIONS.find((f) => f.value === format)?.label ?? 'Primary'}
+                                            {SELECT_FORMAT_ITEMS.find((f) => f.itemId === format)?.displayText ??
+                                                'Primary'}
                                         </div>
                                     </div>
                                     <div className="date-kpi-card">
