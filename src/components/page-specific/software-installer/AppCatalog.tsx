@@ -74,16 +74,23 @@ const AppCatalog = ({ platform, selectedAppIds, onToggle }: AppCatalogProps): Re
                         {filtered.map((app) => (
                             <tr
                                 key={app.id}
-                                onClick={() => onToggle(app)}
-                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    if (!app.platforms[platform]) return;
+                                    onToggle(app);
+                                }}
+                                style={{ cursor: app.platforms[platform] ? 'pointer' : 'not-allowed' }}
                                 className={!app.platforms[platform] ? 'installer-catalog-row--unavailable' : ''}
                             >
                                 <td>
                                     <input
                                         type="checkbox"
                                         checked={selectedAppIds.has(app.id)}
-                                        onChange={() => onToggle(app)}
+                                        onChange={() => {
+                                            if (!app.platforms[platform]) return;
+                                            onToggle(app);
+                                        }}
                                         onClick={(e) => e.stopPropagation()}
+                                        disabled={!app.platforms[platform]}
                                         aria-label={`Select ${app.name}`}
                                         data-testid={`select-app-${app.id}`}
                                     />

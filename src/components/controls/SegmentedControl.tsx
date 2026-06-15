@@ -27,7 +27,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, value, onC
                     }}
                 >
                     {opt.icon}
-                    {opt.label}
+                    <span>{opt.label}</span>
                 </button>
             ))}
         </div>

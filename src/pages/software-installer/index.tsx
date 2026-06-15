@@ -1,7 +1,7 @@
 // src/pages/software-installer/index.tsx
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
-import { MANAGER_LABEL } from '@/common/catalog-utils';
+import { getAvailableManagers, MANAGER_LABEL } from '@/common/catalog-utils';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import AppBasket from '@/page-specific/software-installer/AppBasket';
@@ -10,9 +10,9 @@ import ScriptOutput from '@/page-specific/software-installer/ScriptOutput';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
-    { value: 'macos', label: 'macOS' },
-    { value: 'windows', label: 'Windows' },
-    { value: 'linux', label: 'Linux' },
+    { value: 'macos', label: 'macOS', icon: '' },
+    { value: 'windows', label: 'Windows', icon: '⊞' },
+    { value: 'linux', label: 'Linux', icon: '🐧' },
 ];
 
 const DISTRO_OPTIONS: SegmentedOption[] = [
@@ -58,16 +58,21 @@ const IndexPage = (): React.JSX.Element => {
         setSelectedManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
     }
 
-    const toggleApp = useCallback((app: CatalogApp): void => {
-        setSelectedApps((prev) => {
-            if (app.id in prev) {
-                const next = { ...prev };
-                delete next[app.id];
-                return next;
-            }
-            return { ...prev, [app.id]: null };
-        });
-    }, []);
+    const toggleApp = useCallback(
+        (app: CatalogApp): void => {
+            setSelectedApps((prev) => {
+                if (app.id in prev) {
+                    const next = { ...prev };
+                    delete next[app.id];
+                    return next;
+                }
+                const avail = getAvailableManagers(app, platform, linuxDistro);
+                const defaultMgr = selectedManagers.find((m) => avail.includes(m)) ?? null;
+                return { ...prev, [app.id]: defaultMgr };
+            });
+        },
+        [platform, linuxDistro, selectedManagers],
+    );
 
     const removeApp = useCallback((appId: string): void => {
         setSelectedApps((prev) => {

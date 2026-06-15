@@ -363,6 +363,37 @@ describe('Software Installer — Step 3: App catalog', () => {
     });
 });
 
+describe('platform icons, method default, unavailability guard', () => {
+    it('shows platform icons in the segmented control', () => {
+        renderPage();
+        const platformGroup = screen.getByRole('group', { name: 'Target platform' });
+        const buttons = within(platformGroup).getAllByRole('button');
+        expect(buttons[0].textContent).toContain('');
+        expect(buttons[1].textContent).toContain('⊞');
+        expect(buttons[2].textContent).toContain('🐧');
+    });
+
+    it('defaults install method to resolved preferred manager when adding an app', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        const methodSelect = screen.getByLabelText('Install method for Firefox') as HTMLSelectElement;
+        expect(methodSelect.value).not.toBe('');
+        expect(methodSelect.value).toBe('brew');
+    });
+
+    it('prevents adding unavailable apps on the current platform', () => {
+        renderPage();
+        const unavailableRows = document.querySelectorAll('tr.installer-catalog-row--unavailable');
+        expect(unavailableRows.length).toBeGreaterThan(0);
+        const firstUnavailableRow = unavailableRows[0] as HTMLElement;
+        const checkbox = within(firstUnavailableRow).getByRole('checkbox') as HTMLInputElement;
+        expect(checkbox).toBeDisabled();
+        fireEvent.click(firstUnavailableRow);
+        expect(checkbox).not.toBeChecked();
+    });
+});
+
 describe('Software Installer — Step 4: Output', () => {
     beforeEach(() => {
         Object.defineProperty(navigator, 'clipboard', {
