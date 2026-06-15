@@ -95,7 +95,8 @@ describe('Software Installer — Step 2: Manager selection', () => {
         renderPage();
         const grp = screen.getByRole('group', { name: 'Platform package managers' });
         expect(within(grp).getByText('Homebrew')).toBeInTheDocument();
-        expect(within(grp).getByText('Mac App Store')).toBeInTheDocument();
+        // mas is hidden via HIDDEN_MANAGERS filter (task 4c)
+        expect(within(grp).queryByText('Mac App Store')).not.toBeInTheDocument();
     });
 
     it('renders dev manager chips always', () => {
@@ -142,7 +143,8 @@ describe('Software Installer — Step 2: Manager selection', () => {
     it('plural form: 2 managers', () => {
         renderPage();
         fireEvent.click(screen.getByText('Homebrew'));
-        fireEvent.click(screen.getByText('Mac App Store'));
+        // Mac App Store (mas) is hidden; use a dev manager for the second selection
+        fireEvent.click(screen.getByText('npm'));
         expect(screen.getByTestId('sum-managers')).toHaveTextContent('2 managers');
     });
 
@@ -505,12 +507,15 @@ describe('Software Installer — Step 4: Output', () => {
         expect(screen.getByTestId('output-code').textContent).toContain('run_task');
     });
 
-    it('per-app preview contains PER-APP MODE header comment', () => {
+    it('per-app scope renders individual CodeSnippet blocks (one per app)', () => {
         renderPage();
         fireEvent.click(screen.getByText('Homebrew'));
         fireEvent.click(screen.getByLabelText('Select Firefox'));
         fireEvent.click(within(screen.getByRole('group', { name: 'Script scope' })).getByText('One per app'));
-        expect(screen.getByTestId('output-code').textContent).toContain('PER-APP MODE');
+        // task 4b: per-app now renders individual snippets inside output-per-app
+        expect(screen.getByTestId('output-per-app')).toBeInTheDocument();
+        // Firefox's name should appear as a snippet header
+        expect(screen.getByTestId('output-code').textContent).toContain('Firefox');
     });
 
     it('per-app preview shows skip comment for app with no preferred manager', () => {

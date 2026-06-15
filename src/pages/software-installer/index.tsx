@@ -25,6 +25,8 @@ const DISTRO_OPTIONS: SegmentedOption[] = [
 
 const PLATFORM_LABEL: Record<CatalogPlatform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' };
 
+const HIDDEN_MANAGERS: CatalogManager[] = ['mas'];
+
 type PrefMode = 'preferred' | 'fallback';
 
 const PREF_OPTIONS: SegmentedOption[] = [
@@ -51,7 +53,8 @@ const IndexPage = (): React.JSX.Element => {
 
     const platformManagers = useMemo<CatalogManager[]>(() => {
         if (platform === 'linux') return APPS_CATALOG.managers.linux[linuxDistro] ?? [];
-        return APPS_CATALOG.managers[platform as 'macos' | 'windows'] ?? [];
+        const raw = APPS_CATALOG.managers[platform as 'macos' | 'windows'] ?? [];
+        return raw.filter((m) => !HIDDEN_MANAGERS.includes(m));
     }, [platform, linuxDistro]);
 
     function toggleManager(mgr: CatalogManager): void {
@@ -113,6 +116,17 @@ const IndexPage = (): React.JSX.Element => {
         setSelectedApps({});
         setSelectedVersions({});
     }, []);
+
+    const handleBulkAdd = useCallback(
+        (apps: CatalogApp[]) => {
+            apps.forEach((app) => {
+                if (!(app.id in selectedApps)) {
+                    toggleApp(app);
+                }
+            });
+        },
+        [selectedApps, toggleApp],
+    );
 
     const selectedAppCount = useMemo(() => Object.keys(selectedApps).length, [selectedApps]);
     const selectedAppIds = useMemo(() => new Set(Object.keys(selectedApps)), [selectedApps]);
@@ -236,7 +250,14 @@ const IndexPage = (): React.JSX.Element => {
                     Applications
                 </div>
                 <div className="installer-apps-grid">
-                    <AppCatalog platform={platform} selectedAppIds={selectedAppIds} onToggle={toggleApp} />
+                    <AppCatalog
+                        platform={platform}
+                        selectedAppIds={selectedAppIds}
+                        onToggle={toggleApp}
+                        selectedManagers={selectedManagers}
+                        linuxDistro={linuxDistro}
+                        onBulkAdd={handleBulkAdd}
+                    />
                     <AppBasket
                         platform={platform}
                         linuxDistro={linuxDistro}

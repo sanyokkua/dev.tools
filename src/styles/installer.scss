@@ -192,6 +192,12 @@
     }
 }
 
+.installer-bulk-row {
+    display: flex;
+    gap: var(--s2);
+    margin-bottom: var(--s2);
+}
+
 .installer-catalog-scroll {
     border: 1px solid var(--outline-soft);
     border-radius: var(--r-md);
@@ -418,4 +424,23 @@
         flex-direction: column;
         gap: var(--s3);
     }
+}
+
+.installer-per-app-skip {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    padding: var(--s1) 0;
+}
+
+.app-site-link {
+    margin-left: var(--s1);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0.7;
+}
+.app-site-link:hover {
+    opacity: 1;
+    color: var(--primary);
 }

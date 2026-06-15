@@ -104,6 +104,11 @@ const ScriptOutput = ({
             : buildPerAppPreview(selectedList, action, config);
     }, [isEmpty, scope, selectedList, action, config]);
 
+    const perAppScripts = useMemo(() => {
+        if (scope !== 'per-app' || isEmpty) return null;
+        return buildPerAppScripts(selectedList, action, config);
+    }, [scope, isEmpty, selectedList, action, config]);
+
     const language = platform === 'windows' ? 'powershell' : 'bash';
 
     return (
@@ -138,12 +143,33 @@ const ScriptOutput = ({
                     <span data-testid="output-filename" style={{ display: 'none' }}>
                         {filename}
                     </span>
-                    <CodeSnippet
-                        content={scriptContent}
-                        headerText={filename}
-                        language={language}
-                        onDownload={() => downloadScript(scriptContent, filename)}
-                    />
+                    {scope === 'per-app' && perAppScripts ? (
+                        <div data-testid="output-per-app">
+                            {selectedList.map((app) => {
+                                const script = perAppScripts[app.id];
+                                return script ? (
+                                    <CodeSnippet
+                                        key={app.id}
+                                        content={script}
+                                        headerText={app.name}
+                                        language={language}
+                                        onDownload={() => downloadScript(script, `${app.id}-${action}.${ext}`)}
+                                    />
+                                ) : (
+                                    <p key={app.id} className="installer-per-app-skip">
+                                        {app.name}: skipped (no available method)
+                                    </p>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <CodeSnippet
+                            content={scriptContent}
+                            headerText={filename}
+                            language={language}
+                            onDownload={() => downloadScript(scriptContent, filename)}
+                        />
+                    )}
                 </div>
             )}
         </div>
