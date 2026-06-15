@@ -61,7 +61,7 @@ const PromptDetailPanel: FC<Props> = ({ prompt }) => {
                 <p className="prompt-detail-title">{prompt.description}</p>
                 <div className="prompt-meta-row">
                     <span className="prompt-type-pill">{prompt.type}</span>
-                    <Chip text={prompt.category} />
+                    <Chip key={`__cat__${prompt.category}`} text={prompt.category} />
                     {prompt.tags.map((tag) => (
                         <Chip key={tag} text={tag.trim()} />
                     ))}
