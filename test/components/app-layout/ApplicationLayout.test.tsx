@@ -27,6 +27,52 @@ jest.mock('../../../src/components/contexts/ThemeContext', () => ({
     useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),
 }));
 
+describe('ApplicationLayout sidebar collapse (desktop)', () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
+    it('sidebar is not collapsed by default', () => {
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        const nav = screen.getByRole('navigation', { name: /site navigation/i });
+        expect(nav.classList.contains('collapsed')).toBe(false);
+    });
+
+    it('collapses sidebar when collapse button is clicked', () => {
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        const collapseBtn = screen.getByRole('button', { name: /collapse sidebar/i });
+        fireEvent.click(collapseBtn);
+        const nav = screen.getByRole('navigation', { name: /site navigation/i });
+        expect(nav.classList.contains('collapsed')).toBe(true);
+        expect(localStorage.getItem('sidebarCollapsed')).toBe('true');
+    });
+
+    it('hamburger un-collapses sidebar on desktop when collapsed', () => {
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        // Collapse first
+        fireEvent.click(screen.getByRole('button', { name: /collapse sidebar/i }));
+        // Now hamburger should un-collapse
+        fireEvent.click(screen.getByRole('button', { name: /open navigation/i }));
+        const nav = screen.getByRole('navigation', { name: /site navigation/i });
+        expect(nav.classList.contains('collapsed')).toBe(false);
+        expect(localStorage.getItem('sidebarCollapsed')).toBe('false');
+    });
+
+    it('restores collapsed state from localStorage', () => {
+        localStorage.setItem('sidebarCollapsed', 'true');
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        const nav = screen.getByRole('navigation', { name: /site navigation/i });
+        expect(nav.classList.contains('collapsed')).toBe(true);
+    });
+
+    it('hamburger has menu-btn--visible class when sidebar is collapsed', () => {
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        fireEvent.click(screen.getByRole('button', { name: /collapse sidebar/i }));
+        const menuBtn = screen.getByRole('button', { name: /open navigation/i });
+        expect(menuBtn.classList.contains('menu-btn--visible')).toBe(true);
+    });
+});
+
 describe('ApplicationLayout mobile nav', () => {
     it('renders hamburger button', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);

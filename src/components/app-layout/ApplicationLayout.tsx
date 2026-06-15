@@ -25,9 +25,18 @@ const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
         });
     };
 
+    const handleMenuOpen = () => {
+        if (sidebarCollapsed) {
+            // On desktop: un-collapse the sidebar instead of opening a mobile drawer
+            setSidebarCollapsed(false);
+            localStorage.setItem('sidebarCollapsed', 'false');
+        }
+        setSidebarOpen(true);
+    };
+
     return (
         <AppMainContainer>
-            <ApplicationTopBar onMenuOpen={() => setSidebarOpen(true)} sidebarCollapsed={sidebarCollapsed} />
+            <ApplicationTopBar onMenuOpen={handleMenuOpen} sidebarCollapsed={sidebarCollapsed} />
             <AppSideBarAndContentContainer>
                 <ApplicationSidebar
                     isOpen={sidebarOpen}
