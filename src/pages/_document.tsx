@@ -7,16 +7,17 @@ export default class Document extends NextDocument {
     }
 
     render(): React.JSX.Element {
+        const bp = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
         return (
             <Html lang="en" data-theme="light" suppressHydrationWarning>
                 <Head>
-                    <link rel="icon" href="/favicon.ico" />
-                    <link rel="icon" type="image/png" href="/favicon-16x16.png" />
-                    <link rel="icon" type="image/png" href="/favicon-32x32.png" />
-                    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-                    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-                    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
-                    <link rel="manifest" href="/site.webmanifest" />
+                    <link rel="icon" href={`${bp}/favicon.ico`} />
+                    <link rel="icon" type="image/png" href={`${bp}/favicon-16x16.png`} />
+                    <link rel="icon" type="image/png" href={`${bp}/favicon-32x32.png`} />
+                    <link rel="apple-touch-icon" href={`${bp}/apple-touch-icon.png`} />
+                    <link rel="icon" type="image/png" sizes="192x192" href={`${bp}/android-chrome-192x192.png`} />
+                    <link rel="icon" type="image/png" sizes="512x512" href={`${bp}/android-chrome-512x512.png`} />
+                    <link rel="manifest" href={`${bp}/site.webmanifest`} />
                 </Head>
 
                 <body>
