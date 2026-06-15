@@ -15,21 +15,6 @@
     justify-content: center;
 }
 
-/* DASHED — same as outlined with dashed border */
-.button-dashed {
-    background: transparent;
-    border: 1px dashed var(--outline);
-    color: var(--on-surface);
-}
-
-.button-dashed:hover {
-    background: var(--hover-overlay);
-}
-
-.button-dashed:active {
-    opacity: 0.8;
-}
-
 /* TEXT — no background, no border */
 .button-text {
     background: transparent;
