@@ -29,6 +29,7 @@ export enum PromptCategory {
     TEXT_TRANSLATION = 'text-translation',
     TASK_RESEARCH_PROMPT = 'task-research', // analyze the problem
     AGILE_USER_STORY_GENERATION = 'agile-user-story-generation',
+    PROMPT_ENGINEERING = 'prompt-engineering',
 }
 
 export type Tags = string[];
