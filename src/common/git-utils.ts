@@ -152,7 +152,6 @@ export function generateGitCommands(name: string, email: string, globalConfig: b
             ),
         );
     }
-    commands.push(generateCommand('Copy SSH Public Key', SSH_KEY_COPY[os]));
     commands.push(generateCommand('Test GPG', GPG_TEST));
     commands.push(generateCommand('Test SSH', SSH_KEY_TEST));
 
