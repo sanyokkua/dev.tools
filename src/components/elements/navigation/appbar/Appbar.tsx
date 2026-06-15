@@ -8,12 +8,17 @@ export type AppBarProps = {
     theme?: 'light' | 'dark';
     onThemeToggle?: () => void;
     onMenuOpen?: () => void;
+    sidebarCollapsed?: boolean;
 };
 
-const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle, onMenuOpen }) => {
+const Appbar: React.FC<AppBarProps> = ({ appTitle, pageTitle, theme, onThemeToggle, onMenuOpen, sidebarCollapsed }) => {
     return (
         <header className="topbar">
-            <button className="icon-btn menu-btn" onClick={onMenuOpen} aria-label="Open navigation">
+            <button
+                className={'icon-btn menu-btn' + (sidebarCollapsed ? ' menu-btn--visible' : '')}
+                onClick={onMenuOpen}
+                aria-label="Open navigation"
+            >
                 ☰
             </button>
             <Link href="/" className="topbar-brand">

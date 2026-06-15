@@ -42,11 +42,22 @@ const navGroups: NavGroup[] = [
 interface SidebarWrapperProps {
     isOpen: boolean;
     onClose: () => void;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
 }
 
-const ApplicationSidebar: React.FC<SidebarWrapperProps> = ({ isOpen, onClose }) => {
+const ApplicationSidebar: React.FC<SidebarWrapperProps> = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
     const router = useRouter();
-    return <Sidebar groups={navGroups} activeLink={router.pathname} isOpen={isOpen} onClose={onClose} />;
+    return (
+        <Sidebar
+            groups={navGroups}
+            activeLink={router.pathname}
+            isOpen={isOpen}
+            onClose={onClose}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={onToggleCollapse}
+        />
+    );
 };
 
 export default ApplicationSidebar;

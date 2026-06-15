@@ -6,13 +6,24 @@ export type NavItem = { itemName: string; itemLink: string; icon: string; badge?
 export type NavGroup = { groupName: string; items: NavItem[] };
 export type SideBarItem = NavItem;
 
-export type SidebarProps = { groups: NavGroup[]; activeLink: string; isOpen?: boolean; onClose?: () => void };
+export type SidebarProps = {
+    groups: NavGroup[];
+    activeLink: string;
+    isOpen?: boolean;
+    onClose?: () => void;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
+};
 
-const Sidebar: React.FC<SidebarProps> = ({ groups, activeLink, isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ groups, activeLink, isOpen, onClose, isCollapsed, onToggleCollapse }) => {
     return (
         <>
             {isOpen && <div className="nav-backdrop" onClick={onClose} aria-hidden="true" />}
-            <aside className={'nav-rail' + (isOpen ? ' open' : '')} role="navigation" aria-label="Site navigation">
+            <aside
+                className={'nav-rail' + (isOpen ? ' open' : '') + (isCollapsed ? ' collapsed' : '')}
+                role="navigation"
+                aria-label="Site navigation"
+            >
                 {groups.map((group) => (
                     <div key={group.groupName}>
                         <div className="nav-group-label">{group.groupName}</div>
@@ -36,6 +47,14 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, activeLink, isOpen, onClose }
                         })}
                     </div>
                 ))}
+                <button
+                    className="nav-collapse-btn"
+                    onClick={onToggleCollapse}
+                    aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                    title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                    {isCollapsed ? '›' : '‹'}
+                </button>
             </aside>
         </>
     );

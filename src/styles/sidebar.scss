@@ -84,6 +84,36 @@
     border: 1px solid var(--outline-soft);
 }
 
+/* Desktop collapse toggle button — hidden on mobile, shown on desktop */
+.nav-collapse-btn {
+    display: none;
+    margin-top: auto;
+    padding: 8px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    align-self: flex-end;
+}
+
+.nav-collapse-btn:hover {
+    background-color: var(--card-2);
+    color: var(--on-surface);
+}
+
+/* Desktop collapse: hide sidebar when collapsed */
+@media (min-width: 921px) {
+    .nav-collapse-btn {
+        display: block;
+    }
+
+    .nav-rail.collapsed {
+        display: none;
+    }
+}
+
 /* Backdrop — invisible on desktop; appears behind drawer on mobile */
 .nav-backdrop {
     display: none;

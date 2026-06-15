@@ -96,3 +96,11 @@
         flex-shrink: 0;
     }
 }
+
+/* Show hamburger on desktop when sidebar is collapsed */
+@media (min-width: 921px) {
+    .menu-btn--visible {
+        display: grid;
+        flex-shrink: 0;
+    }
+}
