@@ -69,4 +69,43 @@ describe('ThemeProvider', () => {
         });
         expect(screen.getByTestId('theme').textContent).toBe('dark');
     });
+
+    it('renders without crashing when localStorage.getItem throws SecurityError', async () => {
+        const spy = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+            throw new Error('SecurityError');
+        });
+        await act(async () => {
+            render(
+                <ThemeProvider>
+                    <ThemeDisplay />
+                </ThemeProvider>,
+            );
+        });
+        expect(screen.getByTestId('theme').textContent).toBe('light');
+        spy.mockRestore();
+    });
+
+    it('does not crash when localStorage.setItem throws SecurityError', async () => {
+        const spy = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+            throw new Error('SecurityError');
+        });
+        let toggle: () => void = () => {};
+        const Capture: React.FC = () => {
+            const { toggleTheme, theme } = useTheme();
+            toggle = toggleTheme;
+            return <div data-testid="theme">{theme}</div>;
+        };
+        await act(async () => {
+            render(
+                <ThemeProvider>
+                    <Capture />
+                </ThemeProvider>,
+            );
+        });
+        act(() => {
+            toggle();
+        });
+        expect(screen.getByTestId('theme').textContent).toBe('dark');
+        spy.mockRestore();
+    });
 });

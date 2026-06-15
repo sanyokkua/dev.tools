@@ -73,6 +73,32 @@ describe('ApplicationLayout sidebar collapse (desktop)', () => {
     });
 });
 
+describe('ApplicationLayout localStorage error handling', () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
+    it('renders without crashing when localStorage.getItem throws SecurityError', () => {
+        const spy = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+            throw new Error('SecurityError');
+        });
+        expect(() => render(<ApplicationLayout>content</ApplicationLayout>)).not.toThrow();
+        spy.mockRestore();
+    });
+
+    it('does not crash when localStorage.setItem throws SecurityError during collapse', () => {
+        render(<ApplicationLayout>content</ApplicationLayout>);
+        const spy = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+            throw new Error('SecurityError');
+        });
+        // Click the toggle-sidebar button (logo area) to trigger persistCollapsed -> setItem
+        expect(() => {
+            fireEvent.click(screen.getByRole('button', { name: /toggle sidebar/i }));
+        }).not.toThrow();
+        spy.mockRestore();
+    });
+});
+
 describe('ApplicationLayout mobile nav', () => {
     beforeEach(() => {
         localStorage.clear();
