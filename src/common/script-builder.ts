@@ -195,8 +195,6 @@ export function buildPerAppScripts(
     config: BuilderConfig,
 ): Record<string, string> {
     const result: Record<string, string> = {};
-    const isWindows = config.platform === 'windows';
-    const ext = isWindows ? 'ps1' : 'sh';
 
     for (const app of apps) {
         const manager = resolveManager(app, config);
@@ -204,20 +202,16 @@ export function buildPerAppScripts(
 
         const methods = getMethodsForPlatform(app, config)!;
         const method = findMethodByManager(methods, manager)!;
-        const filename = `${action}-${app.id}.${ext}`;
-        const header = `# ===== ${filename} =====`;
 
         if (app.parameterized) {
             const versions = config.selectedVersions[app.id] ?? [];
             const cmds = versions.map((v) => getCommand(method, action, v)).filter((c): c is string => c !== null);
             if (cmds.length === 0) continue;
-            result[app.id] = isWindows
-                ? [header, ...cmds].join('\n')
-                : ['#!/usr/bin/env bash', header, ...cmds].join('\n');
+            result[app.id] = cmds.join('\n');
         } else {
             const cmd = getCommand(method, action, undefined);
             if (!cmd) continue;
-            result[app.id] = isWindows ? [header, cmd].join('\n') : ['#!/usr/bin/env bash', header, cmd].join('\n');
+            result[app.id] = cmd;
         }
     }
 

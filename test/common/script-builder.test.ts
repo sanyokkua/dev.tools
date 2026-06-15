@@ -508,9 +508,9 @@ describe('upgrade action', () => {
             expect(result['google-chrome']).toContain('brew upgrade --greedy --cask google-chrome');
         });
 
-        it('includes filename header with upgrade action', () => {
+        it('emits bare command only (no shebang, no header) for upgrade action', () => {
             const result = buildPerAppScripts([CHROME_BREW_CASK], 'upgrade', macosConfig);
-            expect(result['google-chrome']).toContain('# ===== upgrade-google-chrome.sh =====');
+            expect(result['google-chrome']).toBe('brew upgrade --greedy --cask google-chrome');
         });
 
         it('omits key when both upgrade and update are absent', () => {
@@ -732,29 +732,29 @@ describe('buildPerAppScripts', () => {
     });
 
     describe('.sh script content', () => {
-        it('starts with bash shebang', () => {
+        it('does NOT include bash shebang', () => {
             const result = buildPerAppScripts([FIREFOX], 'install', macosConfig);
-            expect(result['firefox']).toContain('#!/usr/bin/env bash');
+            expect(result['firefox']).not.toContain('#!/usr/bin/env bash');
         });
 
-        it('includes filename header comment for install', () => {
+        it('does NOT include filename header comment', () => {
             const result = buildPerAppScripts([FIREFOX], 'install', macosConfig);
-            expect(result['firefox']).toContain('# ===== install-firefox.sh =====');
+            expect(result['firefox']).not.toContain('#');
         });
 
-        it('includes filename header comment for update', () => {
+        it('is exactly the bare install command', () => {
+            const result = buildPerAppScripts([FIREFOX], 'install', macosConfig);
+            expect(result['firefox']).toBe('brew install --cask firefox');
+        });
+
+        it('is exactly the bare update command', () => {
             const result = buildPerAppScripts([FIREFOX], 'update', macosConfig);
-            expect(result['firefox']).toContain('# ===== update-firefox.sh =====');
+            expect(result['firefox']).toBe('brew upgrade --cask firefox');
         });
 
-        it('includes filename header comment for remove', () => {
+        it('is exactly the bare remove command', () => {
             const result = buildPerAppScripts([FIREFOX], 'remove', macosConfig);
-            expect(result['firefox']).toContain('# ===== remove-firefox.sh =====');
-        });
-
-        it('includes the install command', () => {
-            const result = buildPerAppScripts([FIREFOX], 'install', macosConfig);
-            expect(result['firefox']).toContain('brew install --cask firefox');
+            expect(result['firefox']).toBe('brew uninstall --cask firefox');
         });
     });
 
@@ -764,33 +764,37 @@ describe('buildPerAppScripts', () => {
             expect(result['firefox']).not.toContain('#!/usr/bin/env bash');
         });
 
-        it('includes filename header comment with .ps1 extension', () => {
+        it('does NOT include filename header comment', () => {
             const result = buildPerAppScripts([FIREFOX], 'install', windowsConfig);
-            expect(result['firefox']).toContain('# ===== install-firefox.ps1 =====');
+            expect(result['firefox']).not.toContain('#');
         });
 
-        it('includes the winget install command', () => {
+        it('is exactly the bare winget install command', () => {
             const result = buildPerAppScripts([FIREFOX], 'install', windowsConfig);
-            expect(result['firefox']).toContain('winget install --id Mozilla.Firefox -e');
+            expect(result['firefox']).toBe('winget install --id Mozilla.Firefox -e');
         });
     });
 
     describe('three actions × both scopes', () => {
-        it.each(['install', 'update', 'remove'] as ScriptAction[])(
-            'per-app .sh returns expected key for action=%s',
-            (action) => {
-                const result = buildPerAppScripts([FIREFOX], action, macosConfig);
-                expect(result['firefox']).toContain(`# ===== ${action}-firefox.sh =====`);
-            },
-        );
+        it.each([
+            ['install', 'brew install --cask firefox'],
+            ['update', 'brew upgrade --cask firefox'],
+            ['remove', 'brew uninstall --cask firefox'],
+        ] as [ScriptAction, string][])('per-app .sh emits bare command for action=%s', (action, expected) => {
+            const result = buildPerAppScripts([FIREFOX], action, macosConfig);
+            expect(result['firefox']).toBe(expected);
+            expect(result['firefox']).not.toContain('#');
+        });
 
-        it.each(['install', 'update', 'remove'] as ScriptAction[])(
-            'per-app .ps1 returns expected key for action=%s',
-            (action) => {
-                const result = buildPerAppScripts([FIREFOX], action, windowsConfig);
-                expect(result['firefox']).toContain(`# ===== ${action}-firefox.ps1 =====`);
-            },
-        );
+        it.each([
+            ['install', 'winget install --id Mozilla.Firefox -e'],
+            ['update', 'winget upgrade --id Mozilla.Firefox -e'],
+            ['remove', 'winget uninstall --id Mozilla.Firefox -e'],
+        ] as [ScriptAction, string][])('per-app .ps1 emits bare command for action=%s', (action, expected) => {
+            const result = buildPerAppScripts([FIREFOX], action, windowsConfig);
+            expect(result['firefox']).toBe(expected);
+            expect(result['firefox']).not.toContain('#');
+        });
     });
 
     describe('parameterized version substitution', () => {
