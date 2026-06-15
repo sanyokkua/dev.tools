@@ -84,12 +84,11 @@ const toolGroups: ToolGroup[] = [
                 route: '/software-installer',
                 icon: '⚙',
                 description: 'Generate install, update, and remove scripts for any OS',
-                badge: 'NEW',
             },
             {
                 name: 'macOS Setup',
                 route: '/mac-os-setup',
-                icon: '',
+                icon: '⌘',
                 description: 'Package managers, env vars, and platform scripts for macOS',
             },
             {

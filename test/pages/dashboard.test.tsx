@@ -51,9 +51,16 @@ describe('Dashboard page', () => {
         expect(cards).toHaveLength(16);
     });
 
-    it('Software Installer card has the NEW badge', () => {
+    it('Software Installer card has no NEW badge', () => {
         renderPage();
-        expect(screen.getByText('NEW')).toBeInTheDocument();
+        expect(screen.queryByText('NEW')).not.toBeInTheDocument();
+    });
+
+    it('macOS Setup card displays the ⌘ icon', () => {
+        renderPage();
+        const cards = screen.getAllByRole('link').filter((el) => el.classList.contains('dashboard-card'));
+        const macCard = cards.find((el) => el.textContent?.includes('macOS Setup'));
+        expect(macCard?.textContent).toContain('⌘');
     });
 
     it('GitHub link is present and points to the correct URL', () => {
