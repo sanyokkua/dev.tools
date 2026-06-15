@@ -225,8 +225,9 @@
 
 .json-formatter-field {
     display: flex;
-    align-items: center;
-    gap: var(--s2);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     margin-bottom: var(--s2);
 }
 
