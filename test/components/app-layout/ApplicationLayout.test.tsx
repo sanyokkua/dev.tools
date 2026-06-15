@@ -74,6 +74,10 @@ describe('ApplicationLayout sidebar collapse (desktop)', () => {
 });
 
 describe('ApplicationLayout mobile nav', () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
     it('renders hamburger button', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);
         expect(screen.getByRole('button', { name: /open navigation/i })).toBeInTheDocument();

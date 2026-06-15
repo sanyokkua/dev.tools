@@ -1,5 +1,5 @@
 'use client';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import AppMainContainer from '../layouts/AppMainContainer';
 import AppMainContentContainer from '../layouts/AppMainContentContainer';
 import AppSideBarAndContentContainer from '../layouts/AppSideBarAndContentContainer';
@@ -12,24 +12,26 @@ interface LayoutProps {
 
 const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        return localStorage.getItem('sidebarCollapsed') === 'true';
-    });
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+    useEffect(() => {
+        setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+    }, []);
+
+    const persistCollapsed = (value: boolean) => {
+        setSidebarCollapsed(value);
+        localStorage.setItem('sidebarCollapsed', String(value));
+    };
 
     const toggleSidebarCollapsed = () => {
-        setSidebarCollapsed((prev) => {
-            const next = !prev;
-            localStorage.setItem('sidebarCollapsed', String(next));
-            return next;
-        });
+        persistCollapsed(!sidebarCollapsed);
     };
 
     const handleMenuOpen = () => {
         if (sidebarCollapsed) {
             // On desktop: un-collapse the sidebar instead of opening a mobile drawer
-            setSidebarCollapsed(false);
-            localStorage.setItem('sidebarCollapsed', 'false');
+            persistCollapsed(false);
+            return;
         }
         setSidebarOpen(true);
     };
