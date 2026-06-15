@@ -525,3 +525,102 @@ describe('Software Installer — Step 4: Output', () => {
         expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
     });
 });
+
+describe('Software Installer — Multi-version JDK selection', () => {
+    it('shows version chip group instead of a version select for parameterized apps', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        // No longer a <select> for version
+        expect(screen.queryByLabelText('Version for Amazon Corretto')).not.toBeInTheDocument();
+        // Chip group present
+        expect(screen.getByRole('group', { name: 'Versions for Amazon Corretto' })).toBeInTheDocument();
+    });
+
+    it('defaults to the last version pre-selected on app add', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const selected = within(versionGroup)
+            .getAllByRole('button')
+            .filter((btn) => btn.getAttribute('aria-pressed') === 'true');
+        expect(selected.length).toBeGreaterThan(0);
+    });
+
+    it('clicking an unselected version chip selects it', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const unselected = within(versionGroup)
+            .getAllByRole('button')
+            .find((btn) => btn.getAttribute('aria-pressed') === 'false');
+        expect(unselected).toBeDefined();
+        fireEvent.click(unselected!);
+        expect(unselected!).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('clicking a selected version chip deselects it', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const selected = within(versionGroup)
+            .getAllByRole('button')
+            .filter((btn) => btn.getAttribute('aria-pressed') === 'true');
+        expect(selected.length).toBeGreaterThan(0);
+        fireEvent.click(selected[0]);
+        expect(selected[0]).toHaveAttribute('aria-pressed', 'false');
+    });
+
+    it('shows "Select a version" status when all chips are deselected', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        // Deselect every selected chip
+        const allSelected = within(versionGroup)
+            .getAllByRole('button')
+            .filter((btn) => btn.getAttribute('aria-pressed') === 'true');
+        allSelected.forEach((chip) => fireEvent.click(chip));
+        expect(screen.getByText('Select a version')).toBeInTheDocument();
+    });
+
+    it('removing a parameterized app cleans up its version selection', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        // App added; select an extra version
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const unselected = within(versionGroup)
+            .getAllByRole('button')
+            .find((btn) => btn.getAttribute('aria-pressed') === 'false');
+        if (unselected) fireEvent.click(unselected);
+        // Now remove the app
+        fireEvent.click(screen.getByRole('button', { name: /Remove Amazon Corretto/i }));
+        // Re-add the app — should start fresh with only the default version
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        const versionGroupAfter = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const selectedAfter = within(versionGroupAfter)
+            .getAllByRole('button')
+            .filter((btn) => btn.getAttribute('aria-pressed') === 'true');
+        expect(selectedAfter).toHaveLength(1);
+    });
+
+    it('combined script output contains a command for each selected version', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Amazon Corretto'));
+        // Select one additional version beyond the default
+        const versionGroup = screen.getByRole('group', { name: 'Versions for Amazon Corretto' });
+        const unselected = within(versionGroup)
+            .getAllByRole('button')
+            .find((btn) => btn.getAttribute('aria-pressed') === 'false');
+        if (unselected) fireEvent.click(unselected);
+        // Output panel should have at least 2 corretto@ references
+        const outputText = screen.getByTestId('output-code').textContent ?? '';
+        const matches = outputText.match(/corretto@\d+/g) ?? [];
+        expect(matches.length).toBeGreaterThanOrEqual(2);
+    });
+});
