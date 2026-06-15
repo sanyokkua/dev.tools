@@ -13,7 +13,7 @@ interface AppBasketProps {
     selectedManagers: CatalogManager[];
     prefMode: PrefMode;
     selectedApps: Record<string, CatalogManager | null>;
-    selectedVersions: Record<string, string>;
+    selectedVersions: Record<string, string[]>;
     onRemove: (appId: string) => void;
     onOverride: (appId: string, mgr: CatalogManager | null) => void;
     onVersionSelect: (appId: string, version: string) => void;
@@ -29,7 +29,7 @@ type BasketStatus =
 
 function getStatus(app: CatalogApp, config: BuilderConfig, selectedManagers: CatalogManager[]): BasketStatus {
     if (!app.platforms[config.platform]) return { kind: 'error' };
-    if (app.parameterized && !config.selectedVersions[app.id]) return { kind: 'no-version' };
+    if (app.parameterized && !config.selectedVersions[app.id]?.length) return { kind: 'no-version' };
     const mgr = resolveManager(app, config);
     if (!mgr) return { kind: 'skip' };
     const isFallback = selectedManagers.length > 0 && !selectedManagers.includes(mgr);
@@ -154,21 +154,29 @@ const AppBasket = ({
                                 )}
 
                                 {app.parameterized && app.versions && (
-                                    <div className="installer-basket-card__field">
-                                        <label htmlFor={`version-${app.id}`}>Version</label>
-                                        <select
-                                            id={`version-${app.id}`}
-                                            value={selectedVersions[app.id] ?? ''}
-                                            onChange={(e) => onVersionSelect(app.id, e.target.value)}
-                                            aria-label={`Version for ${app.name}`}
+                                    <div className="installer-basket-card__versions">
+                                        <label>Versions to install</label>
+                                        <div
+                                            className="installer-chip-row"
+                                            role="group"
+                                            aria-label={`Versions for ${app.name}`}
                                         >
-                                            <option value="">— select —</option>
-                                            {app.versions.map((v) => (
-                                                <option key={v} value={v}>
-                                                    {v}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            {app.versions.map((v) => {
+                                                const selected = (selectedVersions[app.id] ?? []).includes(v);
+                                                return (
+                                                    <button
+                                                        key={v}
+                                                        type="button"
+                                                        className={`chip${selected ? ' on' : ''}`}
+                                                        aria-pressed={selected}
+                                                        onClick={() => onVersionSelect(app.id, v)}
+                                                    >
+                                                        {v}
+                                                        {selected ? ' ✓' : ''}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
                             </div>

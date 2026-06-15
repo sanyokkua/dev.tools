@@ -360,6 +360,19 @@
     }
 }
 
+.installer-basket-card__versions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+
+    > label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--on-surface-variant);
+        white-space: nowrap;
+    }
+}
+
 // Responsive collapse
 
 @media (max-width: 900px) {

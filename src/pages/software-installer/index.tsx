@@ -39,7 +39,7 @@ const IndexPage = (): React.JSX.Element => {
     const [selectedManagers, setSelectedManagers] = useState<CatalogManager[]>([]);
     const [prefMode, setPrefMode] = useState<PrefMode>('preferred');
     const [selectedApps, setSelectedApps] = useState<Record<string, CatalogManager | null>>({});
-    const [selectedVersions, setSelectedVersions] = useState<Record<string, string>>({});
+    const [selectedVersions, setSelectedVersions] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         setPageTitle('Software Installer');
@@ -60,22 +60,37 @@ const IndexPage = (): React.JSX.Element => {
 
     const toggleApp = useCallback(
         (app: CatalogApp): void => {
-            setSelectedApps((prev) => {
-                if (app.id in prev) {
+            if (app.id in selectedApps) {
+                setSelectedApps((prev) => {
                     const next = { ...prev };
                     delete next[app.id];
                     return next;
-                }
+                });
+                setSelectedVersions((prev) => {
+                    const next = { ...prev };
+                    delete next[app.id];
+                    return next;
+                });
+            } else {
                 const avail = getAvailableManagers(app, platform, linuxDistro);
                 const defaultMgr = selectedManagers.find((m) => avail.includes(m)) ?? null;
-                return { ...prev, [app.id]: defaultMgr };
-            });
+                setSelectedApps((prev) => ({ ...prev, [app.id]: defaultMgr }));
+                if (app.parameterized && app.versions?.length) {
+                    const defaultVersion = app.versions[app.versions.length - 1];
+                    setSelectedVersions((prev) => ({ ...prev, [app.id]: [defaultVersion] }));
+                }
+            }
         },
-        [platform, linuxDistro, selectedManagers],
+        [platform, linuxDistro, selectedManagers, selectedApps],
     );
 
     const removeApp = useCallback((appId: string): void => {
         setSelectedApps((prev) => {
+            const next = { ...prev };
+            delete next[appId];
+            return next;
+        });
+        setSelectedVersions((prev) => {
             const next = { ...prev };
             delete next[appId];
             return next;
@@ -86,8 +101,12 @@ const IndexPage = (): React.JSX.Element => {
         setSelectedApps((prev) => ({ ...prev, [appId]: mgr }));
     }, []);
 
-    const setVersion = useCallback((appId: string, version: string): void => {
-        setSelectedVersions((prev) => ({ ...prev, [appId]: version }));
+    const toggleVersion = useCallback((appId: string, version: string): void => {
+        setSelectedVersions((prev) => {
+            const current = prev[appId] ?? [];
+            const next = current.includes(version) ? current.filter((v) => v !== version) : [...current, version];
+            return { ...prev, [appId]: next };
+        });
     }, []);
 
     const clearBasket = useCallback((): void => {
@@ -227,7 +246,7 @@ const IndexPage = (): React.JSX.Element => {
                         selectedVersions={selectedVersions}
                         onRemove={removeApp}
                         onOverride={setOverride}
-                        onVersionSelect={setVersion}
+                        onVersionSelect={toggleVersion}
                         onClear={clearBasket}
                     />
                 </div>

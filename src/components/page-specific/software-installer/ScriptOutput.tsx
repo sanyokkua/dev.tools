@@ -15,7 +15,7 @@ export interface ScriptOutputProps {
     selectedManagers: CatalogManager[];
     prefMode: PrefMode;
     selectedApps: Record<string, CatalogManager | null>;
-    selectedVersions: Record<string, string>;
+    selectedVersions: Record<string, string[]>;
 }
 
 const ACTION_OPTIONS: SegmentedOption[] = [
@@ -42,7 +42,7 @@ function buildPerAppPreview(apps: CatalogApp[], action: ScriptAction, config: Bu
         } else {
             const reason = !app.platforms[config.platform]
                 ? `no ${config.platform} build`
-                : app.parameterized && !config.selectedVersions[app.id]
+                : app.parameterized && !config.selectedVersions[app.id]?.length
                   ? 'no version selected'
                   : 'no preferred manager — fallback off';
             parts.push(`# ${app.name}: ${reason} — skipped`);
