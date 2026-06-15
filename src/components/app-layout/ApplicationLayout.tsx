@@ -15,12 +15,20 @@ const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     useEffect(() => {
-        setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+        try {
+            setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+        } catch {
+            // localStorage unavailable (private browsing, SSR)
+        }
     }, []);
 
     const persistCollapsed = (value: boolean) => {
         setSidebarCollapsed(value);
-        localStorage.setItem('sidebarCollapsed', String(value));
+        try {
+            localStorage.setItem('sidebarCollapsed', String(value));
+        } catch {
+            // ignore
+        }
     };
 
     const toggleSidebarCollapsed = () => {

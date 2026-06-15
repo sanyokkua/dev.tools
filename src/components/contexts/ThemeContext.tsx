@@ -11,17 +11,31 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [theme, setTheme] = useState<Theme>('light');
 
     useEffect(() => {
-        const saved = localStorage.getItem('theme');
-        if (saved === 'light' || saved === 'dark') {
-            setTheme(saved);
-        } else {
-            setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        try {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'light' || saved === 'dark') {
+                setTheme(saved);
+                return;
+            }
+        } catch {
+            // localStorage unavailable (private browsing, SSR)
+        }
+        try {
+            if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setTheme('dark');
+            }
+        } catch {
+            // matchMedia unavailable
         }
     }, []);
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+            // ignore
+        }
     }, [theme]);
 
     const toggleTheme = (): void => {
