@@ -83,7 +83,7 @@ const toolGroups: ToolGroup[] = [
                 name: 'Software Installer',
                 route: '/software-installer',
                 icon: '⚙',
-                description: 'Generate install, update, and remove scripts for any OS',
+                description: 'Generate install, update, upgrade, and remove scripts for any OS',
             },
             {
                 name: 'macOS Setup',
