@@ -370,7 +370,7 @@ describe('platform icons, method default, unavailability guard', () => {
         renderPage();
         const platformGroup = screen.getByRole('group', { name: 'Target platform' });
         const buttons = within(platformGroup).getAllByRole('button');
-        expect(buttons[0].textContent).toContain('');
+        expect(buttons[0].textContent).toContain('⌘');
         expect(buttons[1].textContent).toContain('⊞');
         expect(buttons[2].textContent).toContain('🐧');
     });

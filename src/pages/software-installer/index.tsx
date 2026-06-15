@@ -10,7 +10,7 @@ import ScriptOutput from '@/page-specific/software-installer/ScriptOutput';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
-    { value: 'macos', label: 'macOS', icon: '' },
+    { value: 'macos', label: 'macOS', icon: '⌘' },
     { value: 'windows', label: 'Windows', icon: '⊞' },
     { value: 'linux', label: 'Linux', icon: '🐧' },
 ];

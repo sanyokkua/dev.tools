@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
+import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import {
     copyToClipboardFromEditor,
@@ -19,7 +20,7 @@ import EditorToolbar from '../../components/elements/editor/EditorToolbar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
 
-const SYNTAX_OPTIONS: { value: EditorLanguage; label: string }[] = [
+const SYNTAX_OPTIONS: SegmentedOption[] = [
     { value: 'shell', label: 'Unix bash' },
     { value: 'bat', label: 'Windows bat' },
     { value: 'powershell', label: 'PowerShell' },
@@ -76,8 +77,8 @@ const IndexPage: React.FC = (): React.JSX.Element => {
         setEditorContent(editorResultRef, joined);
     }, []);
 
-    const handleSyntaxChange = (lang: EditorLanguage): void => {
-        setLanguageId(lang);
+    const handleSyntaxChange = (lang: string): void => {
+        setLanguageId(lang as EditorLanguage);
         showToast({ message: `Changed Syntax to ${lang}`, type: ToastType.INFO });
     };
 
@@ -91,18 +92,12 @@ const IndexPage: React.FC = (): React.JSX.Element => {
 
                 <div className="terminal-utils__toolbar">
                     <span className="terminal-utils__syntax-label">Syntax:</span>
-                    <div className="seg-control" role="group" aria-label="Syntax">
-                        {SYNTAX_OPTIONS.map((opt) => (
-                            <button
-                                key={opt.value}
-                                type="button"
-                                onClick={() => handleSyntaxChange(opt.value)}
-                                aria-pressed={languageId === opt.value}
-                            >
-                                {opt.label}
-                            </button>
-                        ))}
-                    </div>
+                    <SegmentedControl
+                        options={SYNTAX_OPTIONS}
+                        value={languageId}
+                        onChange={handleSyntaxChange}
+                        aria-label="Syntax"
+                    />
                 </div>
 
                 <div className="editorpane">

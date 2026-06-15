@@ -28,6 +28,11 @@ export default class Document extends NextDocument {
                 </Head>
 
                 <body>
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`,
+                        }}
+                    />
                     <Main />
                     <NextScript />
                 </body>

@@ -99,9 +99,9 @@ const GitCheatSheetPage: FC = () => {
                             content={singleLineCommands}
                             language={codeLanguage}
                         />
-                        {detailedCommands.map((cmd) => (
+                        {detailedCommands.map((cmd, idx) => (
                             <CodeSnippet
-                                key={StringUtils.slugifyString(cmd.description)}
+                                key={`${idx}-${StringUtils.slugifyString(cmd.description)}`}
                                 headerText={cmd.description}
                                 content={cmd.command}
                                 language={codeLanguage}
