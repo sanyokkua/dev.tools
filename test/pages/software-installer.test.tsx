@@ -639,3 +639,64 @@ describe('Software Installer — Multi-version JDK selection', () => {
         expect(matches.length).toBeGreaterThanOrEqual(2);
     });
 });
+
+describe('Software Installer — handleBulkAdd integration', () => {
+    it('Add All Visible adds unselected platform-available apps to the basket', () => {
+        renderPage();
+        // Narrow to "iterm" — uniquely matches only iTerm2 (macOS-only), so count is predictable.
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'iterm' } });
+
+        // Before: basket empty, summary shows 0 apps.
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add All Visible' }));
+
+        // iTerm2 is available on macOS (default platform) → it should be added.
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('1 app');
+        expect(screen.queryByTestId('basket-empty')).not.toBeInTheDocument();
+    });
+
+    it('Add All Visible does not add the same app twice', () => {
+        renderPage();
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'iterm' } });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add All Visible' }));
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('1 app');
+
+        // Clicking again should not duplicate.
+        fireEvent.click(screen.getByRole('button', { name: 'Add All Visible' }));
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('1 app');
+    });
+
+    it('Add Supported adds only apps with a matching manager', () => {
+        renderPage();
+        // Select Homebrew as a manager.
+        fireEvent.click(screen.getByText('Homebrew'));
+
+        // Narrow to "iterm" — iTerm2 has a brew method on macOS.
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'iterm' } });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add Supported' }));
+
+        // iTerm2 should be in the basket.
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('1 app');
+        expect(screen.queryByTestId('basket-empty')).not.toBeInTheDocument();
+    });
+
+    it('Add Supported adds nothing when no managers are selected', () => {
+        renderPage();
+        // No managers selected.
+        const search = screen.getByPlaceholderText('Search apps…');
+        fireEvent.change(search, { target: { value: 'iterm' } });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add Supported' }));
+
+        // Nothing should be added.
+        expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
+        expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+    });
+});
