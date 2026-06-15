@@ -1,7 +1,7 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { filterCatalog, getAvailableManagers, getCategories } from '@/common/catalog-utils';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 interface AppCatalogProps {
     platform: CatalogPlatform;
@@ -30,19 +30,19 @@ const AppCatalog = ({
 
     const filtered = useMemo(() => filterCatalog(APPS_CATALOG.apps, search, activeCategory), [search, activeCategory]);
 
-    const handleAddAllVisible = () => {
+    const handleAddAllVisible = useCallback(() => {
         const toAdd = filtered.filter((app) => app.platforms[platform] && !selectedAppIds.has(app.id));
         onBulkAdd(toAdd);
-    };
+    }, [filtered, platform, selectedAppIds, onBulkAdd]);
 
-    const handleAddSupported = () => {
+    const handleAddSupported = useCallback(() => {
         const toAdd = filtered.filter(
             (app) =>
                 !selectedAppIds.has(app.id) &&
                 getAvailableManagers(app, platform, linuxDistro).some((m) => selectedManagers.includes(m)),
         );
         onBulkAdd(toAdd);
-    };
+    }, [filtered, platform, selectedAppIds, linuxDistro, selectedManagers, onBulkAdd]);
 
     return (
         <div data-testid="app-catalog">

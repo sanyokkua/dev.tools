@@ -29,27 +29,10 @@ const SCOPE_OPTIONS: SegmentedOption[] = [
     { value: 'per-app', label: 'One per app' },
 ];
 
-function buildPerAppPreview(apps: CatalogApp[], action: ScriptAction, config: BuilderConfig): string {
-    const scripts = buildPerAppScripts(apps, action, config);
-    const parts: string[] = [
-        `# PER-APP MODE — ${apps.length} app${apps.length === 1 ? '' : 's'}; preview of each ${action} script:`,
-    ];
-
-    for (const app of apps) {
-        parts.push('');
-        if (app.id in scripts) {
-            parts.push(scripts[app.id]);
-        } else {
-            const reason = !app.platforms[config.platform]
-                ? `no ${config.platform} build`
-                : app.parameterized && !config.selectedVersions[app.id]?.length
-                  ? 'no version selected'
-                  : 'no preferred manager — fallback off';
-            parts.push(`# ${app.name}: ${reason} — skipped`);
-        }
-    }
-
-    return parts.join('\n');
+function getSkipReason(app: CatalogApp, config: BuilderConfig): string {
+    if (!app.platforms[config.platform]) return `no ${config.platform} build`;
+    if (app.parameterized && !config.selectedVersions[app.id]?.length) return 'no version selected';
+    return 'no preferred manager — fallback off';
 }
 
 function downloadScript(content: string, filename: string): void {
@@ -98,10 +81,8 @@ const ScriptOutput = ({
     );
 
     const scriptContent = useMemo(() => {
-        if (isEmpty) return '';
-        return scope === 'combined'
-            ? buildCombinedScript(selectedList, action, config)
-            : buildPerAppPreview(selectedList, action, config);
+        if (isEmpty || scope === 'per-app') return '';
+        return buildCombinedScript(selectedList, action, config);
     }, [isEmpty, scope, selectedList, action, config]);
 
     const perAppScripts = useMemo(() => {
@@ -157,7 +138,7 @@ const ScriptOutput = ({
                                     />
                                 ) : (
                                     <p key={app.id} className="installer-per-app-skip">
-                                        {app.name}: skipped (no available method)
+                                        {app.name}: {getSkipReason(app, config)} — skipped
                                     </p>
                                 );
                             })}
