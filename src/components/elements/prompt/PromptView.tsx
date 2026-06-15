@@ -1,6 +1,7 @@
 import { copyToClipboard } from '@/common/clipboard-utils';
 import { Prompt, replaceParams } from '@/common/prompts/prompts';
 import { useToast } from '@/contexts/ToasterContext';
+import AutoTextarea from '@/controls/AutoTextarea';
 import Button from '@/controls/Button';
 import Chip from '@/controls/Chip';
 import { ToastType } from '@/controls/toaster/types';
