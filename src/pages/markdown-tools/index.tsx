@@ -56,14 +56,16 @@ const IndexPage: React.FC = () => {
     });
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const savedEditorContent = useRef<string>('');
 
     const handleEditorMount = useCallback((props: EditorProperties) => {
         leftEditorRef.current = props.editor;
-        setEditorContent(leftEditorRef, '');
+        setEditorContent(leftEditorRef, savedEditorContent.current);
     }, []);
 
     const handleNewFile = useCallback(() => {
         const emptyContent = '';
+        savedEditorContent.current = emptyContent;
         setEditorContent(leftEditorRef, emptyContent);
         setCurrentFileInfo((prevState) => ({
             ...prevState,
@@ -83,6 +85,7 @@ const IndexPage: React.FC = () => {
                     showToast({ message: 'No files are chosen', type: ToastType.WARNING });
                     return;
                 }
+                savedEditorContent.current = fileInfo.content;
                 setEditorContent(leftEditorRef, fileInfo.content);
                 setCurrentFileInfo(fileInfo);
                 showToast({ message: 'File opened', type: ToastType.INFO });
@@ -134,6 +137,7 @@ const IndexPage: React.FC = () => {
 
     const handleTextChange = useCallback(() => {
         const updatedContent = getEditorContent(leftEditorRef);
+        savedEditorContent.current = updatedContent;
         setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
     }, []);
 

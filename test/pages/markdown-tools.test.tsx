@@ -5,12 +5,33 @@ import { PageProvider } from '../../src/components/contexts/PageContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/markdown-tools/index';
 
-jest.mock('../../src/components/elements/editor/CodeEditor', () => ({
-    __esModule: true,
-    default: ({ languageId }: { languageId?: string }) => (
-        <div data-testid="code-editor" data-language={languageId ?? 'markdown'} />
-    ),
-}));
+const mockEditorInstances: Array<{ getValue: jest.Mock; setValue: jest.Mock }> = [];
+let mockLatestOnChange: (() => void) | undefined;
+
+jest.mock('../../src/components/elements/editor/CodeEditor', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ReactMod = require('react');
+    return {
+        __esModule: true,
+        default: ({ onEditorMounted, onChange, languageId }: any) => {
+            ReactMod.useEffect(() => {
+                let content = '';
+                const mockEditor = {
+                    getValue: jest.fn(() => content),
+                    setValue: jest.fn((v: string) => {
+                        content = v;
+                    }),
+                };
+                mockEditorInstances.push(mockEditor);
+                onEditorMounted?.({ editor: mockEditor });
+            }, []);
+
+            mockLatestOnChange = onChange;
+
+            return <div data-testid="code-editor" data-language={languageId ?? 'markdown'} />;
+        },
+    };
+});
 
 jest.mock('react-markdown', () => ({
     __esModule: true,
@@ -40,6 +61,11 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Markdown Tools page', () => {
+    beforeEach(() => {
+        mockEditorInstances.length = 0;
+        mockLatestOnChange = undefined;
+    });
+
     it('renders the Monaco editor mock', () => {
         renderPage();
         expect(screen.getByTestId('code-editor')).toBeInTheDocument();
@@ -169,5 +195,83 @@ describe('Markdown Tools page', () => {
         const opts = Array.from(select.options).map((o) => o.value);
         expect(opts).toContain('.md');
         expect(opts).toContain('.txt');
+    });
+
+    it('editor content is preserved after hide/show cycle', async () => {
+        const { act } = await import('react');
+        renderPage();
+
+        await act(async () => {});
+
+        const firstEditor = mockEditorInstances[0];
+        firstEditor.getValue.mockReturnValue('# Hello');
+
+        const onChange = mockLatestOnChange;
+        act(() => {
+            onChange?.();
+        });
+
+        const editorSwitch = screen.getByRole('switch', { name: /editor/i });
+        fireEvent.click(editorSwitch); // hide
+        fireEvent.click(editorSwitch); // show
+
+        await act(async () => {});
+
+        const secondEditor = mockEditorInstances[1];
+        expect(secondEditor.setValue).toHaveBeenCalledWith('# Hello');
+    });
+
+    it('editor is empty on first mount (no prior content)', async () => {
+        const { act } = await import('react');
+        renderPage();
+        await act(async () => {});
+
+        const firstEditor = mockEditorInstances[0];
+        expect(firstEditor.setValue).toHaveBeenCalledWith('');
+    });
+
+    it('editor content is cleared when New is clicked then re-shown', async () => {
+        const { act } = await import('react');
+        renderPage();
+        await act(async () => {});
+
+        const firstEditor = mockEditorInstances[0];
+        firstEditor.getValue.mockReturnValue('# Hello');
+
+        const onChange = mockLatestOnChange;
+        act(() => {
+            onChange?.();
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'New' }));
+
+        const editorSwitch = screen.getByRole('switch', { name: /editor/i });
+        fireEvent.click(editorSwitch); // hide
+        fireEvent.click(editorSwitch); // show
+
+        await act(async () => {});
+
+        const secondEditor = mockEditorInstances[1];
+        expect(secondEditor.setValue).toHaveBeenCalledWith('');
+    });
+
+    it('preview pane content is preserved after hide/show cycle', async () => {
+        const { act } = await import('react');
+        renderPage();
+        await act(async () => {});
+
+        const firstEditor = mockEditorInstances[0];
+        firstEditor.getValue.mockReturnValue('# Preview Test');
+
+        const onChange = mockLatestOnChange;
+        act(() => {
+            onChange?.();
+        });
+
+        const previewSwitch = screen.getByRole('switch', { name: /preview/i });
+        fireEvent.click(previewSwitch); // hide
+        fireEvent.click(previewSwitch); // show
+
+        expect(screen.getByTestId('react-markdown')).toHaveTextContent('# Preview Test');
     });
 });
