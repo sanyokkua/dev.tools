@@ -32,7 +32,6 @@ const nextConfig = {
     assetPrefix: assetPrefix,
     basePath: basePath,
     env: { NEXT_PUBLIC_BASE_PATH: basePath },
-    turbopack: {},
 };
 
 const isProd = process.env.NODE_ENV === 'production';
