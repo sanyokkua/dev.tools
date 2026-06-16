@@ -55,12 +55,10 @@ interface VramCalculatorFormProps {
     onReset: () => void;
 }
 
-function getQuantizationItems(): SelectItem[] {
-    return [
-        { itemId: 'all', displayText: 'All' },
-        ...Object.keys(QUANT_CATALOG).map((q) => ({ itemId: q, displayText: q })),
-    ];
-}
+const quantizationItems: SelectItem[] = [
+    { itemId: 'all', displayText: 'All' },
+    ...Object.keys(QUANT_CATALOG).map((q) => ({ itemId: q, displayText: q })),
+];
 
 const kvCacheQuantItems: SelectItem[] = [
     { itemId: KVCacheQuant.Q4, displayText: 'Q4' },
@@ -163,7 +161,7 @@ const VramCalculatorForm: React.FC<VramCalculatorFormProps> = ({ formState, onFo
                         <div className="field">
                             <label htmlFor="quantization">Quantization</label>
                             <Select
-                                items={getQuantizationItems()}
+                                items={quantizationItems}
                                 selectedItem={formState.quantization}
                                 onSelect={(item) => updateField('quantization', item.itemId)}
                                 size="small"

@@ -1121,7 +1121,7 @@ function calculateVram(input: CalculatorInput): Result<CalculatorOutput, Validat
  * - QuantEntry: Metadata structure for a quant catalog entry (type-only)
  *
  * Exported Constants:
- * - QUANT_CATALOG: 43-entry catalog of GGUF quantization formats with effective bpw
+ * - QUANT_CATALOG: 44-entry catalog of GGUF quantization formats with effective bpw
  * - KVCacheQuant: KV cache quantization options
  * - OperatingSystem: Supported operating systems
  * - STANDARD_CONTEXTS: Standard context sizes for analysis

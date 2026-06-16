@@ -1759,7 +1759,7 @@ describe('Recommendation Headroom Calculation', () => {
 });
 
 // ============================================================================
-// SECTION 9: Real Model Validation Tests
+// SECTION 13: Real Model Validation Tests
 // ============================================================================
 describe('Real Model Validation', () => {
     // ========================================================================
