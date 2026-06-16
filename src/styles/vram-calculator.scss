@@ -186,3 +186,36 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
+
+.vram-offload-verdict {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-weight: 500;
+}
+
+.vram-offload-fits {
+    background-color: var(--success-container-color, #e8f5e9);
+    color: var(--on-success-container-color, #1b5e20);
+}
+
+.vram-offload-partial {
+    background-color: var(--warning-container-color, #fff3e0);
+    color: var(--on-warning-container-color, #e65100);
+}
+
+.vram-offload-no_fit {
+    background-color: var(--error-container-color);
+    color: var(--error-container-color-on);
+}
+
+.vram-offload-note {
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+
+.vram-sweet-spot-mark {
+    color: var(--success-color, #2e7d32);
+    font-weight: 700;
+}

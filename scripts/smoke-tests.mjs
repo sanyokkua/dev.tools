@@ -375,6 +375,44 @@ await runSmoke('code-editor-format', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__code_editor_format__after.png` });
 });
 
+// ── 11. LLM VRAM Calculator — happy path ─────────────────────────────────────
+await runSmoke('vram-calculator', async (page) => {
+    await page.goto(BASE + '/llm-vram-calculator', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__vram__before.png` });
+
+    // Fill params_b (Q4_K_M is already default)
+    await page.fill('#params_b', '8');
+
+    // Click Calculate
+    await page.click('button[type="submit"]');
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `${OUT}/smoke__vram__basic_result.png` });
+
+    // Verify KPI cards appeared
+    const kpiCount = await page.locator('.vram-kpi-value').count();
+    if (kpiCount < 3) {
+        throw new Error(`Expected at least 3 KPI cards, got ${kpiCount}`);
+    }
+
+    // Open Advanced options and set VRAM to 8 GB
+    await page.locator('details.detailsbox summary').click();
+    await page.waitForTimeout(200);
+    const chip8 = page.locator('.chip').filter({ hasText: /^8$/ });
+    if ((await chip8.count()) > 0) {
+        await chip8.first().click();
+    }
+
+    // Calculate with VRAM constraint
+    await page.click('button[type="submit"]');
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `${OUT}/smoke__vram__with_vram.png` });
+
+    // Reset and verify
+    await page.click('button[type="button"]');
+    await page.waitForTimeout(100);
+    await page.screenshot({ path: `${OUT}/smoke__vram__after_reset.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -384,4 +422,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 12 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 13 interaction flows passed. Screenshots in ' + OUT);

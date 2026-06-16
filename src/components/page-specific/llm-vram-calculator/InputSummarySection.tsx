@@ -1,5 +1,5 @@
 'use client';
-import type { InputSummary, OSOverhead } from '@/common/llm-vram-calc';
+import type { GpuType, InputSummary, OSOverhead } from '@/common/llm-vram-calc';
 import React from 'react';
 
 /** @description Props for the InputSummarySection component. */
@@ -21,6 +21,20 @@ function formatOsLabel(os: string | null): string {
             return 'Linux Headless';
         default:
             return 'None';
+    }
+}
+
+/** @description Formats a GPU type identifier into a human-readable label. */
+function formatGpuTypeLabel(gpu_type: GpuType | null): string {
+    switch (gpu_type) {
+        case 'nvidia-amd':
+            return 'NVIDIA / AMD';
+        case 'apple':
+            return 'Apple Silicon';
+        case 'intel-integrated':
+            return 'Intel / Integrated';
+        default:
+            return 'Not specified';
     }
 }
 
@@ -64,6 +78,10 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                         <dd>{inputSummary.expert_info}</dd>
                     </>
                 )}
+                <dt>GPU Type</dt>
+                <dd>{formatGpuTypeLabel(inputSummary.gpu_type)}</dd>
+                <dt>Engine</dt>
+                <dd>{inputSummary.engine ?? 'llama.cpp'}</dd>
                 <dt>VRAM</dt>
                 <dd>{inputSummary.vram_gb !== null ? `${inputSummary.vram_gb} GB` : 'Not specified'}</dd>
                 <dt>OS</dt>

@@ -1,10 +1,34 @@
 'use client';
-import type { CalculatorOutput, Result, ValidationError } from '@/common/llm-vram-calc';
+import type { CalculatorOutput, OffloadResult, Result, ValidationError } from '@/common/llm-vram-calc';
 import React from 'react';
 import InputSummarySection from './InputSummarySection';
 import QuantizationTable from './QuantizationTable';
 import RecommendationsSection from './RecommendationsSection';
 import SummarySection from './SummarySection';
+
+/** @description Renders the offload verdict banner. */
+function OffloadVerdictCard({ offload }: { offload: OffloadResult }) {
+    return (
+        <div className={`vram-offload-verdict vram-offload-${offload.verdict}`}>
+            {offload.verdict === 'fits' && (
+                <span>&#10003; Fits fully in VRAM ({offload.total_needed_gb.toFixed(1)} GB needed)</span>
+            )}
+            {offload.verdict === 'partial' && (
+                <span>
+                    &#9889; Partial offload &mdash; {offload.layers_on_gpu} of {offload.total_layers} layers on GPU (
+                    {offload.gpu_resident_gb.toFixed(1)} GB GPU + {offload.ram_spill_gb.toFixed(1)} GB RAM spill)
+                </span>
+            )}
+            {offload.verdict === 'no_fit' && (
+                <span>
+                    &#10007; Will not fit &mdash; needs {offload.total_needed_gb.toFixed(1)} GB, only{' '}
+                    {offload.available_gb?.toFixed(1)} GB available
+                </span>
+            )}
+            {offload.note && <div className="vram-offload-note">{offload.note}</div>}
+        </div>
+    );
+}
 
 interface VramResultsDisplayProps {
     result: Result<CalculatorOutput, ValidationError> | null;
@@ -76,6 +100,8 @@ const VramResultsDisplay: React.FC<VramResultsDisplayProps> = ({ result }) => {
                     <div className="vram-kpi-label">Total (incl. OS)</div>
                 </div>
             </div>
+
+            {output.offload_result !== null && <OffloadVerdictCard offload={output.offload_result} />}
 
             <InputSummarySection inputSummary={output.input_summary} osOverhead={output.os_overhead} />
 
