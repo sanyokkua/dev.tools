@@ -10,24 +10,67 @@
 // ============================================================================
 
 /**
- * Model weight quantization levels.
- * Values represent common GGUF quantization formats.
+ * Metadata for a GGUF quantization format.
  */
-const Quantization = {
-    Q1: 'Q1',
-    Q2: 'Q2',
-    Q3: 'Q3',
-    Q4: 'Q4',
-    Q5: 'Q5',
-    Q6: 'Q6',
-    Q8: 'Q8',
-    FP4: 'FP4',
-    FP8: 'FP8',
-    FP16: 'FP16',
-    FP32: 'FP32',
-} as const;
+interface QuantEntry {
+    readonly bpw: number;
+    readonly family: 'legacy' | 'k-quant' | 'i-quant' | 'unsloth' | 'fp4' | 'full';
+    readonly sweetSpot: boolean;
+    readonly hint: string;
+}
 
-type Quantization = (typeof Quantization)[keyof typeof Quantization];
+/**
+ * Catalog of known GGUF quantization formats with effective bits-per-weight.
+ * bpw values are empirical whole-file averages (weights + overhead).
+ */
+const QUANT_CATALOG = {
+    'Q4_0': { bpw: 4.58, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit block-scale' },
+    'Q4_1': { bpw: 5.05, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit + min-offset' },
+    'Q5_0': { bpw: 5.5, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit block-scale' },
+    'Q5_1': { bpw: 6.0, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit + min-offset' },
+    'Q8_0': { bpw: 8.5, family: 'legacy', sweetSpot: true, hint: '★ Near-lossless, larger files' },
+    'Q2_K': { bpw: 3.0, family: 'k-quant', sweetSpot: false, hint: 'Very small, noticeable quality loss' },
+    'Q2_K_L': { bpw: 3.1, family: 'k-quant', sweetSpot: false, hint: 'Q2_K + higher-precision layers' },
+    'Q3_K_S': { bpw: 3.5, family: 'k-quant', sweetSpot: false, hint: 'Small 3-bit mixed-precision' },
+    'Q3_K_M': { bpw: 3.91, family: 'k-quant', sweetSpot: false, hint: 'Medium 3-bit mixed-precision' },
+    'Q3_K_L': { bpw: 4.27, family: 'k-quant', sweetSpot: false, hint: 'Large 3-bit mixed-precision' },
+    'Q4_K_S': { bpw: 4.58, family: 'k-quant', sweetSpot: false, hint: 'Small 4-bit mixed-precision' },
+    'Q4_K_M': { bpw: 4.85, family: 'k-quant', sweetSpot: true, hint: '★ Best balance size/quality (default)' },
+    'Q5_K_S': { bpw: 5.5, family: 'k-quant', sweetSpot: false, hint: 'Small 5-bit mixed-precision' },
+    'Q5_K_M': { bpw: 5.7, family: 'k-quant', sweetSpot: false, hint: 'Medium 5-bit mixed-precision' },
+    'Q6_K': { bpw: 6.55, family: 'k-quant', sweetSpot: true, hint: '★ Near-lossless quality pick' },
+    'IQ1_S': { bpw: 1.56, family: 'i-quant', sweetSpot: false, hint: 'Extremely small, low quality' },
+    'IQ1_M': { bpw: 1.75, family: 'i-quant', sweetSpot: false, hint: 'Small 1-bit imatrix' },
+    'IQ2_XXS': { bpw: 2.06, family: 'i-quant', sweetSpot: false, hint: 'Very small 2-bit imatrix' },
+    'IQ2_XS': { bpw: 2.31, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix XS' },
+    'IQ2_S': { bpw: 2.5, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix S' },
+    'IQ2_M': { bpw: 2.72, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix M; punches above weight' },
+    'IQ3_XXS': { bpw: 3.06, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix XXS' },
+    'IQ3_XS': { bpw: 3.3, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix XS' },
+    'IQ3_S': { bpw: 3.5, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix S' },
+    'IQ3_M': { bpw: 3.7, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix M' },
+    'IQ4_XS': { bpw: 4.35, family: 'i-quant', sweetSpot: true, hint: '★ Excellent size/quality; smaller than Q4_K_M' },
+    'IQ4_NL': { bpw: 4.58, family: 'i-quant', sweetSpot: false, hint: 'Non-linear 4-bit imatrix' },
+    'UD-IQ1_S': { bpw: 1.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit; best quality at 1-bit' },
+    'UD-IQ1_M': { bpw: 2.0, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit M' },
+    'UD-IQ2_XXS': { bpw: 2.3, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit XXS' },
+    'UD-IQ2_M': { bpw: 2.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit M' },
+    'UD-Q2_K_XL': { bpw: 3.15, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q2_K XL layers' },
+    'UD-IQ3_XXS': { bpw: 3.2, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 3-bit XXS' },
+    'UD-Q3_K_XL': { bpw: 4.0, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q3_K XL layers' },
+    'UD-Q4_K_XL': { bpw: 4.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q4_K XL; best quality/GB at 4-bit' },
+    'UD-Q5_K_XL': { bpw: 5.7, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q5_K XL layers' },
+    'UD-Q6_K_XL': { bpw: 7.05, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q6_K XL layers' },
+    'UD-Q8_K_XL': { bpw: 9.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q8_K XL; maximum quality' },
+    'MXFP4': { bpw: 4.25, family: 'fp4', sweetSpot: false, hint: 'MX FP4 (OCP standard, in GGUF; Blackwell)' },
+    'NVFP4': { bpw: 4.5, family: 'fp4', sweetSpot: false, hint: 'NVIDIA FP4 (vLLM/TensorRT; Blackwell)' },
+    'FP8': { bpw: 8.0, family: 'full', sweetSpot: false, hint: '8-bit float; hardware-dependent support' },
+    'FP16': { bpw: 16.0, family: 'full', sweetSpot: false, hint: 'Half precision; reference quality' },
+    'BF16': { bpw: 16.0, family: 'full', sweetSpot: false, hint: 'BFloat16; training standard' },
+    'FP32': { bpw: 32.0, family: 'full', sweetSpot: false, hint: 'Full precision; rarely practical locally' },
+} as const satisfies Record<string, QuantEntry>;
+
+type Quantization = keyof typeof QUANT_CATALOG;
 
 /**
  * KV cache quantization options.
@@ -150,7 +193,9 @@ interface ContextEntry {
  */
 interface QuantizationAnalysis {
     readonly quantization: Quantization;
-    readonly bits_per_param: number;
+    readonly eff_bpw: number;
+    readonly family: string;
+    readonly sweet_spot: boolean;
     readonly estimated_gguf_gb: number | null;
     readonly min_vram_no_cache_gb: number;
     readonly min_vram_with_cache_gb: number;
@@ -230,23 +275,6 @@ type ValidationError =
 // ============================================================================
 
 /**
- * Bits per parameter for each quantization level.
- */
-const QUANTIZATION_BITS = {
-    Q1: 1,
-    Q2: 2,
-    Q3: 3,
-    Q4: 4,
-    Q5: 5,
-    Q6: 6,
-    Q8: 8,
-    FP4: 4,
-    FP8: 8,
-    FP16: 16,
-    FP32: 32,
-} as const satisfies Record<Quantization, number>;
-
-/**
  * Bytes per value for each KV cache quantization level.
  * Used in exact KV cache calculation when layer count is known.
  */
@@ -268,9 +296,6 @@ const OS_OVERHEAD_CONFIG = {
     'linux-headless': { type: 'fixed', value: 0.05 },
 } as const satisfies Record<OperatingSystem, { readonly type: 'percent' | 'fixed'; readonly value: number }>;
 
-/** GGUF metadata overhead factor (5%). */
-const METADATA_OVERHEAD = 0.05;
-
 /** Fixed working buffer for inference computations in GB. */
 const WORKING_BUFFER_GB = 0.4;
 
@@ -279,19 +304,25 @@ const STANDARD_CONTEXTS = [4096, 8192, 16384, 32768, 65536, 131072, 262144, 5242
 
 /** Standard quantizations for multi-quantization analysis. */
 const STANDARD_QUANTIZATIONS: readonly Quantization[] = [
-    'Q1',
-    'Q2',
-    'Q3',
-    'Q4',
-    'Q5',
-    'Q6',
-    'Q8',
+    'Q2_K',
+    'IQ2_M',
+    'Q3_K_S',
+    'Q3_K_M',
+    'IQ3_M',
+    'IQ4_XS',
+    'Q4_0',
+    'Q4_K_S',
+    'Q4_K_M',
+    'UD-Q4_K_XL',
+    'Q5_K_M',
+    'Q6_K',
+    'Q8_0',
     'FP16',
     'FP32',
 ] as const;
 
 /** Preferred quantizations for optimal recommendations (balance of quality and size). */
-const OPTIMAL_QUANTIZATIONS: readonly Quantization[] = ['Q4', 'Q5', 'Q6'] as const;
+const OPTIMAL_QUANTIZATIONS: readonly Quantization[] = ['Q4_K_M', 'IQ4_XS', 'Q5_K_M', 'Q4_K_S'] as const;
 
 /** Bytes in a gigabyte (1024^3). */
 const BYTES_PER_GB = 1073741824;
@@ -414,15 +445,14 @@ function estimateKvHeads(params_b: number): number {
 
 /**
  * Estimates model file size from parameters and quantization.
+ * Uses effective bits-per-weight from QUANT_CATALOG (empirical whole-file values).
  *
  * @param params_b - Model parameters in billions.
  * @param quantization - Quantization level.
  * @returns Estimated GGUF file size in GB.
  */
 function estimateModelSize(params_b: number, quantization: Quantization): number {
-    const bits = QUANTIZATION_BITS[quantization];
-    const bytesPerParam = bits / 8;
-    return params_b * bytesPerParam * (1 + METADATA_OVERHEAD);
+    return (params_b * QUANT_CATALOG[quantization].bpw) / 8;
 }
 
 /**
@@ -527,7 +557,7 @@ interface ConfigEntry {
     readonly kvCache: number;
     readonly totalVram: number;
     readonly fits: boolean | null;
-    readonly quantBits: number;
+    readonly quantBpw: number;
 }
 
 /**
@@ -653,12 +683,12 @@ function findMinVram(configs: readonly ConfigEntry[]): ConfigEntry {
 }
 
 /**
- * Finds the configuration with maximum quality (bits then context) from a list.
+ * Finds the configuration with maximum quality (bpw then context) from a list.
  */
 function findMaxQuality(configs: readonly ConfigEntry[]): ConfigEntry {
     return configs.reduce((best, c) => {
-        if (c.quantBits > best.quantBits) return c;
-        if (c.quantBits === best.quantBits && c.context > best.context) return c;
+        if (c.quantBpw > best.quantBpw) return c;
+        if (c.quantBpw === best.quantBpw && c.context > best.context) return c;
         return best;
     });
 }
@@ -681,7 +711,7 @@ function generateRecommendations(
     const recommendations: Recommendation[] = [];
 
     // OPTIMAL: Best balance of quality and context
-    // Prefer Q4-Q6, largest context that fits
+    // Prefer Q4_K_M, IQ4_XS, Q5_K_M, Q4_K_S, largest context that fits
     const optimalCandidates = fittingConfigs.filter((c) => isOptimalQuantization(c.quant));
     const optimal = optimalCandidates.length > 0 ? findMaxContext(optimalCandidates) : findMaxContext(fittingConfigs);
 
@@ -795,7 +825,7 @@ function buildContextAnalysis(
 ): { contextTable: readonly ContextEntry[]; configs: readonly ConfigEntry[] } {
     const contextTable: ContextEntry[] = [];
     const configs: ConfigEntry[] = [];
-    const quantBits = QUANTIZATION_BITS[quant];
+    const quantBpw = QUANT_CATALOG[quant].bpw;
 
     for (const ctx of contextList) {
         const kvCache = calculateKvCache(
@@ -836,7 +866,7 @@ function buildContextAnalysis(
             kvCache,
             totalVram: vramWithCache,
             fits,
-            quantBits,
+            quantBpw,
         });
     }
 
@@ -954,7 +984,9 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
 
         quantizationAnalysis.push({
             quantization: quant,
-            bits_per_param: QUANTIZATION_BITS[quant],
+            eff_bpw: QUANT_CATALOG[quant].bpw,
+            family: QUANT_CATALOG[quant].family,
+            sweet_spot: QUANT_CATALOG[quant].sweetSpot,
             estimated_gguf_gb: estimatedSize !== null ? roundTo(estimatedSize, 2) : null,
             min_vram_no_cache_gb: roundTo(minVramNoCache, 2),
             min_vram_with_cache_gb: roundTo(minVramWithCache, 2),
@@ -1022,7 +1054,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
  * // With specific configuration and VRAM constraint
  * const result = calculateVram({
  *   params_b: 8,
- *   quantization: 'Q4',
+ *   quantization: 'Q4_K_M',
  *   vram_gb: 24,
  *   os: 'macos',
  * });
@@ -1050,11 +1082,13 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
  *
  * @remarks
  * - When `context_size` is null, calculates for standard sizes: 4K, 8K, 16K, 32K, 64K, 128K, 256K, 512K, 1M.
- * - When `quantization` is null, calculates for: Q1, Q2, Q3, Q4, Q5, Q6, Q8, FP16, FP32.
+ * - When `quantization` is null, calculates for 15 curated formats: Q2_K, IQ2_M, Q3_K_S, Q3_K_M, IQ3_M,
+ *   IQ4_XS, Q4_0, Q4_K_S, Q4_K_M, UD-Q4_K_XL, Q5_K_M, Q6_K, Q8_0, FP16, FP32.
  * - When `vram_gb` is provided, generates recommendations for configurations that fit.
  * - Recommendations include three tiers: optimal (balanced), minimum (smallest), maximum_quality (best quality).
  * - OS overhead varies: macOS reserves 25%, Windows 0.8GB, Linux GUI 0.5GB, Linux headless 0.05GB.
  * - KV cache calculation is exact when `layers` is provided, otherwise uses empirical estimation.
+ * - Model size is estimated as params_b × bpw / 8, where bpw is from QUANT_CATALOG (empirical whole-file values).
  */
 function calculateVram(input: CalculatorInput): Result<CalculatorOutput, ValidationError> {
     const validation = validateInput(input);
@@ -1083,29 +1117,26 @@ function calculateVram(input: CalculatorInput): Result<CalculatorOutput, Validat
  * - SummaryStatistics: Aggregate statistics
  * - ValidationError: Input validation error types
  * - Result: Result type for error handling
+ * - Quantization: Union type of all quant keys (type-only)
+ * - QuantEntry: Metadata structure for a quant catalog entry (type-only)
  *
  * Exported Constants:
- * - Quantization: Model weight quantization levels
+ * - QUANT_CATALOG: 43-entry catalog of GGUF quantization formats with effective bpw
  * - KVCacheQuant: KV cache quantization options
  * - OperatingSystem: Supported operating systems
  * - STANDARD_CONTEXTS: Standard context sizes for analysis
- * - STANDARD_QUANTIZATIONS: Standard quantization levels
- * - QUANTIZATION_BITS: Bits per parameter mapping
+ * - STANDARD_QUANTIZATIONS: 15 curated standard quantization levels
  * - KV_CACHE_BYTES: Bytes per KV value mapping
  * - KV_CACHE_FACTOR: KV cache scaling factors
  * - WORKING_BUFFER_GB: Fixed working buffer size
- * - METADATA_OVERHEAD: GGUF metadata overhead factor
  */
 
 export {
     KVCacheQuant,
     KV_CACHE_BYTES,
     KV_CACHE_FACTOR,
-    METADATA_OVERHEAD,
     OperatingSystem,
-    QUANTIZATION_BITS,
-    // Type constants (as const objects)
-    Quantization,
+    QUANT_CATALOG,
     // Configuration constants
     STANDARD_CONTEXTS,
     STANDARD_QUANTIZATIONS,
@@ -1121,12 +1152,13 @@ export type {
     ContextEntry,
     InputSummary,
     OSOverhead,
+    QuantEntry,
+    // Error, Result, and Quantization types
+    Quantization,
     QuantizationAnalysis,
     Recommendation,
     RecommendationTier,
     Result,
     SummaryStatistics,
-
-    // Error and Result types
     ValidationError,
 };

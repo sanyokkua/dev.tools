@@ -1,5 +1,5 @@
 'use client';
-import { KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
+import { KVCacheQuant, OperatingSystem, QUANT_CATALOG } from '@/common/llm-vram-calc';
 import Button from '@/controls/Button';
 import Input from '@/controls/Input';
 import Select, { SelectItem } from '@/controls/Select';
@@ -55,10 +55,12 @@ interface VramCalculatorFormProps {
     onReset: () => void;
 }
 
-const quantizationItems: SelectItem[] = [
-    { itemId: 'all', displayText: 'All' },
-    ...Object.values(Quantization).map((q) => ({ itemId: q, displayText: q })),
-];
+function getQuantizationItems(): SelectItem[] {
+    return [
+        { itemId: 'all', displayText: 'All' },
+        ...Object.keys(QUANT_CATALOG).map((q) => ({ itemId: q, displayText: q })),
+    ];
+}
 
 const kvCacheQuantItems: SelectItem[] = [
     { itemId: KVCacheQuant.Q4, displayText: 'Q4' },
@@ -161,7 +163,7 @@ const VramCalculatorForm: React.FC<VramCalculatorFormProps> = ({ formState, onFo
                         <div className="field">
                             <label htmlFor="quantization">Quantization</label>
                             <Select
-                                items={quantizationItems}
+                                items={getQuantizationItems()}
                                 selectedItem={formState.quantization}
                                 onSelect={(item) => updateField('quantization', item.itemId)}
                                 size="small"

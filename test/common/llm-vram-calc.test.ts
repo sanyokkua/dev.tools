@@ -8,16 +8,20 @@ import {
     KV_CACHE_BYTES,
     KV_CACHE_FACTOR,
     KVCacheQuant,
-    METADATA_OVERHEAD,
     OperatingSystem,
-    Quantization,
-    QUANTIZATION_BITS,
+    QUANT_CATALOG,
     STANDARD_CONTEXTS,
     STANDARD_QUANTIZATIONS,
     WORKING_BUFFER_GB,
 } from '../../src/common/llm-vram-calc';
 
-import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from '../../src/common/llm-vram-calc';
+import type {
+    CalculatorInput,
+    CalculatorOutput,
+    Quantization,
+    Result,
+    ValidationError,
+} from '../../src/common/llm-vram-calc';
 
 // ============================================================================
 // Test Helpers
@@ -51,22 +55,12 @@ function expectError(result: Result<CalculatorOutput, ValidationError>, expected
 
 describe('Exported Constants', () => {
     describe('Quantization', () => {
-        it('should contain all expected quantization levels', () => {
-            expect(Quantization.Q1).toBe('Q1');
-            expect(Quantization.Q2).toBe('Q2');
-            expect(Quantization.Q3).toBe('Q3');
-            expect(Quantization.Q4).toBe('Q4');
-            expect(Quantization.Q5).toBe('Q5');
-            expect(Quantization.Q6).toBe('Q6');
-            expect(Quantization.Q8).toBe('Q8');
-            expect(Quantization.FP4).toBe('FP4');
-            expect(Quantization.FP8).toBe('FP8');
-            expect(Quantization.FP16).toBe('FP16');
-            expect(Quantization.FP32).toBe('FP32');
+        it('QUANT_CATALOG should contain Q4_K_M and IQ4_XS as sweet spots', () => {
+            expect(QUANT_CATALOG['Q4_K_M'].sweetSpot).toBe(true);
+            expect(QUANT_CATALOG['IQ4_XS'].sweetSpot).toBe(true);
         });
-
-        it('should have exactly 11 quantization levels', () => {
-            expect(Object.keys(Quantization)).toHaveLength(11);
+        it('QUANT_CATALOG should have 44 entries', () => {
+            expect(Object.keys(QUANT_CATALOG)).toHaveLength(44);
         });
     });
 
@@ -114,27 +108,13 @@ describe('Exported Constants', () => {
 
     describe('STANDARD_QUANTIZATIONS', () => {
         it('should contain expected quantizations', () => {
-            expect(STANDARD_QUANTIZATIONS).toEqual(['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q8', 'FP16', 'FP32']);
+            expect(STANDARD_QUANTIZATIONS).toContain('Q4_K_M');
+            expect(STANDARD_QUANTIZATIONS).toContain('FP16');
+            expect(STANDARD_QUANTIZATIONS).toContain('FP32');
         });
 
-        it('should have 9 standard quantizations', () => {
-            expect(STANDARD_QUANTIZATIONS).toHaveLength(9);
-        });
-    });
-
-    describe('QUANTIZATION_BITS', () => {
-        it('should map quantizations to correct bit values', () => {
-            expect(QUANTIZATION_BITS.Q1).toBe(1);
-            expect(QUANTIZATION_BITS.Q2).toBe(2);
-            expect(QUANTIZATION_BITS.Q3).toBe(3);
-            expect(QUANTIZATION_BITS.Q4).toBe(4);
-            expect(QUANTIZATION_BITS.Q5).toBe(5);
-            expect(QUANTIZATION_BITS.Q6).toBe(6);
-            expect(QUANTIZATION_BITS.Q8).toBe(8);
-            expect(QUANTIZATION_BITS.FP4).toBe(4);
-            expect(QUANTIZATION_BITS.FP8).toBe(8);
-            expect(QUANTIZATION_BITS.FP16).toBe(16);
-            expect(QUANTIZATION_BITS.FP32).toBe(32);
+        it('should have 15 standard quantizations', () => {
+            expect(STANDARD_QUANTIZATIONS).toHaveLength(15);
         });
     });
 
@@ -159,10 +139,6 @@ describe('Exported Constants', () => {
     describe('Numeric constants', () => {
         it('should have correct WORKING_BUFFER_GB value', () => {
             expect(WORKING_BUFFER_GB).toBe(0.4);
-        });
-
-        it('should have correct METADATA_OVERHEAD value', () => {
-            expect(METADATA_OVERHEAD).toBe(0.05);
         });
     });
 });
@@ -253,17 +229,17 @@ describe('Input Validation - Optional Parameters', () => {
         });
 
         it('should accept minimum value (0.1)', () => {
-            const result = calculateVram({ ...validBase, model_size_gb: 0.1, quantization: 'Q4' });
+            const result = calculateVram({ ...validBase, model_size_gb: 0.1, quantization: 'Q4_K_M' });
             expect(result.ok).toBe(true);
         });
 
         it('should accept maximum value (500)', () => {
-            const result = calculateVram({ ...validBase, model_size_gb: 500, quantization: 'Q4' });
+            const result = calculateVram({ ...validBase, model_size_gb: 500, quantization: 'Q4_K_M' });
             expect(result.ok).toBe(true);
         });
 
         it('should accept typical value (4.0)', () => {
-            const result = calculateVram({ ...validBase, model_size_gb: 4, quantization: 'Q4' });
+            const result = calculateVram({ ...validBase, model_size_gb: 4, quantization: 'Q4_K_M' });
             expect(result.ok).toBe(true);
         });
 
@@ -301,8 +277,8 @@ describe('Input Validation - Optional Parameters', () => {
             expect(output.quantization_analysis).toHaveLength(STANDARD_QUANTIZATIONS.length);
         });
 
-        it.each(Object.values(Quantization))('should accept quantization = %s', (quant) => {
-            const result = calculateVram({ ...validBase, quantization: quant });
+        it.each(Object.keys(QUANT_CATALOG))('should accept quantization = %s', (quant) => {
+            const result = calculateVram({ ...validBase, quantization: quant as Quantization });
             const output = expectSuccess(result);
             expect(output.input_summary.quantization).toBe(quant);
             expect(output.quantization_analysis).toHaveLength(1);
@@ -711,7 +687,7 @@ describe('Output Structure', () => {
             const result = calculateVram({
                 params_b: 7,
                 model_size_gb: 4,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 context_size: 32768,
                 kv_cache_enabled: true,
                 kv_cache_quant: 'fp16',
@@ -727,7 +703,7 @@ describe('Output Structure', () => {
 
             expect(summary.params_b).toBe(7);
             expect(summary.model_size_gb).toBe(4);
-            expect(summary.quantization).toBe('Q4');
+            expect(summary.quantization).toBe('Q4_K_M');
             expect(summary.context_size).toBe(32768);
             expect(summary.kv_cache_enabled).toBe(true);
             expect(summary.kv_cache_quant).toBe('fp16');
@@ -798,14 +774,16 @@ describe('Output Structure', () => {
 
     describe('QuantizationAnalysis', () => {
         it('should produce correct structure for single quantization', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
 
             expect(output.quantization_analysis).toHaveLength(1);
             const analysis = output.quantization_analysis[0];
 
-            expect(analysis.quantization).toBe('Q4');
-            expect(analysis.bits_per_param).toBe(4);
+            expect(analysis.quantization).toBe('Q4_K_M');
+            expect(analysis.eff_bpw).toBeCloseTo(4.85, 1);
+            expect(analysis.family).toBe('k-quant');
+            expect(analysis.sweet_spot).toBe(true);
             expect(typeof analysis.estimated_gguf_gb).toBe('number');
             expect(typeof analysis.min_vram_no_cache_gb).toBe('number');
             expect(typeof analysis.min_vram_with_cache_gb).toBe('number');
@@ -822,7 +800,7 @@ describe('Output Structure', () => {
         });
 
         it('should set estimated_gguf_gb to null when model_size_gb is provided', () => {
-            const result = calculateVram({ params_b: 8, model_size_gb: 5, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, model_size_gb: 5, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
 
             expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
@@ -831,7 +809,7 @@ describe('Output Structure', () => {
 
     describe('ContextEntry', () => {
         it('should produce correct structure', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
             const entry = output.quantization_analysis[0].context_table[0];
 
@@ -856,7 +834,7 @@ describe('Output Structure', () => {
         });
 
         it('should format context labels correctly', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
             const table = output.quantization_analysis[0].context_table;
 
@@ -873,7 +851,7 @@ describe('Output Structure', () => {
         });
 
         it('should determine fits_in_vram when vram_gb is provided', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'windows' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'windows' });
             const output = expectSuccess(result);
             const table = output.quantization_analysis[0].context_table;
 
@@ -882,7 +860,7 @@ describe('Output Structure', () => {
                 expect(typeof entry.fits_in_vram).toBe('boolean');
             }
 
-            // At least some should fit, some should not (8B Q4 model)
+            // At least some should fit, some should not (8B Q4_K_M model)
             const fittingCount = table.filter((e) => e.fits_in_vram).length;
             const notFittingCount = table.filter((e) => !e.fits_in_vram).length;
             expect(fittingCount).toBeGreaterThan(0);
@@ -905,7 +883,7 @@ describe('Output Structure', () => {
         });
 
         it('should contain three tiers when configurations fit', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'windows' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'windows' });
             const output = expectSuccess(result);
 
             expect(output.recommendations).not.toBeNull();
@@ -918,7 +896,7 @@ describe('Output Structure', () => {
         });
 
         it('should have correct recommendation structure', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'windows' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'windows' });
             const output = expectSuccess(result);
             const rec = output.recommendations![0];
 
@@ -934,7 +912,7 @@ describe('Output Structure', () => {
         });
 
         it('should have positive headroom for all recommendations', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'windows' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'windows' });
             const output = expectSuccess(result);
 
             for (const rec of output.recommendations!) {
@@ -964,7 +942,7 @@ describe('Output Structure', () => {
 
         it('should count total configurations correctly', () => {
             // Single quantization, standard contexts
-            const result1 = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result1 = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output1 = expectSuccess(result1);
             expect(output1.summary.total_configurations).toBe(STANDARD_CONTEXTS.length);
 
@@ -991,48 +969,48 @@ describe('Output Structure', () => {
 
 describe('Calculation Tests', () => {
     describe('Model Size Estimation', () => {
-        it('should estimate Q4 model size correctly (4 bits per param)', () => {
-            // 8B params * 0.5 bytes/param * 1.05 overhead = 4.2 GB
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+        it('should estimate Q4_K_M model size correctly (4.85 bpw)', () => {
+            // 8B params × 4.85 bpw / 8 = 4.85 GB
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
             const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-            expect(estimated).toBeCloseTo(4.2, 1);
+            expect(estimated).toBeCloseTo(4.85, 1);
         });
 
-        it('should estimate FP16 model size correctly (16 bits per param)', () => {
-            // 8B params * 2 bytes/param * 1.05 overhead = 16.8 GB
+        it('should estimate FP16 model size correctly (16 bpw)', () => {
+            // 8B params × 16 bpw / 8 = 16.0 GB (no overhead factor)
             const result = calculateVram({ params_b: 8, quantization: 'FP16' });
             const output = expectSuccess(result);
             const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-            expect(estimated).toBeCloseTo(16.8, 1);
+            expect(estimated).toBeCloseTo(16.0, 1);
         });
 
-        it('should estimate FP32 model size correctly (32 bits per param)', () => {
-            // 8B params * 4 bytes/param * 1.05 overhead = 33.6 GB
+        it('should estimate FP32 model size correctly (32 bpw)', () => {
+            // 8B params × 32 bpw / 8 = 32.0 GB
             const result = calculateVram({ params_b: 8, quantization: 'FP32' });
             const output = expectSuccess(result);
             const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-            expect(estimated).toBeCloseTo(33.6, 1);
+            expect(estimated).toBeCloseTo(32.0, 1);
         });
 
         it('should use provided model_size_gb when quantization is specific', () => {
-            const result = calculateVram({ params_b: 8, model_size_gb: 5.5, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, model_size_gb: 5.5, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
 
             // estimated_gguf_gb should be null since actual size was provided
             expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
 
-            // min_vram should be based on 5.5 GB + buffer
+            // min_vram = 5.5 + WORKING_BUFFER_GB (0.4) = 5.9
             expect(output.quantization_analysis[0].min_vram_no_cache_gb).toBeCloseTo(5.9, 1);
         });
     });
 
     describe('VRAM with and without cache', () => {
         it('should have vram_without_cache = model_size + working_buffer', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
 
             // vram_without_cache should be constant across all contexts
@@ -1042,7 +1020,7 @@ describe('Calculation Tests', () => {
         });
 
         it('should have vram_with_cache > vram_without_cache when kv_cache_enabled', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
 
             for (const entry of output.quantization_analysis[0].context_table) {
@@ -1051,7 +1029,7 @@ describe('Calculation Tests', () => {
         });
 
         it('should have vram_with_cache == vram_without_cache when kv_cache_enabled=false', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_enabled: false });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_enabled: false });
             const output = expectSuccess(result);
 
             for (const entry of output.quantization_analysis[0].context_table) {
@@ -1063,7 +1041,7 @@ describe('Calculation Tests', () => {
 
     describe('KV Cache scaling with context', () => {
         it('should scale KV cache linearly with context size (estimated)', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
             const table = output.quantization_analysis[0].context_table;
 
@@ -1078,7 +1056,7 @@ describe('Calculation Tests', () => {
         it('should scale KV cache with context size (exact calculation)', () => {
             const result = calculateVram({
                 params_b: 8,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 layers: 32,
                 kv_heads: 8,
                 key_dim: 128,
@@ -1096,8 +1074,8 @@ describe('Calculation Tests', () => {
 
     describe('KV Cache quantization effect', () => {
         it('should have smaller KV cache with Q4 than FP16', () => {
-            const resultQ4 = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_quant: 'q4' });
-            const resultFP16 = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_quant: 'fp16' });
+            const resultQ4 = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_quant: 'q4' });
+            const resultFP16 = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_quant: 'fp16' });
 
             const outputQ4 = expectSuccess(resultQ4);
             const outputFP16 = expectSuccess(resultFP16);
@@ -1109,8 +1087,8 @@ describe('Calculation Tests', () => {
         });
 
         it('should respect KV cache factor ratios', () => {
-            const resultQ8 = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_quant: 'q8' });
-            const resultFP16 = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_quant: 'fp16' });
+            const resultQ8 = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_quant: 'q8' });
+            const resultFP16 = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_quant: 'fp16' });
 
             const outputQ8 = expectSuccess(resultQ8);
             const outputFP16 = expectSuccess(resultFP16);
@@ -1127,11 +1105,11 @@ describe('Calculation Tests', () => {
         it('should cap KV cache when sliding_window < context_size', () => {
             const withWindow = calculateVram({
                 params_b: 8,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 sliding_window: 4096,
                 context_size: 131072,
             });
-            const withoutWindow = calculateVram({ params_b: 8, quantization: 'Q4', context_size: 131072 });
+            const withoutWindow = calculateVram({ params_b: 8, quantization: 'Q4_K_M', context_size: 131072 });
 
             const outputWith = expectSuccess(withWindow);
             const outputWithout = expectSuccess(withoutWindow);
@@ -1149,11 +1127,11 @@ describe('Calculation Tests', () => {
         it('should not affect KV cache when sliding_window > context_size', () => {
             const withWindow = calculateVram({
                 params_b: 8,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 sliding_window: 1000000,
                 context_size: 4096,
             });
-            const withoutWindow = calculateVram({ params_b: 8, quantization: 'Q4', context_size: 4096 });
+            const withoutWindow = calculateVram({ params_b: 8, quantization: 'Q4_K_M', context_size: 4096 });
 
             const outputWith = expectSuccess(withWindow);
             const outputWithout = expectSuccess(withoutWindow);
@@ -1170,9 +1148,9 @@ describe('Calculation Tests', () => {
     describe('KV base factor by model size', () => {
         it('should use different factors for different model sizes', () => {
             // Small model (4B) should have larger factor
-            const small = calculateVram({ params_b: 4, quantization: 'Q4', context_size: 4096 });
+            const small = calculateVram({ params_b: 4, quantization: 'Q4_K_M', context_size: 4096 });
             // Large model (100B) should have smaller factor
-            const large = calculateVram({ params_b: 100, quantization: 'Q4', context_size: 4096 });
+            const large = calculateVram({ params_b: 100, quantization: 'Q4_K_M', context_size: 4096 });
 
             const outputSmall = expectSuccess(small);
             const outputLarge = expectSuccess(large);
@@ -1192,7 +1170,7 @@ describe('Calculation Tests', () => {
         it('should use exact calculation when layers are provided', () => {
             const result = calculateVram({
                 params_b: 8,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 layers: 32,
                 kv_heads: 8,
                 key_dim: 128,
@@ -1215,29 +1193,31 @@ describe('Calculation Tests', () => {
 describe('Edge Cases', () => {
     describe('Extreme model sizes', () => {
         it('should handle 1B model', () => {
-            const result = calculateVram({ params_b: 1, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 1, quantization: 'IQ1_S' });
             const output = expectSuccess(result);
-            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(0.53, 2);
+            // 1 × 1.56 / 8 = 0.195 GB, rounds to 0.20
+            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(0.2, 1);
         });
 
         it('should handle 1000B model', () => {
-            const result = calculateVram({ params_b: 1000, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 1000, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
-            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(525, 0);
+            // 1000 × 4.85 / 8 = 606.25 GB
+            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(606, 0);
         });
 
-        it('should handle very small quantization (Q1)', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q1' });
+        it('should handle very small quantization (IQ1_S)', () => {
+            const result = calculateVram({ params_b: 8, quantization: 'IQ1_S' });
             const output = expectSuccess(result);
-            // 8B * 0.125 bytes * 1.05 = 1.05 GB
-            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(1.05, 1);
+            // 8 × 1.56 / 8 = 1.56 GB
+            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(1.56, 1);
         });
 
         it('should handle very large quantization (FP32)', () => {
             const result = calculateVram({ params_b: 8, quantization: 'FP32' });
             const output = expectSuccess(result);
-            // 8B * 4 bytes * 1.05 = 33.6 GB
-            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(33.6, 1);
+            // 8 × 32 / 8 = 32.0 GB (no overhead)
+            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(32.0, 1);
         });
     });
 
@@ -1259,7 +1239,7 @@ describe('Edge Cases', () => {
 
     describe('VRAM constraints', () => {
         it('should handle case where nothing fits', () => {
-            // 70B FP32 model needs ~280GB+, only 1GB available
+            // FP32 70B ≈ 280 GB; only 1 GB available
             const result = calculateVram({ params_b: 70, quantization: 'FP32', vram_gb: 1, os: 'linux-headless' });
             const output = expectSuccess(result);
 
@@ -1268,8 +1248,8 @@ describe('Edge Cases', () => {
         });
 
         it('should handle case where everything fits', () => {
-            // 1B Q1 model with 256GB VRAM
-            const result = calculateVram({ params_b: 1, quantization: 'Q1', vram_gb: 256, os: 'linux-headless' });
+            // IQ1_S 1B ≈ 0.195 GB; 256 GB VRAM
+            const result = calculateVram({ params_b: 1, quantization: 'IQ1_S', vram_gb: 256, os: 'linux-headless' });
             const output = expectSuccess(result);
 
             expect(output.recommendations).not.toBeNull();
@@ -1277,17 +1257,16 @@ describe('Edge Cases', () => {
         });
 
         it('should handle boundary case where model barely fits', () => {
-            // Setup: Q4 8B model is ~4.2GB + 0.4 buffer = 4.6GB minimum
+            // IQ4_XS 8B = 8 × 4.35 / 8 = 4.35 GB + 0.4 buffer = 4.75 GB < 5 GB VRAM
             const result = calculateVram({
                 params_b: 8,
-                quantization: 'Q4',
+                quantization: 'IQ4_XS',
                 kv_cache_enabled: false,
                 vram_gb: 5,
                 os: 'linux-headless',
             });
             const output = expectSuccess(result);
 
-            // Should fit with minimal headroom
             expect(output.recommendations).not.toBeNull();
             expect(output.summary.fitting_configurations).toBeGreaterThan(0);
         });
@@ -1317,8 +1296,9 @@ describe('Edge Cases', () => {
             const output = expectSuccess(result);
             const optimal = output.recommendations!.find((r) => r.tier === 'optimal')!;
 
-            // Optimal should be Q4, Q5, or Q6
-            expect(['Q4', 'Q5', 'Q6']).toContain(optimal.quantization);
+            // Optimal should be from OPTIMAL_QUANTIZATIONS list: Q4_K_M, IQ4_XS, Q5_K_M, Q4_K_S
+            const optimalQuants = ['Q4_K_M', 'IQ4_XS', 'Q5_K_M', 'Q4_K_S'];
+            expect(optimalQuants).toContain(optimal.quantization);
         });
 
         it('should select minimum memory for minimum recommendation', () => {
@@ -1337,12 +1317,10 @@ describe('Edge Cases', () => {
             const output = expectSuccess(result);
             const maxQuality = output.recommendations!.find((r) => r.tier === 'maximum_quality')!;
 
-            // Max quality should have the highest bit quantization among fitting configs
-            const maxBits = QUANTIZATION_BITS[maxQuality.quantization as keyof typeof QUANTIZATION_BITS];
-
+            const maxBpw = QUANT_CATALOG[maxQuality.quantization as Quantization]?.bpw ?? 0;
             for (const rec of output.recommendations!) {
-                const recBits = QUANTIZATION_BITS[rec.quantization as keyof typeof QUANTIZATION_BITS];
-                expect(maxBits).toBeGreaterThanOrEqual(recBits);
+                const recBpw = QUANT_CATALOG[rec.quantization as Quantization]?.bpw ?? 0;
+                expect(maxBpw).toBeGreaterThanOrEqual(recBpw);
             }
         });
     });
@@ -1372,7 +1350,7 @@ describe('Edge Cases', () => {
 
     describe('Numerical precision', () => {
         it('should round output values to 2 decimal places', () => {
-            const result = calculateVram({ params_b: 7.123, quantization: 'Q4' });
+            const result = calculateVram({ params_b: 7.123, quantization: 'Q4_K_M' });
             const output = expectSuccess(result);
             const analysis = output.quantization_analysis[0];
 
@@ -1401,15 +1379,15 @@ describe('Edge Cases', () => {
 // ============================================================================
 
 describe('Integration Tests', () => {
-    it('should handle realistic 8B Q4 model on macOS 24GB', () => {
-        const result = calculateVram({ params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'macos' });
+    it('should handle realistic 8B Q4_K_M model on macOS 24GB', () => {
+        const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'macos' });
         const output = expectSuccess(result);
 
         // macOS should reserve 6GB, leaving 18GB available
         expect(output.os_overhead.available_gb).toBe(18);
 
-        // 8B Q4 model should be ~4.2GB
-        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(4.2, 1);
+        // Q4_K_M 8B should be ~4.85GB
+        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(4.85, 1);
 
         // Should have recommendations
         expect(output.recommendations).not.toBeNull();
@@ -1420,15 +1398,15 @@ describe('Integration Tests', () => {
         expect(optimal.context_size).toBeGreaterThanOrEqual(4096);
     });
 
-    it('should handle realistic 70B Q4 model on Windows 48GB', () => {
-        const result = calculateVram({ params_b: 70, quantization: 'Q4', vram_gb: 48, os: 'windows' });
+    it('should handle realistic 70B Q4_K_M model on Windows 48GB', () => {
+        const result = calculateVram({ params_b: 70, quantization: 'Q4_K_M', vram_gb: 48, os: 'windows' });
         const output = expectSuccess(result);
 
         // Windows should reserve 0.8GB
         expect(output.os_overhead.reserved_gb).toBe(0.8);
 
-        // 70B Q4 should be ~36.75GB
-        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(36.75, 1);
+        // 70B Q4_K_M ≈ 70 × 4.85 / 8 = 42.44 GB
+        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(42.44, 1);
 
         // Should have limited or no fitting configurations at high contexts
         expect(output.summary.fitting_configurations).toBeDefined();
@@ -1438,7 +1416,7 @@ describe('Integration Tests', () => {
         const result = calculateVram({
             params_b: 7,
             model_size_gb: 4,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             context_size: 32768,
             kv_cache_enabled: true,
             kv_cache_quant: 'fp16',
@@ -1460,7 +1438,7 @@ describe('Integration Tests', () => {
     it('should handle MoE model like Mixtral', () => {
         const result = calculateVram({
             params_b: 47,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             expert_count: 8,
             active_experts: 2,
             vram_gb: 48,
@@ -1471,14 +1449,14 @@ describe('Integration Tests', () => {
         expect(output.input_summary.is_moe).toBe(true);
         expect(output.input_summary.expert_info).toBe('8 total, 2 active');
 
-        // Model size should be based on total params
-        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(24.68, 1);
+        // Model size should be based on total params: 47 × 4.85 / 8 = 28.49 GB
+        expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(28.49, 1);
     });
 
     it('should handle model with sliding window', () => {
         const result = calculateVram({
             params_b: 7,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             sliding_window: 4096,
             context_size: 131072,
             vram_gb: 16,
@@ -1510,7 +1488,7 @@ describe('Regression Tests', () => {
             calculateVram({
                 params_b: 8,
                 model_size_gb: 4,
-                quantization: 'Q4',
+                quantization: 'Q4_K_M',
                 context_size: 4096,
                 kv_cache_enabled: true,
                 kv_cache_quant: 'q8',
@@ -1529,7 +1507,7 @@ describe('Regression Tests', () => {
     });
 
     it('should return consistent results for same input', () => {
-        const input: CalculatorInput = { params_b: 8, quantization: 'Q4', vram_gb: 24, os: 'macos' };
+        const input: CalculatorInput = { params_b: 8, quantization: 'Q4_K_M', vram_gb: 24, os: 'macos' };
 
         const result1 = calculateVram(input);
         const result2 = calculateVram(input);
@@ -1545,7 +1523,7 @@ describe('Regression Tests', () => {
     });
 
     it('should handle all quantization types without errors', () => {
-        for (const quant of Object.values(Quantization)) {
+        for (const quant of Object.keys(QUANT_CATALOG) as (keyof typeof QUANT_CATALOG)[]) {
             const result = calculateVram({ params_b: 8, quantization: quant });
             expect(result.ok).toBe(true);
         }
@@ -1565,7 +1543,7 @@ describe('Regression Tests', () => {
 describe('Batch Size Impact on KV Cache', () => {
     const baseInput = {
         params_b: 8,
-        quantization: 'Q4' as const,
+        quantization: 'Q4_K_M' as const,
         layers: 32,
         kv_heads: 8,
         key_dim: 128,
@@ -1634,7 +1612,7 @@ describe('KV Cache Formula Verification', () => {
         // = 2 × 32 × 8 × 256 × 8192 × 1 × 2 bytes = 2,147,483,648 bytes = 2.0 GB
         const result = calculateVram({
             params_b: 8,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             layers: 32,
             kv_heads: 8,
             key_dim: 128,
@@ -1658,7 +1636,7 @@ describe('KV Cache Formula Verification', () => {
         // = 2 × 80 × 8 × 256 × 131072 × 1 × 2 bytes = 85,899,345,920 bytes = 80.0 GB
         const result = calculateVram({
             params_b: 70,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             layers: 80,
             kv_heads: 8,
             key_dim: 128,
@@ -1678,7 +1656,7 @@ describe('KV Cache Formula Verification', () => {
     it('should respect KV_CACHE_BYTES mapping in calculation', () => {
         const baseInput = {
             params_b: 8,
-            quantization: 'Q4' as const,
+            quantization: 'Q4_K_M' as const,
             layers: 32,
             kv_heads: 8,
             key_dim: 128,
@@ -1710,11 +1688,11 @@ describe('KV Cache Formula Verification', () => {
 });
 
 // ============================================================================
-// SECTION 11: Working Buffer Tests (MISSING - ADD THIS)
+// SECTION 11: Working Buffer Tests
 // ============================================================================
 describe('Working Buffer Application', () => {
     it('should add WORKING_BUFFER_GB to vram_without_cache', () => {
-        const result = calculateVram({ params_b: 8, quantization: 'Q4', kv_cache_enabled: false });
+        const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_enabled: false });
         const output = expectSuccess(result);
 
         const modelSize = output.quantization_analysis[0].estimated_gguf_gb!;
@@ -1726,7 +1704,7 @@ describe('Working Buffer Application', () => {
     it('should add WORKING_BUFFER_GB to vram_with_cache', () => {
         const result = calculateVram({
             params_b: 8,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             kv_cache_enabled: true,
             layers: 32,
             kv_heads: 8,
@@ -1752,7 +1730,7 @@ describe('Recommendation Headroom Calculation', () => {
     it('should calculate headroom as available_vram - total_vram', () => {
         const result = calculateVram({
             params_b: 8,
-            quantization: 'Q4',
+            quantization: 'Q4_K_M',
             vram_gb: 24,
             os: 'windows', // 0.8 GB overhead
         });
@@ -1769,7 +1747,7 @@ describe('Recommendation Headroom Calculation', () => {
 
     it('should have zero headroom when config exactly fits', () => {
         // Find a configuration that barely fits
-        const result = calculateVram({ params_b: 1, quantization: 'Q1', vram_gb: 2, os: 'linux-headless' });
+        const result = calculateVram({ params_b: 1, quantization: 'IQ1_S', vram_gb: 2, os: 'linux-headless' });
 
         const output = expectSuccess(result);
         if (output.recommendations) {
@@ -1800,12 +1778,12 @@ describe('Real Model Validation', () => {
             key_length: 128,
             value_length: 128,
             sliding_window: null,
-            quantization: 'Q4' as const,
+            quantization: 'Q4_K_M' as const,
             kv_cache_quant: 'fp16' as const,
         };
 
         describe('File Size Estimation', () => {
-            it('should estimate Q4 model size close to actual GGUF file size', () => {
+            it('should estimate Q4_K_M model size close to actual GGUF file size', () => {
                 const result = calculateVram({
                     params_b: modelConfig.params_b,
                     quantization: modelConfig.quantization,
@@ -1815,8 +1793,8 @@ describe('Real Model Validation', () => {
                 const output = expectSuccess(result);
                 const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-                // Expected: 4B × 0.5 bytes × 1.05 = 2.1 GB (estimate)
-                expect(estimated).toBeCloseTo(2.1, 1);
+                // Expected: 4B × 4.85 bpw / 8 = 2.425 GB
+                expect(estimated).toBeCloseTo(2.43, 1);
 
                 // Test passes if estimate is within 25% of actual
                 const variance =
@@ -1993,12 +1971,12 @@ describe('Real Model Validation', () => {
             key_length: 128,
             value_length: 128,
             sliding_window: 1024,
-            quantization: 'Q4' as const,
+            quantization: 'Q4_K_M' as const,
             kv_cache_quant: 'fp16' as const,
         };
 
         describe('File Size Estimation', () => {
-            it('should estimate Q4 model size close to actual GGUF file size', () => {
+            it('should estimate Q4_K_M model size close to actual GGUF file size', () => {
                 const result = calculateVram({
                     params_b: modelConfig.params_b,
                     quantization: modelConfig.quantization,
@@ -2007,8 +1985,8 @@ describe('Real Model Validation', () => {
                 const output = expectSuccess(result);
                 const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-                // Expected: 27B × 0.5 bytes × 1.05 = 14.175 GB
-                expect(estimated).toBeCloseTo(14.2, 1);
+                // Expected: 27B × 4.85 bpw / 8 = 16.36 GB
+                expect(estimated).toBeCloseTo(16.36, 1);
 
                 const variance =
                     Math.abs(estimated - modelConfig.actual_file_size_gb) / modelConfig.actual_file_size_gb;
@@ -2183,12 +2161,12 @@ describe('Real Model Validation', () => {
             sliding_window: 128,
             expert_count: 32,
             active_experts: 4,
-            quantization: 'Q4' as const,
+            quantization: 'Q4_K_M' as const,
             kv_cache_quant: 'fp16' as const,
         };
 
         describe('File Size Estimation', () => {
-            it('should estimate Q4 model size close to actual GGUF file size', () => {
+            it('should estimate Q4_K_M model size close to actual GGUF file size', () => {
                 const result = calculateVram({
                     params_b: modelConfig.params_b,
                     quantization: modelConfig.quantization,
@@ -2197,8 +2175,8 @@ describe('Real Model Validation', () => {
                 const output = expectSuccess(result);
                 const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-                // Expected: 20B × 0.5 bytes × 1.05 = 10.5 GB
-                expect(estimated).toBeCloseTo(10.5, 1);
+                // Expected: 20B × 4.85 bpw / 8 = 12.13 GB
+                expect(estimated).toBeCloseTo(12.13, 1);
 
                 const variance =
                     Math.abs(estimated - modelConfig.actual_file_size_gb) / modelConfig.actual_file_size_gb;
@@ -2507,5 +2485,52 @@ describe('Real Model Validation', () => {
                 expect(optimal.headroom_gb).toBeGreaterThanOrEqual(0);
             }
         });
+    });
+});
+
+// ============================================================================
+// Quant Catalog Anchors (2.5b)
+// ============================================================================
+describe('Quant Catalog Anchors (2.5b)', () => {
+    it('QUANT_CATALOG should export with Q4_K_M bpw ≈ 4.85', () => {
+        expect(QUANT_CATALOG['Q4_K_M'].bpw).toBeCloseTo(4.85, 1);
+        expect(QUANT_CATALOG['Q4_K_M'].sweetSpot).toBe(true);
+        expect(QUANT_CATALOG['Q4_K_M'].family).toBe('k-quant');
+    });
+
+    it('Q4_K_M 24B model size ≈ 14.3 GB ±5%', () => {
+        const result = calculateVram({ params_b: 24, quantization: 'Q4_K_M' });
+        const output = expectSuccess(result);
+        const size = output.quantization_analysis[0].estimated_gguf_gb!;
+        // 24 × 4.85 / 8 = 14.55 GB; anchor 14.3 ±5% = [13.585, 15.015]
+        expect(size).toBeGreaterThanOrEqual(13.58);
+        expect(size).toBeLessThanOrEqual(15.02);
+    });
+
+    it('IQ4_XS should have sweetSpot=true and family i-quant', () => {
+        expect(QUANT_CATALOG['IQ4_XS'].sweetSpot).toBe(true);
+        expect(QUANT_CATALOG['IQ4_XS'].family).toBe('i-quant');
+    });
+
+    it('Q8_0 should have bpw ≈ 8.5', () => {
+        expect(QUANT_CATALOG['Q8_0'].bpw).toBeCloseTo(8.5, 1);
+    });
+
+    it('STANDARD_QUANTIZATIONS should have 15 entries', () => {
+        expect(STANDARD_QUANTIZATIONS).toHaveLength(15);
+    });
+
+    it('STANDARD_QUANTIZATIONS should include Q4_K_M', () => {
+        expect(STANDARD_QUANTIZATIONS).toContain('Q4_K_M');
+    });
+
+    it('QuantizationAnalysis should expose eff_bpw (not bits_per_param)', () => {
+        const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
+        const output = expectSuccess(result);
+        const analysis = output.quantization_analysis[0];
+        expect(analysis.eff_bpw).toBeCloseTo(4.85, 1);
+        expect((analysis as any).bits_per_param).toBeUndefined();
+        expect(analysis.sweet_spot).toBe(true);
+        expect(analysis.family).toBe('k-quant');
     });
 });

@@ -22,7 +22,7 @@ const QuantizationTable: React.FC<QuantizationTableProps> = ({ analysis, default
                 <span className="vram-quant-header">
                     <strong>{analysis.quantization}</strong>
                     <span className="vram-quant-stat">
-                        {analysis.bits_per_param} bits/param
+                        {analysis.eff_bpw} bpw
                         {analysis.estimated_gguf_gb !== null && ` | ~${analysis.estimated_gguf_gb.toFixed(2)} GB GGUF`}
                         {' | '}Min VRAM: {analysis.min_vram_no_cache_gb.toFixed(2)} GB (no cache),{' '}
                         {analysis.min_vram_with_cache_gb.toFixed(2)} GB (with cache)

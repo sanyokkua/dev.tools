@@ -1,5 +1,5 @@
-import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from '@/common/llm-vram-calc';
-import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
+import type { CalculatorInput, CalculatorOutput, Quantization, Result, ValidationError } from '@/common/llm-vram-calc';
+import { calculateVram, KVCacheQuant, OperatingSystem, QUANT_CATALOG } from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';
 import ToolAbout from '@/controls/ToolAbout';
 import { FC, useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ function parseOptionalInt(value: string): number | null {
 
 /** @description Converts form state strings into a typed CalculatorInput for the VRAM calculation engine. */
 function buildCalculatorInput(form: VramFormState): CalculatorInput {
-    const quantizationValues = Object.values(Quantization) as string[];
+    const quantizationValues = Object.keys(QUANT_CATALOG) as string[];
     const kvCacheValues = Object.values(KVCacheQuant) as string[];
     const osValues = Object.values(OperatingSystem) as string[];
 
