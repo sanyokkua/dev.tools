@@ -9,6 +9,71 @@ import {
     PromptType,
     replaceParams,
 } from '@/common/prompts/prompts';
+import { promptsLibraryList } from '@/common/prompts/prompts-library';
+
+describe('promptsLibraryList assembly', () => {
+    it('assembles without throwing', () => {
+        expect(() => promptsLibraryList).not.toThrow();
+    });
+
+    it('has no prompts with LEARNING_RESOURCES category', () => {
+        const found = promptsLibraryList.filter((p) => p.category === ('learning-resources' as PromptCategory));
+        expect(found).toHaveLength(0);
+    });
+
+    it('includes the 4 language-parametrized code prompts', () => {
+        const ids = promptsLibraryList.map((p) => p.id);
+        expect(ids).toContain('userParametrizedPromptForGeneratingCode');
+        expect(ids).toContain('userParametrizedPromptForRefactoringCode');
+        expect(ids).toContain('userParametrizedPromptForTestingCode');
+        expect(ids).toContain('userParametrizedPromptForDocumentingCode');
+    });
+
+    it('all 4 language prompts have {{language}} as a parameter', () => {
+        const languagePromptIds = [
+            'userParametrizedPromptForGeneratingCode',
+            'userParametrizedPromptForRefactoringCode',
+            'userParametrizedPromptForTestingCode',
+            'userParametrizedPromptForDocumentingCode',
+        ];
+        for (const id of languagePromptIds) {
+            const p = promptsLibraryList.find((x) => x.id === id);
+            expect(p).toBeDefined();
+            expect(p?.parameters).toContain('language');
+        }
+    });
+
+    it('does not contain the deprecated conversation chain prompts', () => {
+        const ids = new Set(promptsLibraryList.map((p) => p.id));
+        const shouldBeGone = [
+            'userParametrizedPromptResearchSubtaskIdentification',
+            'userParametrizedPromptResearchFunctionalitySegregation',
+            'userParametrizedPromptResearchFoundationalSubtaskIdentification',
+            'userParametrizedPromptResearchResourceAssignment',
+            'userParametrizedPromptResearchProgressMeasurement',
+            'userParametrizedPromptResearchDependencyBasedOrderDetermination',
+            'userParametrizedPromptResearchParallelizableSubtaskIdentification',
+            'userParametrizedPromptResearchDependencyImpactAssessment',
+            'userParametrizedPromptResearchBottleneckAdjustmentRecommendations',
+            'userParametrizedPromptResearchSubtasksOverview',
+            'userParametrizedPromptResearchSubtasksAndDependenciesOverview',
+            'userParametrizedPromptResearchSolutionRelevanceConfirmation',
+            'userParametrizedPromptResearchCommonCodePatternAnalysis',
+            'userParametrizedPromptResearchCodeCustomizationGuidance',
+            'userParametrizedPromptResearchIntegrationAndAccuracyCheck',
+            'userParametrizedPromptDocumentationInlineCommentGeneration',
+        ];
+        for (const id of shouldBeGone) {
+            expect(ids.has(id)).toBe(false);
+        }
+    });
+
+    it('has no duplicate prompt IDs', () => {
+        const ids = promptsLibraryList.map((p) => p.id);
+        const uniqueIds = new Set(ids);
+        expect(uniqueIds.size).toBe(ids.length);
+    });
+});
 
 describe('filterPrompts', () => {
     const mockPromptsList: Prompt[] = [
@@ -200,5 +265,50 @@ describe('joinPromptLines', () => {
 
     test('returns empty string for empty array', () => {
         expect(joinPromptLines([])).toBe('');
+    });
+});
+
+describe('promptsLibraryList integrity', () => {
+    it('every prompt has a non-empty id, type, category, template, description', () => {
+        for (const p of promptsLibraryList) {
+            expect(p.id.length).toBeGreaterThan(0);
+            expect(p.type.length).toBeGreaterThan(0);
+            expect(p.category.length).toBeGreaterThan(0);
+            expect(p.template.length).toBeGreaterThan(0);
+            expect(p.description.length).toBeGreaterThan(0);
+        }
+    });
+
+    it('every parametrized prompt whose template contains {{...}} declares those params', () => {
+        const parametrized = promptsLibraryList.filter(
+            (p) =>
+                p.type === PromptType.USER_PROMPT_PARAMETRIZED ||
+                p.type === PromptType.USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED,
+        );
+        for (const p of parametrized) {
+            const inTemplate = extractParams(p.template);
+            if (inTemplate.length > 0) {
+                expect(p.parameters?.length ?? 0).toBeGreaterThan(0);
+            }
+        }
+    });
+
+    it('every {{param}} in a parametrized prompt template is listed in parameters', () => {
+        const parametrized = promptsLibraryList.filter(
+            (p) =>
+                p.type === PromptType.USER_PROMPT_PARAMETRIZED ||
+                p.type === PromptType.USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED,
+        );
+        for (const p of parametrized) {
+            const inTemplate = extractParams(p.template);
+            for (const param of inTemplate) {
+                expect(p.parameters).toContain(param);
+            }
+        }
+    });
+
+    it('total library count is in expected range after curation (55–75)', () => {
+        expect(promptsLibraryList.length).toBeGreaterThanOrEqual(55);
+        expect(promptsLibraryList.length).toBeLessThanOrEqual(75);
     });
 });

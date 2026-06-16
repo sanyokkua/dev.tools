@@ -397,85 +397,6 @@ output:
 
 Before generating the Research Prompt, list and verify each transformation step you plan to apply.
 `.trim();
-const userParametrizedPromptForUserStoryCreation = `
-Your Role: "Agile User‑Story Generator, Senior Product Owner expertise in crafting development‑ready stories"
-
-Your capabilities:
-  — Parse raw requirements or feature requests from user input
-  — Identify user‑roles, actions, and business values
-  — Structure stories according to industry best practices (Who, What, Why, How)
-  — Auto‑generate clear Acceptance Criteria (Gherkin style) and list non‑functional requirements
-  — Call out dependencies, UX/UI notes, data/schema considerations, test plans, and relevant links
-
-Your main task: "Transform any user’s feature description or requirement into a fully‑formed Agile user story, strictly following the provided template and including only the information the user supplies."
-
-User Input:
-  — Requirements: \`\`\`{{requirements}}\`\`\`
-
-instructions:
-    1. Interpret \`{{requirements}}\` as the raw requirements for one user story.
-    2. Extract and map each piece of provided information into the template sections:
-       — Title
-       — Story (As a…, I want…, so that…)
-       — Description (Scope, Background)
-       — Business Rules / Mapping Logic / Domain Rules
-       — Acceptance Criteria (Given‑When‑Then)
-       — Non‑Functional Requirements
-       — Dependencies
-       — UX / UI Notes
-       — Data & Schema Considerations
-       — Testing & Validation
-       — Links & References
-    3. Do not invent any details not explicitly given in \`{{requirements}}\`. If a section has no provided content, leave it as an empty placeholder or omit it if the template allows.
-    4. Follow the exact headings and formatting of the template.
-    5. Ensure each Acceptance Criterion is testable and phrased pass/fail.
-
-additional instructions:
-  — If \`{{requirements}}\` is ambiguous or misses critical elements (e.g., user‑role or benefit), ask a clarifying question rather than guessing.
-  — Maintain professional, concise language suitable for hand‑off to development teams.
-  — Preserve Markdown formatting for easy copy‑and‑paste into issue trackers.
-
-constraints:
-  — Only use information explicitly provided in \`{{requirements}}\`.
-  — Do not add extra examples or commentary in the output.
-  — Do not break the structure or rename template headings.
-  — Work for any domain: backend, frontend, data, UX, integrations, etc.
-
-errorHandling:
-  — If a required template section cannot be populated from \`{{requirements}}\`, insert a placeholder comment like \`<!-- NEEDS INPUT: <section> -->\` and request clarification.
-  — If \`{{requirements}}\` contains multiple unrelated requirements, ask whether to split into separate stories.
-
-output:
-  — A single Markdown‑formatted user story with the following sections (omit any sections with no content):
-    1. Title:
-    2. Story:
-       As a [user‑role],
-       I want to [action],
-       so that [business value].
-    3. Description:
-       * Scope: …
-       * Background: …
-    4. Business Rules / Mapping Logic / Domain Rules:
-       * …
-    5. Acceptance Criteria:
-       1. Given … When … Then …
-       2. …
-    6. Non‑Functional Requirements:
-       * …
-    7. Dependencies:
-       * …
-    8. UX / UI Notes:
-       * …
-    9. Data & Schema Considerations:
-       * …
-    10. Testing & Validation:
-        * Unit tests: …
-        * Integration tests: …
-        * Manual/UAT: …
-        * Monitoring/Alerts: …
-    11. Links & References:
-        * …
-`.trim();
 const userParametrizedPromptForTranslatingTextInDictionaryFormat = makeUserPromptForTextTransformation({
     userInputParameters: [
         'UserText: ```{{user_text}}``` # Expect new word/phrase/sentence on the new lines',
@@ -1116,6 +1037,151 @@ Produce the User Story for the following input. Output only the Markdown — no 
 **USER_DESCRIPTION:**
 {{USER_DESCRIPTION}}`.trim();
 
+const userParametrizedPromptForGeneratingCode = `
+Your Role: "Experienced Software Developer with multi-language expertise"
+
+Your capabilities:
+  — Proficient in core data structures, algorithms, and complexity analysis
+  — Familiar with concurrency/asynchrony models in {{language}}
+  — Knowledge of common build/package tools for {{language}}
+
+Your main task: "Generate {{language}} code for the user provided requirements"
+
+instructions:
+  — Follow clean-code principles (KISS, DRY, YAGNI) for {{language}}
+  — Use meaningful, consistent naming conventions in {{language}}
+  — Apply SOLID (or analogous) design principles
+  — Keep functions/methods small and focused
+  — Include logging at key application boundaries
+  — Sanitize and validate all external inputs
+  — Never expose sensitive data in logs or error messages
+
+constraints:
+  — Pass the {{language}} standard linter/formatter with zero warnings
+  — Target the latest stable {{language}} runtime or compiler version
+  — Avoid deprecated or non-idiomatic {{language}} constructs
+  — Enforce immutability where it makes sense
+
+documentation:
+  — Provide idiomatic {{language}} comments or docstrings on all public APIs
+
+errorHandling:
+  — Handle and propagate errors per {{language}} conventions
+  — Use custom exception/error types for clarity
+  — Fail fast on invalid inputs
+
+performance:
+  — Optimize hot code paths only after profiling
+  — Choose appropriate data structures for the job
+
+security:
+  — Follow OWASP (or {{language}}-specific) secure-coding practices
+  — Do not roll your own crypto; use vetted libraries
+`.trim();
+
+const userParametrizedPromptForRefactoringCode = `
+Your Role: "Experienced Software Architect, multi-language refactoring specialist"
+
+Your capabilities:
+  — Identify and replace {{language}}-specific anti-patterns
+  — Simplify control flow and improve modularity
+  — Optimize common algorithms for performance
+
+Your main task: "Review the user provided {{language}} code and suggest improvements"
+
+instructions:
+  — Follow clean-code principles (readability, DRY, KISS)
+  — Use consistent {{language}} naming conventions
+  — Apply performance optimization techniques (algorithmic efficiency, memory usage)
+  — Break large functions into smaller, single-purpose units
+  — Favor declarative over imperative constructs where possible
+  — Find all anti-patterns in the code and fix them
+
+constraints:
+  — Identify all problematic areas (anti-patterns, inconsistencies, inefficiencies)
+  — Explain each issue with before/after code examples
+  — Provide fully refactored code with all improvements applied
+  — Maintain existing external behavior (no regressions)
+  — Do not alter external behavior or public APIs without comment
+  — Any unsupported constructs should be flagged, not modified
+
+documentation:
+  — Include inline comments explaining each refactoring decision
+  — Summarize high-level changes in a short overview
+
+errorHandling:
+  — Gracefully handle syntax errors or unsupported {{language}} features
+  — Provide clear messages if parts of the input can't be refactored automatically
+`.trim();
+
+const userParametrizedPromptForTestingCode = `
+Your Role: "Senior Test Engineer, multi-language test specialist"
+
+Your capabilities:
+  — Choose the correct framework and style for {{language}}
+  — Generate parameterized and table-driven tests where {{language}} supports them
+  — Apply minimal mocking strategies for external dependencies
+  — Include basic setup/teardown or fixture code for {{language}}
+
+Your main task: "Analyze the user provided {{language}} code and generate test cases"
+
+instructions:
+  — Prioritize edge cases, error conditions, and boundary values first
+  — Use parameterized or data-driven tests for combinatorial inputs
+  — Keep mocks minimal to avoid "mock hell"; prefer real objects where feasible
+  — Focus on behavior verification (public API) over internal state
+
+constraints:
+  — Use {{language}}-native test framework idioms
+  — Cover 100% of logical branches, exception flows, and validation rules
+  — Do not mock external libraries or frameworks unless explicitly requested
+  — Validate test assertions against documented behavior / specification
+  — Do not assume third-party test libraries beyond standard {{language}} frameworks
+
+documentation:
+  — Annotate each test case with a clear scenario description
+  — Report coverage metrics and highlight any gaps
+
+errorHandling:
+  — Ensure generated tests compile / execute without {{language}} syntax errors
+  — If required imports or fixtures are missing, add fallback stubs
+  — Sanitize any sensitive data in test inputs or fixtures
+`.trim();
+
+const userParametrizedPromptForDocumentingCode = `
+Your Role: "Senior Documentation Engineer, multi-language specialist"
+
+Your capabilities:
+  — Detect file type or accept explicit {{language}} input
+  — Apply the appropriate doc style for {{language}} (e.g. JSDoc, PyDoc, GoDoc, JavaDoc, TSDoc, CSSDoc)
+  — Ensure 100% coverage of public APIs and exported members
+  — Accurately reflect parameter names, types, and return value semantics
+
+Your main task: "Analyze the user provided {{language}} code and generate code documentation"
+
+instructions:
+  — Follow {{language}}-specific documentation standards
+  — Write concise, unambiguous descriptions in active voice
+  — Use explicit @param, @returns, @throws tags as supported by {{language}}
+  — Maintain consistent indentation and spacing; do not use Markdown syntax
+
+constraints:
+  — Document all public or exported functions, classes, interfaces, enums, mixins, variables
+  — Omit private/internal members (skip names prefixed with _ or marked private/protected)
+  — Do not include implementation details, TODOs, or usage examples
+  — Sanitize any sensitive information from code snippets
+  — Follow the {{language}} standard documentation conventions
+
+documentation:
+  — Achieve 100% documentation coverage on all exported/public members
+  — Include minimal illustrative examples only when clarifying complex behavior
+
+errorHandling:
+  — Validate code syntax before generating docs; report parse errors and skip invalid blocks
+  — Silently skip private/internal members without error
+  — Ensure no sensitive data appears in output
+`.trim();
+
 export const userPrompts: Prompt[] = [
     createUserParametrizedPrompt(
         'userParametrizedPromptForTranslatingText',
@@ -1290,20 +1356,6 @@ export const userPrompts: Prompt[] = [
         'prompt',
     ),
     createUserParametrizedPrompt(
-        'userParametrizedPromptForUserStoryCreation',
-        userParametrizedPromptForUserStoryCreation,
-        PromptCategory.AGILE_USER_STORY_GENERATION,
-        'User prompt that transforms user requirements into a fully-formed Agile user story',
-        'user',
-        'story',
-        'requirements',
-        'agile',
-        'user',
-        'story',
-        'template',
-        'task',
-    ),
-    createUserParametrizedPrompt(
         'userParametrizedPromptForTranslatingTextInDictionaryFormat',
         userParametrizedPromptForTranslatingTextInDictionaryFormat,
         PromptCategory.TEXT_TRANSLATION,
@@ -1346,5 +1398,45 @@ export const userPrompts: Prompt[] = [
         'ticket',
         'requirements',
         'qa',
+    ),
+    createUserParametrizedPrompt(
+        'userParametrizedPromptForGeneratingCode',
+        userParametrizedPromptForGeneratingCode,
+        PromptCategory.CODE_GENERATION,
+        'User prompt that generates code in any {{language}} following clean-code principles, SOLID, and language-specific idioms',
+        'code-generation',
+        'programming',
+        'generic',
+        'language',
+    ),
+    createUserParametrizedPrompt(
+        'userParametrizedPromptForRefactoringCode',
+        userParametrizedPromptForRefactoringCode,
+        PromptCategory.CODE_REFACTORING,
+        'User prompt that refactors code in any {{language}} to remove anti-patterns and improve readability',
+        'refactoring',
+        'programming',
+        'generic',
+        'language',
+    ),
+    createUserParametrizedPrompt(
+        'userParametrizedPromptForTestingCode',
+        userParametrizedPromptForTestingCode,
+        PromptCategory.TEST_GENERATION,
+        'User prompt that generates unit tests for any {{language}} using native frameworks and minimal mocking',
+        'test-generation',
+        'programming',
+        'generic',
+        'language',
+    ),
+    createUserParametrizedPrompt(
+        'userParametrizedPromptForDocumentingCode',
+        userParametrizedPromptForDocumentingCode,
+        PromptCategory.CODE_DOCUMENTATION,
+        'User prompt that generates documentation comments for any {{language}} following standard doc conventions',
+        'documentation',
+        'programming',
+        'generic',
+        'language',
     ),
 ];

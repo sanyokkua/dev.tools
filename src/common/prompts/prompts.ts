@@ -21,7 +21,6 @@ export enum PromptCategory {
     MIGRATION_GUIDANCE = 'migration-guidance', // Framework/language transitions
     UX_IMPLEMENTATION = 'ux-implementation', // UI/UX code patterns
     INTERNATIONALIZATION = 'internationalization', // i18n implementation
-    LEARNING_RESOURCES = 'learning-resources', // Tutorial recommendations
     MONITORING_SETUP = 'monitoring-setup', // Logging/observability configs
     IMAGE_PROMPT_GENERATION = 'image-prompt-generation',
     TEXT_PROOFREADING = 'text-proofreading',

@@ -15,12 +15,6 @@ const userParametrizedPromptResearchTaskBreakdownOverview = `
 I am planning to break down a development task involving {{describe_the_task_and_problem}}.
 Could you first provide an overview of the key components and functional aspects identified during the task research phase?
 `.trim();
-const userParametrizedPromptResearchSubtaskIdentification = `
-Based on the overview provided, what key subtasks can we identify that are necessary to complete the main task of {{describe_the_task}}? Please list each subtask with a brief description.
-`.trim();
-const userParametrizedPromptResearchFunctionalitySegregation = `
-Are there specific functionalities within the main task that can be treated as separate subtasks? Please describe each and explain why it should be considered a standalone subtask.
-`.trim();
 const userParametrizedPromptResearchTaskDependencySpecification = `
 For the subtasks identified, can you specify any dependencies among them? Understanding these dependencies will help in planning the execution order.
 `.trim();
@@ -33,42 +27,13 @@ I am in the process of organizing subtasks hierarchically for a development task
 To ensure efficient task completion, I aim to create a clear and effective hierarchy of tasks.
 Could you guide me on how to organize these subtasks into a hierarchical structure? Additionally, are there any particular subtasks that are foundational and should be tackled first?
 `.trim();
-const userParametrizedPromptResearchSubtasksOverview = `
-I am working on a development task involving {{describe_the_task_and_problem}}.
-Before organizing the subtasks into a hierarchy, could you provide a brief overview of all identified subtasks based on the task decomposition?
-`.trim();
 const userParametrizedPromptResearchHierarchyOrganization = `
 Based on the subtasks overview provided, how should I organize these subtasks into a hierarchical structure? What criteria should I use to determine the order and grouping of these subtasks?
-`.trim();
-const userParametrizedPromptResearchFoundationalSubtaskIdentification = `
-Among the subtasks listed, are there any that are particularly foundational and should be addressed first? Please identify these subtasks and explain why they are critical to start with.
-`.trim();
-const userParametrizedPromptResearchResourceAssignment = `
-Given the hierarchical structure we've discussed, how should resources be assigned to ensure efficient progress? Are there specific subtasks that require more resources or specialized skills?
-`.trim();
-const userParametrizedPromptResearchProgressMeasurement = `
-What methods or metrics would you recommend for measuring the progress of each subtask within the hierarchy? How can we effectively track and report on the development process?
 `.trim();
 const userParametrizedPromptResearchDependencySpecification = `
 I am in the process of specifying dependencies for a development task that involves {{describe_the_task_and_problem}}.
 To ensure a smooth workflow, I need to establish the correct order for completing subtasks based on their dependencies.
 Could you guide me on how to determine the order in which to complete these subtasks? Additionally, are there any subtasks that can be parallelized or worked on simultaneously?
-`.trim();
-const userParametrizedPromptResearchSubtasksAndDependenciesOverview = `
-I am working on a development task involving {{describe_the_task_and_problem}}.
-Before specifying the order of subtasks based on dependencies, could you provide a brief overview of all identified subtasks and any known dependencies among them?
-`.trim();
-const userParametrizedPromptResearchDependencyBasedOrderDetermination = `
-Based on the overview of subtasks and dependencies provided, how should I determine the optimal order in which to complete these subtasks? What criteria should I use to establish this sequence?
-`.trim();
-const userParametrizedPromptResearchParallelizableSubtaskIdentification = `
-Considering the dependencies and the order of subtasks you've outlined, are there any subtasks that can be parallelized or worked on simultaneously? Please identify these subtasks and explain why they can be handled concurrently.
-`.trim();
-const userParametrizedPromptResearchDependencyImpactAssessment = `
-Can you assess the impact of these dependencies on the overall project timeline? How might delays in one subtask affect the completion of subsequent subtasks?
-`.trim();
-const userParametrizedPromptResearchBottleneckAdjustmentRecommendations = `
-If there are potential bottlenecks due to dependencies, what adjustments would you recommend to minimize delays and ensure smoother workflow?
 `.trim();
 const userParametrizedPromptResearchPositiveScenarioIdentification = `
 I am developing a new feature {{describe_the_feature}} for {{describe_the_application_or_system}}.
@@ -92,18 +57,6 @@ Could you help me generate examples of potential solutions in {{specify_programm
 const userParametrizedPromptResearchSolutionGeneration = `
 I am working on a development subtask {{describe_the_subtask}}.
 Since I am unfamiliar with this area, could you generate examples of potential solutions in {{specify_programming_language_or_technology}} that align with this task?
-`.trim();
-const userParametrizedPromptResearchSolutionRelevanceConfirmation = `
-Given the solutions you've provided for {{describe_the_subtask}}, how can I ensure these solutions are relevant to my specific requirements? Are there particular aspects I should verify or adjust?
-`.trim();
-const userParametrizedPromptResearchCommonCodePatternAnalysis = `
-Can you help me identify common patterns or design approaches in the code snippets provided for {{describe_the_subtask}}? What should I look for that could be beneficial for integrating these solutions into my project?
-`.trim();
-const userParametrizedPromptResearchCodeCustomizationGuidance = `
-What steps should I take to customize the provided solutions to fit the specific requirements of {{describe_the_subtask}}? Are there any best practices for modifying existing code to better suit new contexts?
-`.trim();
-const userParametrizedPromptResearchIntegrationAndAccuracyCheck = `
-Once I have customized the solutions for {{describe_the_subtask}}, how can I ensure that the integration into the existing system remains accurate and coherent? Are there strategies or checks I should employ?
 `.trim();
 const userParametrizedPromptCodeGenerationNewFunctionCreation = `
 Please generate a {{programming_language}} function that {{describe_the_function_purpose}}.
@@ -252,23 +205,6 @@ Explanation Requirement:
 - Provide detailed explanations for each update made to help understand the modifications and their purposes.
 
 Ensure the updated test data is comprehensive and aligns with the new model specifications.
-`.trim();
-const userParametrizedPromptDocumentationInlineCommentGeneration = `
-Please generate {{type_of_comments}} comments for the following code snippet.
-This code implements {{brief_description_of_code_functionality}}.
-Provide clear and concise language to ensure the comments are easy to understand.
-
-Type of Comments: {{type_of_comments}}
-Code Snippet:
-
-\`\`\`
-{{code_snippet}}
-\`\`\`
-
-Information About the Code and Its Algorithms:
-{{detailed_explanation_of_code_and_algorithms}}
-
-Your assistance will help in understanding the code better and ensuring that the generated comments accurately reflect the code's functionality and logic.
 `.trim();
 const userParametrizedPromptDocumentationCodeDocumentationGeneration = `
 Please generate {{type_of_comments}} comments for the following code snippet.
@@ -523,26 +459,6 @@ export const userConversationPrompts: Prompt[] = [
         'functional aspects',
     ),
     createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchSubtaskIdentification',
-        userParametrizedPromptResearchSubtaskIdentification,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Identify key subtasks necessary to complete the main development task.',
-        'subtask',
-        'identification',
-        'development',
-        'task breakdown',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchFunctionalitySegregation',
-        userParametrizedPromptResearchFunctionalitySegregation,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Identify functionalities that can be treated as standalone subtasks.',
-        'functionality',
-        'segregation',
-        'modularization',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
         'userParametrizedPromptResearchTaskDependencySpecification',
         userParametrizedPromptResearchTaskDependencySpecification,
         PromptCategory.TASK_RESEARCH_PROMPT,
@@ -573,16 +489,6 @@ export const userConversationPrompts: Prompt[] = [
         'development',
     ),
     createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchSubtasksOverview',
-        userParametrizedPromptResearchSubtasksOverview,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Provide an overview of all identified subtasks before organizing them hierarchically.',
-        'subtasks',
-        'overview',
-        'development',
-        'task breakdown',
-    ),
-    createUserParametrizedPromptForConversation(
         'userParametrizedPromptResearchHierarchyOrganization',
         userParametrizedPromptResearchHierarchyOrganization,
         PromptCategory.TASK_RESEARCH_PROMPT,
@@ -593,36 +499,6 @@ export const userConversationPrompts: Prompt[] = [
         'development',
     ),
     createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchFoundationalSubtaskIdentification',
-        userParametrizedPromptResearchFoundationalSubtaskIdentification,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Identify foundational subtasks critical to start with in the hierarchy.',
-        'foundational',
-        'subtask',
-        'priority',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchResourceAssignment',
-        userParametrizedPromptResearchResourceAssignment,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Assign resources to subtasks for efficient progress and identify skill requirements.',
-        'resources',
-        'assignment',
-        'development',
-        'planning',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchProgressMeasurement',
-        userParametrizedPromptResearchProgressMeasurement,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Recommend methods and metrics for measuring subtask progress.',
-        'progress',
-        'measurement',
-        'tracking',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
         'userParametrizedPromptResearchDependencySpecification',
         userParametrizedPromptResearchDependencySpecification,
         PromptCategory.TASK_RESEARCH_PROMPT,
@@ -630,56 +506,6 @@ export const userConversationPrompts: Prompt[] = [
         'dependencies',
         'task',
         'planning',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchSubtasksAndDependenciesOverview',
-        userParametrizedPromptResearchSubtasksAndDependenciesOverview,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Provide an overview of subtasks and known dependencies.',
-        'subtasks',
-        'dependencies',
-        'overview',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchDependencyBasedOrderDetermination',
-        userParametrizedPromptResearchDependencyBasedOrderDetermination,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Determine the optimal order of subtasks based on dependencies.',
-        'order',
-        'dependency',
-        'planning',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchParallelizableSubtaskIdentification',
-        userParametrizedPromptResearchParallelizableSubtaskIdentification,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Identify subtasks that can be parallelized based on dependencies.',
-        'parallelization',
-        'subtask',
-        'optimization',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchDependencyImpactAssessment',
-        userParametrizedPromptResearchDependencyImpactAssessment,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Assess the impact of dependencies on the project timeline.',
-        'impact',
-        'dependency',
-        'timeline',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchBottleneckAdjustmentRecommendations',
-        userParametrizedPromptResearchBottleneckAdjustmentRecommendations,
-        PromptCategory.TASK_RESEARCH_PROMPT,
-        'Recommend adjustments to minimize bottlenecks caused by dependencies.',
-        'bottlenecks',
-        'adjustments',
-        'optimization',
         'development',
     ),
     createUserParametrizedPromptForConversation(
@@ -731,46 +557,6 @@ export const userConversationPrompts: Prompt[] = [
         'generation',
         'development',
         'code',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchSolutionRelevanceConfirmation',
-        userParametrizedPromptResearchSolutionRelevanceConfirmation,
-        PromptCategory.CODE_GENERATION,
-        'Confirm the relevance of provided solutions to the specific subtask requirements.',
-        'relevance',
-        'solution',
-        'verification',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchCommonCodePatternAnalysis',
-        userParametrizedPromptResearchCommonCodePatternAnalysis,
-        PromptCategory.CODE_GENERATION,
-        'Identify common patterns in provided code snippets for integration purposes.',
-        'pattern',
-        'analysis',
-        'code',
-        'integration',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchCodeCustomizationGuidance',
-        userParametrizedPromptResearchCodeCustomizationGuidance,
-        PromptCategory.CODE_GENERATION,
-        'Guide on customizing solutions to fit specific subtask requirements.',
-        'customization',
-        'code',
-        'guidance',
-        'development',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptResearchIntegrationAndAccuracyCheck',
-        userParametrizedPromptResearchIntegrationAndAccuracyCheck,
-        PromptCategory.CODE_GENERATION,
-        'Ensure accuracy and coherence when integrating customized solutions.',
-        'integration',
-        'accuracy',
-        'code',
-        'development',
     ),
     createUserParametrizedPromptForConversation(
         'userParametrizedPromptCodeGenerationNewFunctionCreation',
@@ -891,16 +677,6 @@ export const userConversationPrompts: Prompt[] = [
         'test data',
         'model',
         'migration',
-    ),
-    createUserParametrizedPromptForConversation(
-        'userParametrizedPromptDocumentationInlineCommentGeneration',
-        userParametrizedPromptDocumentationInlineCommentGeneration,
-        PromptCategory.CODE_DOCUMENTATION,
-        'Generate inline comments for a code snippet.',
-        'inline',
-        'comment',
-        'documentation',
-        'code',
     ),
     createUserParametrizedPromptForConversation(
         'userParametrizedPromptDocumentationCodeDocumentationGeneration',
