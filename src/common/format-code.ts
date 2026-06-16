@@ -51,7 +51,7 @@ async function formatWithPrettier(parser: string, src: string, pluginKeys: Plugi
     ]);
     // estree is needed for babel/typescript parsers; html/postcss/markdown don't need it
     const needsEstree = parser === 'babel' || parser === 'typescript' || parser === 'json' || parser === 'json5';
-    const plugins = needsEstree ? [estree, ...rest] : [...rest];
+    const plugins = (needsEstree ? [estree, ...rest] : [...rest]) as Options['plugins'];
     return (prettier as { format: (src: string, opts: Options) => Promise<string> }).format(src, {
         ...PROJECT_PRETTIER_OPTIONS,
         parser,
@@ -72,14 +72,13 @@ async function formatWithXml(src: string): Promise<string> {
     return (prettier as { format: (src: string, opts: Options) => Promise<string> }).format(src, {
         ...PROJECT_PRETTIER_OPTIONS,
         parser: 'xml',
-        plugins: [pluginXml],
-        // @ts-expect-error -- @prettier/plugin-xml option not in base types
+        plugins: [pluginXml] as Options['plugins'],
         xmlWhitespaceSensitivity: 'ignore',
     });
 }
 
 export async function formatCode(languageId: string, src: string): Promise<string> {
-    if (!src.trim() || !isFormattable(languageId)) return src;
+    if (!src.trim()) return src;
 
     switch (languageId) {
         case 'javascript':
