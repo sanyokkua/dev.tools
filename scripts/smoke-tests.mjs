@@ -478,14 +478,14 @@ await runSmoke('diff-happy-path', async (page) => {
     await page.waitForSelector('.monaco-diff-editor .monaco-editor', { timeout: 10000 });
     await page.screenshot({ path: `${OUT}/smoke__diff__loaded.png` });
 
-    // Type in the left (original) pane — Monaco view-lines, first pane
-    const leftPane = page.locator('.original-in-monaco-diff-editor .monaco-editor .view-lines');
+    // Type in the left (original) pane — .monaco-editor and .original-in-monaco-diff-editor are on the same element
+    const leftPane = page.locator('.original-in-monaco-diff-editor .view-lines');
     await leftPane.click();
     await page.keyboard.type('{"b":2,"a":1}');
     await page.screenshot({ path: `${OUT}/smoke__diff__left_typed.png` });
 
     // Type in the right (modified) pane
-    const rightPane = page.locator('.modified-in-monaco-diff-editor .monaco-editor .view-lines');
+    const rightPane = page.locator('.modified-in-monaco-diff-editor .view-lines');
     await rightPane.click();
     await page.keyboard.type('{"b":2,"a":1,"c":3}');
     await page.screenshot({ path: `${OUT}/smoke__diff__right_typed.png` });
@@ -515,7 +515,7 @@ await runSmoke('diff-edge-invalid-json', async (page) => {
     await page.locator('[role="group"][aria-label="Diff type"] button', { hasText: 'JSON' }).click();
 
     // Type invalid JSON in the left pane — editor must remain visible with content intact
-    const leftPane = page.locator('.original-in-monaco-diff-editor .monaco-editor .view-lines');
+    const leftPane = page.locator('.original-in-monaco-diff-editor .view-lines');
     await leftPane.click();
     await page.keyboard.type('{invalid json}');
     await page.waitForTimeout(600);
