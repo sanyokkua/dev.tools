@@ -161,3 +161,28 @@
     border: 2px dashed var(--divider-color, #e0e0e0);
     border-radius: 8px;
 }
+
+.vram-primary-inputs {
+    margin-bottom: 1rem;
+}
+
+.vram-subsection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.vram-subsection:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.vram-subsection-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}

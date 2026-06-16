@@ -35,6 +35,7 @@ interface SelectProps {
     selectedItem: string | SelectItem;
     onSelect: (selectItem: SelectItem) => void;
 
+    id?: string;
     size?: Size;
     colorStyle?: Color;
     disabled?: boolean;
@@ -55,6 +56,7 @@ const Select: React.FC<SelectProps> = ({
     items,
     selectedItem,
     onSelect,
+    id,
     size = 'default',
     colorStyle = '',
     disabled = false,
@@ -82,7 +84,7 @@ const Select: React.FC<SelectProps> = ({
         .join(' ');
 
     return (
-        <select value={selectedItemId} onChange={handleChange} className={classes} disabled={disabled}>
+        <select id={id} value={selectedItemId} onChange={handleChange} className={classes} disabled={disabled}>
             {items.map((item) => (
                 <option key={item.itemId} value={item.itemId}>
                     {item.displayText}

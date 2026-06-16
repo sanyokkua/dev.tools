@@ -1,5 +1,12 @@
 import type { CalculatorInput, CalculatorOutput, Quantization, Result, ValidationError } from '@/common/llm-vram-calc';
-import { calculateVram, KVCacheQuant, OperatingSystem, QUANT_CATALOG } from '@/common/llm-vram-calc';
+import {
+    calculateVram,
+    GpuType,
+    InferenceEngine,
+    KVCacheQuant,
+    OperatingSystem,
+    QUANT_CATALOG,
+} from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';
 import ToolAbout from '@/controls/ToolAbout';
 import { FC, useEffect, useState } from 'react';
@@ -29,6 +36,8 @@ function buildCalculatorInput(form: VramFormState): CalculatorInput {
     const quantizationValues = Object.keys(QUANT_CATALOG) as string[];
     const kvCacheValues = Object.values(KVCacheQuant) as string[];
     const osValues = Object.values(OperatingSystem) as string[];
+    const gpuTypeValues = Object.values(GpuType) as string[];
+    const engineValues = Object.values(InferenceEngine) as string[];
 
     return {
         params_b: parseFloat(form.params_b) || 0,
@@ -39,6 +48,11 @@ function buildCalculatorInput(form: VramFormState): CalculatorInput {
         kv_cache_quant: kvCacheValues.includes(form.kv_cache_quant)
             ? (form.kv_cache_quant as KVCacheQuant)
             : KVCacheQuant.Q8_0,
+        kv_cache_quant_v: kvCacheValues.includes(form.kv_cache_quant_v)
+            ? (form.kv_cache_quant_v as KVCacheQuant)
+            : undefined,
+        gpu_type: gpuTypeValues.includes(form.gpu_type) ? (form.gpu_type as GpuType) : null,
+        engine: engineValues.includes(form.engine) ? (form.engine as InferenceEngine) : null,
         os: osValues.includes(form.os) ? (form.os as OperatingSystem) : null,
         vram_gb: parseOptionalFloat(form.vram_gb),
         layers: parseOptionalInt(form.layers),

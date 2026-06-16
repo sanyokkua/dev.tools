@@ -14,16 +14,14 @@ describe('VramCalculatorForm', () => {
         expect(container.querySelector('.paper')).toBeNull();
     });
 
-    it('renders .steplabel elements for sections A, B, C', () => {
+    it('renders primary inputs section with params_b and quantization (no steplabels)', () => {
         const { container } = render(
             <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
         );
-        const stepLabels = container.querySelectorAll('.steplabel');
-        expect(stepLabels.length).toBe(3);
-        const ns = container.querySelectorAll('.steplabel .n');
-        expect(ns[0].textContent).toBe('A');
-        expect(ns[1].textContent).toBe('B');
-        expect(ns[2].textContent).toBe('C');
+        const primary = container.querySelector('.vram-primary-inputs');
+        expect(primary?.querySelector('#params_b')).toBeTruthy();
+        expect(primary?.querySelector('#quantization')).toBeTruthy();
+        expect(container.querySelectorAll('.steplabel').length).toBe(0);
     });
 
     it('renders a Switch (role=switch) for KV cache, not a checkbox input', () => {
@@ -80,9 +78,8 @@ describe('VramCalculatorForm', () => {
             <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
         );
         const boxes = container.querySelectorAll('details.detailsbox');
-        expect(boxes.length).toBe(2);
-        expect(boxes[0].querySelector('summary')?.textContent).toContain('Advanced Architecture');
-        expect(boxes[1].querySelector('summary')?.textContent).toContain('MoE Parameters');
+        expect(boxes.length).toBe(1);
+        expect(boxes[0].querySelector('summary')?.textContent).toContain('Advanced');
     });
 
     it('renders .formgrid containers for field layout', () => {
@@ -182,5 +179,47 @@ describe('VramCalculatorForm', () => {
         // Value within range should pass through
         fireEvent.change(input, { target: { value: '48' } });
         expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ vram_gb: '48' }));
+    });
+
+    it('INITIAL_FORM_STATE.quantization defaults to Q4_K_M', () => {
+        expect(INITIAL_FORM_STATE.quantization).toBe('Q4_K_M');
+    });
+
+    it('quantization picker uses grouped select (optgroup)', () => {
+        const { container } = render(
+            <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
+        );
+        const groups = container.querySelectorAll('optgroup');
+        expect(groups.length).toBeGreaterThan(0);
+    });
+
+    it('Advanced section contains subsection labels for all subsystems', () => {
+        const { container } = render(
+            <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
+        );
+        const advanced = container.querySelector('details.detailsbox');
+        const text = advanced?.textContent ?? '';
+        expect(text).toContain('Hardware');
+        expect(text).toContain('Context');
+        expect(text).toContain('KV Cache');
+        expect(text).toContain('Architecture');
+        expect(text).toContain('MoE');
+        expect(text).toContain('Inference');
+    });
+
+    it('gpu_type selector is inside Advanced', () => {
+        const { container } = render(
+            <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
+        );
+        const advanced = container.querySelector('details.detailsbox');
+        expect(advanced?.querySelector('#gpu_type')).toBeTruthy();
+    });
+
+    it('engine selector is inside Advanced', () => {
+        const { container } = render(
+            <VramCalculatorForm formState={INITIAL_FORM_STATE} onFormChange={noop} onCalculate={noop} onReset={noop} />,
+        );
+        const advanced = container.querySelector('details.detailsbox');
+        expect(advanced?.querySelector('#engine')).toBeTruthy();
     });
 });
