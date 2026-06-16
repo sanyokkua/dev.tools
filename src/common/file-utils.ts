@@ -1,5 +1,6 @@
 import { DEFAULT_EXTENSION, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo, FileSaveProperties, OnErrorHandler, OnSuccessHandler } from '@/common/file-types';
+import { fileSave } from 'browser-fs-access';
 
 /**
  * Validates the properties required for saving a file.
@@ -58,6 +59,37 @@ export function saveTextFile({
 
     document.body.removeChild(htmlATag);
     URL.revokeObjectURL(url);
+}
+
+/**
+ * Saves text content using the native Save As picker (Chromium/Safari) with a
+ * download fallback on unsupported browsers. Returns the FileSystemFileHandle
+ * when the native picker was used, undefined on download fallback.
+ */
+export async function saveAsFile(
+    {
+        fileName,
+        fileContent = '',
+        fileExtension = DEFAULT_EXTENSION,
+        fileMimeType = DEFAULT_MIME_TYPE,
+    }: FileSaveProperties,
+    existingHandle?: FileSystemFileHandle | null,
+): Promise<FileSystemFileHandle | undefined> {
+    validateTheFileSaveProperties({ fileName, fileExtension });
+
+    const blob = new Blob([fileContent], { type: fileMimeType });
+    const handle = await (
+        fileSave as (
+            blob: Blob,
+            options: object,
+            existingHandle?: FileSystemFileHandle | null,
+        ) => Promise<FileSystemFileHandle | undefined>
+    )(
+        blob,
+        { fileName: `${fileName}${fileExtension}`, extensions: [fileExtension], mimeTypes: [fileMimeType] },
+        existingHandle ?? null,
+    );
+    return handle;
 }
 
 /**

@@ -14,6 +14,8 @@ const config: Config = {
     moduleNameMapper: {
         // uuid v13 is pure ESM; Jest can't parse it — use a CJS shim
         '^uuid$': '<rootDir>/test/__mocks__/uuid.js',
+        // browser-fs-access is ESM-only; use a CJS shim for Jest
+        '^browser-fs-access$': '<rootDir>/test/__mocks__/browser-fs-access.js',
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@/common/(.*)$': '<rootDir>/src/common/$1',
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
