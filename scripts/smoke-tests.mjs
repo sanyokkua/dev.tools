@@ -384,4 +384,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 11 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 12 interaction flows passed. Screenshots in ' + OUT);
