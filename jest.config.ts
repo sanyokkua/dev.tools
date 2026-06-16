@@ -22,6 +22,7 @@ const config: Config = {
         '^prettier/standalone$': '<rootDir>/node_modules/prettier/standalone.js',
         '^prettier/plugins/(.*)$': '<rootDir>/node_modules/prettier/plugins/$1.js',
         '^@prettier/plugin-xml$': '<rootDir>/node_modules/@prettier/plugin-xml/src/plugin.js',
+        '^jsonpath-plus$': '<rootDir>/node_modules/jsonpath-plus/dist/index-node-cjs.cjs',
     },
 };
 

@@ -236,6 +236,46 @@ await runSmoke('prompts-autogrow', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts__after.png` });
 });
 
+// ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
+await runSmoke('json-formatter-query', async (page) => {
+    await page.goto(BASE + '/json-formatter', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__json_formatter_query__before.png` });
+
+    // Type valid JSON into the left editor
+    await page.locator('.editorpane').first().locator('.monaco-editor .view-lines').click();
+    await page.keyboard.type('{"name":"Alice","age":30}');
+
+    // Switch to Query (JSONPath) mode
+    await page.locator('.seg-control button', { hasText: 'Query (JSONPath)' }).click();
+
+    // Fill the JSONPath expression
+    await page.fill('#jsonpath-input', '$.name');
+
+    // Click Run Query
+    await page.locator('button', { hasText: 'Run Query' }).click();
+    await page.waitForTimeout(800);
+
+    // Right editor must contain "Alice"
+    const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    if (!resultText?.includes('Alice')) {
+        throw new Error(`Expected "Alice" in right editor output, got: ${resultText?.slice(0, 200)}`);
+    }
+
+    // Match count pill must show "1 match"
+    const pillText = await page.locator('.pill.muted').textContent();
+    if (!pillText?.includes('1')) {
+        throw new Error(`Expected match count pill to include "1", got: "${pillText}"`);
+    }
+
+    // Edge case: clear the path and run again — expect WARNING toast, no crash, no console error
+    await page.fill('#jsonpath-input', '');
+    await page.locator('button', { hasText: 'Run Query' }).click();
+    await page.waitForTimeout(300);
+
+    await page.screenshot({ path: `${OUT}/smoke__json_formatter_query__after.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -245,4 +285,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 8 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 9 interaction flows passed. Screenshots in ' + OUT);

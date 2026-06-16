@@ -8,10 +8,12 @@ import {
     validateJson,
     type JsonValidationResult,
 } from '@/common/formatting-tools';
+import { queryJsonPath } from '@/common/json-query';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
+import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import { editor, type IDisposable } from 'monaco-editor';
@@ -30,6 +32,7 @@ import ContentContainerGridChild from '../../components/layouts/ContentContainer
 import ScrollableContentContainer from '../../components/layouts/ScrollableContentContainer';
 
 type IndentValue = '2' | '4' | '\t';
+type Mode = 'format' | 'query';
 
 const INDENT_OPTIONS: SegmentedOption[] = [
     { value: '2', label: '2' },
@@ -37,8 +40,16 @@ const INDENT_OPTIONS: SegmentedOption[] = [
     { value: '\t', label: 'Tab' },
 ];
 
+const MODE_OPTIONS: SegmentedOption[] = [
+    { value: 'format', label: 'Format' },
+    { value: 'query', label: 'Query (JSONPath)' },
+];
+
 const JsonFormatterPage: React.FC = () => {
     const [indent, setIndent] = useState<IndentValue>('2');
+    const [mode, setMode] = useState<Mode>('format');
+    const [jsonPathInput, setJsonPathInput] = useState<string>('');
+    const [matchCount, setMatchCount] = useState<number | null>(null);
     const [validState, setValidState] = useState<JsonValidationResult | null>(null);
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -49,7 +60,6 @@ const JsonFormatterPage: React.FC = () => {
     const { showFileSaveDialog } = useFileSaveDialog();
     const { showToast } = useToast();
 
-    // Fix 4: Reusable error toast helper
     const toastError = useCallback(
         (e: unknown): void => {
             showToast({ message: `Error: ${e instanceof Error ? e.message : String(e)}`, type: ToastType.ERROR });
@@ -82,7 +92,6 @@ const JsonFormatterPage: React.FC = () => {
 
     const getIndentValue = useCallback((): number | string => (indent === '\t' ? '\t' : Number(indent)), [indent]);
 
-    // Fix 3: Wrap operation handlers in useCallback
     const handleBeautify = useCallback((): void => {
         try {
             const result = formatJson(getEditorContent(leftEditorRef), getIndentValue());
@@ -113,7 +122,6 @@ const JsonFormatterPage: React.FC = () => {
         }
     }, [getIndentValue, showToast, toastError]);
 
-    // Fix 1 & 2: Output valid JSON and guard empty input
     const handleValidate = useCallback((): void => {
         const input = getEditorContent(leftEditorRef);
         if (!input.trim()) {
@@ -163,7 +171,31 @@ const JsonFormatterPage: React.FC = () => {
         }
     }, [showToast, toastError]);
 
-    // Fix 3: Wrap menu handlers in useCallback
+    const handleQuery = useCallback(async (): Promise<void> => {
+        const input = getEditorContent(leftEditorRef);
+        if (!input.trim()) {
+            showToast({ message: 'Nothing to query', type: ToastType.WARNING });
+            return;
+        }
+        if (!jsonPathInput.trim()) {
+            showToast({ message: 'Enter a JSONPath expression', type: ToastType.WARNING });
+            return;
+        }
+        setMatchCount(null);
+        const result = await queryJsonPath(input, jsonPathInput);
+        if ('error' in result) {
+            toastError(result.error);
+            setEditorContent(rightEditorRef, '');
+            return;
+        }
+        setMatchCount(result.matches.length);
+        setEditorContent(rightEditorRef, JSON.stringify(result.matches, null, getIndentValue()));
+        showToast({
+            message: `${result.matches.length} match${result.matches.length === 1 ? '' : 'es'}`,
+            type: ToastType.INFO,
+        });
+    }, [jsonPathInput, getIndentValue, showToast, toastError]);
+
     const handleLeftOpen = useCallback((): void => {
         showFileOpenDialog({
             supportedFiles: supportedExtensions,
@@ -238,36 +270,79 @@ const JsonFormatterPage: React.FC = () => {
                     className="card pad"
                     style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
                 >
-                    <h3>JSON Formatter</h3>
-                    <div className="json-formatter-field">
-                        <label>Indent</label>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 'var(--s2)',
+                        }}
+                    >
+                        <span style={{ fontWeight: 600, fontSize: '13px' }}>Mode</span>
                         <SegmentedControl
-                            options={INDENT_OPTIONS}
-                            value={indent}
-                            onChange={(v) => setIndent(v as IndentValue)}
-                            aria-label="Indent"
+                            options={MODE_OPTIONS}
+                            value={mode}
+                            onChange={(v) => setMode(v as Mode)}
+                            aria-label="Mode"
                         />
                     </div>
-                    <ScrollableContentContainer>
-                        <button className="func-btn" onClick={handleBeautify}>
-                            Beautify
-                        </button>
-                        <button className="func-btn" onClick={handleMinify}>
-                            Minify
-                        </button>
-                        <button className="func-btn" onClick={handleSortKeys}>
-                            Sort Keys (A→Z)
-                        </button>
-                        <button className="func-btn" onClick={handleValidate}>
-                            Validate
-                        </button>
-                        <button className="func-btn" onClick={handleEscape}>
-                            Escape String
-                        </button>
-                        <button className="func-btn" onClick={handleUnescape}>
-                            Unescape String
-                        </button>
-                    </ScrollableContentContainer>
+
+                    {mode === 'format' && (
+                        <>
+                            <div className="json-formatter-field">
+                                <label>Indent</label>
+                                <SegmentedControl
+                                    options={INDENT_OPTIONS}
+                                    value={indent}
+                                    onChange={(v) => setIndent(v as IndentValue)}
+                                    aria-label="Indent"
+                                />
+                            </div>
+                            <ScrollableContentContainer>
+                                <button className="func-btn" onClick={handleBeautify}>
+                                    Beautify
+                                </button>
+                                <button className="func-btn" onClick={handleMinify}>
+                                    Minify
+                                </button>
+                                <button className="func-btn" onClick={handleSortKeys}>
+                                    Sort Keys (A→Z)
+                                </button>
+                                <button className="func-btn" onClick={handleValidate}>
+                                    Validate
+                                </button>
+                                <button className="func-btn" onClick={handleEscape}>
+                                    Escape String
+                                </button>
+                                <button className="func-btn" onClick={handleUnescape}>
+                                    Unescape String
+                                </button>
+                            </ScrollableContentContainer>
+                        </>
+                    )}
+
+                    {mode === 'query' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s2)' }}>
+                            <div className="json-formatter-field">
+                                <label htmlFor="jsonpath-input">JSONPath</label>
+                                <Input
+                                    id="jsonpath-input"
+                                    value={jsonPathInput}
+                                    onChange={setJsonPathInput}
+                                    placeholder="$.store.book[*].title"
+                                    block
+                                />
+                            </div>
+                            {matchCount !== null && (
+                                <span className="pill muted">
+                                    {matchCount} {matchCount === 1 ? 'match' : 'matches'}
+                                </span>
+                            )}
+                            <button className="func-btn" onClick={() => void handleQuery()}>
+                                Run Query
+                            </button>
+                        </div>
+                    )}
                 </div>
             </ContentContainerGridChild>
 

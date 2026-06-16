@@ -1,5 +1,8 @@
-import { act, render, screen } from '@testing-library/react';
+jest.mock('../../src/common/json-query', () => ({ queryJsonPath: jest.fn().mockResolvedValue({ matches: [] }) }));
+
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import * as jsonQueryModule from '../../src/common/json-query';
 import { FileOpenProvider } from '../../src/components/contexts/FileOpenContext';
 import { FileSaveDialogProvider } from '../../src/components/contexts/FileSaveDialogContext';
 import { PageProvider } from '../../src/components/contexts/PageContext';
@@ -85,9 +88,9 @@ describe('JsonFormatterPage', () => {
         expect(container.querySelector('.card.pad')).toBeInTheDocument();
     });
 
-    it('renders the JSON Formatter heading in the middle column', () => {
+    it('renders the Mode SegmentedControl in the middle column', () => {
         renderPage();
-        expect(screen.getByRole('heading', { name: 'JSON Formatter' })).toBeInTheDocument();
+        expect(screen.getByRole('group', { name: 'Mode' })).toBeInTheDocument();
     });
 
     it('renders all action buttons', () => {
@@ -152,5 +155,88 @@ describe('JsonFormatterPage', () => {
     it('renders Use as Input button in the right pane toolbar', () => {
         renderPage();
         expect(screen.getByRole('button', { name: /use as input/i })).toBeInTheDocument();
+    });
+});
+
+describe('JsonFormatterPage — Query mode', () => {
+    beforeEach(() => {
+        leftEditorHolder.current = null;
+        (jsonQueryModule.queryJsonPath as jest.Mock).mockResolvedValue({ matches: [] });
+    });
+
+    it('renders Mode SegmentedControl with Format and Query options', () => {
+        renderPage();
+        expect(screen.getByRole('group', { name: 'Mode' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Format' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Query (JSONPath)' })).toBeInTheDocument();
+    });
+
+    it('defaults to Format mode (shows Beautify button)', () => {
+        renderPage();
+        expect(screen.getByRole('button', { name: 'Beautify' })).toBeInTheDocument();
+    });
+
+    it('switching to Query mode hides format buttons and shows JSONPath input', async () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        expect(screen.queryByRole('button', { name: 'Beautify' })).not.toBeInTheDocument();
+        expect(screen.getByPlaceholderText('$.store.book[*].title')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Run Query' })).toBeInTheDocument();
+    });
+
+    it('switching back to Format mode restores format buttons', async () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Format' }));
+        expect(screen.getByRole('button', { name: 'Beautify' })).toBeInTheDocument();
+        expect(screen.queryByPlaceholderText('$.store.book[*].title')).not.toBeInTheDocument();
+    });
+
+    it('Run Query calls queryJsonPath with editor content and path', async () => {
+        (jsonQueryModule.queryJsonPath as jest.Mock).mockResolvedValueOnce({ matches: ['Alice'] });
+        renderPage();
+        act(() => {
+            leftEditorHolder.current!.setValue('{"name":"Alice"}');
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        fireEvent.change(screen.getByPlaceholderText('$.store.book[*].title'), { target: { value: '$.name' } });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: 'Run Query' }));
+        });
+        expect(jsonQueryModule.queryJsonPath).toHaveBeenCalledWith('{"name":"Alice"}', '$.name');
+    });
+
+    it('shows match count pill after a successful query', async () => {
+        (jsonQueryModule.queryJsonPath as jest.Mock).mockResolvedValueOnce({ matches: [1, 2] });
+        renderPage();
+        act(() => {
+            leftEditorHolder.current!.setValue('[1,2,3]');
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        fireEvent.change(screen.getByPlaceholderText('$.store.book[*].title'), { target: { value: '$[0,1]' } });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: 'Run Query' }));
+        });
+        await waitFor(() => expect(screen.getByText('2 matches', { selector: 'span.pill' })).toBeInTheDocument());
+    });
+
+    it('shows singular "1 match" for exactly one result', async () => {
+        (jsonQueryModule.queryJsonPath as jest.Mock).mockResolvedValueOnce({ matches: ['x'] });
+        renderPage();
+        act(() => {
+            leftEditorHolder.current!.setValue('{"k":"x"}');
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        fireEvent.change(screen.getByPlaceholderText('$.store.book[*].title'), { target: { value: '$.k' } });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: 'Run Query' }));
+        });
+        await waitFor(() => expect(screen.getByText('1 match', { selector: 'span.pill' })).toBeInTheDocument());
+    });
+
+    it('does not show match count pill before any query runs', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Query (JSONPath)' }));
+        expect(screen.queryByText(/match/i)).not.toBeInTheDocument();
     });
 });

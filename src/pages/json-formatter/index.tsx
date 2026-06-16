@@ -11,7 +11,8 @@ const IndexPage: React.FC = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
             <ToolAbout routeKey="json-formatter" title="JSON Formatter">
-                Format, validate, and explore JSON data. Paste raw JSON to pretty-print it or minify it for transport.
+                Format, validate, and explore JSON data. Beautify, minify, sort keys, or run JSONPath queries to extract
+                values.
             </ToolAbout>
             <JsonFormatterPage />
         </div>
