@@ -413,6 +413,33 @@ await runSmoke('vram-calculator', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__vram__after_reset.png` });
 });
 
+// ── 12. Mermaid Editor ────────────────────────────────────────────────────────
+await runSmoke('mermaid-editor', async (page) => {
+    await page.goto(BASE + '/mermaid-editor', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__mermaid_editor__before.png` });
+
+    // Type a simple diagram into the editor pane
+    await page.locator('.split-preview-editor .editorpane .monaco-editor .view-lines').first().click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type('graph TD\nA[Hello] --> B[World]');
+
+    // Wait for the debounce + mermaid render: SVG must appear in the preview pane
+    await page.waitForSelector('.split-preview-editor .split-preview-editor__preview .mermaid-block svg', {
+        timeout: 10000,
+    });
+    await page.screenshot({ path: `${OUT}/smoke__mermaid_editor__after.png` });
+
+    // Edge case: invalid syntax shows the error state
+    await page.locator('.split-preview-editor .editorpane .monaco-editor .view-lines').first().click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type('not valid !!!');
+    await page.waitForSelector('.split-preview-editor .split-preview-editor__preview .mermaid-block--error', {
+        timeout: 8000,
+    });
+    await page.screenshot({ path: `${OUT}/smoke__mermaid_editor__error.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -422,4 +449,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 13 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 14 interaction flows passed. Screenshots in ' + OUT);
