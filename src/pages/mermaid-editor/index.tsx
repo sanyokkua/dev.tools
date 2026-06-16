@@ -106,18 +106,41 @@ const IndexPage: React.FC = () => {
     const handleExportPng = useCallback(async () => {
         try {
             const svgString = await renderMermaid('mermaid-editor-png-export', content);
-            const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+
+            // Upscale SVG to print dimensions before rasterisation
+            const PRINT_MIN_WIDTH = 2480; // ~A4 at 300 DPI
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+            const svgEl = svgDoc.documentElement;
+            const viewBox = svgEl.getAttribute('viewBox');
+            let printScale = 3;
+            if (viewBox) {
+                const [, , vbW, vbH] = viewBox
+                    .trim()
+                    .split(/[\s,]+/)
+                    .map(Number);
+                if (vbW > 0 && vbH > 0) {
+                    printScale = Math.max(3, Math.ceil(PRINT_MIN_WIDTH / vbW));
+                    svgEl.setAttribute('width', String(Math.round(vbW * printScale)));
+                    svgEl.setAttribute('height', String(Math.round(vbH * printScale)));
+                }
+            }
+            const printSvgString = new XMLSerializer().serializeToString(svgDoc);
+            const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(printSvgString)}`;
+
             await new Promise<void>((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = img.naturalWidth || 800;
-                    canvas.height = img.naturalHeight || 600;
+                    canvas.width = img.naturalWidth || 800 * printScale;
+                    canvas.height = img.naturalHeight || 600 * printScale;
                     const ctx = canvas.getContext('2d');
                     if (!ctx) {
                         reject(new Error('Canvas 2D context unavailable'));
                         return;
                     }
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0);
                     canvas.toBlob((pngBlob) => {
                         if (!pngBlob) {
