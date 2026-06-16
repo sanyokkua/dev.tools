@@ -49,7 +49,7 @@ const markdownComponents: Components = {
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
     const { showFileOpenDialog } = useFileOpen();
-    const { showFileSaveDialog } = useFileSaveDialog();
+    const { save, saveAs } = useFileSaveDialog();
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -115,13 +115,23 @@ const IndexPage: React.FC = () => {
 
     const handleSaveFile = useCallback(() => {
         const content = getEditorContent(leftEditorRef);
-        showFileSaveDialog({
+        save({
             fileName: currentFileInfo.name,
             fileExtension: currentFileInfo.extension,
             fileContent: content,
             availableExtensions: ['.md', '.txt'],
         });
-    }, [currentFileInfo, showFileSaveDialog]);
+    }, [currentFileInfo.name, currentFileInfo.extension, save]);
+
+    const handleSaveFileAs = useCallback(() => {
+        const content = getEditorContent(leftEditorRef);
+        saveAs({
+            fileName: currentFileInfo.name,
+            fileExtension: currentFileInfo.extension,
+            fileContent: content,
+            availableExtensions: ['.md', '.txt'],
+        });
+    }, [currentFileInfo.name, currentFileInfo.extension, saveAs]);
 
     const handleCopy = useCallback(() => {
         copyToClipboardFromEditor(leftEditorRef, showToast);
@@ -171,6 +181,7 @@ const IndexPage: React.FC = () => {
                     onFileNewClick={handleNewFile}
                     onFileOpenClick={handleOpenFileDialog}
                     onFileSaveClick={handleSaveFile}
+                    onFileSaveAsClick={handleSaveFileAs}
                     onCopyClick={handleCopy}
                     onPasteClick={handlePaste}
                     showEditor={isEditorVisible}

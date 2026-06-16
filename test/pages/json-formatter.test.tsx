@@ -156,6 +156,12 @@ describe('JsonFormatterPage', () => {
         renderPage();
         expect(screen.getByRole('button', { name: /use as input/i })).toBeInTheDocument();
     });
+
+    it('clicking Save on the output pane opens the Save File dialog', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(screen.getByText('Save File As')).toBeInTheDocument();
+    });
 });
 
 describe('JsonFormatterPage — Query mode', () => {

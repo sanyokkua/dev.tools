@@ -136,6 +136,24 @@ describe('Code Editor page', () => {
         fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
         expect(screen.getByRole('button', { name: 'Format' })).not.toBeDisabled();
     });
+
+    it('renders a "Save As" button in addition to "Save"', () => {
+        renderPage();
+        expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Save As' })).toBeInTheDocument();
+    });
+
+    it('clicking Save (no handle) opens the Save File dialog', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(screen.getByText('Save File As')).toBeInTheDocument();
+    });
+
+    it('clicking Save As opens the Save File dialog', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save As' }));
+        expect(screen.getByText('Save File As')).toBeInTheDocument();
+    });
 });
 
 const RUST_LANG = { id: 'rust', extensions: ['.rs'], aliases: ['Rust'], mimetypes: ['text/rust'] };
@@ -146,6 +164,7 @@ function renderToolbar(onLanguageSelected: (id: string) => void) {
             onFileNewClick={noop}
             onFileOpenClick={noop}
             onFileSaveClick={noop}
+            onFileSaveAsClick={noop}
             onCopyClick={noop}
             onPasteClick={noop}
             onClearClick={noop}
@@ -194,6 +213,7 @@ describe('CodeEditorToolbar — Format button', () => {
                 onFileNewClick={noop}
                 onFileOpenClick={noop}
                 onFileSaveClick={noop}
+                onFileSaveAsClick={noop}
                 onCopyClick={noop}
                 onPasteClick={noop}
                 onClearClick={noop}
@@ -218,6 +238,7 @@ describe('CodeEditorToolbar — Format button', () => {
                 onFileNewClick={noop}
                 onFileOpenClick={noop}
                 onFileSaveClick={noop}
+                onFileSaveAsClick={noop}
                 onCopyClick={noop}
                 onPasteClick={noop}
                 onClearClick={noop}

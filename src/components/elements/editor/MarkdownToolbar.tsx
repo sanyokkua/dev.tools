@@ -7,6 +7,7 @@ export type MarkdownToolbarProps = {
     onFileNewClick: () => void;
     onFileOpenClick: () => void;
     onFileSaveClick: () => void;
+    onFileSaveAsClick: () => void;
     onCopyClick: () => void;
     onPasteClick: () => void;
     showEditor: boolean;
@@ -25,6 +26,7 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = (props) => {
         onFileNewClick,
         onFileOpenClick,
         onFileSaveClick,
+        onFileSaveAsClick,
         onCopyClick,
         onPasteClick,
         showEditor,
@@ -44,6 +46,7 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = (props) => {
                 <Button text="New" variant="outlined" size="small" onClick={onFileNewClick} />
                 <Button text="Open" variant="outlined" size="small" onClick={onFileOpenClick} />
                 <Button text="Save" variant="outlined" size="small" onClick={onFileSaveClick} />
+                <Button text="Save As" variant="outlined" size="small" onClick={onFileSaveAsClick} />
             </div>
 
             <div className="markdown-tools__toolbar-sep" aria-hidden="true" />

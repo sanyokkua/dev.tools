@@ -84,11 +84,12 @@ describe('Markdown Tools page', () => {
         expect(screen.getByTestId('code-editor')).toBeInTheDocument();
     });
 
-    it('renders New, Open and Save buttons', () => {
+    it('renders New, Open, Save and Save As buttons', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Open' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Save As' })).toBeInTheDocument();
     });
 
     it('renders Copy and Paste buttons', () => {
@@ -198,6 +199,12 @@ describe('Markdown Tools page', () => {
         renderPage();
         expect(screen.queryByText('Save File As')).toBeNull();
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(screen.getByText('Save File As')).toBeInTheDocument();
+    });
+
+    it('clicking Save As opens the Save File dialog', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save As' }));
         expect(screen.getByText('Save File As')).toBeInTheDocument();
     });
 

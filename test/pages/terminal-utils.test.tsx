@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { FileSaveDialogProvider } from '../../src/components/contexts/FileSaveDialogContext';
 import { PageProvider } from '../../src/components/contexts/PageContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/terminal-utils/index';
@@ -14,7 +15,9 @@ function renderPage(): ReturnType<typeof render> {
     return render(
         <ToasterProvider>
             <PageProvider>
-                <IndexPage />
+                <FileSaveDialogProvider>
+                    <IndexPage />
+                </FileSaveDialogProvider>
             </PageProvider>
         </ToasterProvider>,
     );
@@ -77,5 +80,16 @@ describe('Terminal Utils page', () => {
     it('renders Copy button in the result pane', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+    });
+
+    it('renders a "Save As" button in the result pane', () => {
+        renderPage();
+        expect(screen.getByRole('button', { name: 'Save As' })).toBeInTheDocument();
+    });
+
+    it('clicking Save As on empty result pane shows a warning toast (nothing to save)', async () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Save As' }));
+        await screen.findByText('Nothing to save');
     });
 });

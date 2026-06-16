@@ -79,7 +79,7 @@ function createDefaultState(): CodeEditorState {
 
 const IndexPage = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
-    const { showFileSaveDialog } = useFileSaveDialog();
+    const { save, saveAs } = useFileSaveDialog();
     const { showFileOpenDialog } = useFileOpen();
     const { showToast } = useToast();
 
@@ -197,7 +197,7 @@ const IndexPage = (): React.JSX.Element => {
 
     const handleFileSave: () => void = useCallback(() => {
         const content = getEditorContent(editorRef);
-        showFileSaveDialog({
+        save({
             fileContent: content,
             fileName: editorState.fileName,
             fileExtension: editorState.fileExtension,
@@ -209,7 +209,24 @@ const IndexPage = (): React.JSX.Element => {
         editorState.fileExtension,
         editorState.editorPropsSupportedMimeTypes,
         editorState.fileSaveExtensions,
-        showFileSaveDialog,
+        save,
+    ]);
+
+    const handleFileSaveAs: () => void = useCallback(() => {
+        const content = getEditorContent(editorRef);
+        saveAs({
+            fileContent: content,
+            fileName: editorState.fileName,
+            fileExtension: editorState.fileExtension,
+            mimeType: editorState.editorPropsSupportedMimeTypes[0],
+            availableExtensions: editorState.fileSaveExtensions.map((e) => e.itemId),
+        });
+    }, [
+        editorState.fileName,
+        editorState.fileExtension,
+        editorState.editorPropsSupportedMimeTypes,
+        editorState.fileSaveExtensions,
+        saveAs,
     ]);
 
     const handleWordWrapToggle: () => void = useCallback(() => {
@@ -269,6 +286,7 @@ const IndexPage = (): React.JSX.Element => {
                     onFileNewClick={handleFileNew}
                     onFileOpenClick={handleFileOpen}
                     onFileSaveClick={handleFileSave}
+                    onFileSaveAsClick={handleFileSaveAs}
                     onCopyClick={handleCopy}
                     onPasteClick={handlePaste}
                     onClearClick={handleClear}

@@ -23,6 +23,7 @@ export type CodeEditorToolbarProps = {
     onFileNewClick: () => void;
     onFileOpenClick: () => void;
     onFileSaveClick: () => void;
+    onFileSaveAsClick: () => void;
     onCopyClick: () => void;
     onPasteClick: () => void;
     onClearClick: () => void;
@@ -42,6 +43,7 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
         onFileNewClick,
         onFileOpenClick,
         onFileSaveClick,
+        onFileSaveAsClick,
         onCopyClick,
         onPasteClick,
         onClearClick,
@@ -77,6 +79,9 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
                 </button>
                 <button type="button" className="button-base button-outlined button-small" onClick={onFileSaveClick}>
                     Save
+                </button>
+                <button type="button" className="button-base button-outlined button-small" onClick={onFileSaveAsClick}>
+                    Save As
                 </button>
             </div>
 

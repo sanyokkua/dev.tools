@@ -1,6 +1,7 @@
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
@@ -27,9 +28,12 @@ const SYNTAX_OPTIONS: SegmentedOption[] = [
     { value: 'powershell', label: 'PowerShell' },
 ];
 
+const LANG_EXT: Record<EditorLanguage, string> = { shell: '.sh', bat: '.bat', powershell: '.ps1' };
+
 const IndexPage: React.FC = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const { showToast } = useToast();
+    const { saveAs } = useFileSaveDialog();
 
     useEffect(() => {
         setPageTitle('Terminal Utils');
@@ -83,6 +87,20 @@ const IndexPage: React.FC = (): React.JSX.Element => {
         showToast({ message: `Changed Syntax to ${lang}`, type: ToastType.INFO });
     };
 
+    const handleSaveAs = useCallback((): void => {
+        const content = getEditorContent(editorResultRef);
+        if (!content.trim()) {
+            showToast({ message: 'Nothing to save', type: ToastType.WARNING });
+            return;
+        }
+        saveAs({
+            fileContent: content,
+            fileName: 'commands',
+            fileExtension: LANG_EXT[languageId],
+            availableExtensions: Object.values(LANG_EXT),
+        });
+    }, [languageId, saveAs, showToast]);
+
     return (
         <ContentContainerFlex>
             <ToolAbout routeKey="terminal-utils" title="Terminal Utils">
@@ -129,6 +147,7 @@ const IndexPage: React.FC = (): React.JSX.Element => {
                         <span style={{ flex: 1 }} />
                         <Button text="Copy" variant="text" size="small" onClick={handleCopy} />
                         <Button text="Clear" variant="text" size="small" onClick={handleClearResult} />
+                        <Button text="Save As" variant="text" size="small" onClick={handleSaveAs} />
                     </EditorToolbar>
                     <div className="eb">
                         <CodeEditor

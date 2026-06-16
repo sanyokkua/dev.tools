@@ -57,7 +57,7 @@ const JsonFormatterPage: React.FC = () => {
     const contentListenerRef = useRef<IDisposable | null>(null);
 
     const { showFileOpenDialog } = useFileOpen();
-    const { showFileSaveDialog } = useFileSaveDialog();
+    const { saveAs } = useFileSaveDialog();
     const { showToast } = useToast();
 
     const toastError = useCallback(
@@ -221,14 +221,14 @@ const JsonFormatterPage: React.FC = () => {
     const handleLeftClear = useCallback((): void => setEditorContent(leftEditorRef, ''), []);
 
     const handleRightSave = useCallback((): void => {
-        showFileSaveDialog({
+        saveAs({
             fileContent: getEditorContent(rightEditorRef),
             fileName: 'output',
             fileExtension: DEFAULT_EXTENSION,
             mimeType: DEFAULT_MIME_TYPE,
             availableExtensions: supportedExtensions,
         });
-    }, [showFileSaveDialog, supportedExtensions]);
+    }, [saveAs, supportedExtensions]);
 
     const handleRightCopy = useCallback((): void => copyToClipboardFromEditor(rightEditorRef, showToast), [showToast]);
     const handleRightClear = useCallback((): void => setEditorContent(rightEditorRef, ''), []);
