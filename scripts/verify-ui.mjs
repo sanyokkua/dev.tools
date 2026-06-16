@@ -24,6 +24,7 @@ const ROUTES = [
     '/prompts-collection',
     '/mermaid-editor',
     '/diff',
+    '/html-editor',
 ];
 
 // Routes that must have a Monaco editor with height > 200px
@@ -37,6 +38,7 @@ const MONACO_ROUTES = new Set([
     '/markdown-tools',
     '/mermaid-editor',
     '/diff',
+    '/html-editor',
 ]);
 
 const WIDTHS = [375, 768, 1280];

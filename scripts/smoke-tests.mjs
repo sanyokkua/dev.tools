@@ -525,6 +525,33 @@ await runSmoke('diff-edge-invalid-json', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__diff__invalid_json_edge.png` });
 });
 
+// ── HTML Editor ───────────────────────────────────────────────────────────────
+await runSmoke('html-editor', async (page) => {
+    await page.goto(BASE + '/html-editor', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__html_editor__before.png` });
+
+    // Replace default content with fresh HTML
+    await page.locator('.split-preview-editor .editorpane .monaco-editor .view-lines').first().click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type('<h1>Hello World</h1>');
+
+    // iframe srcdoc must update to include the typed content
+    await page.waitForFunction(
+        () => document.querySelector('.html-editor__preview-frame')?.getAttribute('srcdoc')?.includes('Hello World'),
+        { timeout: 5000 },
+    );
+    await page.screenshot({ path: `${OUT}/smoke__html_editor__after.png` });
+
+    // Edge case: toggle Allow Scripts — sandbox must switch to allow-scripts
+    await page.locator('[role="switch"]').click();
+    await page.waitForFunction(
+        () => document.querySelector('.html-editor__preview-frame')?.getAttribute('sandbox') === 'allow-scripts',
+        { timeout: 3000 },
+    );
+    await page.screenshot({ path: `${OUT}/smoke__html_editor__scripts_on.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -534,4 +561,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 17 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 18 interaction flows passed. Screenshots in ' + OUT);

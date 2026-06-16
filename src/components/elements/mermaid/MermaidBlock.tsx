@@ -1,5 +1,5 @@
 import { renderMermaid } from '@/common/mermaid';
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 
 interface MermaidBlockProps {
     src: string;
@@ -8,14 +8,16 @@ interface MermaidBlockProps {
 const MermaidBlock: React.FC<MermaidBlockProps> = ({ src }) => {
     const rawId = useId();
     const diagramId = `mermaid${rawId.replace(/\W/g, '')}`;
+    const renderCountRef = useRef(0);
     const [svg, setSvg] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
+        const renderId = `${diagramId}r${++renderCountRef.current}`;
         setSvg('');
         setError(null);
-        renderMermaid(diagramId, src)
+        renderMermaid(renderId, src)
             .then((result) => {
                 if (!cancelled) setSvg(result);
             })

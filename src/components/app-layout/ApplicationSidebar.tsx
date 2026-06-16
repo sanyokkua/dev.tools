@@ -19,6 +19,7 @@ const navGroups: NavGroup[] = [
             { itemName: 'Markdown Tools', itemLink: '/markdown-tools', icon: '¶' },
             { itemName: 'Mermaid Editor', itemLink: '/mermaid-editor', icon: '◈' },
             { itemName: 'Diff', itemLink: '/diff', icon: '△', badge: 'NEW' },
+            { itemName: 'HTML Editor', itemLink: '/html-editor', icon: '</>', badge: 'NEW' },
             { itemName: 'Converting Tools', itemLink: '/converting-tools', icon: '⇆' },
             { itemName: 'Date Tools', itemLink: '/date-tools', icon: '◷' },
         ],

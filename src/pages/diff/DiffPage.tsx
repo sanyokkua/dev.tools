@@ -6,7 +6,7 @@ import Button from '@/controls/Button';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import Switch from '@/controls/Switch';
 import { ToastType } from '@/controls/toaster/types';
-import { DiffEditor } from '@monaco-editor/react';
+import { DiffEditor, useMonaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -26,8 +26,25 @@ const DiffPage: React.FC = () => {
     const diffEditorRef = useRef<editor.IStandaloneDiffEditor | null>(null);
     const { theme: appTheme } = useTheme();
     const { showToast } = useToast();
+    const showToastRef = useRef(showToast);
+    const monaco = useMonaco();
+
+    useEffect(() => {
+        showToastRef.current = showToast;
+    });
 
     const monacoTheme = appTheme === 'dark' ? 'vs-dark' : 'vs';
+
+    // Update model language in-place when type changes (avoids disposal race from remounting)
+    useEffect(() => {
+        const de = diffEditorRef.current;
+        if (!monaco || !de) return;
+        const lang = DIFF_LANGUAGE[type];
+        const om = de.getOriginalEditor().getModel();
+        const mm = de.getModifiedEditor().getModel();
+        if (om) monaco.editor.setModelLanguage(om, lang);
+        if (mm) monaco.editor.setModelLanguage(mm, lang);
+    }, [type, monaco]);
 
     useEffect(() => {
         if (type === 'text') return;
@@ -43,11 +60,11 @@ const DiffPage: React.FC = () => {
             if (origEd.getValue() !== leftNorm) origEd.setValue(leftNorm);
             if (modEd.getValue() !== rightNorm) modEd.setValue(rightNorm);
 
-            if (leftErr) showToast({ message: `Left: ${leftErr}`, type: ToastType.ERROR });
-            if (rightErr) showToast({ message: `Right: ${rightErr}`, type: ToastType.ERROR });
+            if (leftErr) showToastRef.current({ message: `Left: ${leftErr}`, type: ToastType.ERROR });
+            if (rightErr) showToastRef.current({ message: `Right: ${rightErr}`, type: ToastType.ERROR });
         }, 300);
         return () => clearTimeout(id);
-    }, [leftText, rightText, type, showToast]);
+    }, [leftText, rightText, type]);
 
     const handleMount = useCallback((diffEditor: editor.IStandaloneDiffEditor) => {
         diffEditorRef.current = diffEditor;
@@ -74,9 +91,9 @@ const DiffPage: React.FC = () => {
         const val = diffEditorRef.current?.getModifiedEditor().getValue() ?? '';
         navigator.clipboard
             .writeText(val)
-            .then(() => showToast({ message: 'Copied', type: ToastType.SUCCESS }))
-            .catch(() => showToast({ message: 'Copy failed', type: ToastType.ERROR }));
-    }, [showToast]);
+            .then(() => showToastRef.current({ message: 'Copied', type: ToastType.SUCCESS }))
+            .catch(() => showToastRef.current({ message: 'Copy failed', type: ToastType.ERROR }));
+    }, []);
 
     return (
         <div className="diff-tool">
@@ -96,7 +113,7 @@ const DiffPage: React.FC = () => {
                     <DiffEditor
                         original=""
                         modified=""
-                        language={DIFF_LANGUAGE[type]}
+                        language="plaintext"
                         theme={monacoTheme}
                         height="100%"
                         options={{

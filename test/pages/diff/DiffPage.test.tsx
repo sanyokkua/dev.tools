@@ -21,11 +21,13 @@ interface MockSideEditor {
     getValue(): string;
     setValue(v: string): void;
     onDidChangeModelContent(cb: () => void): void;
+    getModel(): object | null;
 }
 
 function makeSideEditor(initial = ''): MockSideEditor & { _fireChange: () => void } {
     let value = initial;
     let changeListener: (() => void) | null = null;
+    const model = { id: 'mock-model' };
     return {
         getValue: () => value,
         setValue: (v: string) => {
@@ -35,6 +37,7 @@ function makeSideEditor(initial = ''): MockSideEditor & { _fireChange: () => voi
         onDidChangeModelContent: (cb: () => void) => {
             changeListener = cb;
         },
+        getModel: () => model,
         _fireChange: () => changeListener?.(),
     };
 }
@@ -42,6 +45,8 @@ function makeSideEditor(initial = ''): MockSideEditor & { _fireChange: () => voi
 let mockOrigEditor: ReturnType<typeof makeSideEditor>;
 let mockModEditor: ReturnType<typeof makeSideEditor>;
 let capturedOnMount: MockDiffEditorProps['onMount'];
+
+const mockSetModelLanguage = jest.fn();
 
 jest.mock('@monaco-editor/react', () => ({
     DiffEditor: (props: MockDiffEditorProps) => {
@@ -55,6 +60,7 @@ jest.mock('@monaco-editor/react', () => ({
             />
         );
     },
+    useMonaco: () => ({ editor: { setModelLanguage: mockSetModelLanguage } }),
 }));
 
 function wrap(ui: React.ReactElement) {
@@ -75,6 +81,7 @@ function mountDiffEditor() {
 
 beforeEach(() => {
     capturedOnMount = undefined;
+    mockSetModelLanguage.mockClear();
     window.matchMedia = jest
         .fn()
         .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
@@ -117,7 +124,7 @@ describe('DiffPage – renders', () => {
         expect(screen.getByRole('switch')).toBeInTheDocument();
     });
 
-    it('passes "plaintext" language for Text type (default)', () => {
+    it('passes "plaintext" language to DiffEditor as a static prop', () => {
         wrap(<DiffPage />);
         expect(screen.getByTestId('diff-editor')).toHaveAttribute('data-language', 'plaintext');
     });
@@ -129,16 +136,22 @@ describe('DiffPage – renders', () => {
 });
 
 describe('DiffPage – type selector', () => {
-    it('switching to JSON passes "json" language to DiffEditor', () => {
+    it('switching to JSON calls setModelLanguage with "json" on both models', () => {
         wrap(<DiffPage />);
+        mountDiffEditor();
+        mockSetModelLanguage.mockClear();
         fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
-        expect(screen.getByTestId('diff-editor')).toHaveAttribute('data-language', 'json');
+        expect(mockSetModelLanguage).toHaveBeenCalledWith(expect.anything(), 'json');
+        expect(mockSetModelLanguage).toHaveBeenCalledTimes(2);
     });
 
-    it('switching to XML passes "xml" language to DiffEditor', () => {
+    it('switching to XML calls setModelLanguage with "xml" on both models', () => {
         wrap(<DiffPage />);
+        mountDiffEditor();
+        mockSetModelLanguage.mockClear();
         fireEvent.click(screen.getByRole('button', { name: 'XML' }));
-        expect(screen.getByTestId('diff-editor')).toHaveAttribute('data-language', 'xml');
+        expect(mockSetModelLanguage).toHaveBeenCalledWith(expect.anything(), 'xml');
+        expect(mockSetModelLanguage).toHaveBeenCalledTimes(2);
     });
 });
 
