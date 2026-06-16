@@ -7,6 +7,7 @@ const ROUTES = [
     '/',
     '/string-utils',
     '/json-formatter',
+    '/xml-formatter',
     '/hashing-tools',
     '/encoding-tools',
     '/terminal-utils',
@@ -28,6 +29,7 @@ const ROUTES = [
 const MONACO_ROUTES = new Set([
     '/string-utils',
     '/json-formatter',
+    '/xml-formatter',
     '/encoding-tools',
     '/terminal-utils',
     '/code-editor',

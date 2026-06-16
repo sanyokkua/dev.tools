@@ -301,6 +301,37 @@ await runSmoke('json-formatter-query', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__json_formatter_query__after.png` });
 });
 
+// ── 9b. XML Formatter — XPath query ───────────────────────────────────────────
+await runSmoke('xml-formatter', async (page) => {
+    await page.goto(BASE + '/xml-formatter', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__xml_formatter__before.png` });
+
+    // Type valid XML into the left editor
+    await page.locator('.editorpane').first().locator('.monaco-editor .view-lines').click();
+    await page.keyboard.type('<root><item id="1">Hello</item><item id="2">World</item></root>');
+
+    // Wait for .pill.ok to appear (valid XML detected)
+    await page.waitForSelector('.pill.ok', { timeout: 5000 });
+
+    // Click Beautify — no console errors
+    await page.locator('button', { hasText: 'Beautify' }).click();
+    await page.waitForTimeout(500);
+
+    // Switch to Query (XPath) mode
+    await page.locator('.seg-control button', { hasText: 'Query (XPath)' }).click();
+
+    // XPath input must be visible
+    await page.waitForSelector('#xpath-input', { timeout: 3000 });
+
+    // Run XPath query for //item
+    await page.fill('#xpath-input', '//item');
+    await page.locator('button', { hasText: 'Run Query' }).click();
+    await page.waitForTimeout(500);
+
+    await page.screenshot({ path: `${OUT}/smoke__xml_formatter__after.png` });
+});
+
 // ── 9. Converting Tools — Markdown table ─────────────────────────────────────
 await runSmoke('converting-md-table', async (page) => {
     await page.goto(BASE + '/converting-tools', { waitUntil: 'networkidle' });
@@ -449,4 +480,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 14 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 15 interaction flows passed. Screenshots in ' + OUT);

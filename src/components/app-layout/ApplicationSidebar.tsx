@@ -11,6 +11,7 @@ const navGroups: NavGroup[] = [
             { itemName: 'Dashboard', itemLink: '/', icon: '▦' },
             { itemName: 'String Utils', itemLink: '/string-utils', icon: 'Ⓢ' },
             { itemName: 'JSON Formatter', itemLink: '/json-formatter', icon: '{}' },
+            { itemName: 'XML Formatter', itemLink: '/xml-formatter', icon: '⟨/⟩' },
             { itemName: 'Hashing Tools', itemLink: '/hashing-tools', icon: '#' },
             { itemName: 'Encoding Tools', itemLink: '/encoding-tools', icon: '⇄' },
             { itemName: 'Terminal Utils', itemLink: '/terminal-utils', icon: '>_' },
