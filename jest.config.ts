@@ -17,6 +17,9 @@ const config: Config = {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@/common/(.*)$': '<rootDir>/src/common/$1',
         '^@/components/(.*)$': '<rootDir>/src/components/$1',
+        '^prettier/standalone$': '<rootDir>/node_modules/prettier/standalone.js',
+        '^prettier/plugins/(.*)$': '<rootDir>/node_modules/prettier/plugins/$1.js',
+        '^@prettier/plugin-xml$': '<rootDir>/node_modules/@prettier/plugin-xml/src/plugin.js',
     },
 };
 
