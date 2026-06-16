@@ -4,7 +4,10 @@
  */
 
 import {
+    BACKEND_BASELINE_GB,
     calculateVram,
+    GpuType,
+    InferenceEngine,
     KV_CACHE_BYTES,
     KV_CACHE_FACTOR,
     KVCacheQuant,
@@ -12,7 +15,6 @@ import {
     QUANT_CATALOG,
     STANDARD_CONTEXTS,
     STANDARD_QUANTIZATIONS,
-    WORKING_BUFFER_GB,
 } from '../../src/common/llm-vram-calc';
 
 import type {
@@ -143,8 +145,8 @@ describe('Exported Constants', () => {
     });
 
     describe('Numeric constants', () => {
-        it('should have correct WORKING_BUFFER_GB value', () => {
-            expect(WORKING_BUFFER_GB).toBe(0.4);
+        it('BACKEND_BASELINE_GB should be 0.75 for llama.cpp', () => {
+            expect(BACKEND_BASELINE_GB['llama.cpp']).toBeCloseTo(0.75, 2);
         });
     });
 });
@@ -1003,26 +1005,37 @@ describe('Calculation Tests', () => {
         });
 
         it('should use provided model_size_gb when quantization is specific', () => {
-            const result = calculateVram({ params_b: 8, model_size_gb: 5.5, quantization: 'Q4_K_M' });
+            const result = calculateVram({
+                params_b: 8,
+                model_size_gb: 5.5,
+                quantization: 'Q4_K_M',
+                engine: 'llama.cpp',
+            });
             const output = expectSuccess(result);
 
             // estimated_gguf_gb should be null since actual size was provided
             expect(output.quantization_analysis[0].estimated_gguf_gb).toBeNull();
 
-            // min_vram = 5.5 + WORKING_BUFFER_GB (0.4) = 5.9
-            expect(output.quantization_analysis[0].min_vram_no_cache_gb).toBeCloseTo(5.9, 1);
+            // min_vram = 5.5 + backend(0.75) + compute@4K(0.30) = 6.55
+            expect(output.quantization_analysis[0].min_vram_no_cache_gb).toBeCloseTo(6.55, 1);
         });
     });
 
     describe('VRAM with and without cache', () => {
-        it('should have vram_without_cache = model_size + working_buffer', () => {
-            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
+        it('should have vram_without_cache = model_size + backend + compute_buffer (varies by context)', () => {
+            const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', engine: 'llama.cpp' });
             const output = expectSuccess(result);
 
-            // vram_without_cache should be constant across all contexts
-            const vramWithoutCache = output.quantization_analysis[0].context_table.map((e) => e.vram_without_cache_gb);
+            // vram_without_cache now varies by context since compute buffer scales with context
+            const table = output.quantization_analysis[0].context_table;
+            const vramWithoutCache = table.map((e) => e.vram_without_cache_gb);
             const uniqueValues = new Set(vramWithoutCache);
-            expect(uniqueValues.size).toBe(1);
+            // Multiple tiers means multiple unique values across 9 standard contexts
+            expect(uniqueValues.size).toBeGreaterThan(1);
+            // But vram_without_cache at 4K should be modelSize + 0.75 + 0.30
+            const modelSize = output.quantization_analysis[0].estimated_gguf_gb!;
+            const entry4k = table.find((e) => e.context_size === 4096)!;
+            expect(entry4k.vram_without_cache_gb).toBeCloseTo(modelSize + 0.75 + 0.3, 1);
         });
 
         it('should have vram_with_cache > vram_without_cache when kv_cache_enabled', () => {
@@ -1264,13 +1277,15 @@ describe('Edge Cases', () => {
         });
 
         it('should handle boundary case where model barely fits', () => {
-            // IQ4_XS 8B = 8 × 4.35 / 8 = 4.35 GB + 0.4 buffer = 4.75 GB < 5 GB VRAM
+            // IQ4_XS 8B = 8 × 4.35 / 8 = 4.35 GB; backend=0.75; compute@4K=0.30 → total ≈ 5.40 GB
+            // With 8 GB VRAM and kv_cache_enabled=false → should fit
             const result = calculateVram({
                 params_b: 8,
                 quantization: 'IQ4_XS',
                 kv_cache_enabled: false,
-                vram_gb: 5,
+                vram_gb: 8,
                 os: 'linux-headless',
+                engine: 'llama.cpp',
             });
             const output = expectSuccess(result);
 
@@ -1748,18 +1763,22 @@ describe('KV Cache Formula Verification', () => {
 // ============================================================================
 // SECTION 11: Working Buffer Tests
 // ============================================================================
-describe('Working Buffer Application', () => {
-    it('should add WORKING_BUFFER_GB to vram_without_cache', () => {
-        const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M', kv_cache_enabled: false });
+describe('Backend + Compute Overhead', () => {
+    it('min_vram_no_cache includes backend baseline + compute buffer at 4K', () => {
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4_K_M',
+            kv_cache_enabled: false,
+            context_size: 4096,
+            engine: 'llama.cpp',
+        });
         const output = expectSuccess(result);
-
         const modelSize = output.quantization_analysis[0].estimated_gguf_gb!;
-        const vramWithoutCache = output.quantization_analysis[0].min_vram_no_cache_gb;
-
-        expect(vramWithoutCache).toBeCloseTo(modelSize + WORKING_BUFFER_GB, 2);
+        // backend: 0.75, compute@4K (batch=1, ratio=1.0): 0.30
+        expect(output.quantization_analysis[0].min_vram_no_cache_gb).toBeCloseTo(modelSize + 0.75 + 0.3, 1);
     });
 
-    it('should add WORKING_BUFFER_GB to vram_with_cache', () => {
+    it('vram_with_cache_gb = modelSize + kvCache + backend + compute', () => {
         const result = calculateVram({
             params_b: 8,
             quantization: 'Q4_K_M',
@@ -1768,16 +1787,16 @@ describe('Working Buffer Application', () => {
             kv_heads: 8,
             key_dim: 128,
             value_dim: 128,
+            kv_cache_quant: 'q8_0',
             context_size: 4096,
+            engine: 'llama.cpp',
         });
-
         const output = expectSuccess(result);
         const analysis = output.quantization_analysis[0];
-        const entry = analysis.context_table[0];
-
-        const expectedVram = analysis.estimated_gguf_gb! + entry.kv_cache_gb + WORKING_BUFFER_GB;
-
-        expect(entry.vram_with_cache_gb).toBeCloseTo(expectedVram, 2);
+        const entry = analysis.context_table.find((e) => e.context_size === 4096)!;
+        // modelSize + kv + backend(0.75) + compute@4K(0.30)
+        const expectedVram = analysis.estimated_gguf_gb! + entry.kv_cache_gb + 0.75 + 0.3;
+        expect(entry.vram_with_cache_gb).toBeCloseTo(expectedVram, 1);
     });
 });
 
@@ -2613,5 +2632,128 @@ describe('Quant Catalog Anchors (2.5b)', () => {
         expect((analysis as any).bits_per_param).toBeUndefined();
         expect(analysis.sweet_spot).toBe(true);
         expect(analysis.family).toBe('k-quant');
+    });
+});
+
+// ============================================================================
+// SECTION 14: GPU Type + Engine + Offload (2.5c+e+f)
+// ============================================================================
+describe('GPU Type + Engine + Offload (2.5c+e+f)', () => {
+    it('GpuType should export NVIDIA_AMD, APPLE, INTEL_INTEGRATED', () => {
+        expect(GpuType.NVIDIA_AMD).toBe('nvidia-amd');
+        expect(GpuType.APPLE).toBe('apple');
+        expect(GpuType.INTEL_INTEGRATED).toBe('intel-integrated');
+        expect(Object.keys(GpuType)).toHaveLength(3);
+    });
+
+    it('InferenceEngine should export llama.cpp, ollama, lm-studio', () => {
+        expect(InferenceEngine.LLAMA_CPP).toBe('llama.cpp');
+        expect(InferenceEngine.OLLAMA).toBe('ollama');
+        expect(InferenceEngine.LM_STUDIO).toBe('lm-studio');
+        expect(Object.keys(InferenceEngine)).toHaveLength(3);
+    });
+
+    it('offload_result should be null when no vram_gb provided', () => {
+        const result = calculateVram({ params_b: 8, quantization: 'Q4_K_M' });
+        const output = expectSuccess(result);
+        expect(output.offload_result).toBeNull();
+    });
+
+    it('offload_result.verdict = fits when model fits in VRAM', () => {
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4_K_M',
+            vram_gb: 24,
+            os: 'linux-headless',
+            engine: 'llama.cpp',
+            context_size: 4096,
+            kv_cache_enabled: false,
+        });
+        const output = expectSuccess(result);
+        expect(output.offload_result).not.toBeNull();
+        expect(output.offload_result!.verdict).toBe('fits');
+        expect(output.offload_result!.ram_spill_gb).toBe(0);
+    });
+
+    it('offload_result.verdict = partial when model partially fits', () => {
+        const result = calculateVram({
+            params_b: 70,
+            quantization: 'Q4_K_M',
+            vram_gb: 16,
+            os: 'linux-headless',
+            engine: 'llama.cpp',
+            context_size: 4096,
+            kv_cache_enabled: false,
+            layers: 80,
+        });
+        const output = expectSuccess(result);
+        expect(output.offload_result).not.toBeNull();
+        expect(output.offload_result!.verdict).toBe('partial');
+        expect(output.offload_result!.layers_on_gpu).toBeGreaterThan(0);
+        expect(output.offload_result!.ram_spill_gb).toBeGreaterThan(0);
+    });
+
+    it('offload_result.verdict = no_fit when model exceeds VRAM entirely', () => {
+        const result = calculateVram({
+            params_b: 70,
+            quantization: 'Q4_K_M',
+            vram_gb: 1, // 1GB available → 0.95 after OS; backend(0.75)+compute(0.30)>0.95 → no_fit
+            os: 'linux-headless',
+            engine: 'llama.cpp',
+            context_size: 4096,
+            kv_cache_enabled: false,
+        });
+        const output = expectSuccess(result);
+        expect(output.offload_result!.verdict).toBe('no_fit');
+    });
+
+    it('Windows NVIDIA note appears in partial offload', () => {
+        const result = calculateVram({
+            params_b: 70,
+            quantization: 'Q4_K_M',
+            vram_gb: 16,
+            os: 'windows',
+            gpu_type: 'nvidia-amd',
+            engine: 'llama.cpp',
+            context_size: 4096,
+            kv_cache_enabled: false,
+            layers: 80,
+        });
+        const output = expectSuccess(result);
+        if (output.offload_result?.verdict === 'partial') {
+            expect(output.offload_result.note).toContain('Windows');
+        }
+    });
+
+    it('MoE active_ratio scales compute buffer (MoE uses less compute)', () => {
+        const densResult = calculateVram({ params_b: 47, quantization: 'Q4_K_M', context_size: 4096 });
+        const moeResult = calculateVram({
+            params_b: 47,
+            quantization: 'Q4_K_M',
+            context_size: 4096,
+            expert_count: 8,
+            active_experts: 2,
+        });
+        const densOutput = expectSuccess(densResult);
+        const moeOutput = expectSuccess(moeResult);
+        const densMin = densOutput.quantization_analysis[0].min_vram_no_cache_gb;
+        const moeMin = moeOutput.quantization_analysis[0].min_vram_no_cache_gb;
+        // MoE ratio = 2/8 = 0.25, so compute buffer is 1/4 of dense
+        expect(moeMin).toBeLessThan(densMin);
+    });
+
+    it('offload_result exposes total_layers and backend_gb', () => {
+        const result = calculateVram({
+            params_b: 8,
+            quantization: 'Q4_K_M',
+            vram_gb: 24,
+            os: 'linux-headless',
+            layers: 32,
+            kv_cache_enabled: false,
+        });
+        const output = expectSuccess(result);
+        const offload = output.offload_result!;
+        expect(offload.total_layers).toBe(32);
+        expect(offload.backend_gb).toBeCloseTo(0.75, 2);
     });
 });

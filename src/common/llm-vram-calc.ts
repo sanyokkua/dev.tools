@@ -99,6 +99,27 @@ const OperatingSystem = {
 
 type OperatingSystem = (typeof OperatingSystem)[keyof typeof OperatingSystem];
 
+const GpuType = { NVIDIA_AMD: 'nvidia-amd', APPLE: 'apple', INTEL_INTEGRATED: 'intel-integrated' } as const;
+type GpuType = (typeof GpuType)[keyof typeof GpuType];
+
+const InferenceEngine = { LLAMA_CPP: 'llama.cpp', OLLAMA: 'ollama', LM_STUDIO: 'lm-studio' } as const;
+type InferenceEngine = (typeof InferenceEngine)[keyof typeof InferenceEngine];
+
+interface OffloadResult {
+    readonly verdict: 'fits' | 'partial' | 'no_fit';
+    readonly model_gb: number;
+    readonly kv_cache_gb: number;
+    readonly backend_gb: number;
+    readonly compute_gb: number;
+    readonly total_needed_gb: number;
+    readonly available_gb: number | null;
+    readonly layers_on_gpu: number;
+    readonly total_layers: number;
+    readonly gpu_resident_gb: number;
+    readonly ram_spill_gb: number;
+    readonly note: string | null;
+}
+
 /**
  * Input parameters for the VRAM calculator.
  */
@@ -156,6 +177,12 @@ interface CalculatorInput {
 
     /** Batch size for inference. Default: 1 */
     readonly batch_size?: number | null;
+
+    /** GPU architecture for offload analysis. */
+    readonly gpu_type?: GpuType | null;
+
+    /** Inference engine for backend overhead. Default: llama.cpp. */
+    readonly engine?: InferenceEngine | null;
 }
 
 /**
@@ -174,6 +201,9 @@ interface InputSummary {
     readonly sliding_window: number | null;
     readonly is_moe: boolean;
     readonly expert_info: string | null;
+    readonly gpu_type: GpuType | null;
+    readonly engine: InferenceEngine | null;
+    readonly active_ratio: number;
 }
 
 /**
@@ -252,6 +282,7 @@ interface CalculatorOutput {
     readonly quantization_analysis: readonly QuantizationAnalysis[];
     readonly recommendations: readonly Recommendation[] | null;
     readonly summary: SummaryStatistics;
+    readonly offload_result: OffloadResult | null;
 }
 
 /**
@@ -323,8 +354,21 @@ const OS_OVERHEAD_CONFIG = {
     'linux-headless': { type: 'fixed', value: 0.05 },
 } as const satisfies Record<OperatingSystem, { readonly type: 'percent' | 'fixed'; readonly value: number }>;
 
-/** Fixed working buffer for inference computations in GB. */
-const WORKING_BUFFER_GB = 0.4;
+const BACKEND_BASELINE_GB: Record<InferenceEngine, number> = {
+    'llama.cpp': 0.75,
+    'ollama': 0.75,
+    'lm-studio': 0.75,
+} as const;
+
+const COMPUTE_BUFFER_TIERS: readonly [number, number][] = [
+    [8192, 0.3],
+    [16384, 0.4],
+    [32768, 0.5],
+    [65536, 0.75],
+    [131072, 1.0],
+    [262144, 1.5],
+    [Infinity, 2.5],
+];
 
 /** Standard context sizes for multi-context analysis. */
 const STANDARD_CONTEXTS = [4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576] as const;
@@ -476,6 +520,120 @@ function estimateKvHeads(params_b: number): number {
  */
 function estimateModelSize(params_b: number, quantization: Quantization): number {
     return (params_b * QUANT_CATALOG[quantization].bpw) / 8;
+}
+
+/**
+ * Estimates compute buffer in GB based on context size, batch size, and MoE active ratio.
+ */
+function estimateComputeBuffer(context_size: number, batch_size: number, active_ratio: number = 1.0): number {
+    const base = COMPUTE_BUFFER_TIERS.find(([maxCtx]) => context_size <= maxCtx)?.[1] ?? 2.5;
+    return base * batch_size * active_ratio;
+}
+
+/**
+ * Returns backend baseline GB for the given inference engine.
+ */
+function getBackendBaseline(engine: InferenceEngine | null): number {
+    return engine !== null ? BACKEND_BASELINE_GB[engine] : 0.75;
+}
+
+/**
+ * Calculates the GPU offload result (fits/partial/no_fit verdict).
+ */
+function calculateOffload(
+    modelSize_gb: number,
+    kv_gb: number,
+    backend_gb: number,
+    compute_gb: number,
+    available_gb: number | null,
+    total_layers: number,
+    os: OperatingSystem | null,
+    gpu_type: GpuType | null,
+): OffloadResult {
+    const total_needed_gb = modelSize_gb + kv_gb + backend_gb + compute_gb;
+
+    if (available_gb === null) {
+        return {
+            verdict: 'fits',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb: null,
+            layers_on_gpu: total_layers,
+            total_layers,
+            gpu_resident_gb: modelSize_gb,
+            ram_spill_gb: 0,
+            note: null,
+        };
+    }
+
+    if (total_needed_gb <= available_gb) {
+        return {
+            verdict: 'fits',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb,
+            layers_on_gpu: total_layers,
+            total_layers,
+            gpu_resident_gb: modelSize_gb,
+            ram_spill_gb: 0,
+            note: null,
+        };
+    }
+
+    // How many weight layers fit after reserving overhead + KV?
+    const gpu_budget_for_weights = Math.max(0, available_gb - backend_gb - compute_gb - kv_gb);
+    const size_per_layer = total_layers > 0 ? modelSize_gb / total_layers : modelSize_gb;
+    const layers_on_gpu =
+        total_layers > 0 ? Math.max(0, Math.min(total_layers, Math.floor(gpu_budget_for_weights / size_per_layer))) : 0;
+
+    if (layers_on_gpu === 0) {
+        return {
+            verdict: 'no_fit',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb,
+            layers_on_gpu: 0,
+            total_layers,
+            gpu_resident_gb: backend_gb + compute_gb,
+            ram_spill_gb: modelSize_gb,
+            note: null,
+        };
+    }
+
+    const gpu_resident_model = layers_on_gpu * size_per_layer;
+    const ram_spill_gb = roundTo(modelSize_gb - gpu_resident_model, 2);
+    const gpu_resident_gb = roundTo(gpu_resident_model + backend_gb + compute_gb, 2);
+
+    let note: string | null = null;
+    if (gpu_type === 'nvidia-amd' && os === 'windows') {
+        note = 'Windows may spill overflow weights to slow shared GPU memory (system RAM)';
+    } else if (gpu_type === 'nvidia-amd' && (os === 'linux-gui' || os === 'linux-headless')) {
+        note = 'NVIDIA on Linux has no shared-memory fallback — hard OOM if weights exceed VRAM';
+    }
+
+    return {
+        verdict: 'partial',
+        model_gb: modelSize_gb,
+        kv_cache_gb: kv_gb,
+        backend_gb,
+        compute_gb,
+        total_needed_gb,
+        available_gb,
+        layers_on_gpu,
+        total_layers,
+        gpu_resident_gb,
+        ram_spill_gb,
+        note,
+    };
 }
 
 /**
@@ -808,6 +966,9 @@ function buildInputSummary(
     sliding_window: number | null,
     expert_count: number | null,
     active_experts: number | null,
+    gpu_type: GpuType | null,
+    engine: InferenceEngine | null,
+    active_ratio: number,
 ): InputSummary {
     let expertInfo: string | null = null;
     if (expert_count !== null) {
@@ -830,6 +991,9 @@ function buildInputSummary(
         sliding_window,
         is_moe: expert_count !== null,
         expert_info: expertInfo,
+        gpu_type,
+        engine,
+        active_ratio,
     };
 }
 
@@ -850,7 +1014,9 @@ function buildContextAnalysis(
     sliding_window: number | null,
     availableVram: number | null,
     quant: Quantization,
-    batch_size: number = 1,
+    batch_size: number,
+    backendGb: number,
+    active_ratio: number,
 ): { contextTable: readonly ContextEntry[]; configs: readonly ConfigEntry[] } {
     const contextTable: ContextEntry[] = [];
     const configs: ConfigEntry[] = [];
@@ -871,8 +1037,9 @@ function buildContextAnalysis(
             batch_size,
         );
 
-        const vramWithCache = modelSize + kvCache + WORKING_BUFFER_GB;
-        const vramWithoutCache = modelSize + WORKING_BUFFER_GB;
+        const computeGb = estimateComputeBuffer(ctx, batch_size, active_ratio);
+        const vramWithCache = modelSize + kvCache + backendGb + computeGb;
+        const vramWithoutCache = modelSize + backendGb + computeGb;
 
         let fits: boolean | null = null;
         if (availableVram !== null) {
@@ -925,6 +1092,13 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const expert_count = input.expert_count ?? null;
     const active_experts = input.active_experts ?? null;
     const batch_size = input.batch_size ?? 1;
+    const gpu_type = input.gpu_type ?? null;
+    const engine = input.engine ?? null;
+    const active_ratio =
+        expert_count !== null && expert_count !== undefined && active_experts !== null && active_experts !== undefined
+            ? Math.min(1, active_experts / expert_count)
+            : 1.0;
+    const backendGb = getBackendBaseline(engine);
 
     // Step 1: Determine quantization list
     const quantList: readonly Quantization[] = quantization !== null ? [quantization] : STANDARD_QUANTIZATIONS;
@@ -959,6 +1133,9 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         sliding_window,
         expert_count,
         active_experts,
+        gpu_type,
+        engine,
+        active_ratio,
     );
 
     // Step 5: Calculate for each quantization
@@ -979,7 +1156,8 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         }
 
         // Calculate minimum VRAM values
-        const minVramNoCache = modelSize + WORKING_BUFFER_GB;
+        const computeAtMinCtx = estimateComputeBuffer(MIN_CONTEXT_SIZE, batch_size, active_ratio);
+        const minVramNoCache = modelSize + backendGb + computeAtMinCtx;
         const minKv = calculateKvCache(
             params_b,
             MIN_CONTEXT_SIZE,
@@ -993,7 +1171,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             sliding_window,
             batch_size,
         );
-        const minVramWithCache = modelSize + minKv + WORKING_BUFFER_GB;
+        const minVramWithCache = modelSize + minKv + backendGb + computeAtMinCtx;
 
         // Build context table
         const { contextTable, configs } = buildContextAnalysis(
@@ -1011,6 +1189,8 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             availableVram,
             quant,
             batch_size,
+            backendGb,
+            active_ratio,
         );
 
         allConfigs.push(...configs);
@@ -1049,12 +1229,42 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         fitting_configurations: fittingCount,
     };
 
+    // Step 8: Compute offload result
+    let offload_result: OffloadResult | null = null;
+    if (availableVram !== null && quantizationAnalysis.length > 0) {
+        const primaryAnalysis = quantizationAnalysis[0];
+        const primaryModelSizeGb =
+            primaryAnalysis.estimated_gguf_gb ??
+            (model_size_gb !== null && quantList.length === 1
+                ? model_size_gb
+                : estimateModelSize(params_b, quantList[0]));
+        const offloadCtx = context_size ?? MIN_CONTEXT_SIZE;
+        const offloadEntry =
+            primaryAnalysis.context_table.find((e) => e.context_size === offloadCtx) ??
+            primaryAnalysis.context_table[0];
+        const offloadKv = offloadEntry?.kv_cache_gb ?? 0;
+        const offloadCompute = estimateComputeBuffer(offloadCtx, batch_size, active_ratio);
+        const totalLayersForOffload = layers ?? estimateLayers(params_b);
+
+        offload_result = calculateOffload(
+            primaryModelSizeGb,
+            offloadKv,
+            backendGb,
+            offloadCompute,
+            availableVram,
+            totalLayersForOffload,
+            os,
+            gpu_type,
+        );
+    }
+
     return {
         input_summary: inputSummary,
         os_overhead: osOverhead,
         quantization_analysis: quantizationAnalysis,
         recommendations,
         summary,
+        offload_result,
     };
 }
 
@@ -1157,14 +1367,19 @@ function calculateVram(input: CalculatorInput): Result<CalculatorOutput, Validat
  * - QUANT_CATALOG: 44-entry catalog of GGUF quantization formats with effective bpw
  * - KVCacheQuant: KV cache quantization options
  * - OperatingSystem: Supported operating systems
+ * - GpuType: GPU architecture types
+ * - InferenceEngine: Inference engine options
  * - STANDARD_CONTEXTS: Standard context sizes for analysis
  * - STANDARD_QUANTIZATIONS: 15 curated standard quantization levels
  * - KV_CACHE_BYTES: Bytes per KV value mapping
  * - KV_CACHE_FACTOR: KV cache scaling factors
- * - WORKING_BUFFER_GB: Fixed working buffer size
+ * - BACKEND_BASELINE_GB: Backend baseline memory per engine
  */
 
 export {
+    BACKEND_BASELINE_GB,
+    GpuType,
+    InferenceEngine,
     KVCacheQuant,
     KV_CACHE_BYTES,
     KV_CACHE_FACTOR,
@@ -1173,7 +1388,6 @@ export {
     // Configuration constants
     STANDARD_CONTEXTS,
     STANDARD_QUANTIZATIONS,
-    WORKING_BUFFER_GB,
     // Main function
     calculateVram,
 };
@@ -1185,6 +1399,7 @@ export type {
     ContextEntry,
     InputSummary,
     OSOverhead,
+    OffloadResult,
     QuantEntry,
     // Error, Result, and Quantization types
     Quantization,
