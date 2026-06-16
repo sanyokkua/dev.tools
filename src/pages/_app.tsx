@@ -12,6 +12,7 @@ import '@/styles/colors.scss';
 import '@/styles/converting-tools.scss';
 import '@/styles/dashboard.scss';
 import '@/styles/date-tools.scss';
+import '@/styles/diff.scss';
 import '@/styles/git-cheat-sheet.scss';
 import '@/styles/global.css';
 import '@/styles/hashing-tools.scss';
