@@ -180,3 +180,115 @@ describe('convertDataFormat — CSV input', () => {
         expect(csv?.error).toBeDefined();
     });
 });
+
+describe('convertDataFormat — markdown-table output', () => {
+    it('JSON array of flat objects → Markdown table', () => {
+        const results = convertDataFormat('[{"name":"Alice","age":"30"},{"name":"Bob","age":"25"}]', 'json');
+        const md = results.find((r) => r.format === 'markdown-table');
+        expect(md?.error).toBeUndefined();
+        expect(md?.value).toContain('| name | age |');
+        expect(md?.value).toContain('| --- | --- |');
+        expect(md?.value).toContain('| Alice | 30 |');
+        expect(md?.value).toContain('| Bob | 25 |');
+    });
+
+    it('JSON flat object → Markdown table key/value', () => {
+        const results = convertDataFormat('{"name":"Alice","age":"30"}', 'json');
+        const md = results.find((r) => r.format === 'markdown-table');
+        expect(md?.error).toBeUndefined();
+        expect(md?.value).toContain('| key | value |');
+        expect(md?.value).toContain('| name | Alice |');
+        expect(md?.value).toContain('| age | 30 |');
+    });
+
+    it('CSV → Markdown table (via shared pipeline)', () => {
+        const results = convertDataFormat('name,age\nAlice,30\nBob,25\n', 'csv');
+        const md = results.find((r) => r.format === 'markdown-table');
+        expect(md?.error).toBeUndefined();
+        expect(md?.value).toContain('| name | age |');
+        expect(md?.value).toContain('| Alice | 30 |');
+    });
+
+    it('nested JSON → markdown-table returns error', () => {
+        const results = convertDataFormat('{"a":{"b":1}}', 'json');
+        const md = results.find((r) => r.format === 'markdown-table');
+        expect(md?.error).toBeDefined();
+    });
+
+    it('JSON mixed-type array → markdown-table returns error', () => {
+        const results = convertDataFormat('[{"name":"Alice"},"oops"]', 'json');
+        const md = results.find((r) => r.format === 'markdown-table');
+        expect(md?.error).toBeDefined();
+    });
+
+    it('markdown-table not included in results when fromFormat is markdown-table', () => {
+        const results = convertDataFormat('| name | age |\n| --- | --- |\n| Alice | 30 |', 'markdown-table');
+        expect(results.find((r) => r.format === 'markdown-table')).toBeUndefined();
+    });
+});
+
+describe('convertDataFormat — markdown-table input', () => {
+    it('standard table → JSON array (happy path)', () => {
+        const results = convertDataFormat(
+            '| name | age |\n| --- | --- |\n| Alice | 30 |\n| Bob | 25 |',
+            'markdown-table',
+        );
+        const json = results.find((r) => r.format === 'json');
+        expect(json?.error).toBeUndefined();
+        const parsed = JSON.parse(json!.value!);
+        expect(Array.isArray(parsed)).toBe(true);
+        expect(parsed[0].name).toBe('Alice');
+        expect(parsed[1].age).toBe('25');
+    });
+
+    it('standard table → CSV round-trip', () => {
+        const results = convertDataFormat('| name | age |\n| --- | --- |\n| Alice | 30 |', 'markdown-table');
+        const csv = results.find((r) => r.format === 'csv');
+        expect(csv?.error).toBeUndefined();
+        expect(csv?.value).toContain('name,age');
+        expect(csv?.value).toContain('Alice,30');
+    });
+
+    it('table with alignment markers (:---:, ---:) parsed correctly', () => {
+        const results = convertDataFormat('| name | age |\n| :---: | ---: |\n| Alice | 30 |', 'markdown-table');
+        const json = results.find((r) => r.format === 'json');
+        expect(json?.error).toBeUndefined();
+        const parsed = JSON.parse(json!.value!);
+        expect(parsed[0].name).toBe('Alice');
+        expect(parsed[0].age).toBe('30');
+    });
+
+    it('table with pipe characters in values (escaped \\|) round-trips', () => {
+        const mdInput = '| name | value |\n| --- | --- |\n| a\\|b | c\\|d |';
+        const results = convertDataFormat(mdInput, 'markdown-table');
+        const json = results.find((r) => r.format === 'json');
+        expect(json?.error).toBeUndefined();
+        const parsed = JSON.parse(json!.value!);
+        expect(parsed[0].name).toBe('a|b');
+        expect(parsed[0].value).toBe('c|d');
+    });
+
+    it('table with only header + separator (no data rows) → empty array', () => {
+        const results = convertDataFormat('| name | age |\n| --- | --- |', 'markdown-table');
+        const json = results.find((r) => r.format === 'json');
+        expect(json?.error).toBeUndefined();
+        const parsed = JSON.parse(json!.value!);
+        expect(Array.isArray(parsed)).toBe(true);
+        expect(parsed.length).toBe(0);
+    });
+
+    it('fewer than 2 lines → error on all rows', () => {
+        const results = convertDataFormat('| name | age |', 'markdown-table');
+        expect(results.every((r) => r.error !== undefined)).toBe(true);
+    });
+
+    it('missing/invalid separator row → error on all rows', () => {
+        const results = convertDataFormat('| name | age |\n| not a separator |\n| Alice | 30 |', 'markdown-table');
+        expect(results.every((r) => r.error !== undefined)).toBe(true);
+    });
+
+    it('empty string input → error on all rows', () => {
+        const results = convertDataFormat('', 'markdown-table');
+        expect(results.every((r) => r.error !== undefined)).toBe(true);
+    });
+});

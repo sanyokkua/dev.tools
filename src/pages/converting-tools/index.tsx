@@ -37,6 +37,7 @@ const DATA_FORMAT_OPTIONS: SegmentedOption[] = [
     { value: 'querystring', label: 'Query-string' },
     { value: 'toml', label: 'TOML' },
     { value: 'csv', label: 'CSV' },
+    { value: 'markdown-table', label: 'Markdown table' },
 ];
 
 const COLOR_FORMAT_OPTIONS: SegmentedOption[] = [

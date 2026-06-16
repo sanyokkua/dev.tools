@@ -301,6 +301,54 @@ await runSmoke('json-formatter-query', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__json_formatter_query__after.png` });
 });
 
+// ── 9. Converting Tools — Markdown table ─────────────────────────────────────
+await runSmoke('converting-md-table', async (page) => {
+    await page.goto(BASE + '/converting-tools', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.converting-results-table', { timeout: 3000 });
+
+    // Switch to Data format mode
+    await page.locator('.seg-control button', { hasText: 'Data format' }).click();
+    await page.waitForSelector('.converting-textarea', { timeout: 3000 });
+
+    // Select CSV as source format
+    await page.locator('[aria-label="Source data format"] button', { hasText: 'CSV' }).click();
+
+    // Fill CSV input
+    await page.locator('.converting-textarea').fill('name,age\nAlice,30\nBob,25');
+
+    // Wait for Markdown table result cell containing the header row
+    await page.waitForFunction(
+        () =>
+            Array.from(document.querySelectorAll('.converting-value-mono')).some((el) =>
+                el.textContent?.includes('| name | age |'),
+            ),
+        { timeout: 5000 },
+    );
+
+    await page.screenshot({ path: `${OUT}/smoke__converting_md_table__csv_to_md.png` });
+
+    // Switch source to Markdown table and paste a valid table
+    await page.locator('[aria-label="Source data format"] button', { hasText: 'Markdown table' }).click();
+    await page.locator('.converting-textarea').fill('| name | age |\n| --- | --- |\n| Alice | 30 |');
+
+    // Wait for JSON result containing Alice
+    await page.waitForFunction(
+        () =>
+            Array.from(document.querySelectorAll('.converting-value-mono')).some((el) =>
+                el.textContent?.includes('Alice'),
+            ),
+        { timeout: 5000 },
+    );
+
+    await page.screenshot({ path: `${OUT}/smoke__converting_md_table__md_to_json.png` });
+
+    // Edge case: invalid table (no separator) → error cells appear
+    await page.locator('.converting-textarea').fill('not a table at all');
+    await page.waitForSelector('.converting-error-cell', { timeout: 5000 });
+
+    await page.screenshot({ path: `${OUT}/smoke__converting_md_table__invalid.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -310,4 +358,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 9 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 10 interaction flows passed. Screenshots in ' + OUT);
