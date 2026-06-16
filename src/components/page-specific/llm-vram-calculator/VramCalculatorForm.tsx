@@ -33,7 +33,7 @@ export const INITIAL_FORM_STATE: VramFormState = {
     quantization: 'all',
     context_size: '4096',
     kv_cache_enabled: true,
-    kv_cache_quant: KVCacheQuant.Q8,
+    kv_cache_quant: KVCacheQuant.Q8_0,
     os: 'none',
     vram_gb: '',
     layers: '',
@@ -61,10 +61,13 @@ const quantizationItems: SelectItem[] = [
 ];
 
 const kvCacheQuantItems: SelectItem[] = [
-    { itemId: KVCacheQuant.Q4, displayText: 'Q4' },
-    { itemId: KVCacheQuant.Q8, displayText: 'Q8' },
-    { itemId: KVCacheQuant.FP16, displayText: 'FP16' },
-    { itemId: KVCacheQuant.FP32, displayText: 'FP32' },
+    { itemId: KVCacheQuant.F16, displayText: 'F16' },
+    { itemId: KVCacheQuant.Q8_0, displayText: 'Q8_0' },
+    { itemId: KVCacheQuant.Q5_1, displayText: 'Q5_1' },
+    { itemId: KVCacheQuant.Q5_0, displayText: 'Q5_0' },
+    { itemId: KVCacheQuant.Q4_1, displayText: 'Q4_1' },
+    { itemId: KVCacheQuant.Q4_0, displayText: 'Q4_0' },
+    { itemId: KVCacheQuant.IQ4_NL, displayText: 'IQ4_NL' },
 ];
 
 const osItems: SelectItem[] = [

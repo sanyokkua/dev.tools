@@ -73,9 +73,17 @@ const QUANT_CATALOG = {
 type Quantization = keyof typeof QUANT_CATALOG;
 
 /**
- * KV cache quantization options.
+ * KV cache quantization options (llama.cpp names).
  */
-const KVCacheQuant = { Q4: 'q4', Q8: 'q8', FP16: 'fp16', FP32: 'fp32' } as const;
+const KVCacheQuant = {
+    F16: 'f16',
+    Q8_0: 'q8_0',
+    Q5_1: 'q5_1',
+    Q5_0: 'q5_0',
+    Q4_1: 'q4_1',
+    Q4_0: 'q4_0',
+    IQ4_NL: 'iq4_nl',
+} as const;
 
 type KVCacheQuant = (typeof KVCacheQuant)[keyof typeof KVCacheQuant];
 
@@ -110,8 +118,11 @@ interface CalculatorInput {
     /** Enable KV cache calculation. Default: true. */
     readonly kv_cache_enabled?: boolean;
 
-    /** KV cache quantization level. Default: Q8. */
+    /** KV cache quantization level. Default: q8_0. */
     readonly kv_cache_quant?: KVCacheQuant;
+
+    /** Optional asymmetric V cache quantization. Defaults to kv_cache_quant if not provided. */
+    readonly kv_cache_quant_v?: KVCacheQuant;
 
     /** Operating system for overhead calculation. If null, no overhead applied. */
     readonly os?: OperatingSystem | null;
@@ -278,13 +289,29 @@ type ValidationError =
  * Bytes per value for each KV cache quantization level.
  * Used in exact KV cache calculation when layer count is known.
  */
-const KV_CACHE_BYTES = { q4: 0.5, q8: 1, fp16: 2, fp32: 4 } as const satisfies Record<KVCacheQuant, number>;
+const KV_CACHE_BYTES = {
+    f16: 2.0,
+    q8_0: 1.0,
+    q5_1: 0.69,
+    q5_0: 0.66,
+    q4_1: 0.56,
+    q4_0: 0.5,
+    iq4_nl: 0.56,
+} as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * Scaling factor for KV cache estimation when architecture is unknown.
- * Relative to FP16 baseline (factor 1.0).
+ * Relative to F16 baseline (factor 1.0).
  */
-const KV_CACHE_FACTOR = { q4: 0.25, q8: 0.5, fp16: 1, fp32: 2 } as const satisfies Record<KVCacheQuant, number>;
+const KV_CACHE_FACTOR = {
+    f16: 1.0,
+    q8_0: 0.5,
+    q5_1: 0.345,
+    q5_0: 0.33,
+    q4_1: 0.28,
+    q4_0: 0.25,
+    iq4_nl: 0.28,
+} as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * OS-specific memory overhead configuration.
@@ -422,15 +449,11 @@ function estimateLayers(params_b: number): number {
 }
 
 /**
- * Estimates hidden dimension from parameters and layers.
- * Formula: hidden_dim ≈ params_b / (layers × 24) × 1e9
- * Factor of 24 accounts for typical transformer weight distribution
+ * Estimates head dimension from parameter count.
+ * Most modern models use 128 for head dim; small sub-2B models often use 64.
  */
-function estimateHeadDim(params_b: number, layers: number): number {
-    const hiddenDim = (params_b * 1e9) / (layers * 24);
-    // Round to common head dimensions (64, 96, 128, 256)
-    const commonDims = [64, 96, 128, 256];
-    return commonDims.reduce((prev, curr) => (Math.abs(curr - hiddenDim) < Math.abs(prev - hiddenDim) ? curr : prev));
+function estimateHeadDim(params_b: number): number {
+    return params_b <= 2 ? 64 : 128;
 }
 
 /**
@@ -497,19 +520,22 @@ function calculateOsOverhead(os: OperatingSystem | null, vram_gb: number | null)
  * @param params_b - Model parameters in billions.
  * @param contextSize - Context window size in tokens.
  * @param kvCacheEnabled - Whether KV cache is enabled.
- * @param kvCacheQuant - KV cache quantization level.
+ * @param kvCacheQuantK - KV cache quantization level for K tensor.
+ * @param kvCacheQuantV - KV cache quantization level for V tensor.
  * @param layers - Number of transformer layers, or null for estimation.
  * @param keyDim - Key head dimension.
  * @param valueDim - Value head dimension.
  * @param kvHeads - Number of KV heads.
  * @param slidingWindow - Sliding window cap, or null for no cap.
+ * @param batch_size - Batch size for inference.
  * @returns KV cache size in GB.
  */
 function calculateKvCache(
     params_b: number,
     contextSize: number,
     kvCacheEnabled: boolean,
-    kvCacheQuant: KVCacheQuant,
+    kvCacheQuantK: KVCacheQuant,
+    kvCacheQuantV: KVCacheQuant,
     layers: number | null,
     keyDim: number,
     valueDim: number,
@@ -517,32 +543,34 @@ function calculateKvCache(
     slidingWindow: number | null,
     batch_size: number = 1,
 ): number {
-    if (!kvCacheEnabled) {
-        return 0;
-    }
+    if (!kvCacheEnabled) return 0;
 
-    // Apply sliding window cap if present
     let effectiveContext = contextSize;
     if (slidingWindow !== null && slidingWindow > 0) {
         effectiveContext = Math.min(contextSize, slidingWindow);
     }
 
-    // EXACT calculation when architecture is known
-    const bytesPerValue = KV_CACHE_BYTES[kvCacheQuant];
+    const bytesK = KV_CACHE_BYTES[kvCacheQuantK];
+    const bytesV = KV_CACHE_BYTES[kvCacheQuantV];
+
     if (layers !== null) {
-        // Formula: 2 × layers × kv_heads × (key_dim + value_dim) × context × batch × bytes
-        const bytesPerToken = 2 * kvHeads * (keyDim + valueDim) * bytesPerValue;
-        const kvBytes = layers * effectiveContext * batch_size * bytesPerToken;
+        // EXACT: K tensor + V tensor separately (no leading 2×)
+        const kvBytes = layers * effectiveContext * batch_size * kvHeads * (keyDim * bytesK + valueDim * bytesV);
         return kvBytes / BYTES_PER_GB;
     }
 
-    // ESTIMATED calculation when architecture unknown
+    // ESTIMATED: both K and V; estimatedHeadDim is shared
     const estimatedLayers = estimateLayers(params_b);
-    const estimatedHeadDim = estimateHeadDim(params_b, estimatedLayers);
+    const estimatedHeadDim = estimateHeadDim(params_b);
     const estimatedKvHeads = estimateKvHeads(params_b);
-
-    const bytesPerToken = 2 * estimatedKvHeads * (estimatedHeadDim + estimatedHeadDim) * bytesPerValue;
-    const kvBytes = estimatedLayers * effectiveContext * batch_size * bytesPerToken;
+    const avgBytes = (bytesK + bytesV) / 2;
+    const kvBytes =
+        estimatedLayers *
+        effectiveContext *
+        batch_size *
+        estimatedKvHeads *
+        (estimatedHeadDim + estimatedHeadDim) *
+        avgBytes;
     return kvBytes / BYTES_PER_GB;
 }
 
@@ -813,7 +841,8 @@ function buildContextAnalysis(
     modelSize: number,
     contextList: readonly number[],
     kv_cache_enabled: boolean,
-    kv_cache_quant: KVCacheQuant,
+    kv_cache_quant_k: KVCacheQuant,
+    kv_cache_quant_v: KVCacheQuant,
     layers: number | null,
     key_dim: number,
     value_dim: number,
@@ -832,7 +861,8 @@ function buildContextAnalysis(
             params_b,
             ctx,
             kv_cache_enabled,
-            kv_cache_quant,
+            kv_cache_quant_k,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,
@@ -883,7 +913,8 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const quantization = input.quantization ?? null;
     const context_size = input.context_size ?? null;
     const kv_cache_enabled = input.kv_cache_enabled ?? true;
-    const kv_cache_quant = input.kv_cache_quant ?? 'q8';
+    const kv_cache_quant = input.kv_cache_quant ?? 'q8_0';
+    const kv_cache_quant_v = input.kv_cache_quant_v ?? kv_cache_quant;
     const os = input.os ?? null;
     const vram_gb = input.vram_gb ?? null;
     const layers = input.layers ?? null;
@@ -954,6 +985,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             MIN_CONTEXT_SIZE,
             kv_cache_enabled,
             kv_cache_quant,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,
@@ -970,6 +1002,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             contextList,
             kv_cache_enabled,
             kv_cache_quant,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,

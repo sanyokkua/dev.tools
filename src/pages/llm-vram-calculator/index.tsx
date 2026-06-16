@@ -38,7 +38,7 @@ function buildCalculatorInput(form: VramFormState): CalculatorInput {
         kv_cache_enabled: form.kv_cache_enabled,
         kv_cache_quant: kvCacheValues.includes(form.kv_cache_quant)
             ? (form.kv_cache_quant as KVCacheQuant)
-            : KVCacheQuant.Q8,
+            : KVCacheQuant.Q8_0,
         os: osValues.includes(form.os) ? (form.os as OperatingSystem) : null,
         vram_gb: parseOptionalFloat(form.vram_gb),
         layers: parseOptionalInt(form.layers),
