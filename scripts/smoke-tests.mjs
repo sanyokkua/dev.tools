@@ -202,6 +202,31 @@ await runSmoke('markdown', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__markdown__after.png` });
 });
 
+// ── 6b. Markdown Tools — Mermaid diagram renders ─────────────────────────────
+await runSmoke('markdown-mermaid', async (page) => {
+    await page.goto(BASE + '/markdown-tools', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+
+    const mermaidSrc = '```mermaid\ngraph TD\nA[Start] --> B[End]\n```';
+    await page.locator('.markdown-tools__pane.editorpane .monaco-editor .view-lines').click();
+    // clear editor first
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type(mermaidSrc);
+
+    // Wait for mermaid SVG to appear in preview
+    await page.waitForSelector('.markdown-tools__preview .mermaid-block svg', { timeout: 10000 });
+
+    await page.screenshot({ path: `${OUT}/smoke__markdown_mermaid.png` });
+
+    // Edge case: typing an invalid mermaid block shows error state
+    await page.locator('.markdown-tools__pane.editorpane .monaco-editor .view-lines').click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.type('```mermaid\nnot valid !!!\n```');
+
+    await page.waitForSelector('.markdown-tools__preview .mermaid-block--error', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__markdown_mermaid_error.png` });
+});
+
 // ── 7. Prompts Collection — AutoTextarea auto-grow ───────────────────────────
 await runSmoke('prompts-autogrow', async (page) => {
     await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });

@@ -14,6 +14,7 @@ import {
     setEditorContent,
 } from '@/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/elements/editor/types';
+import MermaidBlock from '@/elements/mermaid/MermaidBlock';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
 import MarkdownToolbar from '../../components/elements/editor/MarkdownToolbar';
 
@@ -21,7 +22,7 @@ import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
 import { mapBoolean } from '@/common/formatting-tools';
 import 'katex/dist/katex.min.css';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import { useReactToPrint } from 'react-to-print';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -30,6 +31,20 @@ import remarkMath from 'remark-math';
 import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 
 const markdownExtension = '.md';
+
+const markdownComponents: Components = {
+    code({ className, children, ...rest }) {
+        const lang = /language-(\w+)/.exec(className ?? '')?.[1];
+        if (lang === 'mermaid') {
+            return <MermaidBlock src={String(children).trim()} />;
+        }
+        return (
+            <code className={className} {...rest}>
+                {children}
+            </code>
+        );
+    },
+};
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
@@ -204,6 +219,7 @@ const IndexPage: React.FC = () => {
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm, remarkMath]}
                                     rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                                    components={markdownComponents}
                                 >
                                     {currentFileInfo.content}
                                 </ReactMarkdown>

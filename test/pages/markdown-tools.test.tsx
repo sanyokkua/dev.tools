@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
 import { FileOpenProvider } from '../../src/components/contexts/FileOpenContext';
 import { FileSaveDialogProvider } from '../../src/components/contexts/FileSaveDialogContext';
 import { PageProvider } from '../../src/components/contexts/PageContext';
@@ -33,9 +34,20 @@ jest.mock('../../src/components/elements/editor/CodeEditor', () => {
     };
 });
 
+// Track the latest `components` prop passed to ReactMarkdown
+let capturedComponents: Record<string, unknown> | undefined;
+
 jest.mock('react-markdown', () => ({
     __esModule: true,
-    default: ({ children }: { children: string }) => <div data-testid="react-markdown">{children}</div>,
+    default: ({ children, components }: { children: string; components?: Record<string, unknown> }) => {
+        capturedComponents = components;
+        return <div data-testid="react-markdown">{children}</div>;
+    },
+}));
+
+jest.mock('../../src/components/elements/mermaid/MermaidBlock', () => ({
+    __esModule: true,
+    default: ({ src }: { src: string }) => <div data-testid="mermaid-block" data-src={src} />,
 }));
 
 jest.mock('react-to-print', () => ({ useReactToPrint: () => jest.fn() }));
@@ -64,6 +76,7 @@ describe('Markdown Tools page', () => {
     beforeEach(() => {
         mockEditorInstances.length = 0;
         mockLatestOnChange = undefined;
+        capturedComponents = undefined;
     });
 
     it('renders the Monaco editor mock', () => {
@@ -273,5 +286,36 @@ describe('Markdown Tools page', () => {
         fireEvent.click(previewSwitch); // show
 
         expect(screen.getByTestId('react-markdown')).toHaveTextContent('# Preview Test');
+    });
+
+    it('passes a components prop to ReactMarkdown', () => {
+        renderPage();
+        expect(capturedComponents).toBeDefined();
+        expect(typeof capturedComponents?.code).toBe('function');
+    });
+
+    it('code override returns MermaidBlock for mermaid language', () => {
+        renderPage();
+        const CodeOverride = capturedComponents?.code as React.FC<{ className?: string; children?: string }>;
+        expect(CodeOverride).toBeDefined();
+        const { container } = render(<CodeOverride className="language-mermaid">{'graph TD\\nA-->B'}</CodeOverride>);
+        expect(container.querySelector('[data-testid="mermaid-block"]')).toBeInTheDocument();
+        expect(container.querySelector('[data-src]')?.getAttribute('data-src')).toBe('graph TD\\nA-->B');
+    });
+
+    it('code override falls through to <code> for non-mermaid language', () => {
+        renderPage();
+        const CodeOverride = capturedComponents?.code as React.FC<{ className?: string; children?: string }>;
+        const { container } = render(<CodeOverride className="language-js">const x = 1;</CodeOverride>);
+        expect(container.querySelector('code.language-js')).toBeInTheDocument();
+        expect(container.querySelector('[data-testid="mermaid-block"]')).toBeNull();
+    });
+
+    it('code override falls through to <code> for inline code (no className)', () => {
+        renderPage();
+        const CodeOverride = capturedComponents?.code as React.FC<{ className?: string; children?: string }>;
+        const { container } = render(<CodeOverride>inline</CodeOverride>);
+        expect(container.querySelector('code')).toBeInTheDocument();
+        expect(container.querySelector('[data-testid="mermaid-block"]')).toBeNull();
     });
 });

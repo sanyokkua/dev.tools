@@ -21,6 +21,7 @@ import '@/styles/layout.scss';
 import '@/styles/linux-setup.scss';
 import '@/styles/mac-os-setup.scss';
 import '@/styles/markdown-tools.scss';
+import '@/styles/mermaid-block.scss';
 import '@/styles/modal.scss';
 import '@/styles/primitives.scss';
 import '@/styles/prompts-collection.scss';
