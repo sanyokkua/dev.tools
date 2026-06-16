@@ -27,6 +27,7 @@ import '@/styles/prompts-collection.scss';
 import '@/styles/segmented-control.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
+import '@/styles/split-preview-editor.scss';
 import '@/styles/surfaces.scss';
 import '@/styles/switch.scss';
 import '@/styles/table.scss';
