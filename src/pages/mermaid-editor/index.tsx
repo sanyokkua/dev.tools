@@ -106,8 +106,7 @@ const IndexPage: React.FC = () => {
     const handleExportPng = useCallback(async () => {
         try {
             const svgString = await renderMermaid('mermaid-editor-png-export', content);
-            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-            const svgUrl = URL.createObjectURL(svgBlob);
+            const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
             await new Promise<void>((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
@@ -121,7 +120,6 @@ const IndexPage: React.FC = () => {
                     }
                     ctx.drawImage(img, 0, 0);
                     canvas.toBlob((pngBlob) => {
-                        URL.revokeObjectURL(svgUrl);
                         if (!pngBlob) {
                             reject(new Error('toBlob returned null'));
                             return;
@@ -136,7 +134,6 @@ const IndexPage: React.FC = () => {
                     }, 'image/png');
                 };
                 img.onerror = () => {
-                    URL.revokeObjectURL(svgUrl);
                     reject(new Error('SVG image load failed'));
                 };
                 img.src = svgUrl;
