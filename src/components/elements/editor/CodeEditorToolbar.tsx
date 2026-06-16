@@ -26,6 +26,8 @@ export type CodeEditorToolbarProps = {
     onCopyClick: () => void;
     onPasteClick: () => void;
     onClearClick: () => void;
+    onFormatClick: () => void;
+    isFormattable: boolean;
     currentLanguageId: string;
     mappedLanguages: EditorLanguage[];
     onLanguageSelected: (languageId: string) => void;
@@ -43,6 +45,8 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
         onCopyClick,
         onPasteClick,
         onClearClick,
+        onFormatClick,
+        isFormattable,
         currentLanguageId,
         mappedLanguages,
         onLanguageSelected,
@@ -87,6 +91,14 @@ const CodeEditorToolbar: React.FC<CodeEditorToolbarProps> = (props) => {
                 </button>
                 <button type="button" className="button-base button-ghost button-small" onClick={onClearClick}>
                     Clear
+                </button>
+                <button
+                    type="button"
+                    className="button-base button-ghost button-small"
+                    onClick={onFormatClick}
+                    disabled={!isFormattable}
+                >
+                    Format
                 </button>
             </div>
 

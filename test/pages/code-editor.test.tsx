@@ -15,6 +15,11 @@ jest.mock('../../src/components/elements/editor/CodeEditor', () => ({
     ),
 }));
 
+jest.mock('@/common/format-code', () => ({
+    formatCode: jest.fn().mockResolvedValue('formatted'),
+    isFormattable: jest.requireActual('@/common/format-code').isFormattable,
+}));
+
 function renderPage(): ReturnType<typeof render> {
     return render(
         <ToasterProvider>
@@ -111,6 +116,26 @@ describe('Code Editor page', () => {
         expect(screen.getByText('LF')).toBeInTheDocument();
         expect(screen.getByText(/Spaces: 2/)).toBeInTheDocument();
     });
+
+    it('renders Format button (enabled for default TypeScript language)', () => {
+        renderPage();
+        const btn = screen.getByRole('button', { name: 'Format' });
+        expect(btn).toBeInTheDocument();
+        expect(btn).not.toBeDisabled();
+    });
+
+    it('Format button becomes disabled after switching to Go (non-formattable)', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+        expect(screen.getByRole('button', { name: 'Format' })).toBeDisabled();
+    });
+
+    it('Format button is enabled after switching to JSON (formattable)', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+        fireEvent.click(screen.getByRole('button', { name: 'JSON' }));
+        expect(screen.getByRole('button', { name: 'Format' })).not.toBeDisabled();
+    });
 });
 
 const RUST_LANG = { id: 'rust', extensions: ['.rs'], aliases: ['Rust'], mimetypes: ['text/rust'] };
@@ -124,6 +149,8 @@ function renderToolbar(onLanguageSelected: (id: string) => void) {
             onCopyClick={noop}
             onPasteClick={noop}
             onClearClick={noop}
+            onFormatClick={noop}
+            isFormattable={true}
             currentLanguageId="typescript"
             mappedLanguages={[RUST_LANG]}
             onLanguageSelected={onLanguageSelected}
@@ -150,5 +177,62 @@ describe('CodeEditorToolbar — handleSelectChange', () => {
         const select = screen.getByRole('combobox', { name: 'More languages' });
         fireEvent.change(select, { target: { value: '' } });
         expect(onLanguageSelected).not.toHaveBeenCalled();
+    });
+});
+
+describe('CodeEditorToolbar — Format button', () => {
+    it('renders Format button as enabled when isFormattable=true', () => {
+        renderToolbar(jest.fn());
+        const btn = screen.getByRole('button', { name: 'Format' });
+        expect(btn).toBeInTheDocument();
+        expect(btn).not.toBeDisabled();
+    });
+
+    it('renders Format button as disabled when isFormattable=false', () => {
+        render(
+            <CodeEditorToolbar
+                onFileNewClick={noop}
+                onFileOpenClick={noop}
+                onFileSaveClick={noop}
+                onCopyClick={noop}
+                onPasteClick={noop}
+                onClearClick={noop}
+                onFormatClick={noop}
+                isFormattable={false}
+                currentLanguageId="go"
+                mappedLanguages={[]}
+                onLanguageSelected={noop}
+                wordWrap={false}
+                onWordWrapToggle={noop}
+                minimap={false}
+                onMinimapToggle={noop}
+            />,
+        );
+        expect(screen.getByRole('button', { name: 'Format' })).toBeDisabled();
+    });
+
+    it('calls onFormatClick when Format button is clicked', () => {
+        const onFormatClick = jest.fn();
+        render(
+            <CodeEditorToolbar
+                onFileNewClick={noop}
+                onFileOpenClick={noop}
+                onFileSaveClick={noop}
+                onCopyClick={noop}
+                onPasteClick={noop}
+                onClearClick={noop}
+                onFormatClick={onFormatClick}
+                isFormattable={true}
+                currentLanguageId="typescript"
+                mappedLanguages={[]}
+                onLanguageSelected={noop}
+                wordWrap={false}
+                onWordWrapToggle={noop}
+                minimap={false}
+                onMinimapToggle={noop}
+            />,
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Format' }));
+        expect(onFormatClick).toHaveBeenCalledTimes(1);
     });
 });

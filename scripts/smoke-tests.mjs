@@ -349,6 +349,32 @@ await runSmoke('converting-md-table', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__converting_md_table__invalid.png` });
 });
 
+// ── 10. Code Editor — Format button ───────────────────────────────────────────
+await runSmoke('code-editor-format', async (page) => {
+    await page.goto(BASE + '/code-editor', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__code_editor_format__before.png` });
+
+    // Happy path: Format is enabled for TypeScript (default language)
+    const formatBtn = page.getByRole('button', { name: 'Format' });
+    await formatBtn.waitFor({ state: 'visible' });
+    const isEnabled = await formatBtn.isEnabled();
+    if (!isEnabled) throw new Error('Format button should be enabled for TypeScript');
+
+    // Edge case: switch to Go (non-formattable), Format must be disabled
+    await page.getByRole('button', { name: 'Go' }).click();
+    await page.waitForTimeout(200);
+    const isDisabledAfterGo = await formatBtn.isDisabled();
+    if (!isDisabledAfterGo) throw new Error('Format button should be disabled for Go');
+
+    // Switch back to TypeScript, click Format
+    await page.getByRole('button', { name: 'TS' }).click();
+    await page.waitForTimeout(200);
+    await formatBtn.click();
+    await page.waitForTimeout(800);
+
+    await page.screenshot({ path: `${OUT}/smoke__code_editor_format__after.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -358,4 +384,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 10 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 11 interaction flows passed. Screenshots in ' + OUT);

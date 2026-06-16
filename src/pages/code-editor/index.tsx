@@ -1,5 +1,6 @@
 import { DEFAULT_EXTENSION } from '@/common/constants';
 import { createDefaultFile } from '@/common/file-utils';
+import { formatCode, isFormattable } from '@/common/format-code';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
@@ -232,6 +233,19 @@ const IndexPage = (): React.JSX.Element => {
         setEditorState((prevState) => ({ ...prevState, fileSize: 0 }));
     }, []);
 
+    const handleFormat: () => void = useCallback(() => {
+        const src = getEditorContent(editorRef);
+        formatCode(editorState.editorLanguageId, src)
+            .then((formatted) => {
+                setEditorContent(editorRef, formatted);
+                showToast({ message: 'Code formatted', type: ToastType.SUCCESS });
+            })
+            .catch((err: unknown) => {
+                console.error(err);
+                showToast({ message: 'Format failed', type: ToastType.ERROR });
+            });
+    }, [editorState.editorLanguageId, showToast]);
+
     const onEditorContentChanged = useCallback((): void => {
         setEditorState((prevState) => {
             const content = getEditorContent(editorRef);
@@ -258,6 +272,8 @@ const IndexPage = (): React.JSX.Element => {
                     onCopyClick={handleCopy}
                     onPasteClick={handlePaste}
                     onClearClick={handleClear}
+                    onFormatClick={handleFormat}
+                    isFormattable={isFormattable(editorState.editorLanguageId)}
                     currentLanguageId={editorState.editorLanguageId}
                     mappedLanguages={editorState.editorPropsMappedLanguages}
                     onLanguageSelected={handleLanguageSelected}
