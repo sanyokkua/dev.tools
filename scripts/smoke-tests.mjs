@@ -471,6 +471,60 @@ await runSmoke('mermaid-editor', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__mermaid_editor__error.png` });
 });
 
+// ── N. Diff Tool ──────────────────────────────────────────────────────────────
+await runSmoke('diff-happy-path', async (page) => {
+    await page.goto(BASE + '/diff', { waitUntil: 'networkidle' });
+    // Wait for Monaco DiffEditor (renders two .monaco-editor elements inside .monaco-diff-editor)
+    await page.waitForSelector('.monaco-diff-editor .monaco-editor', { timeout: 10000 });
+    await page.screenshot({ path: `${OUT}/smoke__diff__loaded.png` });
+
+    // Type in the left (original) pane — Monaco view-lines, first pane
+    const leftPane = page.locator('.original-in-monaco-diff-editor .monaco-editor .view-lines');
+    await leftPane.click();
+    await page.keyboard.type('{"b":2,"a":1}');
+    await page.screenshot({ path: `${OUT}/smoke__diff__left_typed.png` });
+
+    // Type in the right (modified) pane
+    const rightPane = page.locator('.modified-in-monaco-diff-editor .monaco-editor .view-lines');
+    await rightPane.click();
+    await page.keyboard.type('{"b":2,"a":1,"c":3}');
+    await page.screenshot({ path: `${OUT}/smoke__diff__right_typed.png` });
+
+    // Switch to JSON type and wait for debounce normalization (300 ms + buffer)
+    await page.locator('[role="group"][aria-label="Diff type"] button', { hasText: 'JSON' }).click();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/smoke__diff__json_normalized.png` });
+
+    // Swap button must exist and be clickable
+    await page.locator('button', { hasText: /⇄ swap/i }).click();
+    await page.screenshot({ path: `${OUT}/smoke__diff__swapped.png` });
+
+    // Ignore whitespace switch must exist and be togglable
+    const sw = page.locator('[role="switch"]');
+    await sw.click();
+    const checked = await sw.getAttribute('aria-checked');
+    if (checked !== 'true') throw new Error('Ignore-whitespace switch did not toggle to true');
+    await page.screenshot({ path: `${OUT}/smoke__diff__ignore_ws.png` });
+});
+
+await runSmoke('diff-edge-invalid-json', async (page) => {
+    await page.goto(BASE + '/diff', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-diff-editor .monaco-editor', { timeout: 10000 });
+
+    // Switch to JSON type first
+    await page.locator('[role="group"][aria-label="Diff type"] button', { hasText: 'JSON' }).click();
+
+    // Type invalid JSON in the left pane — editor must remain visible with content intact
+    const leftPane = page.locator('.original-in-monaco-diff-editor .monaco-editor .view-lines');
+    await leftPane.click();
+    await page.keyboard.type('{invalid json}');
+    await page.waitForTimeout(600);
+
+    // Page must not crash; editor is still present
+    await page.waitForSelector('.monaco-diff-editor', { timeout: 3000 });
+    await page.screenshot({ path: `${OUT}/smoke__diff__invalid_json_edge.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -480,4 +534,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 15 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 17 interaction flows passed. Screenshots in ' + OUT);

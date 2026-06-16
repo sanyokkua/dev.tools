@@ -23,6 +23,7 @@ const ROUTES = [
     '/llm-vram-calculator',
     '/prompts-collection',
     '/mermaid-editor',
+    '/diff',
 ];
 
 // Routes that must have a Monaco editor with height > 200px
@@ -35,6 +36,7 @@ const MONACO_ROUTES = new Set([
     '/code-editor',
     '/markdown-tools',
     '/mermaid-editor',
+    '/diff',
 ]);
 
 const WIDTHS = [375, 768, 1280];
