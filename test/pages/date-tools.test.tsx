@@ -2,7 +2,13 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import DateToolsPage from '../../src/pages/date-tools/index';
 
 jest.mock('../../src/components/contexts/PageContext', () => ({
-    usePage: () => ({ setPageTitle: jest.fn(), helpVisible: false, setHelpVisible: jest.fn() }),
+    usePage: () => ({
+        setPageTitle: jest.fn(),
+        helpVisible: false,
+        setHelpVisible: jest.fn(),
+        hasToolAbout: false,
+        setHasToolAbout: jest.fn(),
+    }),
 }));
 jest.mock('../../src/components/contexts/ToasterContext', () => ({ useToast: () => ({ showToast: jest.fn() }) }));
 

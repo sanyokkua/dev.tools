@@ -23,7 +23,13 @@ jest.mock('next/link', () => {
     };
 });
 jest.mock('../../../src/components/contexts/PageContext', () => ({
-    usePage: () => ({ pageTitle: 'Test', helpVisible: false, setHelpVisible: jest.fn() }),
+    usePage: () => ({
+        pageTitle: 'Test',
+        helpVisible: false,
+        setHelpVisible: jest.fn(),
+        hasToolAbout: false,
+        setHasToolAbout: jest.fn(),
+    }),
 }));
 jest.mock('../../../src/components/contexts/ThemeContext', () => ({
     useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),

@@ -5,6 +5,7 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useStat
  * Provides context for page-level components, including title management
  * @param pageTitle - The current title of the page
  * @param helpVisible - Whether the tool-about panel is currently open
+ * @param hasToolAbout - Whether the current page has a ToolAbout panel mounted
  * @returns An object containing methods to manipulate the page's state
  */
 interface PageContextType {
@@ -12,6 +13,8 @@ interface PageContextType {
     setPageTitle: Dispatch<SetStateAction<string>>;
     helpVisible: boolean;
     setHelpVisible: Dispatch<SetStateAction<boolean>>;
+    hasToolAbout: boolean;
+    setHasToolAbout: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -37,9 +40,12 @@ export const usePage = (): PageContextType => {
 export const PageProvider = ({ children }: { children: ReactNode }): React.ReactElement => {
     const [pageTitle, setPageTitle] = useState<string>('');
     const [helpVisible, setHelpVisible] = useState<boolean>(false);
+    const [hasToolAbout, setHasToolAbout] = useState<boolean>(false);
 
     return (
-        <PageContext.Provider value={{ pageTitle, setPageTitle, helpVisible, setHelpVisible }}>
+        <PageContext.Provider
+            value={{ pageTitle, setPageTitle, helpVisible, setHelpVisible, hasToolAbout, setHasToolAbout }}
+        >
             {children}
         </PageContext.Provider>
     );
