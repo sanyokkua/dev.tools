@@ -26,6 +26,7 @@ const ROUTES = [
     '/diff',
     '/html-editor',
     '/jwt',
+    '/cron',
 ];
 
 // Routes that must have a Monaco editor with height > 200px

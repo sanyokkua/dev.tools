@@ -598,6 +598,46 @@ await runSmoke('jwt-verify-invalid', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__jwt__verify_invalid.png` });
 });
 
+// ── Cron ──────────────────────────────────────────────────────────────────────
+await runSmoke('cron-describe', async (page) => {
+    await page.goto(BASE + '/cron', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__cron__before.png` });
+
+    await page.locator('[data-testid="cron-input"]').fill('0 9 * * 1-5');
+    await page.waitForSelector('[data-testid="cron-description"]', { timeout: 3000 });
+
+    const desc = await page.locator('[data-testid="cron-description"]').innerText();
+    if (!desc.trim()) throw new Error('cron-description is empty');
+    if (!/\d/.test(desc)) throw new Error(`Description does not contain a time: "${desc}"`);
+
+    await page.screenshot({ path: `${OUT}/smoke__cron__described.png` });
+});
+
+await runSmoke('cron-next-runs', async (page) => {
+    await page.goto(BASE + '/cron', { waitUntil: 'networkidle' });
+
+    await page.locator('[data-testid="cron-input"]').fill('0 9 * * 1-5');
+    await page.waitForSelector('[data-testid="cron-next-runs"]', { timeout: 3000 });
+
+    const items = page.locator('[data-testid="cron-run-item"]');
+    const countBefore = await items.count();
+    if (countBefore !== 5) throw new Error(`Expected 5 run items, got ${countBefore}`);
+
+    // Switch count to 10 via SegmentedControl and verify list grows
+    await page.locator('[aria-label="Run count"] button', { hasText: '10' }).click();
+    await page.waitForTimeout(300);
+    const countAfter = await items.count();
+    if (countAfter !== 10) throw new Error(`Expected 10 run items after switching count to 10, got ${countAfter}`);
+
+    // Switch timezone and verify runs are still shown (confirms state update works)
+    await page.locator('.cron-runs-toolbar select').selectOption('America/New_York');
+    await page.waitForTimeout(300);
+    const countFinal = await items.count();
+    if (countFinal !== 10) throw new Error(`Expected 10 run items after timezone change, got ${countFinal}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__cron__next_runs.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -607,4 +647,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 20 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 22 interaction flows passed. Screenshots in ' + OUT);

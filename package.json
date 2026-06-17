@@ -48,6 +48,8 @@
         "browser-fs-access": "^0.38.0",
         "copy-to-clipboard": "^3.3.3",
         "coreutilsts": "^2.0.1",
+        "cron-parser": "^5.5.0",
+        "cronstrue": "^3.14.0",
         "highlight.js": "^11.11.1",
         "js-md5": "^0.8.3",
         "jsonpath-plus": "^10.3.0",
