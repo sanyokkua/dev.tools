@@ -3,7 +3,6 @@ import React, { ReactNode, useEffect, useRef } from 'react';
 
 interface ToolAboutProps {
     routeKey: string;
-    title?: string;
     children: ReactNode;
 }
 
