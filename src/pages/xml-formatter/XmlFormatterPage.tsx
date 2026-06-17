@@ -228,15 +228,8 @@ const XmlFormatterPage: React.FC = () => {
                     className="card pad"
                     style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
                 >
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: 'var(--s2)',
-                        }}
-                    >
-                        <span style={{ fontWeight: 600, fontSize: '13px' }}>Mode</span>
+                    <div className="json-formatter-field">
+                        <label style={{ fontWeight: 600, fontSize: '13px' }}>Mode</label>
                         <SegmentedControl
                             options={MODE_OPTIONS}
                             value={mode}
