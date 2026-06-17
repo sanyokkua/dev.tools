@@ -53,16 +53,15 @@ export const PAYLOAD_TYPE_LABELS: Record<QrPayloadType, string> = {
     geo: 'Location (geo)',
 };
 
-// WiFi special chars that must be escaped: \ ; , " :
+// WiFi special chars that must be escaped: \ ; , "
 function escapeWifi(s: string): string {
     return s.replace(/[\\;,"]/g, (c) => `\\${c}`);
 }
 
 export function buildWifiPayload(f: WifiFields): string {
-    const enc = f.encryption === 'nopass' ? 'nopass' : f.encryption;
     const hidden = f.hidden ? 'H:true;' : '';
     const pass = f.encryption === 'nopass' ? '' : `P:${escapeWifi(f.password)};`;
-    return `WIFI:T:${enc};S:${escapeWifi(f.ssid)};${pass}${hidden};`;
+    return `WIFI:T:${f.encryption};S:${escapeWifi(f.ssid)};${pass}${hidden};`;
 }
 
 export function buildVCardPayload(f: VCardFields): string {
