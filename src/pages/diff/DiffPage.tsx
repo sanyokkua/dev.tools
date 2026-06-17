@@ -29,6 +29,17 @@ const DiffPage: React.FC = () => {
     const showToastRef = useRef(showToast);
     const monaco = useMonaco();
 
+    // Cleanup: reset editor model before unmount to avoid "TextModel got disposed" race
+    useEffect(() => {
+        return () => {
+            try {
+                diffEditorRef.current?.setModel(null);
+            } catch {
+                // ignore — editor may already be gone
+            }
+        };
+    }, []);
+
     useEffect(() => {
         showToastRef.current = showToast;
     });
