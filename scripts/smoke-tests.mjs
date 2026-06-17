@@ -686,7 +686,8 @@ await runSmoke('string-utils', async (page) => {
 
     // Result editor must contain lowercased text
     const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
-    const normalizedText = resultText?.replace(/ /g, ' ') ?? '';
+    // Monaco renders spaces as U+00A0 (NBSP) in .view-lines DOM text — normalize before comparison
+    const normalizedText = resultText?.replace(/\u00A0/g, ' ') ?? '';
     if (!normalizedText.includes('hello world')) {
         throw new Error(`Expected "hello world" in result, got: ${resultText?.slice(0, 100)}`);
     }
