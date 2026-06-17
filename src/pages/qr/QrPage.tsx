@@ -139,13 +139,15 @@ const QrPage: React.FC = () => {
             <div className="qr-main">
                 {/* Left column: form */}
                 <div>
-                    <div className="qr-section-label">Payload Type</div>
-                    <div data-testid="qr-type-select">
-                        <Select
-                            items={TYPE_ITEMS}
-                            selectedItem={payloadType}
-                            onSelect={(item) => setPayloadType(item.itemId as QrPayloadType)}
-                        />
+                    <div className="qr-field">
+                        <label className="qr-section-label">Payload Type</label>
+                        <div data-testid="qr-type-select">
+                            <Select
+                                items={TYPE_ITEMS}
+                                selectedItem={payloadType}
+                                onSelect={(item) => setPayloadType(item.itemId as QrPayloadType)}
+                            />
+                        </div>
                     </div>
 
                     {/* Form fields per type */}
