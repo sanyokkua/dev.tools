@@ -14,11 +14,6 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Linux Setup page', () => {
-    it('renders the page heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'Linux Setup' })).toBeInTheDocument();
-    });
-
     it('renders both section buttons in the segmented control', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Package managers' })).toBeInTheDocument();

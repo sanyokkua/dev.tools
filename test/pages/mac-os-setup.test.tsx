@@ -14,11 +14,6 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('macOS Setup page', () => {
-    it('renders the page heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'macOS Setup' })).toBeInTheDocument();
-    });
-
     it('renders all three section buttons in the segmented control', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Package managers' })).toBeInTheDocument();

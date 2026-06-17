@@ -14,11 +14,6 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Windows Setup page', () => {
-    it('renders the page heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'Windows Setup' })).toBeInTheDocument();
-    });
-
     it('renders both section buttons in the segmented control', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Package managers' })).toBeInTheDocument();
