@@ -99,3 +99,9 @@ Some sidebar items are disabled (converting-tools, date-tools, windows-cheat-she
 - Config in `jest.config.ts` (jsdom environment)
 - Pattern: `**/test/**/*.test.ts(x)`
 - Setup file: `test/setup.ts`
+
+## Verification Rule
+
+Verification scope is the whole branch, not just my diff. If a test, lint, or responsive check fails anywhere in the branch, it is in scope and must be fixed. "Pre-existing" or "not introduced by this change" is not a valid reason to skip a failure — it's a reason to fix it now or log it as an explicit tracked task. Never report a known failure as acceptable.
+
+Acceptance includes: npm run verify:ui exits clean with zero overflow/console failures across all routes at 375/768/1280. A nonzero count fails the task regardless of whether this task introduced it.
