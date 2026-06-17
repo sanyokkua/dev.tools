@@ -20,9 +20,9 @@ function renderPage() {
 }
 
 describe('Cron page', () => {
-    it('renders ToolAbout', () => {
+    it('renders ToolAbout (hidden by default)', () => {
         renderPage();
-        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
     it('renders the page title heading "Cron Editor"', () => {

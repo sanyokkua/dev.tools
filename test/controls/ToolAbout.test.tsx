@@ -1,15 +1,36 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
-import { PageProvider } from '../../src/components/contexts/PageContext';
+import { act, render, screen } from '@testing-library/react';
+import React, { useEffect } from 'react';
+import { PageProvider, usePage } from '../../src/components/contexts/PageContext';
 import ToolAbout from '../../src/components/controls/ToolAbout';
 
-function renderToolAbout(routeKey: string, title: string, content: string) {
+function renderToolAbout(routeKey: string, content: string) {
     return render(
         <PageProvider>
-            <ToolAbout routeKey={routeKey} title={title}>
-                {content}
-            </ToolAbout>
+            <ToolAbout routeKey={routeKey}>{content}</ToolAbout>
         </PageProvider>,
     );
+}
+
+/** Helper that renders ToolAbout and exposes setHelpVisible from PageContext */
+function renderWithContext(routeKey: string, content: string) {
+    let externalSetHelpVisible: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+
+    function ContextCapture() {
+        const { setHelpVisible } = usePage();
+        useEffect(() => {
+            externalSetHelpVisible = setHelpVisible;
+        }, [setHelpVisible]);
+        return null;
+    }
+
+    render(
+        <PageProvider>
+            <ContextCapture />
+            <ToolAbout routeKey={routeKey}>{content}</ToolAbout>
+        </PageProvider>,
+    );
+
+    return { setHelpVisible: (v: boolean) => externalSetHelpVisible(v) };
 }
 
 describe('ToolAbout', () => {
@@ -21,90 +42,91 @@ describe('ToolAbout', () => {
         localStorage.clear();
     });
 
-    it('is hidden by default (no saved state)', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'Tool description here.');
+    it('is hidden by default (no saved localStorage entry) — renders null', async () => {
+        renderToolAbout('test-tool', 'Tool description here.');
         await act(async () => {});
-        expect(screen.queryByText('Tool description here.')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
-    it('shows title in the header button', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'content');
-        await act(async () => {});
-        expect(screen.getByRole('button', { name: /test tool/i })).toBeInTheDocument();
-    });
-
-    it('clicking toggle shows the content when closed', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'Tool description here.');
-        await act(async () => {});
-
-        const btn = screen.getByRole('button');
-        fireEvent.click(btn);
-
-        expect(screen.getByText('Tool description here.')).toBeInTheDocument();
-    });
-
-    it('clicking toggle twice hides content again', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'Tool description here.');
-        await act(async () => {});
-
-        const btn = screen.getByRole('button');
-        fireEvent.click(btn); // open
-        fireEvent.click(btn); // close
-
-        expect(screen.queryByText('Tool description here.')).not.toBeInTheDocument();
-    });
-
-    it('persists open state to localStorage after toggle', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'content');
-        await act(async () => {});
-
-        fireEvent.click(screen.getByRole('button')); // open
-
-        expect(localStorage.getItem('toolAbout:test-tool')).toBe('true');
-    });
-
-    it('persists closed state to localStorage after re-closing', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'content');
-        await act(async () => {});
-
-        const btn = screen.getByRole('button');
-        fireEvent.click(btn); // open
-        fireEvent.click(btn); // close
-
-        expect(localStorage.getItem('toolAbout:test-tool')).toBe('false');
-    });
-
-    it('respects saved closed state from localStorage on mount', async () => {
-        localStorage.setItem('toolAbout:saved-tool', 'false');
-
-        renderToolAbout('saved-tool', 'Saved Tool', 'Hidden content.');
-        await act(async () => {});
-
-        expect(screen.queryByText('Hidden content.')).not.toBeInTheDocument();
-    });
-
-    it('respects saved open state from localStorage on mount', async () => {
+    it('is visible when localStorage has "true" for the routeKey', async () => {
         localStorage.setItem('toolAbout:saved-tool', 'true');
-
-        renderToolAbout('saved-tool', 'Saved Tool', 'Visible content.');
+        renderToolAbout('saved-tool', 'Visible content.');
         await act(async () => {});
-
+        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
         expect(screen.getByText('Visible content.')).toBeInTheDocument();
     });
 
-    it('button has correct aria-expanded when closed (default)', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'content');
+    it('is hidden when localStorage has "false" for the routeKey', async () => {
+        localStorage.setItem('toolAbout:saved-tool', 'false');
+        renderToolAbout('saved-tool', 'Hidden content.');
         await act(async () => {});
-
-        expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
-    it('button has correct aria-expanded when open', async () => {
-        renderToolAbout('test-tool', 'Test Tool', 'content');
+    it('persists helpVisible=true to localStorage when changed via context', async () => {
+        const { setHelpVisible } = renderWithContext('persist-tool', 'content');
         await act(async () => {});
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+            setHelpVisible(true);
+        });
 
-        expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+        expect(localStorage.getItem('toolAbout:persist-tool')).toBe('true');
+    });
+
+    it('persists helpVisible=false to localStorage when changed via context', async () => {
+        localStorage.setItem('toolAbout:persist-tool', 'true');
+        const { setHelpVisible } = renderWithContext('persist-tool', 'content');
+        await act(async () => {});
+
+        // First set to true (read from localStorage), then close
+        await act(async () => {
+            setHelpVisible(false);
+        });
+
+        expect(localStorage.getItem('toolAbout:persist-tool')).toBe('false');
+    });
+
+    it('re-reads localStorage when routeKey changes', async () => {
+        localStorage.setItem('toolAbout:route-a', 'false');
+        localStorage.setItem('toolAbout:route-b', 'true');
+
+        const { rerender } = render(
+            <PageProvider>
+                <ToolAbout routeKey="route-a">Route A content</ToolAbout>
+            </PageProvider>,
+        );
+        await act(async () => {});
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
+
+        rerender(
+            <PageProvider>
+                <ToolAbout routeKey="route-b">Route B content</ToolAbout>
+            </PageProvider>,
+        );
+        await act(async () => {});
+        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
+        expect(screen.getByText('Route B content')).toBeInTheDocument();
+    });
+
+    it('registers itself with PageContext (setHasToolAbout called on mount)', async () => {
+        let capturedHasToolAbout = false;
+
+        function Inspector() {
+            const { hasToolAbout } = usePage();
+            useEffect(() => {
+                capturedHasToolAbout = hasToolAbout;
+            }, [hasToolAbout]);
+            return null;
+        }
+
+        render(
+            <PageProvider>
+                <Inspector />
+                <ToolAbout routeKey="register-tool">content</ToolAbout>
+            </PageProvider>,
+        );
+        await act(async () => {});
+        expect(capturedHasToolAbout).toBe(true);
     });
 });

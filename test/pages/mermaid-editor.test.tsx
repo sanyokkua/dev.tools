@@ -80,9 +80,9 @@ describe('Mermaid Editor page', () => {
         expect(screen.getByRole('heading', { name: 'Mermaid Editor' })).toBeInTheDocument();
     });
 
-    it('renders ToolAbout with route key "mermaid-editor"', () => {
+    it('renders ToolAbout with route key "mermaid-editor" (hidden by default)', () => {
         renderPage();
-        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
     it('renders all editor toolbar buttons', () => {

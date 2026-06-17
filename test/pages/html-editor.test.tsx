@@ -67,9 +67,9 @@ describe('HTML Editor page', () => {
         expect(screen.getByRole('heading', { name: 'HTML Editor' })).toBeInTheDocument();
     });
 
-    it('renders ToolAbout', () => {
+    it('renders ToolAbout (hidden by default)', () => {
         renderPage();
-        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
     it('renders all editor toolbar buttons', () => {

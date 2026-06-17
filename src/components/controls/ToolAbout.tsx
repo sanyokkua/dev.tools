@@ -3,11 +3,11 @@ import React, { ReactNode, useEffect, useRef } from 'react';
 
 interface ToolAboutProps {
     routeKey: string;
-    title: string;
+    title?: string;
     children: ReactNode;
 }
 
-const ToolAbout: React.FC<ToolAboutProps> = ({ routeKey, title, children }) => {
+const ToolAbout: React.FC<ToolAboutProps> = ({ routeKey, children }) => {
     const { helpVisible, setHelpVisible, setHasToolAbout } = usePage();
     const didMount = useRef(false);
 
@@ -42,28 +42,11 @@ const ToolAbout: React.FC<ToolAboutProps> = ({ routeKey, title, children }) => {
         }
     }, [helpVisible, routeKey]);
 
-    const toggle = (): void => {
-        setHelpVisible(!helpVisible);
-    };
+    if (!helpVisible) return null;
 
     return (
-        <div className={`tool-about${helpVisible ? ' tool-about--open' : ''}`} data-testid="tool-about">
-            <button
-                className="tool-about__header"
-                onClick={toggle}
-                aria-expanded={helpVisible}
-                aria-controls={`tool-about-body-${routeKey}`}
-            >
-                <span className="tool-about__arrow" aria-hidden="true">
-                    {helpVisible ? '▾' : '▸'}
-                </span>
-                <span className="tool-about__title">{title}</span>
-            </button>
-            {helpVisible && (
-                <div className="tool-about__body" id={`tool-about-body-${routeKey}`}>
-                    {children}
-                </div>
-            )}
+        <div className="tool-about" data-testid="tool-about">
+            <div className="tool-about__body">{children}</div>
         </div>
     );
 };

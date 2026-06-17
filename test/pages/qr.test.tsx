@@ -31,9 +31,9 @@ function renderPage() {
 }
 
 describe('QR page', () => {
-    it('renders ToolAbout', () => {
+    it('renders ToolAbout (hidden by default)', () => {
         renderPage();
-        expect(screen.getByTestId('tool-about')).toBeInTheDocument();
+        expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
     it('renders heading "QR Generator"', () => {
