@@ -50,7 +50,7 @@ const OUT = '.tmp/verify-screens';
 mkdirSync(OUT, { recursive: true });
 
 const failures = [];
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: true });
 
 for (const theme of THEMES) {
     for (const width of WIDTHS) {

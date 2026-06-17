@@ -6,7 +6,7 @@ const OUT = '.tmp/verify-screens';
 mkdirSync(OUT, { recursive: true });
 
 const failures = [];
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: true });
 
 async function runSmoke(name, fn) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
