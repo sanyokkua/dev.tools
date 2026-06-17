@@ -19,6 +19,7 @@ import '@/styles/hashing-tools.scss';
 import '@/styles/html-editor.scss';
 import '@/styles/input.scss';
 import '@/styles/installer.scss';
+import '@/styles/jwt.scss';
 import '@/styles/layout.scss';
 import '@/styles/linux-setup.scss';
 import '@/styles/mac-os-setup.scss';

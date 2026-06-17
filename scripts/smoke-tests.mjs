@@ -552,6 +552,52 @@ await runSmoke('html-editor', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__html_editor__scripts_on.png` });
 });
 
+// ── JWT ───────────────────────────────────────────────────────────────────────
+await runSmoke('jwt-decode', async (page) => {
+    await page.goto(BASE + '/jwt', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__jwt__before.png` });
+
+    const textarea = page.locator('[data-testid="jwt-input"]');
+    await textarea.fill(
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
+            '.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ' +
+            '.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+    );
+    await page.waitForTimeout(300);
+
+    const headerOut = await page.locator('[data-testid="jwt-header-output"]').innerText();
+    if (!headerOut.includes('HS256')) throw new Error('Header missing alg:HS256');
+
+    await page.waitForFunction(() => document.body.innerText.includes('John Doe'), { timeout: 3000 });
+
+    await page.screenshot({ path: `${OUT}/smoke__jwt__decoded.png` });
+});
+
+await runSmoke('jwt-verify-invalid', async (page) => {
+    await page.goto(BASE + '/jwt', { waitUntil: 'networkidle' });
+
+    await page.locator('[role="group"][aria-label="JWT mode"] button', { hasText: 'Verify' }).click();
+
+    await page
+        .locator('[data-testid="jwt-input"]')
+        .fill(
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
+                '.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ' +
+                '.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+        );
+
+    await page.locator('input[placeholder="HMAC secret"]').fill('wrongsecret');
+
+    // Click the action Verify button (not the mode tab — use last() since mode tab comes first)
+    await page.locator('button', { hasText: 'Verify' }).last().click();
+
+    await page.waitForSelector('[data-testid="jwt-verify-result"]', { timeout: 5000 });
+    const resultText = await page.locator('[data-testid="jwt-verify-result"]').innerText();
+    if (!resultText.includes('invalid')) throw new Error(`Expected invalid, got: ${resultText}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__jwt__verify_invalid.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -561,4 +607,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 18 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 20 interaction flows passed. Screenshots in ' + OUT);

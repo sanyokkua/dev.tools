@@ -25,6 +25,7 @@ const ROUTES = [
     '/mermaid-editor',
     '/diff',
     '/html-editor',
+    '/jwt',
 ];
 
 // Routes that must have a Monaco editor with height > 200px
