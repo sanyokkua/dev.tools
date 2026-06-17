@@ -21,6 +21,7 @@ export async function parseMermaid(src: string): Promise<void> {
 export async function renderMermaid(id: string, src: string): Promise<string> {
     const { default: mermaid } = await import('mermaid');
     mermaid.initialize({ startOnLoad: false, theme: getTheme() });
+    await mermaid.parse(src);
     const { svg } = await mermaid.render(id, src);
     return svg;
 }
