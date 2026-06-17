@@ -109,7 +109,6 @@ const IndexPage: React.FC = (): React.JSX.Element => {
             <div className="terminal-utils">
                 <div>
                     <h1>Terminal Utilities</h1>
-                    <p>Join multiple commands or lines into a single command using a chosen separator.</p>
                 </div>
 
                 <div className="terminal-utils__toolbar">

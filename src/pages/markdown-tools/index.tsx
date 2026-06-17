@@ -175,7 +175,6 @@ const IndexPage: React.FC = () => {
             <div className="markdown-tools">
                 <div className="markdown-tools__header">
                     <h1>Markdown Tools</h1>
-                    <p>Write, live-preview and print/export Markdown. Editor and preview can each be toggled.</p>
                 </div>
                 <MarkdownToolbar
                     onFileNewClick={handleNewFile}

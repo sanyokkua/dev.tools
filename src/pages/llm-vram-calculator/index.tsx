@@ -100,7 +100,6 @@ const LlmVramCalculatorPage: FC = () => {
             </ToolAbout>
             <div className="vram-page-header">
                 <h1>LLM VRAM Calculator</h1>
-                <p>Estimate GPU / unified memory for GGUF-quantized models, with full architecture and MoE controls.</p>
             </div>
             <div className="vram-page-layout">
                 <div>

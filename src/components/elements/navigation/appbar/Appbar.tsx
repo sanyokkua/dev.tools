@@ -10,6 +10,8 @@ export type AppBarProps = {
     onMenuOpen?: () => void;
     onLogoClick?: () => void;
     sidebarCollapsed?: boolean;
+    helpVisible?: boolean;
+    onToggleHelp?: () => void;
 };
 
 const Appbar: React.FC<AppBarProps> = ({
@@ -20,6 +22,8 @@ const Appbar: React.FC<AppBarProps> = ({
     onMenuOpen,
     onLogoClick,
     sidebarCollapsed,
+    helpVisible,
+    onToggleHelp,
 }) => {
     return (
         <header className="topbar">
@@ -43,6 +47,16 @@ const Appbar: React.FC<AppBarProps> = ({
                 </div>
             )}
             <div className="topbar-actions">
+                {onToggleHelp && (
+                    <button
+                        className={`icon-btn${helpVisible ? ' icon-btn--active' : ''}`}
+                        onClick={onToggleHelp}
+                        aria-label="Toggle tool info"
+                        aria-pressed={helpVisible}
+                    >
+                        ℹ
+                    </button>
+                )}
                 <button className="icon-btn" onClick={onThemeToggle} aria-label="Toggle theme">
                     {theme === 'dark' ? '☀' : '🌙'}
                 </button>

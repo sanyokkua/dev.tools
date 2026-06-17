@@ -31,10 +31,6 @@ const IndexPage = (): React.JSX.Element => {
             </ToolAbout>
             <section>
                 <h1>macOS Setup</h1>
-                <p>
-                    Install package managers, configure environment variables, and run platform-specific scripts. App
-                    installation lives in <Link href="/software-installer">Software Installer</Link>.
-                </p>
 
                 <SegmentedControl
                     options={TABS}

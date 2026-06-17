@@ -4,11 +4,14 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useStat
 /**
  * Provides context for page-level components, including title management
  * @param pageTitle - The current title of the page
- * @returns An object containing methods to manipulate the page's title state
+ * @param helpVisible - Whether the tool-about panel is currently open
+ * @returns An object containing methods to manipulate the page's state
  */
 interface PageContextType {
     pageTitle: string;
     setPageTitle: Dispatch<SetStateAction<string>>;
+    helpVisible: boolean;
+    setHelpVisible: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -29,10 +32,15 @@ export const usePage = (): PageContextType => {
 };
 
 /**
- * Provider component for managing page title context across the application.
+ * Provider component for managing page title and help-panel context across the application.
  */
 export const PageProvider = ({ children }: { children: ReactNode }): React.ReactElement => {
     const [pageTitle, setPageTitle] = useState<string>('');
+    const [helpVisible, setHelpVisible] = useState<boolean>(false);
 
-    return <PageContext.Provider value={{ pageTitle, setPageTitle }}>{children}</PageContext.Provider>;
+    return (
+        <PageContext.Provider value={{ pageTitle, setPageTitle, helpVisible, setHelpVisible }}>
+            {children}
+        </PageContext.Provider>
+    );
 };

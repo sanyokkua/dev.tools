@@ -195,7 +195,6 @@ const IndexPage: React.FC = () => {
             <div className="mermaid-editor">
                 <div className="mermaid-editor__header">
                     <h1>Mermaid Editor</h1>
-                    <p>Write diagram code on the left; the rendered diagram updates automatically on the right.</p>
                 </div>
                 <SplitPreviewEditor
                     language="plaintext"

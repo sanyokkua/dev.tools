@@ -4,7 +4,6 @@ import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import ToolAbout from '@/controls/ToolAbout';
 import EnvironmentVariablesSection from '@/page-specific/linux-setup/EnvironmentVariablesSection';
 import PackageManagersSection from '@/page-specific/linux-setup/PackageManagersSection';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import PageShell from '../../components/layouts/PageShell';
 
@@ -38,10 +37,6 @@ const IndexPage = (): React.JSX.Element => {
             </ToolAbout>
             <section>
                 <h1>Linux Setup</h1>
-                <p>
-                    Install package managers and configure environment variables. App installation lives in{' '}
-                    <Link href="/software-installer">Software Installer</Link>.
-                </p>
 
                 <SegmentedControl
                     options={DISTROS}

@@ -75,10 +75,9 @@ describe('Mermaid Editor page', () => {
         jest.clearAllMocks();
     });
 
-    it('renders the page h1 and description', () => {
+    it('renders the page h1', () => {
         renderPage();
         expect(screen.getByRole('heading', { name: 'Mermaid Editor' })).toBeInTheDocument();
-        expect(screen.getByText(/Write diagram code on the left/)).toBeInTheDocument();
     });
 
     it('renders ToolAbout with route key "mermaid-editor"', () => {

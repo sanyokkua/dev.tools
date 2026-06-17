@@ -22,7 +22,9 @@ jest.mock('next/link', () => {
         );
     };
 });
-jest.mock('../../../src/components/contexts/PageContext', () => ({ usePage: () => ({ pageTitle: 'Test' }) }));
+jest.mock('../../../src/components/contexts/PageContext', () => ({
+    usePage: () => ({ pageTitle: 'Test', helpVisible: false, setHelpVisible: jest.fn() }),
+}));
 jest.mock('../../../src/components/contexts/ThemeContext', () => ({
     useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),
 }));

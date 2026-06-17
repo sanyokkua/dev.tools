@@ -88,6 +88,11 @@
     outline-offset: 2px;
 }
 
+.icon-btn--active {
+    color: var(--primary);
+    background: var(--card-2);
+}
+
 /* Mobile nav trigger — hidden on desktop, visible ≤920px */
 .menu-btn {
     display: none;

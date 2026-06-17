@@ -1,4 +1,5 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import { usePage } from '@/contexts/PageContext';
+import React, { ReactNode, useEffect, useRef } from 'react';
 
 interface ToolAboutProps {
     routeKey: string;
@@ -7,45 +8,52 @@ interface ToolAboutProps {
 }
 
 const ToolAbout: React.FC<ToolAboutProps> = ({ routeKey, title, children }) => {
-    const [open, setOpen] = useState(true);
-    const [mounted, setMounted] = useState(false);
+    const { helpVisible, setHelpVisible } = usePage();
+    const didMount = useRef(false);
 
+    // On mount (or routeKey change): read persisted state; default to false (hidden).
     useEffect(() => {
+        didMount.current = false;
         try {
             const saved = localStorage.getItem(`toolAbout:${routeKey}`);
-            if (saved === 'false') {
-                setOpen(false);
-            }
+            setHelpVisible(saved === 'true');
         } catch {
             // localStorage unavailable (SSR or private mode)
+            setHelpVisible(false);
         }
-        setMounted(true);
-    }, [routeKey]);
+    }, [routeKey, setHelpVisible]);
 
-    const toggle = (): void => {
-        const next = !open;
-        setOpen(next);
+    // Persist state to localStorage whenever it changes, but skip the initial mount.
+    useEffect(() => {
+        if (!didMount.current) {
+            didMount.current = true;
+            return;
+        }
         try {
-            localStorage.setItem(`toolAbout:${routeKey}`, String(next));
+            localStorage.setItem(`toolAbout:${routeKey}`, String(helpVisible));
         } catch {
             // localStorage unavailable
         }
+    }, [helpVisible, routeKey]);
+
+    const toggle = (): void => {
+        setHelpVisible(!helpVisible);
     };
 
     return (
-        <div className={`tool-about${open ? ' tool-about--open' : ''}`} data-testid="tool-about">
+        <div className={`tool-about${helpVisible ? ' tool-about--open' : ''}`} data-testid="tool-about">
             <button
                 className="tool-about__header"
                 onClick={toggle}
-                aria-expanded={open}
+                aria-expanded={helpVisible}
                 aria-controls={`tool-about-body-${routeKey}`}
             >
                 <span className="tool-about__arrow" aria-hidden="true">
-                    {open ? '▾' : '▸'}
+                    {helpVisible ? '▾' : '▸'}
                 </span>
                 <span className="tool-about__title">{title}</span>
             </button>
-            {(open || !mounted) && (
+            {helpVisible && (
                 <div className="tool-about__body" id={`tool-about-body-${routeKey}`}>
                     {children}
                 </div>

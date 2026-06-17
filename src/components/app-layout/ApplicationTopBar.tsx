@@ -11,7 +11,7 @@ interface TopBarProps {
 }
 
 const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, onLogoClick, sidebarCollapsed }) => {
-    const { pageTitle } = usePage();
+    const { pageTitle, helpVisible, setHelpVisible } = usePage();
     const { theme, toggleTheme } = useTheme();
 
     return (
@@ -23,6 +23,8 @@ const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, onLogoClick, sid
             onMenuOpen={onMenuOpen}
             onLogoClick={onLogoClick}
             sidebarCollapsed={sidebarCollapsed}
+            helpVisible={helpVisible}
+            onToggleHelp={pageTitle ? () => setHelpVisible(!helpVisible) : undefined}
         />
     );
 };
