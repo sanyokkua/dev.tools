@@ -61,7 +61,7 @@ const Appbar: React.FC<AppBarProps> = ({
                     {theme === 'dark' ? '☀' : '🌙'}
                 </button>
                 <a
-                    className="icon-btn"
+                    className="icon-btn topbar-gh-link"
                     href="https://github.com/sanyokkua/dev.tools"
                     target="_blank"
                     rel="noopener noreferrer"

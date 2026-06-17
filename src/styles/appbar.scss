@@ -112,3 +112,13 @@
         flex-shrink: 0;
     }
 }
+
+/* Hide breadcrumb and GitHub link on narrow mobile — app bar is too tight to fit them at 375px */
+@media (max-width: 480px) {
+    .topbar-crumb {
+        display: none;
+    }
+    .topbar-gh-link {
+        display: none;
+    }
+}

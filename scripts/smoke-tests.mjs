@@ -426,7 +426,7 @@ await runSmoke('vram-calculator', async (page) => {
     }
 
     // Open Advanced options and set VRAM to 8 GB
-    await page.locator('details.detailsbox summary').click();
+    await page.locator('details.detailsbox').filter({ hasText: 'Advanced options' }).locator('summary').click();
     await page.waitForTimeout(200);
     const chip8 = page.locator('.chip').filter({ hasText: /^8$/ });
     if ((await chip8.count()) > 0) {
