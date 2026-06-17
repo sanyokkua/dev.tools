@@ -30,6 +30,7 @@ import '@/styles/mermaid-editor.scss';
 import '@/styles/modal.scss';
 import '@/styles/primitives.scss';
 import '@/styles/prompts-collection.scss';
+import '@/styles/qr.scss';
 import '@/styles/segmented-control.scss';
 import '@/styles/select.scss';
 import '@/styles/sidebar.scss';
