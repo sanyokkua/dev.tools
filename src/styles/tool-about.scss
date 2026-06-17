@@ -1,45 +1,8 @@
 .tool-about {
     border: 1px solid var(--outline-soft);
     border-radius: var(--r-md);
-    overflow: hidden;
     margin-bottom: var(--s4);
-}
-
-.tool-about__header {
-    display: flex;
-    align-items: center;
-    gap: var(--s2);
-    width: 100%;
-    padding: 10px var(--s4);
-    font: inherit;
-    font-size: 13px;
-    font-weight: 650;
-    color: var(--on-surface-variant);
     background: var(--card-2);
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    transition: background 0.12s;
-}
-
-.tool-about__header:hover {
-    background: var(--hover-overlay);
-    color: var(--on-surface);
-}
-
-.tool-about__header:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: -2px;
-}
-
-.tool-about__arrow {
-    color: var(--muted);
-    font-size: 12px;
-    flex-shrink: 0;
-}
-
-.tool-about__title {
-    flex: 1;
 }
 
 .tool-about__body {
@@ -47,6 +10,4 @@
     font-size: 13px;
     color: var(--on-surface-variant);
     line-height: 1.6;
-    background: var(--surface);
-    border-top: 1px solid var(--outline-soft);
 }
