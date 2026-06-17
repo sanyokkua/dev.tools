@@ -22,6 +22,7 @@ const navGroups: NavGroup[] = [
             { itemName: 'HTML Editor', itemLink: '/html-editor', icon: '</>', badge: 'NEW' },
             { itemName: 'JWT', itemLink: '/jwt', icon: '⊛', badge: 'NEW' },
             { itemName: 'Cron', itemLink: '/cron', icon: '⏱', badge: 'NEW' },
+            { itemName: 'QR', itemLink: '/qr', icon: '⬛', badge: 'NEW' },
             { itemName: 'Converting Tools', itemLink: '/converting-tools', icon: '⇆' },
             { itemName: 'Date Tools', itemLink: '/date-tools', icon: '◷' },
         ],

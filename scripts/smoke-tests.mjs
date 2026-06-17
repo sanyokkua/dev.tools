@@ -638,6 +638,34 @@ await runSmoke('cron-next-runs', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__cron__next_runs.png` });
 });
 
+// ── QR ────────────────────────────────────────────────────────────────────────
+await runSmoke('qr-url', async (page) => {
+    await page.goto(BASE + '/qr', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__qr__before.png` });
+
+    await page.locator('[data-testid="qr-url-input"]').fill('https://example.com');
+    await page.waitForSelector('[data-testid="qr-canvas"]', { timeout: 5000 });
+
+    const width = await page.evaluate(() => {
+        const canvas = document.querySelector('[data-testid="qr-canvas"]');
+        return canvas ? canvas.getAttribute('width') : null;
+    });
+    if (!width || Number(width) <= 0) throw new Error(`Canvas width is invalid: ${width}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__qr__url.png` });
+});
+
+await runSmoke('qr-wifi', async (page) => {
+    await page.goto(BASE + '/qr', { waitUntil: 'networkidle' });
+
+    await page.locator('[data-testid="qr-type-select"] select').selectOption('wifi');
+    await page.locator('[data-testid="qr-wifi-ssid"]').fill('MyNetwork');
+    await page.locator('[data-testid="qr-wifi-password"]').fill('secret123');
+    await page.waitForSelector('[data-testid="qr-canvas"]', { timeout: 5000 });
+
+    await page.screenshot({ path: `${OUT}/smoke__qr__wifi.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -647,4 +675,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 22 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 24 interaction flows passed. Screenshots in ' + OUT);
