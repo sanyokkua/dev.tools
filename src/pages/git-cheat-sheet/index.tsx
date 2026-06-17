@@ -292,7 +292,6 @@ const GitCheatSheetPage: FC = () => {
             </ToolAbout>
             <div className="git-cheat-sheet">
                 <div className="git-cheat-sheet__header">
-                    <h1>Git Cheat Sheet</h1>
                     <p>Configure Git, SSH and GPG. Official docs:</p>
                     <ul>
                         <li>

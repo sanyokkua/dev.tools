@@ -14,11 +14,6 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Git Cheat Sheet page', () => {
-    it('renders the page heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: /git cheat sheet/i })).toBeInTheDocument();
-    });
-
     it('renders Interactive and Manual mode buttons', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Interactive (automatic)' })).toBeInTheDocument();
