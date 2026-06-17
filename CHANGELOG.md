@@ -1,5 +1,44 @@
 # Changelog
 
+## [3.0.0] — 2026-06-17
+
+### New tools
+
+- **XML Formatter** (`/xml-formatter`) — DOMParser/XMLSerializer pretty-print with XPath 1.0 query mode
+- **Diff** (`/diff`) — Monaco DiffEditor with text, JSON, and XML semantic comparison modes
+- **HTML Editor** (`/html-editor`) — Monaco editor with sandboxed iframe live preview, script execution toggle, and dark-mode injection
+- **JWT** (`/jwt`) — Web Crypto decode/verify/sign (HS256/384/512), structured claims display with expiry indicators
+- **Cron** (`/cron`) — cronstrue + cron-parser: human-readable descriptions, next-N scheduled runs, timezone selector, Quartz and AWS EventBridge dialect support
+- **QR** (`/qr`) — qrcode canvas/SVG generation with EC level selector and payload builders for URL, Wi-Fi, vCard, email, SMS, geo, and more
+- **Mermaid Editor** (`/mermaid-editor`) — Monaco editor with live debounced SVG render, error overlay, and SVG/PNG export
+
+### Updated tools
+
+- **JSON Formatter**: JSONPath 1.0 query mode powered by jsonpath-plus, with path extraction and result display
+- **Markdown Tools**: embedded Mermaid code-fence rendering via dynamic mermaid import
+- **Code Editor**: language-aware Format button with lazy-loaded Prettier (JS/TS/CSS/HTML/JSON/YAML/Markdown) and sql-formatter
+- **Converting Tools**: bidirectional CSV ⇄ Markdown table conversion added to the format roster
+- **LLM VRAM Calculator**: effective-bpw quant catalog, GPU-type selector (consumer/datacenter/apple-silicon), custom VRAM manager with GB input, KV cache type selector (fp16/fp8/int8/int4), and refined engine-overhead model
+- **Software Installer**: Install / Update / Upgrade / Remove action tabs; Individual mode emits bare package-manager commands; Linux universal installer merges flatpak/snap/AppImage entries across all distros
+- **Prompts Collection**: ToolAbout collapsible panel added; prompt template parameters persist to localStorage
+
+### UX / shell
+
+- **ToolAbout panels**: collapsible info section on every tool page, persisted open/closed per route in localStorage (expanded on first visit)
+- **Theme persistence**: selected theme and sidebar-collapsed state written to localStorage; pre-hydration inline script applies the theme before first paint (no flash)
+- **Navigation**: app name in the top bar navigates to the Dashboard; GitHub icon labelled "GitHub ↗"
+- **Setup & Installer pages**: consistent code-block spacing and step-label alignment
+
+### Infrastructure
+
+- PWA precache `maximumFileSizeToCacheInBytes` raised to 8 MB to accommodate Monaco worker chunks
+- `npm run validate:sw` script added — verifies `public/sw.js` precache covers all 24 routes after each build
+- Jest `coverageThreshold` enforced at statement/line 80 %, branch 70 %, function 60 %
+- Component tests added: `ScriptOutput`, `AppBasket`, `VramResultsDisplay`
+- `smoke-tests.mjs` extended to 28 interaction flows (String Utils, Encoding Tools, LLM VRAM, Diff, HTML Editor, JWT, Cron, QR added)
+
+---
+
 ## [2.0.0] — 2026-06-15
 
 ### Design system
