@@ -686,7 +686,8 @@ await runSmoke('string-utils', async (page) => {
 
     // Result editor must contain lowercased text
     const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
-    if (!resultText?.includes('hello world')) {
+    const normalizedText = resultText?.replace(/ /g, ' ') ?? '';
+    if (!normalizedText.includes('hello world')) {
         throw new Error(`Expected "hello world" in result, got: ${resultText?.slice(0, 100)}`);
     }
 
@@ -727,7 +728,10 @@ await runSmoke('encoding-tools', async (page) => {
 
     // Encoding Utils group is the default (first group) — Encode Base64 should be visible
     await page.waitForSelector('.func-btn', { timeout: 3000 });
-    await page.locator('.func-btn', { hasText: 'Encode Base64' }).click();
+    await page
+        .locator('.func-btn')
+        .filter({ hasText: /^Encode Base64$/ })
+        .click();
     await page.waitForTimeout(500);
 
     // Result must contain Base64 of "Hello" = "SGVsbG8="
@@ -751,7 +755,10 @@ await runSmoke('encoding-tools-round-trip', async (page) => {
     // Switch to Decoding Utils and click Decode Base64
     await page.locator('.card.pad select.input').selectOption('decoding-utils');
     await page.waitForTimeout(200);
-    await page.locator('.func-btn', { hasText: 'Decode Base64' }).click();
+    await page
+        .locator('.func-btn')
+        .filter({ hasText: /^Decode Base64$/ })
+        .click();
     await page.waitForTimeout(500);
 
     // Result must contain the decoded value "Hello"
