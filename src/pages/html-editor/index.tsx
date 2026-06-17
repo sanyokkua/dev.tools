@@ -5,6 +5,7 @@ import { formatCode } from '@/common/format-code';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
 import Switch from '@/controls/Switch';
@@ -33,18 +34,26 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
+function buildSrcDoc(html: string, isDark: boolean): string {
+    if (!isDark || !html.trim()) return html;
+    const tag = '<style>:root{color-scheme:dark}</style>';
+    const headClose = html.indexOf('</head>');
+    return headClose !== -1 ? html.slice(0, headClose) + tag + html.slice(headClose) : tag + html;
+}
+
 interface HtmlPreviewProps {
     src: string;
     allowScripts: boolean;
+    isDark: boolean;
 }
 
-const HtmlPreview: React.FC<HtmlPreviewProps> = ({ src, allowScripts }) => {
+const HtmlPreview: React.FC<HtmlPreviewProps> = ({ src, allowScripts, isDark }) => {
     if (!src.trim()) {
         return <p className="html-editor__empty-hint">Start typing HTML…</p>;
     }
     return (
         <iframe
-            srcDoc={src}
+            srcDoc={buildSrcDoc(src, isDark)}
             sandbox={allowScripts ? 'allow-scripts' : 'allow-same-origin'}
             title="HTML Preview"
             className="html-editor__preview-frame"
@@ -59,6 +68,8 @@ const IndexPage: React.FC = () => {
     const { showFileOpenDialog } = useFileOpen();
     const { save, saveAs } = useFileSaveDialog();
     const { showToast } = useToast();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     useEffect(() => {
         setPageTitle('HTML Editor');
@@ -129,8 +140,8 @@ const IndexPage: React.FC = () => {
     );
 
     const renderPreview = useCallback(
-        (v: string) => <HtmlPreview src={v} allowScripts={allowScripts} />,
-        [allowScripts],
+        (v: string) => <HtmlPreview src={v} allowScripts={allowScripts} isDark={isDark} />,
+        [allowScripts, isDark],
     );
 
     const editorToolbar = (

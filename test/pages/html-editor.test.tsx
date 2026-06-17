@@ -3,6 +3,7 @@ import React from 'react';
 import { FileOpenProvider } from '../../src/components/contexts/FileOpenContext';
 import { FileSaveDialogProvider } from '../../src/components/contexts/FileSaveDialogContext';
 import { PageProvider } from '../../src/components/contexts/PageContext';
+import { ThemeProvider } from '../../src/components/contexts/ThemeContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/html-editor/index';
 
@@ -43,15 +44,17 @@ jest.mock('../../src/common/format-code', () => ({
 
 function renderPage() {
     return render(
-        <ToasterProvider>
-            <PageProvider>
-                <FileOpenProvider>
-                    <FileSaveDialogProvider>
-                        <IndexPage />
-                    </FileSaveDialogProvider>
-                </FileOpenProvider>
-            </PageProvider>
-        </ToasterProvider>,
+        <ThemeProvider>
+            <ToasterProvider>
+                <PageProvider>
+                    <FileOpenProvider>
+                        <FileSaveDialogProvider>
+                            <IndexPage />
+                        </FileSaveDialogProvider>
+                    </FileOpenProvider>
+                </PageProvider>
+            </ToasterProvider>
+        </ThemeProvider>,
     );
 }
 
