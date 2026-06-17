@@ -61,8 +61,6 @@ const CronPage: React.FC = () => {
 
     return (
         <div className="cron-layout">
-            <h1 className="cron-page-title">Cron Editor</h1>
-
             <div className="cron-toolbar">
                 <SegmentedControl
                     options={DIALECT_OPTIONS}

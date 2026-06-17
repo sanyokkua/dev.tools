@@ -36,11 +36,6 @@ describe('QR page', () => {
         expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
-    it('renders heading "QR Generator"', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'QR Generator' })).toBeInTheDocument();
-    });
-
     it('renders type selector', () => {
         renderPage();
         expect(screen.getByTestId('qr-type-select')).toBeInTheDocument();

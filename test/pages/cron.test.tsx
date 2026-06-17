@@ -25,11 +25,6 @@ describe('Cron page', () => {
         expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
-    it('renders the page title heading "Cron Editor"', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'Cron Editor' })).toBeInTheDocument();
-    });
-
     it('renders dialect selector with Linux, Quartz, AWS buttons', () => {
         renderPage();
         const group = screen.getByRole('group', { name: 'Cron dialect' });

@@ -30,11 +30,6 @@ describe('JWT page', () => {
         expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
     });
 
-    it('renders the page title heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'JWT' })).toBeInTheDocument();
-    });
-
     it('renders the privacy badge text', () => {
         renderPage();
         expect(screen.getByText('All operations run locally — secrets never leave your browser')).toBeInTheDocument();

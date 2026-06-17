@@ -136,8 +136,6 @@ const QrPage: React.FC = () => {
 
     return (
         <div className="qr-layout">
-            <h1 className="qr-page-title">QR Generator</h1>
-
             <div className="qr-main">
                 {/* Left column: form */}
                 <div>

@@ -173,8 +173,6 @@ const JwtPage: React.FC = () => {
 
     return (
         <div className="jwt-layout">
-            <h1 className="jwt-page-title">JWT</h1>
-
             <div className="jwt-toolbar">
                 <SegmentedControl
                     options={MODE_OPTIONS}
