@@ -7,7 +7,11 @@ const withPWA = withPWAInit({
     skipWaiting: true,
     cacheOnFrontEndNav: true,
     reloadOnOnline: true,
-    workboxOptions: { disableDevLogs: true },
+    workboxOptions: {
+        disableDevLogs: true,
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        exclude: [/dynamic-css-manifest\.json/],
+    },
 });
 
 const isGithubActions = process.env.GITHUB_ACTIONS || false;

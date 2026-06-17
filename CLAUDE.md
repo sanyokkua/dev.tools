@@ -7,6 +7,7 @@ Browser-based developer utilities suite built with Next.js and React, deployed a
 ```bash
 npm run dev           # Dev server on port 3000
 npm run build         # Production build (static export)
+npm run validate:sw   # Validates that public/sw.js precache covers all routes; run after every build
 npm run lint          # Run ESLint
 npm run lint:fix      # Run ESLint with auto-fix
 npm run test          # Jest with coverage
