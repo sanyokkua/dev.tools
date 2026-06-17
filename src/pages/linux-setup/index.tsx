@@ -38,8 +38,6 @@ const IndexPage = (): React.JSX.Element => {
                 distro and copy the commands. App installation lives in the Software Installer.
             </ToolAbout>
             <section>
-                <h1>Linux Setup</h1>
-
                 <SegmentedControl
                     options={DISTROS}
                     value={selectedDistro}

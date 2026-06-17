@@ -29,8 +29,6 @@ const IndexPage = (): React.JSX.Element => {
                 manager you prefer. App installation lives in the Software Installer.
             </ToolAbout>
             <section>
-                <h1>Windows Setup</h1>
-
                 <SegmentedControl
                     options={TABS}
                     value={activeTab}

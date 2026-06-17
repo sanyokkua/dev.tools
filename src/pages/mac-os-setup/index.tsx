@@ -33,8 +33,6 @@ const IndexPage = (): React.JSX.Element => {
                 Installer. Each step is a copyable command.
             </ToolAbout>
             <section>
-                <h1>macOS Setup</h1>
-
                 <SegmentedControl
                     options={TABS}
                     value={activeTab}
