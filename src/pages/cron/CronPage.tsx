@@ -1,5 +1,12 @@
 'use client';
-import { describeCron, getDialectHints, getNextRuns, TIMEZONES, type CronDialect } from '@/common/cron-utils';
+import {
+    describeCron,
+    getDialectHints,
+    getFieldDefs,
+    getNextRuns,
+    TIMEZONES,
+    type CronDialect,
+} from '@/common/cron-utils';
 import { useToast } from '@/contexts/ToasterContext';
 import Button from '@/controls/Button';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
@@ -37,6 +44,7 @@ const CronPage: React.FC = () => {
         [expression, dialect, timezone, count],
     );
     const hints = useMemo(() => getDialectHints(dialect), [dialect]);
+    const fieldDefs = useMemo(() => getFieldDefs(dialect), [dialect]);
 
     const handlePaste = useCallback(async (): Promise<void> => {
         try {
@@ -85,6 +93,14 @@ const CronPage: React.FC = () => {
                     }
                     spellCheck={false}
                 />
+                <div className="cron-fields" aria-label="Field reference">
+                    {fieldDefs.map((f) => (
+                        <div key={f.name} className="cron-field-item">
+                            <span className="cron-field-name">{f.name}</span>
+                            <span className="cron-field-allowed">{f.allowed}</span>
+                        </div>
+                    ))}
+                </div>
                 {dialect === 'aws' && (
                     <small className="cron-format-hint">
                         Format: min hr dom mon dow year — e.g. 15 10 ? * MON-FRI 2024

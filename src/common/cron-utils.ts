@@ -6,6 +6,41 @@ export { TIMEZONES };
 
 export type CronDialect = 'linux' | 'quartz' | 'aws';
 
+export interface CronFieldDef {
+    name: string;
+    allowed: string;
+}
+
+export function getFieldDefs(dialect: CronDialect): CronFieldDef[] {
+    if (dialect === 'linux') {
+        return [
+            { name: 'minute', allowed: '0-59' },
+            { name: 'hour', allowed: '0-23' },
+            { name: 'day-of-month', allowed: '1-31' },
+            { name: 'month', allowed: '1-12' },
+            { name: 'day-of-week', allowed: '0-6, SUN-SAT' },
+        ];
+    }
+    if (dialect === 'quartz') {
+        return [
+            { name: 'second', allowed: '0-59' },
+            { name: 'minute', allowed: '0-59' },
+            { name: 'hour', allowed: '0-23' },
+            { name: 'day-of-month', allowed: '1-31, ?' },
+            { name: 'month', allowed: '1-12' },
+            { name: 'day-of-week', allowed: '1-7, SUN-SAT, ?' },
+        ];
+    }
+    return [
+        { name: 'minute', allowed: '0-59' },
+        { name: 'hour', allowed: '0-23' },
+        { name: 'day-of-month', allowed: '1-31, ?' },
+        { name: 'month', allowed: '1-12' },
+        { name: 'day-of-week', allowed: '1-7, SUN-SAT, ?' },
+        { name: 'year', allowed: '2024-2199, *' },
+    ];
+}
+
 function adaptAwsForDescription(expression: string): string {
     const fields = expression.trim().split(/\s+/);
     return fields.slice(0, 5).join(' ');
@@ -41,7 +76,7 @@ export function getNextRuns(
     try {
         const tz = timezone || 'UTC';
         const expr = dialect === 'aws' ? adaptAwsForParsing(expression) : expression;
-        const dates = CronExpressionParser.parse(expr, { tz }).take(count);
+        const dates = CronExpressionParser.parse(expr, { tz: 'UTC' }).take(count);
         return dates.map((cronDate) => formatInTimezone(cronDate.toDate(), tz));
     } catch {
         return null;

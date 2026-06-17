@@ -62,6 +62,40 @@
     display: block;
 }
 
+.cron-fields {
+    display: flex;
+    gap: var(--s1);
+    flex-wrap: wrap;
+    margin-top: var(--s2);
+}
+
+.cron-field-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface-variant);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    padding: var(--s1) var(--s2);
+    min-width: 64px;
+    flex: 1;
+}
+
+.cron-field-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--on-surface);
+    text-align: center;
+}
+
+.cron-field-allowed {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    font-family: var(--mono);
+}
+
 .cron-runs-toolbar {
     display: flex;
     align-items: center;

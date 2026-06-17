@@ -1,4 +1,4 @@
-import { describeCron, getDialectHints, getNextRuns, TIMEZONES } from '../../src/common/cron-utils';
+import { describeCron, getDialectHints, getFieldDefs, getNextRuns, TIMEZONES } from '../../src/common/cron-utils';
 
 describe('describeCron', () => {
     describe('linux dialect', () => {
@@ -76,6 +76,27 @@ describe('getNextRuns', () => {
             expect(result!.length).toBe(5);
         });
 
+        it('UTC and America/New_York produce different formatted times for the same expression', () => {
+            const utcRuns = getNextRuns('0 9 * * 1-5', 'linux', 'UTC', 1);
+            const nyRuns = getNextRuns('0 9 * * 1-5', 'linux', 'America/New_York', 1);
+            expect(utcRuns).not.toBeNull();
+            expect(nyRuns).not.toBeNull();
+            expect(utcRuns![0]).not.toEqual(nyRuns![0]);
+        });
+
+        it('UTC run shows 09:00:00 for "0 9 * * 1-5"', () => {
+            const result = getNextRuns('0 9 * * 1-5', 'linux', 'UTC', 1);
+            expect(result).not.toBeNull();
+            expect(result![0]).toContain('09:00:00');
+        });
+
+        it('America/New_York run shows offset time (not 09:00:00) for "0 9 * * 1-5"', () => {
+            const result = getNextRuns('0 9 * * 1-5', 'linux', 'America/New_York', 1);
+            expect(result).not.toBeNull();
+            // 9 AM UTC formatted in NY (EDT=UTC-4 or EST=UTC-5) is never 09:00:00
+            expect(result![0]).not.toContain('09:00:00');
+        });
+
         it('returns an array of 10 date strings when count is 10', () => {
             const result = getNextRuns('0 9 * * 1-5', 'linux', 'UTC', 10);
             expect(result).not.toBeNull();
@@ -134,6 +155,43 @@ describe('getDialectHints', () => {
     it('first aws hint contains "minutes"', () => {
         const hints = getDialectHints('aws');
         expect(hints[0].toLowerCase()).toContain('minutes');
+    });
+});
+
+describe('getFieldDefs', () => {
+    describe('linux dialect', () => {
+        it('returns an array of length 5', () => {
+            expect(getFieldDefs('linux')).toHaveLength(5);
+        });
+
+        it('first field has name "minute" and allowed containing "0-59"', () => {
+            const defs = getFieldDefs('linux');
+            expect(defs[0].name).toBe('minute');
+            expect(defs[0].allowed).toContain('0-59');
+        });
+    });
+
+    describe('quartz dialect', () => {
+        it('returns an array of length 6', () => {
+            expect(getFieldDefs('quartz')).toHaveLength(6);
+        });
+
+        it('first field has name "second"', () => {
+            expect(getFieldDefs('quartz')[0].name).toBe('second');
+        });
+    });
+
+    describe('aws dialect', () => {
+        it('returns an array of length 6', () => {
+            expect(getFieldDefs('aws')).toHaveLength(6);
+        });
+
+        it('last field has name "year" and allowed containing "2024"', () => {
+            const defs = getFieldDefs('aws');
+            const last = defs[defs.length - 1];
+            expect(last.name).toBe('year');
+            expect(last.allowed).toContain('2024');
+        });
     });
 });
 
