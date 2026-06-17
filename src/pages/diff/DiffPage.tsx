@@ -31,7 +31,7 @@ const DiffPage: React.FC = () => {
 
     // Cleanup: reset editor model before unmount to avoid "TextModel got disposed" race
     useEffect(() => {
-        return () => {
+        return (): void => {
             try {
                 diffEditorRef.current?.setModel(null);
             } catch {

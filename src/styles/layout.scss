@@ -40,9 +40,9 @@
 .content-container-grid {
     display: grid; /* Enables CSS Grid layout */
     /* Creates three columns:
-- Left: flexible (1fr) with minimum 0 width
-- Middle: fixed at 30% of available space (0.3fr)
-- Right: flexible (1fr) with minimum 0 width */
+- Left: flexible (0.97fr) with minimum 0 width
+- Middle: narrower (0.36fr) with minimum 0 width
+- Right: flexible (0.97fr) with minimum 0 width */
     grid-template-columns: minmax(0, 0.97fr) minmax(0, 0.36fr) minmax(0, 0.97fr);
     height: 100%; /* inherits from .app-main-content-container; removes 56px overflow */
     gap: var(--s3);
