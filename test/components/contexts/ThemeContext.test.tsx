@@ -13,6 +13,9 @@ describe('ThemeProvider', () => {
     beforeEach(() => {
         localStorage.clear();
         originalMatchMedia = window.matchMedia;
+        window.matchMedia = jest
+            .fn()
+            .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         document.documentElement.removeAttribute('data-theme');
     });
 

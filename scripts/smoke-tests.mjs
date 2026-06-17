@@ -677,7 +677,7 @@ await runSmoke('string-utils', async (page) => {
     await page.keyboard.type('Hello World');
 
     // Switch to Case Utils group
-    await page.locator('select.input').selectOption('case-utils');
+    await page.locator('.card.pad select.input').selectOption('case-utils');
     await page.waitForTimeout(200);
 
     // Click lower case
@@ -707,6 +707,7 @@ await runSmoke('string-utils-empty', async (page) => {
     // The page must not crash — no console errors, no exception
     // Output editor must be empty or blank
     const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    // Allow up to 2 chars: Monaco renders an invisible placeholder/cursor character on empty content
     if (resultText && resultText.trim().length > 2) {
         throw new Error(`Expected empty result for empty input, got: ${resultText.slice(0, 100)}`);
     }
@@ -748,7 +749,7 @@ await runSmoke('encoding-tools-round-trip', async (page) => {
     await page.keyboard.type('SGVsbG8=');
 
     // Switch to Decoding Utils and click Decode Base64
-    await page.locator('select.input').selectOption('decoding-utils');
+    await page.locator('.card.pad select.input').selectOption('decoding-utils');
     await page.waitForTimeout(200);
     await page.locator('.func-btn', { hasText: 'Decode Base64' }).click();
     await page.waitForTimeout(500);
