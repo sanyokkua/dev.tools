@@ -196,9 +196,6 @@ const IndexPage: React.FC = () => {
                 inline. Renders entirely in the browser.
             </ToolAbout>
             <div className="mermaid-editor">
-                <div className="mermaid-editor__header">
-                    <h1>Mermaid Editor</h1>
-                </div>
                 <SplitPreviewEditor
                     language="plaintext"
                     value={content}

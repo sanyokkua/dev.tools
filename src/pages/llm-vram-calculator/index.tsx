@@ -102,9 +102,6 @@ const LlmVramCalculatorPage: FC = () => {
                 inference engine. Covers effective-bpw quant sizing, KV-cache, engine overhead and partial offload.
                 Estimates only.
             </ToolAbout>
-            <div className="vram-page-header">
-                <h1>LLM VRAM Calculator</h1>
-            </div>
             <div className="vram-page-layout">
                 <div>
                     <VramCalculatorForm

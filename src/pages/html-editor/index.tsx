@@ -154,9 +154,6 @@ const IndexPage: React.FC = () => {
                 the browser.
             </ToolAbout>
             <div className="html-editor">
-                <div className="html-editor__header">
-                    <h1>HTML Editor</h1>
-                </div>
                 <SplitPreviewEditor
                     language="html"
                     value={content}

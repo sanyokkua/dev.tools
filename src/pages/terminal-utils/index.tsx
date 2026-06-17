@@ -117,10 +117,6 @@ const IndexPage: React.FC = (): React.JSX.Element => {
                 single command.
             </ToolAbout>
             <div className="terminal-utils">
-                <div>
-                    <h1>Terminal Utilities</h1>
-                </div>
-
                 <div className="terminal-utils__toolbar">
                     <span className="terminal-utils__syntax-label">Syntax:</span>
                     <SegmentedControl

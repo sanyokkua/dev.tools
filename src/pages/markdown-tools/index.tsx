@@ -176,9 +176,6 @@ const IndexPage: React.FC = () => {
                 <code>.md</code> files. Renders entirely in the browser.
             </ToolAbout>
             <div className="markdown-tools">
-                <div className="markdown-tools__header">
-                    <h1>Markdown Tools</h1>
-                </div>
                 <MarkdownToolbar
                     onFileNewClick={handleNewFile}
                     onFileOpenClick={handleOpenFileDialog}

@@ -1,19 +1,8 @@
 .html-editor {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 1fr;
     flex: 1;
     min-height: 0;
-
-    &__header {
-        padding: 16px 20px 4px;
-
-        h1 {
-            font-size: 20px;
-            font-weight: 650;
-            color: var(--on-surface);
-            margin: 0 0 4px;
-        }
-    }
 
     &__empty-hint {
         color: var(--muted);
@@ -35,12 +24,4 @@
     width: 100%;
     border: 0;
     display: block;
-}
-
-@media (max-width: 900px) {
-    .html-editor {
-        &__header {
-            padding: 12px 12px 4px;
-        }
-    }
 }
