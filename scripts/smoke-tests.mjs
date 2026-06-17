@@ -666,6 +666,102 @@ await runSmoke('qr-wifi', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__qr__wifi.png` });
 });
 
+// ── String Utils — lower case happy path ─────────────────────────────────────
+await runSmoke('string-utils', async (page) => {
+    await page.goto(BASE + '/string-utils', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__string_utils__before.png` });
+
+    // Type into the left (input) editor
+    await page.locator('.editorpane').first().locator('.monaco-editor .view-lines').click();
+    await page.keyboard.type('Hello World');
+
+    // Switch to Case Utils group
+    await page.locator('select.input').selectOption('case-utils');
+    await page.waitForTimeout(200);
+
+    // Click lower case
+    await page.locator('.func-btn', { hasText: 'lower case' }).click();
+    await page.waitForTimeout(500);
+
+    // Result editor must contain lowercased text
+    const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    if (!resultText?.includes('hello world')) {
+        throw new Error(`Expected "hello world" in result, got: ${resultText?.slice(0, 100)}`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__string_utils__after.png` });
+});
+
+// ── String Utils — empty input edge case ─────────────────────────────────────
+await runSmoke('string-utils-empty', async (page) => {
+    await page.goto(BASE + '/string-utils', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+
+    // Switch to Case Utils and click lower case without typing any input
+    await page.locator('select.input').selectOption('case-utils');
+    await page.waitForTimeout(200);
+    await page.locator('.func-btn', { hasText: 'lower case' }).click();
+    await page.waitForTimeout(500);
+
+    // The page must not crash — no console errors, no exception
+    // Output editor must be empty or blank
+    const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    if (resultText && resultText.trim().length > 2) {
+        throw new Error(`Expected empty result for empty input, got: ${resultText.slice(0, 100)}`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__string_utils_empty__after.png` });
+});
+
+// ── Encoding Tools — Base64 encode happy path ────────────────────────────────
+await runSmoke('encoding-tools', async (page) => {
+    await page.goto(BASE + '/encoding-tools', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+    await page.screenshot({ path: `${OUT}/smoke__encoding_tools__before.png` });
+
+    // Type into the left (input) editor
+    await page.locator('.editorpane').first().locator('.monaco-editor .view-lines').click();
+    await page.keyboard.type('Hello');
+
+    // Encoding Utils group is the default (first group) — Encode Base64 should be visible
+    await page.waitForSelector('.func-btn', { timeout: 3000 });
+    await page.locator('.func-btn', { hasText: 'Encode Base64' }).click();
+    await page.waitForTimeout(500);
+
+    // Result must contain Base64 of "Hello" = "SGVsbG8="
+    const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    if (!resultText?.includes('SGVsbG8=')) {
+        throw new Error(`Expected Base64 "SGVsbG8=" in result, got: ${resultText?.slice(0, 100)}`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__encoding_tools__after.png` });
+});
+
+// ── Encoding Tools — Base64 round-trip ───────────────────────────────────────
+await runSmoke('encoding-tools-round-trip', async (page) => {
+    await page.goto(BASE + '/encoding-tools', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.monaco-editor', { timeout: 8000 });
+
+    // Type Base64-encoded value in left editor
+    await page.locator('.editorpane').first().locator('.monaco-editor .view-lines').click();
+    await page.keyboard.type('SGVsbG8=');
+
+    // Switch to Decoding Utils and click Decode Base64
+    await page.locator('select.input').selectOption('decoding-utils');
+    await page.waitForTimeout(200);
+    await page.locator('.func-btn', { hasText: 'Decode Base64' }).click();
+    await page.waitForTimeout(500);
+
+    // Result must contain the decoded value "Hello"
+    const resultText = await page.locator('.editorpane').last().locator('.view-lines').textContent();
+    if (!resultText?.includes('Hello')) {
+        throw new Error(`Expected "Hello" after Base64 decode, got: ${resultText?.slice(0, 100)}`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__encoding_tools_round_trip__after.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -675,4 +771,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 24 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 28 interaction flows passed. Screenshots in ' + OUT);
