@@ -10,9 +10,11 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="xml-formatter" title="XML Formatter">
-                Format, validate, and explore XML data. Beautify, minify, or run XPath queries to extract nodes and
-                values.
+            <ToolAbout routeKey="xml-formatter">
+                Format, validate and inspect XML. Beautify with configurable indentation, minify, and validate structure
+                with a live error indicator. The <strong>XPath Query</strong> mode accepts standard XPath 1.0
+                expressions and displays all matching nodes and values. Parsing uses the browser's built-in XML engine —
+                nothing leaves your machine.
             </ToolAbout>
             <XmlFormatterPage />
         </div>

@@ -134,8 +134,12 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <div className="installer-page">
-            <ToolAbout routeKey="software-installer" title="Software Installer">
-                Generate install/update/upgrade/remove scripts for your apps across macOS, Windows, and Linux.
+            <ToolAbout routeKey="software-installer">
+                Generate <strong>install / update / upgrade / remove</strong> scripts for a catalog of 160+ apps across
+                macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select
+                apps (with per-app method override and multi-version JDKs), then build a single resilient script per
+                action or bare one-line commands per app — copy or download. The catalog and scripts are generated
+                client-side; nothing is installed by this tool.
             </ToolAbout>
             {/* Sticky summary */}
             <section className="installer-summary" aria-label="Selection summary">

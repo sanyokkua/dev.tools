@@ -277,9 +277,11 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="code-editor" title="Code Editor">
-                A Monaco-powered editor with syntax highlighting for many languages. Open local files or write code
-                directly.
+            <ToolAbout routeKey="code-editor">
+                A full Monaco (VS Code) editor for quick edits and snippets, with open/save, copy/paste, word-wrap and
+                minimap toggles, a cursor/line status bar, and language selection for 10 common languages inline plus
+                the full Monaco list. The <strong>Format</strong> button pretty-prints the buffer where a formatter
+                exists (JS/TS/JSON/HTML/CSS/Markdown, SQL, XML). All editing is local.
             </ToolAbout>
             <div className="code-editor">
                 <CodeEditorToolbar

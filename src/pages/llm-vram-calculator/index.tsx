@@ -95,8 +95,12 @@ const LlmVramCalculatorPage: FC = () => {
 
     return (
         <PageShell>
-            <ToolAbout routeKey="llm-vram-calculator" title="LLM VRAM Calculator">
-                Estimate GPU memory requirements for running large language models locally.
+            <ToolAbout routeKey="llm-vram-calculator">
+                Estimate the memory needed to run a local GGUF model. Enter <strong>parameters and quantization</strong>{' '}
+                (the two main inputs) for an instant estimate and a "fits on" device table; open{' '}
+                <strong>Advanced</strong> for GPU type, VRAM/OS, context and KV-cache settings, architecture, MoE and
+                inference engine. Covers effective-bpw quant sizing, KV-cache, engine overhead and partial offload.
+                Estimates only.
             </ToolAbout>
             <div className="vram-page-header">
                 <h1>LLM VRAM Calculator</h1>

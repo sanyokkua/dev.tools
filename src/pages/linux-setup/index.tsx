@@ -32,8 +32,10 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
-            <ToolAbout routeKey="linux-setup" title="Linux Setup">
-                Step-by-step guide to setting up a Linux development environment.
+            <ToolAbout routeKey="linux-setup">
+                Enable package managers per distro family (<strong>apt / dnf / pacman / zypper</strong>) plus{' '}
+                <strong>Flatpak</strong> and <strong>Snap</strong>, and set shell environment variables. Pick your
+                distro and copy the commands. App installation lives in the Software Installer.
             </ToolAbout>
             <section>
                 <h1>Linux Setup</h1>

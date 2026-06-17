@@ -11,8 +11,11 @@ const Home: React.FC = () => {
     }, [setPageTitle]);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="jwt" title="JWT">
-                Decode, verify, and sign JSON Web Tokens — all operations run locally, secrets never leave your browser.
+            <ToolAbout routeKey="jwt">
+                Decode, verify, and sign JSON Web Tokens. <strong>Decode</strong> mode displays the header, payload, and
+                signature of any JWT without a secret. <strong>Verify</strong> mode checks the signature with a
+                HS256/RS256 secret or public key. <strong>Sign</strong> mode builds a new token from a JSON payload and
+                a secret. All operations run locally — secrets and tokens never leave your browser.
             </ToolAbout>
             <JwtPage />
         </div>

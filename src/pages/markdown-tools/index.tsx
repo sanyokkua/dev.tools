@@ -169,8 +169,11 @@ const IndexPage: React.FC = () => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="markdown-tools" title="Markdown Tools">
-                Write Markdown and preview the rendered output side-by-side.
+            <ToolAbout routeKey="markdown-tools">
+                Write Markdown on the left and see a live, GitHub-flavored preview on the right — with tables, math
+                (KaTeX), syntax-highlighted code, and <strong>embedded Mermaid diagrams</strong>. Toggle the
+                editor/preview panes, word-wrap and minimap; <strong>Print / Export to PDF</strong>; open and save{' '}
+                <code>.md</code> files. Renders entirely in the browser.
             </ToolAbout>
             <div className="markdown-tools">
                 <div className="markdown-tools__header">

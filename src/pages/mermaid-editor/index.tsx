@@ -187,10 +187,13 @@ const IndexPage: React.FC = () => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="mermaid-editor" title="Mermaid Editor">
-                Write Mermaid diagram syntax on the left and see the rendered SVG update live on the right. Supports
-                flowcharts, sequence diagrams, class diagrams, ER diagrams, and more. Open or save <code>.mmd</code>{' '}
-                files; export the current diagram as SVG or PNG.
+            <ToolAbout routeKey="mermaid-editor">
+                Write Mermaid diagram syntax on the left and see the rendered SVG update live on the right. Supports{' '}
+                <strong>
+                    flowcharts, sequence diagrams, class diagrams, ER diagrams, state diagrams, Gantt charts,
+                </strong>{' '}
+                and more. Open or save <code>.mmd</code> files; export the diagram as SVG or PNG. Parse errors are shown
+                inline. Renders entirely in the browser.
             </ToolAbout>
             <div className="mermaid-editor">
                 <div className="mermaid-editor__header">

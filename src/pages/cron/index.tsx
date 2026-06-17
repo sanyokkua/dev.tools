@@ -11,9 +11,11 @@ const Home: React.FC = () => {
     }, [setPageTitle]);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="cron" title="Cron Editor / Tester">
-                Parse and test cron expressions — get a human-readable description and the next N run times. Supports
-                Linux 5-field, Quartz 6-field, and AWS EventBridge formats. All computation runs locally.
+            <ToolAbout routeKey="cron">
+                Parse and test cron expressions — get a human-readable description and the next scheduled run times.
+                Supports <strong>Linux 5-field</strong> (minute hour day month weekday), <strong>Quartz 6-field</strong>{' '}
+                (adds seconds), and <strong>AWS EventBridge</strong> formats. Enter any expression to see it explained
+                in plain English plus a list of upcoming runs. All computation runs locally.
             </ToolAbout>
             <CronPage />
         </div>

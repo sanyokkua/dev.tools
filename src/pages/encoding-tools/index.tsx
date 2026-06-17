@@ -43,8 +43,11 @@ const Home: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="encoding-tools" title="Encoding Tools">
-                Encode and decode text using Base64, URL encoding, and HTML entities.
+            <ToolAbout routeKey="encoding-tools">
+                Encode and decode text between common formats: <strong>Base64</strong> (standard and URL-safe),{' '}
+                <strong>URL/percent</strong> encoding, and <strong>HTML entities</strong>. Encode/decode are paired so
+                you can round-trip, and <strong>⇄ Use as input</strong> lets you chain conversions (e.g. URL-decode then
+                Base64-decode). Client-side only.
             </ToolAbout>
             <ToolView searchable toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />
         </div>

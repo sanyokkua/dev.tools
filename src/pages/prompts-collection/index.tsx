@@ -18,8 +18,10 @@ const IndexPage: React.FC<Props> = ({ prompts }) => {
 
     return (
         <div className="prompts-page">
-            <ToolAbout routeKey="prompts-collection" title="Prompts Collection">
-                Browse and customize a library of AI prompts for coding, writing, and analysis.
+            <ToolAbout routeKey="prompts-collection">
+                Browse a curated library of reusable LLM prompts, filter by category/type/tag, and open one to fill its
+                parameters and build the final text. System and parametrized user prompts are included; the template and
+                parameter fields auto-grow as you type. Copy the raw or filled prompt.
             </ToolAbout>
             <PromptsCollectionView prompts={prompts} />
         </div>

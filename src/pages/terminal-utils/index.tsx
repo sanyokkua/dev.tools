@@ -103,8 +103,18 @@ const IndexPage: React.FC = (): React.JSX.Element => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="terminal-utils" title="Terminal Utils">
-                Quick-reference for common shell commands and terminal shortcuts.
+            <ToolAbout routeKey="terminal-utils">
+                Build a single shell command from many lines. Paste commands (one per line), pick the target syntax (
+                <strong>Unix bash / Windows bat / PowerShell</strong>), and join them with{' '}
+                <strong>
+                    <code>&amp;</code>
+                </strong>{' '}
+                (run sequentially) or{' '}
+                <strong>
+                    <code>&amp;&amp;</code>
+                </strong>{' '}
+                (stop on first failure) into one copy-paste-ready line. Useful for turning a setup checklist into a
+                single command.
             </ToolAbout>
             <div className="terminal-utils">
                 <div>

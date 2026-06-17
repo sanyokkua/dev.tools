@@ -23,8 +23,10 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
-            <ToolAbout routeKey="windows-setup" title="Windows Setup">
-                Step-by-step guide to setting up a Windows development environment.
+            <ToolAbout routeKey="windows-setup">
+                Set up Windows package managers — <strong>winget</strong>, <strong>Chocolatey</strong>,{' '}
+                <strong>Scoop</strong> — and configure environment variables. Copy the PowerShell commands for the
+                manager you prefer. App installation lives in the Software Installer.
             </ToolAbout>
             <section>
                 <h1>Windows Setup</h1>

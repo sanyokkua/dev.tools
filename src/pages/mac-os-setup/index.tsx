@@ -26,8 +26,11 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <PageShell>
-            <ToolAbout routeKey="mac-os-setup" title="macOS Setup">
-                Step-by-step guide to setting up a fresh macOS development environment.
+            <ToolAbout routeKey="mac-os-setup">
+                Get a Mac ready for development: install <strong>Homebrew</strong>, configure your shell{' '}
+                <code>PATH</code>/profile, and run platform-specific scripts (including the{' '}
+                <strong>Apple Silicon VRAM Manager</strong> for local LLMs). App installation lives in the Software
+                Installer. Each step is a copyable command.
             </ToolAbout>
             <section>
                 <h1>macOS Setup</h1>

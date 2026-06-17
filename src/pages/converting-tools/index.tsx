@@ -134,8 +134,11 @@ const ConvertingToolsPage: React.FC = () => {
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
-            <ToolAbout routeKey="converting-tools" title="Converting Tools">
-                Convert data between formats: JSON↔YAML, JSON↔TOML, and more.
+            <ToolAbout routeKey="converting-tools">
+                Convert between representations in four modes: <strong>number base</strong> (DEC/HEX/BIN/OCT and any
+                base 2–36), <strong>data format</strong> (JSON ↔ YAML ↔ TOML ↔ CSV ↔ <strong>Markdown table</strong>),{' '}
+                <strong>color</strong> (HEX ↔ RGB ↔ HSL ↔ HSV with a swatch), and <strong>units</strong> (data sizes,
+                time, temperature, length). Live, bidirectional, with per-row copy.
             </ToolAbout>
             <div className="converting-toolbar">
                 <SegmentedControl

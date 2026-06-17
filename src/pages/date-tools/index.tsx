@@ -82,8 +82,11 @@ const DateToolsPage: React.FC = () => {
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
-            <ToolAbout routeKey="date-tools" title="Date Tools">
-                Convert between Unix timestamps and human-readable dates, and calculate durations.
+            <ToolAbout routeKey="date-tools">
+                Work with dates two ways: <strong>Timestamp ↔ date</strong> (Unix seconds/ms ↔ formatted date, timezone
+                and format selectors, "Now", and a breakdown with day-of-week, day-of-year and ISO week) and{' '}
+                <strong>Duration between dates</strong> (total / working / weekend days, weeks, months, years between
+                two dates). All computed locally.
             </ToolAbout>
             <div className="date-toolbar">
                 <SegmentedControl

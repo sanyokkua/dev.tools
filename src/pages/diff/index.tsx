@@ -11,10 +11,12 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="diff" title="Diff">
-                Compare two text blocks side-by-side. Select Text, JSON, or XML — JSON and XML inputs are automatically
-                normalized (pretty-printed, keys sorted) for a semantic comparison that ignores irrelevant formatting
-                differences.
+            <ToolAbout routeKey="diff">
+                Compare two text blocks side-by-side with <strong>Text, JSON,</strong> or <strong>XML</strong> mode. In
+                JSON mode, both inputs are parsed and pretty-printed with keys sorted before diffing — so semantic
+                changes show but whitespace or key-order differences don't. XML mode normalises inputs similarly.
+                Differences are highlighted inline; added, removed, and unchanged lines are colour-coded. Everything
+                runs locally.
             </ToolAbout>
             <DiffPage />
         </ContentContainerFlex>

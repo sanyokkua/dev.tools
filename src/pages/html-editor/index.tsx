@@ -147,9 +147,11 @@ const IndexPage: React.FC = () => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="html-editor" title="HTML Editor">
+            <ToolAbout routeKey="html-editor">
                 Write HTML on the left and see the live preview on the right. Scripts are disabled by default; enable
-                them with the toggle for trusted content. Format with Prettier. Open or save <code>.html</code> files.
+                them with the toggle for trusted content. <strong>Format</strong> with Prettier to tidy messy markup.
+                Open or save <code>.html</code> files. The preview is sandboxed in an iframe — no network requests leave
+                the browser.
             </ToolAbout>
             <div className="html-editor">
                 <div className="html-editor__header">

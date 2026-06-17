@@ -285,8 +285,10 @@ const GitCheatSheetPage: FC = () => {
 
     return (
         <ContentContainerFlex>
-            <ToolAbout routeKey="git-cheat-sheet" title="Git Cheat Sheet">
-                A searchable reference of essential Git commands, organized by workflow.
+            <ToolAbout routeKey="git-cheat-sheet">
+                Configure Git, SSH and GPG either interactively (fill name/email/OS → generated commands) or with a
+                manual step-by-step guide covering install, identity, SSH keys, and GPG commit signing, with links to
+                GitHub/GitLab docs. Copy any block.
             </ToolAbout>
             <div className="git-cheat-sheet">
                 <div className="git-cheat-sheet__header">

@@ -10,9 +10,11 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="json-formatter" title="JSON Formatter">
-                Format, validate, and explore JSON data. Beautify, minify, sort keys, or run JSONPath queries to extract
-                values.
+            <ToolAbout routeKey="json-formatter">
+                Format, inspect and query JSON. Beautify with 2/4/Tab indentation, minify, sort keys recursively,
+                validate with a live valid/invalid badge and error position, and escape/unescape JSON strings. The{' '}
+                <strong>Query (JSONPath)</strong> mode evaluates expressions like <code>$.items[*].id</code> and shows
+                the matched values. Parsing is done with the browser's native JSON engine — nothing leaves your machine.
             </ToolAbout>
             <JsonFormatterPage />
         </div>

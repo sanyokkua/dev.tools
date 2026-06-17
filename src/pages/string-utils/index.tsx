@@ -41,9 +41,12 @@ const IndexPage = (): React.JSX.Element => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <ToolAbout routeKey="string-utils" title="String Utilities">
-                A collection of string manipulation tools: case conversion, URL slugify, line and whitespace operations,
-                and more.
+            <ToolAbout routeKey="string-utils">
+                Transform and clean text with 20+ operations — change case (camelCase, snake_case, PascalCase,
+                kebab-case, CONSTANT_CASE, Title Case, sentence case), slugify, trim/normalize whitespace, and line
+                operations (sort, deduplicate, reverse, shuffle, split/join by delimiter). Paste or open a file on the
+                left, pick an operation from the searchable middle panel, and read the result on the right; use{' '}
+                <strong>⇄ Use as input</strong> to chain transforms. Everything runs locally in your browser.
             </ToolAbout>
             <ToolView searchable showCharCount toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />
         </div>
