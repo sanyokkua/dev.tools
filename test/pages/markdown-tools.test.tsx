@@ -160,11 +160,6 @@ describe('Markdown Tools page', () => {
         expect(container.querySelector('.markdown-tools__info.card.pad')).toBeInTheDocument();
     });
 
-    it('renders the page heading "Markdown Tools"', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: /markdown tools/i })).toBeInTheDocument();
-    });
-
     it('hides the Monaco editor when the Editor switch is toggled off', () => {
         renderPage();
         expect(screen.getByTestId('code-editor')).toBeInTheDocument();

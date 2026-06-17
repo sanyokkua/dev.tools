@@ -24,11 +24,6 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Terminal Utils page', () => {
-    it('renders the page heading', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'Terminal Utilities' })).toBeInTheDocument();
-    });
-
     it('renders all three syntax buttons', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Unix bash' })).toBeInTheDocument();

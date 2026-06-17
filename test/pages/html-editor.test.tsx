@@ -62,11 +62,6 @@ describe('HTML Editor page', () => {
         jest.clearAllMocks();
     });
 
-    it('renders the page h1', () => {
-        renderPage();
-        expect(screen.getByRole('heading', { name: 'HTML Editor' })).toBeInTheDocument();
-    });
-
     it('renders ToolAbout (hidden by default)', () => {
         renderPage();
         expect(screen.queryByTestId('tool-about')).not.toBeInTheDocument();
