@@ -13,12 +13,12 @@ React Context API only. No Redux, no Zustand, no external state libraries.
 
 The three contexts in `src/components/contexts/`:
 
-| Context                 | Import path                        | Purpose                                 |
-| ----------------------- | ---------------------------------- | --------------------------------------- |
-| `PageContext`           | `@/contexts/PageContext`           | Page title (`usePage().setPageTitle()`) |
-| `ToasterContext`        | `@/contexts/ToasterContext`        | User feedback toasts                    |
-| `FileOpenContext`       | `@/contexts/FileOpenContext`       | File open dialog                        |
-| `FileSaveDialogContext` | `@/contexts/FileSaveDialogContext` | File save dialog                        |
+| Context                 | Import path                        | Purpose                                                                                            |
+| ----------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `PageContext`           | `@/contexts/PageContext`           | Page title (setPageTitle()), About panel visibility (helpVisible, setHelpVisible, setHasToolAbout) |
+| `ToasterContext`        | `@/contexts/ToasterContext`        | User feedback toasts                                                                               |
+| `FileOpenContext`       | `@/contexts/FileOpenContext`       | File open dialog                                                                                   |
+| `FileSaveDialogContext` | `@/contexts/FileSaveDialogContext` | File save dialog                                                                                   |
 
 ## Page Title
 
@@ -88,6 +88,41 @@ Write no comments by default. Only add one when the WHY is non-obvious: a hidden
 ## Disabled Routes
 
 Some sidebar entries are commented out (converting-tools, date-tools, windows-cheat-sheet). The route files still exist. Do not delete them. To re-enable, uncomment the sidebar entry.
+
+## ToolAbout Component
+
+Every tool page that has an "About this tool" collapsible panel must mount `<ToolAbout>`:
+
+```tsx
+import ToolAbout from '@/controls/ToolAbout';
+
+// Inside the page JSX, above <ToolView>:
+<ToolAbout routeKey="my-tool">One-paragraph description shown when the user opens the About panel.</ToolAbout>;
+```
+
+- `routeKey` — kebab-case route identifier; used as the localStorage key `toolAbout:<routeKey>`.
+- Visibility is persisted to `localStorage` automatically; default is `false` (hidden).
+- The App Bar info button only renders when a `ToolAbout` is mounted (controlled via `setHasToolAbout`).
+- Do not add `ToolAbout` to pages that have no meaningful description to show.
+
+## SplitPreviewEditor Component
+
+Use for Monaco-left + rendered-preview-right layouts (Markdown, Mermaid, HTML tools).
+
+```tsx
+import SplitPreviewEditor from '../../components/elements/editor/SplitPreviewEditor';
+
+<SplitPreviewEditor
+    language="markdown"
+    value={content}
+    onChange={setContent}
+    renderPreview={(val) => <MyRenderer source={val} />}
+    editorToolbarChildren={<CopyButton />} // optional
+    previewToolbarChildren={<ExportButton />} // optional
+/>;
+```
+
+The component applies `.editorpane`, `.eh`, and `.eb` CSS primitives from `primitives.scss` internally — do not wrap it in additional pane divs.
 
 ## Static Export
 

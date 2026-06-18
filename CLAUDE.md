@@ -47,6 +47,19 @@ for root-cause debugging.
 
 ALWAYS USE CHROME LIVE APP TESTING AFTER EACH ACCOMPLISHED TASK
 
+## Mandatory Workflow (Before Every Commit)
+
+Run these steps in order after every code change — no exceptions:
+
+1. `npm run verify` — format → lint → tests must all pass
+2. `npm run build` — static export must succeed
+3. `npm run validate:sw` — service worker precache must cover all routes
+4. `npm run verify:ui` — zero overflow / console-error / font failures across all 17 routes at 375 / 768 / 1280 px, light + dark
+5. `git add -A && git commit -m "..."` — stage everything and commit
+6. `git status` — working tree must be clean (no uncommitted generated files)
+
+Use the `run-verification` skill for a guided walkthrough.
+
 ## Architecture
 
 **Stack**: Next.js 16 (Pages Router), React 19, TypeScript, SCSS, Monaco Editor. Deployed as static export to GitHub Pages.
@@ -73,10 +86,7 @@ ALWAYS USE CHROME LIVE APP TESTING AFTER EACH ACCOMPLISHED TASK
 
 ### Adding a New Tool Page
 
-1. Create `src/pages/[tool-name]/index.tsx`
-2. Use `ToolViewFunctionGroups` (Map) and the generic `ToolView` component from `src/components/elements/column/`
-3. Define tools as objects with `toolId`, `textToDisplay`, `toolFunction`
-4. See `src/common/utils-factory.ts` for the factory pattern
+Invoke the `new-tool` skill — it encodes the full step-by-step process including ToolAbout wiring, render tests, and service-worker validation. See also: `docs/howto/add-a-tool-page.md`.
 
 ### State Management
 
@@ -106,3 +116,17 @@ Some sidebar items are disabled (converting-tools, date-tools, windows-cheat-she
 Verification scope is the whole branch, not just my diff. If a test, lint, or responsive check fails anywhere in the branch, it is in scope and must be fixed. "Pre-existing" or "not introduced by this change" is not a valid reason to skip a failure — it's a reason to fix it now or log it as an explicit tracked task. Never report a known failure as acceptable.
 
 Acceptance includes: npm run verify:ui exits clean with zero overflow/console failures across all routes at 375/768/1280. A nonzero count fails the task regardless of whether this task introduced it.
+
+## Available Skills (`.claude/skills/`)
+
+| Skill                 | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `project-conventions` | Internal conventions — state, styling, types, factory pattern |
+| `new-tool`            | Scaffold a new ToolView-pattern tool page end-to-end          |
+| `add-tool-page`       | Add any tool page (ToolView, Editor, or Custom pattern)       |
+| `add-prompt`          | Add a prompt to the prompts collection                        |
+| `add-software`        | Add software to the apps catalog                              |
+| `update-vram-model`   | Extend the LLM VRAM calculator engine                         |
+| `run-verification`    | Run the complete pre-commit verification pipeline             |
+
+For how-to guides in prose form: `docs/howto/`.

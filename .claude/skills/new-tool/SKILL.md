@@ -55,7 +55,8 @@ Follow this exact pattern (copy from `src/pages/string-utils/index.tsx`):
 'use client';
 import { create<Name>UtilList } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
-import { useEffect, useMemo } from 'react';
+import ToolAbout from '@/controls/ToolAbout';
+import React, { useEffect, useMemo } from 'react';
 import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const IndexPage = (): React.JSX.Element => {
@@ -92,7 +93,12 @@ const IndexPage = (): React.JSX.Element => {
         return groupsMap;
     }, []);
 
-    return <ToolView toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="<name>">One-paragraph description of what this tool does.</ToolAbout>
+            <ToolView searchable showCharCount toolChoseHeader="Select Utils" toolViewFunctionGroups={toolsGroups} />
+        </div>
+    );
 };
 
 export default IndexPage;
@@ -129,13 +135,32 @@ describe('<Name>Utils', () => {
 });
 ```
 
+### 5b. Render test — `test/pages/<name>.test.tsx`
+
+```tsx
+import { render } from '@testing-library/react';
+import IndexPage from '../../src/pages/<name>/index';
+
+jest.mock('next/router', () => ({ useRouter: () => ({ pathname: '/<name>' }) }));
+
+describe('<Name> page', () => {
+    it('renders without crashing', () => {
+        render(<IndexPage />);
+        expect(document.body).toBeTruthy();
+    });
+});
+```
+
 ### 6. Verify
 
 ```bash
-npm run verify
+npm run verify              # format → lint → tests
+npm run build               # static export
+npm run validate:sw         # service worker precache covers the new route
+npm run verify:ui           # interactive Chrome check — 375/768/1280, light+dark
 ```
 
-All of: Prettier format → ESLint → Jest tests must pass before considering the tool complete.
+All four must exit 0 before the tool is considered done.
 
 ## Key constraints
 
