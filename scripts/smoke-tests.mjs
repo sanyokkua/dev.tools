@@ -645,6 +645,14 @@ await runSmoke('qr-url', async (page) => {
 
     await page.locator('[data-testid="qr-url-input"]').fill('https://example.com');
     await page.waitForSelector('[data-testid="qr-canvas"]', { timeout: 5000 });
+    // qrcode is dynamically imported; wait for toCanvas() to set the width attribute
+    await page.waitForFunction(
+        () => {
+            const c = document.querySelector('[data-testid="qr-canvas"]');
+            return c && Number(c.getAttribute('width')) > 0;
+        },
+        { timeout: 8000 },
+    );
 
     const width = await page.evaluate(() => {
         const canvas = document.querySelector('[data-testid="qr-canvas"]');
