@@ -1,3 +1,21 @@
+// Responsive UI verification — all routes × 3 viewport widths × 2 themes.
+//
+// Checks 4 gates on every page × combination:
+//   1. No horizontal overflow (scrollWidth > clientWidth + 1 px)
+//   2. Body font must be sans-serif (not serif / Times)
+//   3. Monaco editor height > 200 px on editor pages
+//   4. No browser console errors or page errors
+//
+// Usage:
+//   node scripts/verify-ui.mjs
+//   BASE_URL=http://localhost:3000 node scripts/verify-ui.mjs
+//
+// Env:
+//   BASE_URL  Dev-server base URL (default: http://localhost:3000)
+//   CI        Forces headless Chromium; omit to use the local Chrome channel
+//
+// Output: .tmp/verify-screens/<slug>__<theme>__<width>.png
+// Prerequisite: npm run dev must be running on BASE_URL
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 

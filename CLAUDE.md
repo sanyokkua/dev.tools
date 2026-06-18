@@ -15,6 +15,8 @@ npm run format        # Format with Prettier
 npm run check:format  # Check formatting without writing
 npm run verify        # Full pipeline: format → lint → test
 npm run clean         # Remove build artifacts
+npm run verify:smoke  # Playwright interaction smoke tests only (28+ flows); requires dev server
+npm run verify:ui     # Responsive check (24 routes × 3 widths × 2 themes) + smoke tests; requires dev server
 ```
 
 Run a single test file:
@@ -28,8 +30,8 @@ npx jest test/path/to/file.test.ts
 With `npm run dev` running in a separate terminal:
 
 ```bash
-npm run verify:ui              # Static pass (17 routes × 3 widths × 2 themes) + interaction smoke tests
-npm run verify:smoke           # Interaction smoke tests only (6 key flows)
+npm run verify:ui              # Static pass (24 routes × 3 widths × 2 themes) + interaction smoke tests
+npm run verify:smoke           # Interaction smoke tests only (28+ flows)
 BASE_URL=http://localhost:3000 npm run verify:ui  # explicit base (same as default)
 ```
 
@@ -54,7 +56,7 @@ Run these steps in order after every code change — no exceptions:
 1. `npm run verify` — format → lint → tests must all pass
 2. `npm run build` — static export must succeed
 3. `npm run validate:sw` — service worker precache must cover all routes
-4. `npm run verify:ui` — zero overflow / console-error / font failures across all 17 routes at 375 / 768 / 1280 px, light + dark
+4. `npm run verify:ui` — zero overflow / console-error / font failures across all 24 routes at 375 / 768 / 1280 px, light + dark
 5. `git add -A && git commit -m "..."` — stage everything and commit
 6. `git status` — working tree must be clean (no uncommitted generated files)
 

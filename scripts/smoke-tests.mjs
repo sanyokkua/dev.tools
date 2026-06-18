@@ -1,3 +1,26 @@
+// Interaction smoke tests — 28+ user flows exercised in real Chromium via Playwright.
+//
+// Each runSmoke() call navigates to a route, performs key actions (type, click, assert),
+// and captures before/after screenshots. Called automatically by npm run verify:ui
+// after the static responsive checks in verify-ui.mjs.
+//
+// Flows covered: Software Installer (basic + multi-JDK), Terminal Utils, Hashing,
+// Converting (number-base + data-format + Markdown table), Git Cheat Sheet,
+// Markdown + Mermaid (valid + invalid), Prompts Collection (AutoTextarea),
+// JSON Formatter (JSONPath), XML Formatter (XPath), Code Editor (Format button),
+// LLM VRAM Calculator, Mermaid Editor, Diff, HTML Editor, JWT, Cron, QR,
+// String Utils, Encoding Tools.
+//
+// Usage:
+//   node scripts/smoke-tests.mjs
+//   BASE_URL=http://localhost:3000 node scripts/smoke-tests.mjs
+//
+// Env:
+//   BASE_URL  Dev-server base URL (default: http://localhost:3000)
+//   CI        Forces headless Chromium; omit to use the local Chrome channel
+//
+// Output: .tmp/verify-screens/smoke__<test>__<stage>.png
+// Prerequisite: npm run dev must be running on BASE_URL
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 

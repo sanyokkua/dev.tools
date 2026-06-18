@@ -119,7 +119,7 @@ See [howto/add-a-tool-page.md](howto/add-a-tool-page.md) for step-by-step instru
 ```bash
 npm run verify          # format + lint + unit/coverage
 npm run verify:ui       # Playwright: all routes × 3 widths × 2 themes
-npm run verify:smoke    # Interaction smoke tests (6 key flows)
+npm run verify:smoke    # Interaction smoke tests (28+ flows)
 ```
 
 Screenshots save to `.tmp/verify-screens/`. The UI verify gate fails on:

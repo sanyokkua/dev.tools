@@ -1,5 +1,13 @@
-// Parses public/sw.js precache manifest and asserts all page routes are covered.
-// Run after `npm run build` via: node scripts/validate-sw-precache.mjs
+// Validates that the service worker precache manifest covers all app routes.
+//
+// Reads public/sw.js, parses the precacheAndRoute() manifest, and asserts a page
+// chunk exists for every route in ROUTES. Exits 1 on missing routes; exits 0 on success.
+//
+// Usage:
+//   node scripts/validate-sw-precache.mjs
+//
+// Prerequisite: npm run build must have completed first (requires public/sw.js)
+// Wired as:     npm run validate:sw
 import { readFileSync } from 'node:fs';
 
 const ROUTES = [
