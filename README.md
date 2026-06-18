@@ -11,24 +11,24 @@
 
 ### Text & Code
 
-| Tool                                                                   | Description                                                                      |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [String Utils](https://sanyokkua.github.io/dev.tools/string-utils)     | 20+ case, slugify, and text transforms via a 3-pane editor                       |
-| [JSON Formatter](https://sanyokkua.github.io/dev.tools/json-formatter) | Beautify or minify JSON; JSONPath query mode                                     |
-| [XML Formatter](https://sanyokkua.github.io/dev.tools/xml-formatter)   | Format and validate XML                                                          |
-| [Hashing Tools](https://sanyokkua.github.io/dev.tools/hashing-tools)   | MD5, SHA-1, SHA-256, SHA-512 hashes in real time                                 |
-| [Encoding Tools](https://sanyokkua.github.io/dev.tools/encoding-tools) | Base64, URL, HTML entity encode and decode                                       |
-| [Terminal Utils](https://sanyokkua.github.io/dev.tools/terminal-utils) | Join shell commands into a single line (bash / bat / PowerShell)                 |
-| [Code Editor](https://sanyokkua.github.io/dev.tools/code-editor)       | Monaco editor with syntax highlighting, format, and file open/save               |
-| [Markdown Tools](https://sanyokkua.github.io/dev.tools/markdown-tools) | Live GitHub-flavored preview with Mermaid, KaTeX, and PDF export                 |
-| [Mermaid Editor](https://sanyokkua.github.io/dev.tools/mermaid-editor) | Write and preview Mermaid diagrams                                               |
-| [Diff](https://sanyokkua.github.io/dev.tools/diff)                     | Side-by-side and inline text diff                                                |
-| [HTML Editor](https://sanyokkua.github.io/dev.tools/html-editor)       | Write HTML and see a live sandboxed preview                                      |
-| [JWT](https://sanyokkua.github.io/dev.tools/jwt)                       | Decode and encode JSON Web Tokens                                                |
-| [Cron](https://sanyokkua.github.io/dev.tools/cron)                     | Cron expression builder with human-readable description                          |
-| [QR](https://sanyokkua.github.io/dev.tools/qr)                         | QR code generator — copy or download as PNG                                      |
-| Converting Tools ¹                                                     | Number base, data format (JSON/YAML/CSV/Markdown table), color, unit conversions |
-| Date Tools ¹                                                           | Timestamp ↔ date, timezone, duration between dates                               |
+| Tool                                                                       | Description                                                                      |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [String Utils](https://sanyokkua.github.io/dev.tools/string-utils)         | 20+ case, slugify, and text transforms via a 3-pane editor                       |
+| [JSON Formatter](https://sanyokkua.github.io/dev.tools/json-formatter)     | Beautify or minify JSON; JSONPath query mode                                     |
+| [XML Formatter](https://sanyokkua.github.io/dev.tools/xml-formatter)       | Format and validate XML                                                          |
+| [Hashing Tools](https://sanyokkua.github.io/dev.tools/hashing-tools)       | MD5, SHA-1, SHA-256, SHA-512 hashes in real time                                 |
+| [Encoding Tools](https://sanyokkua.github.io/dev.tools/encoding-tools)     | Base64, URL, HTML entity encode and decode                                       |
+| [Terminal Utils](https://sanyokkua.github.io/dev.tools/terminal-utils)     | Join shell commands into a single line (bash / bat / PowerShell)                 |
+| [Code Editor](https://sanyokkua.github.io/dev.tools/code-editor)           | Monaco editor with syntax highlighting, format, and file open/save               |
+| [Markdown Tools](https://sanyokkua.github.io/dev.tools/markdown-tools)     | Live GitHub-flavored preview with Mermaid, KaTeX, and PDF export                 |
+| [Mermaid Editor](https://sanyokkua.github.io/dev.tools/mermaid-editor)     | Write and preview Mermaid diagrams                                               |
+| [Diff](https://sanyokkua.github.io/dev.tools/diff)                         | Side-by-side and inline text diff                                                |
+| [HTML Editor](https://sanyokkua.github.io/dev.tools/html-editor)           | Write HTML and see a live sandboxed preview                                      |
+| [JWT](https://sanyokkua.github.io/dev.tools/jwt)                           | Decode and encode JSON Web Tokens                                                |
+| [Cron](https://sanyokkua.github.io/dev.tools/cron)                         | Cron expression builder with human-readable description                          |
+| [QR](https://sanyokkua.github.io/dev.tools/qr)                             | QR code generator — copy or download as PNG                                      |
+| [Converting Tools](https://sanyokkua.github.io/dev.tools/converting-tools) | Number base, data format (JSON/YAML/CSV/Markdown table), color, unit conversions |
+| [Date Tools](https://sanyokkua.github.io/dev.tools/date-tools)             | Timestamp ↔ date, timezone, duration between dates                               |
 
 ### Install & Setup
 
@@ -46,8 +46,6 @@
 | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | [LLM VRAM Calculator](https://sanyokkua.github.io/dev.tools/llm-vram-calculator) | Estimate GPU or unified memory for GGUF-quantized LLMs |
 | [Prompts Collection](https://sanyokkua.github.io/dev.tools/prompts-collection)   | Browse, filter, and build parametrized prompts         |
-
-> ¹ Route exists but is disabled in the sidebar (work in progress).
 
 ---
 
@@ -95,7 +93,7 @@ npm run dev          # http://localhost:3000
 
 ```bash
 npm run verify       # format → lint → unit tests with coverage
-npm run verify:ui    # live-Chrome: 17 routes × 3 widths × 2 themes + smoke tests
+npm run verify:ui    # live-Chrome: 24 routes × 3 widths × 2 themes + smoke tests
 ```
 
 ### Build
