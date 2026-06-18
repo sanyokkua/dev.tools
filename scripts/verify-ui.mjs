@@ -125,7 +125,7 @@ for (const theme of THEMES) {
             const routeFailed =
                 overflow ||
                 /serif|times/i.test(bodyFont.replace(/sans-serif/gi, '')) ||
-                errors.length ||
+                errors.length > 0 ||
                 monacoCollapsed;
             process.stdout.write(routeFailed ? 'FAILED\n' : 'ok\n');
 
