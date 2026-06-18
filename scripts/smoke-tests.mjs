@@ -18,6 +18,7 @@
 // Env:
 //   BASE_URL  Dev-server base URL (default: http://localhost:3000)
 //   CI        Forces headless Chromium; omit to use the local Chrome channel
+//   HEADLESS  Set to "false" to show the browser window (default: true)
 //
 // Output: .tmp/verify-screens/smoke__<test>__<stage>.png
 // Prerequisite: npm run dev must be running on BASE_URL
@@ -29,7 +30,8 @@ const OUT = '.tmp/verify-screens';
 mkdirSync(OUT, { recursive: true });
 
 const failures = [];
-const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: true });
+const HEADLESS = process.env.HEADLESS !== 'false';
+const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: HEADLESS });
 
 async function runSmoke(name, fn) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
