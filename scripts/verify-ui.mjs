@@ -13,6 +13,7 @@
 // Env:
 //   BASE_URL  Dev-server base URL (default: http://localhost:3000)
 //   CI        Forces headless Chromium; omit to use the local Chrome channel
+//   HEADLESS  Set to "false" to show the browser window (default: true)
 //
 // Output: .tmp/verify-screens/<slug>__<theme>__<width>.png
 // Prerequisite: npm run dev must be running on BASE_URL
@@ -68,10 +69,12 @@ const OUT = '.tmp/verify-screens';
 mkdirSync(OUT, { recursive: true });
 
 const failures = [];
-const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: true });
+const HEADLESS = process.env.HEADLESS !== 'false';
+const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: HEADLESS });
 
 for (const theme of THEMES) {
     for (const width of WIDTHS) {
+        process.stdout.write(`\n── ${theme} ${width}px ──\n`);
         const ctx = await browser.newContext({ viewport: { width, height: 900 } });
         const page = await ctx.newPage();
 
@@ -80,6 +83,7 @@ for (const theme of THEMES) {
             page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
             page.on('pageerror', (e) => errors.push(String(e)));
 
+            process.stdout.write(`  ${route} … `);
             await page.goto(BASE + route, { waitUntil: 'networkidle' });
 
             // Apply theme via data-theme attribute
@@ -117,6 +121,13 @@ for (const theme of THEMES) {
             if (errors.length)
                 failures.push(`CONSOLE    ${theme} ${width}px ${route}: ${errors.slice(0, 3).join(' | ')}`);
             if (monacoCollapsed) failures.push(`MONACO-HT  ${theme} ${width}px ${route} (height ≤ 200px)`);
+
+            const routeFailed =
+                overflow ||
+                /serif|times/i.test(bodyFont.replace(/sans-serif/gi, '')) ||
+                errors.length ||
+                monacoCollapsed;
+            process.stdout.write(routeFailed ? 'FAILED\n' : 'ok\n');
 
             await page.screenshot({ path: screenshotPath, fullPage: true });
         }
