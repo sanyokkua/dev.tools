@@ -100,7 +100,7 @@ const QrPage: React.FC = () => {
                 },
             );
         });
-        return () => {
+        return (): void => {
             cancelled = true;
         };
     }, [payload, ecLevel]);

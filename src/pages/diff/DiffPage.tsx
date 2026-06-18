@@ -74,7 +74,7 @@ const DiffPage: React.FC = () => {
             if (leftErr) showToastRef.current({ message: `Left: ${leftErr}`, type: ToastType.ERROR });
             if (rightErr) showToastRef.current({ message: `Right: ${rightErr}`, type: ToastType.ERROR });
         }, 300);
-        return () => clearTimeout(id);
+        return (): void => clearTimeout(id);
     }, [leftText, rightText, type]);
 
     const handleMount = useCallback((diffEditor: editor.IStandaloneDiffEditor) => {

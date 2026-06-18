@@ -14,7 +14,15 @@ jest.mock('../../src/components/elements/editor/CodeEditor', () => {
     const ReactMod = require('react');
     return {
         __esModule: true,
-        default: ({ onEditorMounted, onChange, languageId }: any) => {
+        default: ({
+            onEditorMounted,
+            onChange,
+            languageId,
+        }: {
+            onEditorMounted?: (api: { editor: { getValue: () => string; setValue: (v: string) => void } }) => void;
+            onChange?: () => void;
+            languageId?: string;
+        }) => {
             ReactMod.useEffect(() => {
                 let content = '';
                 const mockEditor = {

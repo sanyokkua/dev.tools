@@ -24,7 +24,7 @@ const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, onLogoClick, sid
             onLogoClick={onLogoClick}
             sidebarCollapsed={sidebarCollapsed}
             helpVisible={helpVisible}
-            onToggleHelp={pageTitle && hasToolAbout ? () => setHelpVisible(!helpVisible) : undefined}
+            onToggleHelp={pageTitle && hasToolAbout ? (): void => setHelpVisible(!helpVisible) : undefined}
         />
     );
 };

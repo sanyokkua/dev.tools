@@ -2629,7 +2629,7 @@ describe('Quant Catalog Anchors (2.5b)', () => {
         const output = expectSuccess(result);
         const analysis = output.quantization_analysis[0];
         expect(analysis.eff_bpw).toBeCloseTo(4.85, 1);
-        expect((analysis as any).bits_per_param).toBeUndefined();
+        expect((analysis as unknown as Record<string, unknown>).bits_per_param).toBeUndefined();
         expect(analysis.sweet_spot).toBe(true);
         expect(analysis.family).toBe('k-quant');
     });

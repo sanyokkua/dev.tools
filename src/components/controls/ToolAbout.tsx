@@ -13,7 +13,7 @@ const ToolAbout: React.FC<ToolAboutProps> = ({ routeKey, children }) => {
     // Register presence so the App Bar info button only shows when a panel is mounted.
     useEffect(() => {
         setHasToolAbout(true);
-        return () => setHasToolAbout(false);
+        return (): void => setHasToolAbout(false);
     }, [setHasToolAbout]);
 
     // On mount (or routeKey change): read persisted state; default to false (hidden).

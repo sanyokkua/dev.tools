@@ -28,7 +28,7 @@ const MermaidPreview: React.FC<{ src: string }> = ({ src }) => {
 
     useEffect(() => {
         const t = setTimeout(() => setDebounced(src), 400);
-        return () => clearTimeout(t);
+        return (): void => clearTimeout(t);
     }, [src]);
 
     if (!debounced.trim()) {
@@ -130,7 +130,7 @@ const IndexPage: React.FC = () => {
 
             await new Promise<void>((resolve, reject) => {
                 const img = new Image();
-                img.onload = () => {
+                img.onload = (): void => {
                     const canvas = document.createElement('canvas');
                     canvas.width = img.naturalWidth || 800 * printScale;
                     canvas.height = img.naturalHeight || 600 * printScale;
@@ -156,7 +156,7 @@ const IndexPage: React.FC = () => {
                         resolve();
                     }, 'image/png');
                 };
-                img.onerror = () => {
+                img.onerror = (): void => {
                     reject(new Error('SVG image load failed'));
                 };
                 img.src = svgUrl;

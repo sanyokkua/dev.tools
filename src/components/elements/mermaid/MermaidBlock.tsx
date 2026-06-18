@@ -24,7 +24,7 @@ const MermaidBlock: React.FC<MermaidBlockProps> = ({ src }) => {
             .catch((err: unknown) => {
                 if (!cancelled) setError(String((err as Error)?.message ?? err));
             });
-        return () => {
+        return (): void => {
             cancelled = true;
         };
     }, [src, diagramId]);

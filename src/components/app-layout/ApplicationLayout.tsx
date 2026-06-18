@@ -22,7 +22,7 @@ const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
         }
     }, []);
 
-    const persistCollapsed = (value: boolean) => {
+    const persistCollapsed = (value: boolean): void => {
         setSidebarCollapsed(value);
         try {
             localStorage.setItem('sidebarCollapsed', String(value));
@@ -31,11 +31,11 @@ const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
         }
     };
 
-    const toggleSidebarCollapsed = () => {
+    const toggleSidebarCollapsed = (): void => {
         persistCollapsed(!sidebarCollapsed);
     };
 
-    const handleMenuOpen = () => {
+    const handleMenuOpen = (): void => {
         if (sidebarCollapsed) {
             // On desktop: un-collapse the sidebar instead of opening a mobile drawer
             persistCollapsed(false);

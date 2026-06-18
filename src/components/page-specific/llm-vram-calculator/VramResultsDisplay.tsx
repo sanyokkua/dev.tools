@@ -7,7 +7,7 @@ import RecommendationsSection from './RecommendationsSection';
 import SummarySection from './SummarySection';
 
 /** @description Renders the offload verdict banner. */
-function OffloadVerdictCard({ offload }: { offload: OffloadResult }) {
+function OffloadVerdictCard({ offload }: { offload: OffloadResult }): JSX.Element {
     return (
         <div className={`vram-offload-verdict vram-offload-${offload.verdict}`}>
             {offload.verdict === 'fits' && (

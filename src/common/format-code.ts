@@ -37,7 +37,7 @@ async function formatWithPrettier(parser: string, src: string, pluginKeys: Plugi
         import('prettier/standalone').then((m) => m.default ?? m),
         import('prettier/plugins/estree').then((m) => m.default ?? m),
         ...pluginKeys.map((k) =>
-            (() => {
+            ((): Promise<unknown> => {
                 const loaders: Record<PluginKey, () => Promise<unknown>> = {
                     babel: () => import('prettier/plugins/babel').then((m) => m.default ?? m),
                     typescript: () => import('prettier/plugins/typescript').then((m) => m.default ?? m),
