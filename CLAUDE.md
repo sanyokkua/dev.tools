@@ -102,10 +102,6 @@ SCSS files in `src/styles/`. One `.scss` file per feature area. Color variables 
 
 `next.config.mjs` sets `output: 'export'`. `basePath` and `assetPrefix` are set dynamically from the `GITHUB_REPOSITORY` env var during CI for GitHub Pages deployment.
 
-### Disabled Pages
-
-Some sidebar items are disabled (converting-tools, date-tools, windows-cheat-sheet) — routes exist but are hidden in the sidebar.
-
 ## Testing
 
 - Tests live in `test/`
