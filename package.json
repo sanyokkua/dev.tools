@@ -18,7 +18,9 @@
         "verify": "npm run clean && npm run format && git add . && npm run check:format && npm run check:lint && npm run test && npm run clean",
         "verify:smoke": "node scripts/smoke-tests.mjs",
         "verify:ui": "node scripts/verify-ui.mjs && node scripts/smoke-tests.mjs",
-        "validate:sw": "node scripts/validate-sw-precache.mjs"
+        "validate:sw": "node scripts/validate-sw-precache.mjs",
+        "ingest:prompts": "node scripts/ingest-prompts.mjs",
+        "prebuild": "npm run ingest:prompts"
     },
     "devDependencies": {
         "@ducanh2912/next-pwa": "^10.2.9",
