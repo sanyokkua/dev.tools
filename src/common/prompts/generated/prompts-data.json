@@ -264,7 +264,7 @@
       "id": "LP-A03-review-change",
       "categoryCode": "A03",
       "title": "Review a Change",
-      "description": "Repository-aware AI-agent prompt that reviews the working changes (diff vs a base) in a repository with full surrounding context, without modifying code.",
+      "description": "Single-shot prompt that reviews a code change (diff or snippet) for correctness, security, tests, and readability, returning structured findings.",
       "variantAxes": [
         "executionContext"
       ],

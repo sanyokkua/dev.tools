@@ -6,8 +6,12 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const args = process.argv.slice(2);
-const srcDir = args[args.indexOf('--src') + 1] ?? join(process.cwd(), 'content/prompts-collection');
-const outDir = args[args.indexOf('--out') + 1] ?? join(process.cwd(), 'src/common/prompts/generated');
+function getArg(name) {
+    const i = args.indexOf(name);
+    return i >= 0 ? args[i + 1] : undefined;
+}
+const srcDir = getArg('--src') ?? join(process.cwd(), 'content/prompts-collection');
+const outDir = getArg('--out') ?? join(process.cwd(), 'src/common/prompts/generated');
 
 const META_CATEGORIES = JSON.parse(readFileSync(join(__dirname, 'ingest/meta-categories.json'), 'utf8'));
 const MODEL_NAMES = JSON.parse(readFileSync(join(__dirname, 'ingest/model-names.json'), 'utf8'));
@@ -202,7 +206,29 @@ function parseYamlFrontmatter(content) {
     if (!match) return { meta: {}, body: content };
     const yamlLines = match[1].split('\n');
     const meta = {};
+    let multilineKey = null;
+    let multilineMode = null; // '>' (folded) or '|' (literal)
+    let multilineLines = [];
+    function flushMultiline() {
+        if (multilineKey === null) return;
+        const joined =
+            multilineMode === '|' ? multilineLines.join('\n').trimEnd() : multilineLines.join(' ').trim();
+        meta[multilineKey] = joined;
+        multilineKey = null;
+        multilineMode = null;
+        multilineLines = [];
+    }
     for (const line of yamlLines) {
+        // If we are collecting a multiline block, check if this line is a continuation
+        if (multilineKey !== null) {
+            if (line.startsWith(' ') || line.startsWith('\t')) {
+                multilineLines.push(line.trim());
+                continue;
+            } else {
+                flushMultiline();
+                // Fall through to parse this line as a new key
+            }
+        }
         const colonIdx = line.indexOf(':');
         if (colonIdx < 0) continue;
         const key = line.slice(0, colonIdx).trim();
@@ -210,10 +236,16 @@ function parseYamlFrontmatter(content) {
         const arrMatch = rawVal.match(/^\[(.+)\]$/);
         if (arrMatch) {
             meta[key] = arrMatch[1].split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
+        } else if (rawVal === '>' || rawVal === '|') {
+            // Start collecting a folded (>) or literal (|) block scalar
+            multilineKey = key;
+            multilineMode = rawVal;
+            multilineLines = [];
         } else {
             meta[key] = rawVal.replace(/^"|"$/g, '');
         }
     }
+    flushMultiline();
     return { meta, body: content.slice(match[0].length).trim() };
 }
 
@@ -300,7 +332,7 @@ function groupLogicalPrompts(variants) {
             id: `LP-${categoryCode}-${conceptSlug}`,
             categoryCode,
             title: TITLE_OVERRIDES[conceptSlug] ?? groupVariants[0].title,
-            description: groupVariants[0].description,
+            description: defaultV.description,
             variantAxes: axes,
             variantIds: groupVariants.map((v) => v.id),
             defaultVariantId: defaultV.id,

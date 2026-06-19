@@ -6,7 +6,7 @@
       "domainCode": "A",
       "title": "aws-expert",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Assist with AWS topics inside a repository — investigating infrastructure, debugging Lambda/ECS/serverless issues, writing or reviewing IaC (CDK/CloudFormation/Terraform), designing or reviewing autoscaling, and explaining services (Lambda, ECS/Fargate, DynamoDB, S3, SQS, SNS, EventBridge, Kinesis, CloudWatch, IAM, SSM). Use when the user works with AWS infra/code or asks AWS \"how/why/which\" questions. Reads code/config; proposes or writes IaC only when asked. Defer repo orientation to project-navigator.",
       "tags": [
         "aws",
         "cdk",
@@ -43,7 +43,7 @@
       "domainCode": "A",
       "title": "cassandra-expert",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Assist with Apache Cassandra work inside a repository — query-driven data modeling, writing and reviewing CQL, detecting anti-patterns, and documenting schemas/keyspaces. Use when the user works with Cassandra (CQL files, schema, driver mappings) or asks Cassandra-specific questions. Reads code/CQL; writes scripts/docs only when asked.",
       "tags": [
         "cassandra",
         "cql",
@@ -76,7 +76,7 @@
       "domainCode": "A",
       "title": "code-review",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Review a code change (working diff or specified files) inside a repository with full surrounding context, and produce a structured, actionable review focused on code health. Use when the user asks to \"review my changes\", \"review this PR/diff\", \"is this ready to merge\", or \"review these files\". READ-ONLY: it reviews and reports, it does not modify code.",
       "tags": [
         "code-review",
         "diff",
@@ -106,7 +106,7 @@
       "domainCode": "A",
       "title": "config-scan",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Scan a repository's infrastructure and configuration (IaC, CI/CD, container, scaling, and runtime config) and report findings against best practices — misconfigurations, missing settings, insecure defaults, and cost/scaling risks. Use when the user asks to \"review our infra config\", \"check the CI/CD setup\", \"audit the scaling/autoscaling config\", \"is this Dockerfile/Terraform/CloudFormation sound?\". READ-ONLY: it inspects and reports; it proposes changes only when asked.",
       "tags": [
         "configuration",
         "IaC",
@@ -138,7 +138,7 @@
       "domainCode": "A",
       "title": "log-root-cause",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Analyze logs and correlate them to one or several source repositories to find the root cause of a problem, trace flow and business logic, and surface bugs/issues — driven by the user's intent (e.g. \"find the bug\", \"trace these logs through the code\", \"why did this fail?\", \"explain this flow\"). Use when the user provides logs/stack traces/error output and points at a repo or a folder of repos. Investigative and READ-ONLY by default; proposes fixes but does not modify code unless asked.",
       "tags": [
         "logs",
         "root-cause",
@@ -169,7 +169,7 @@
       "domainCode": "A",
       "title": "oracle-expert",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Assist with Oracle Database work inside a repository — understanding and documenting schemas, writing and optimizing SQL/PL-SQL, decoding ORA- errors, and reviewing data access. Use when the user works with Oracle (SQL files, migrations, PL/SQL, JDBC/ORM mappings) or asks Oracle-specific questions. Reads code/SQL; writes scripts/docs only when asked.",
       "tags": [
         "oracle",
         "sql",
@@ -202,7 +202,7 @@
       "domainCode": "A",
       "title": "project-documentation",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Generate comprehensive, accurate documentation for a service/repository from its actual contents — architecture, inputs/outputs, external services & integrations, data flow, business logic, data contracts, configuration, and project structure. Writes both a maintained set under docs/ AND a git-ignored hidden working folder (.agent-docs/) for temporary/scratch analysis. Use when the user asks to \"document this project/service\", \"create repo docs\", \"write architecture docs\", \"describe the system end to end\", or \"initialize documentation\". Produces written files; it does not just navigate (defer pure overview to project-navigator).",
       "tags": [
         "documentation",
         "architecture",
@@ -234,7 +234,7 @@
       "domainCode": "A",
       "title": "project-navigator",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Rapidly orient in an unfamiliar source repository (or a folder of several repos) and report what it is: project type, tech stack, build/run/test commands, directory structure, entry points, key configuration, and how the pieces connect. Use when the user asks to \"understand this project\", \"what is this repo\", \"give me an overview\", \"where is X\", \"what stack is this\", or before any deeper task that needs orientation. READ-ONLY: it inspects and explains, it does not modify files. Defer deep documentation generation to project-documentation and diagram creation to mermaid.",
       "tags": [
         "navigation",
         "repository",
@@ -264,7 +264,7 @@
       "domainCode": "A",
       "title": "security-audit",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Perform a defensive security audit across a repository — map the attack surface, find OWASP/SANS-class vulnerabilities, flag supply-chain risks, and produce a prioritized findings report with remediation. Use when the user asks to \"audit this repo for security\", \"find vulnerabilities\", \"is this code secure\", or \"check our dependencies\". READ-ONLY by default; proposes fixes only when asked. Defensive only — never produces exploit code.",
       "tags": [
         "security",
         "audit",
@@ -294,7 +294,7 @@
       "domainCode": "A",
       "title": "test-runner",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Generate tests for target code in a repository using the project's existing test framework and conventions, then run them and iterate until passing or until a real defect is found. Use when the user asks to \"write and run tests\", \"add tests for X and make sure they pass\", or \"increase coverage for this module\". Writes test files and executes the test command; does not change production code except to unblock an obvious test-harness issue (which it flags).",
       "tags": [
         "testing",
         "unit-tests",
@@ -326,7 +326,7 @@
       "domainCode": "D",
       "title": "drawio",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Read, interpret, and review .drawio XML diagram files found in a repository — parse structure, identify components and connections, trace flow, and explain what a diagram depicts or what changed. Use when a .drawio file needs to be understood, a PR changes a .drawio file, or architecture/flow must be extracted from one. READ-ONLY: it does not generate or modify diagrams (use the mermaid skill to create diagrams).",
       "tags": [
         "drawio",
         "diagrams",
@@ -356,7 +356,7 @@
       "domainCode": "D",
       "title": "mermaid",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Create and self-validate Mermaid diagrams that render correctly on the first attempt, and embed them into documentation. Use when the user needs any diagram — flowchart, sequence, class, state, ER, C4 architecture, Gantt — or asks to visualize a flow, architecture, or data model, especially inside repo docs. Produces Mermaid code (and writes it into Markdown docs when asked).",
       "tags": [
         "mermaid",
         "diagrams",
@@ -387,7 +387,7 @@
       "domainCode": "D",
       "title": "skill-builder",
       "version": "1.0.0",
-      "description": ">",
+      "description": "Build a complete, well-structured agent skill — a folder with SKILL.md plus supporting references, scripts, and assets — grounded in a codebase and any research/notes in the agent's working folder. Use when the user asks to \"create a skill\", \"build a skill for X\", \"scaffold a skill\", or \"turn this capability/research into a skill\". META skill: it PRODUCES a skill, it does NOT execute the capability the new skill describes.",
       "tags": [
         "skill authoring",
         "meta",
