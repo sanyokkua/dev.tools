@@ -1,314 +1,271 @@
 import {
-    createSystemPrompt,
-    createUserParametrizedPrompt,
-    extractParams,
-    filterPrompts,
-    joinPromptLines,
-    Prompt,
-    PromptCategory,
-    PromptType,
+    categoriesByDomain,
+    defaultVariant,
+    findVariantById,
+    listDomains,
+    logicalByCategory,
+    recommendedSystemPromptFor,
+    relatedOf,
     replaceParams,
-} from '@/common/prompts/prompts';
-import { promptsLibraryList } from '@/common/prompts/prompts-library';
+    searchAll,
+    skillsByDomain,
+    variantsOf,
+} from '@/common/prompts/data';
+import type { PromptsData, SkillsData } from '@/common/prompts/types';
 
-describe('promptsLibraryList assembly', () => {
-    it('assembles without throwing', () => {
-        expect(() => promptsLibraryList).not.toThrow();
-    });
-
-    it('has no prompts with LEARNING_RESOURCES category', () => {
-        const found = promptsLibraryList.filter((p) => p.category === ('learning-resources' as PromptCategory));
-        expect(found).toHaveLength(0);
-    });
-
-    it('includes the 4 language-parametrized code prompts', () => {
-        const ids = promptsLibraryList.map((p) => p.id);
-        expect(ids).toContain('userParametrizedPromptForGeneratingCode');
-        expect(ids).toContain('userParametrizedPromptForRefactoringCode');
-        expect(ids).toContain('userParametrizedPromptForTestingCode');
-        expect(ids).toContain('userParametrizedPromptForDocumentingCode');
-    });
-
-    it('all 4 language prompts have {{language}} as a parameter', () => {
-        const languagePromptIds = [
-            'userParametrizedPromptForGeneratingCode',
-            'userParametrizedPromptForRefactoringCode',
-            'userParametrizedPromptForTestingCode',
-            'userParametrizedPromptForDocumentingCode',
-        ];
-        for (const id of languagePromptIds) {
-            const p = promptsLibraryList.find((x) => x.id === id);
-            expect(p).toBeDefined();
-            expect(p?.parameters).toContain('language');
-        }
-    });
-
-    it('does not contain the deprecated conversation chain prompts', () => {
-        const ids = new Set(promptsLibraryList.map((p) => p.id));
-        const shouldBeGone = [
-            'userParametrizedPromptResearchSubtaskIdentification',
-            'userParametrizedPromptResearchFunctionalitySegregation',
-            'userParametrizedPromptResearchFoundationalSubtaskIdentification',
-            'userParametrizedPromptResearchResourceAssignment',
-            'userParametrizedPromptResearchProgressMeasurement',
-            'userParametrizedPromptResearchDependencyBasedOrderDetermination',
-            'userParametrizedPromptResearchParallelizableSubtaskIdentification',
-            'userParametrizedPromptResearchDependencyImpactAssessment',
-            'userParametrizedPromptResearchBottleneckAdjustmentRecommendations',
-            'userParametrizedPromptResearchSubtasksOverview',
-            'userParametrizedPromptResearchSubtasksAndDependenciesOverview',
-            'userParametrizedPromptResearchSolutionRelevanceConfirmation',
-            'userParametrizedPromptResearchCommonCodePatternAnalysis',
-            'userParametrizedPromptResearchCodeCustomizationGuidance',
-            'userParametrizedPromptResearchIntegrationAndAccuracyCheck',
-            'userParametrizedPromptDocumentationInlineCommentGeneration',
-        ];
-        for (const id of shouldBeGone) {
-            expect(ids.has(id)).toBe(false);
-        }
-    });
-
-    it('has no duplicate prompt IDs', () => {
-        const ids = promptsLibraryList.map((p) => p.id);
-        const uniqueIds = new Set(ids);
-        expect(uniqueIds.size).toBe(ids.length);
-    });
-});
-
-describe('filterPrompts', () => {
-    const mockPromptsList: Prompt[] = [
+const FIXTURE_PROMPTS: PromptsData = {
+    domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
+    categories: [
         {
-            id: '1',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.API_DESIGN,
-            tags: ['tag1'],
-            template: 'You are a test 1',
-            description: 'Testing Prompt 1',
+            code: 'A03',
+            domainCode: 'A',
+            slug: 'code-review',
+            title: 'Code Review',
+            recommendedSystemPromptId: 'SYS-A03-code-review',
         },
+    ],
+    logical: [
         {
-            id: '2',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.IMAGE_PROMPT_GENERATION,
-            tags: ['tag2'],
-            template: 'You are a test 2',
-            description: 'Prompt for testing',
-        },
-        {
-            id: '3',
-            type: PromptType.USER_PROMPT_PARAMETRIZED,
-            category: PromptCategory.CODE_ANALYSIS,
-            tags: ['tag1', 'tag2'],
-            template: 'Template for user',
+            id: 'LP-A03-review-change',
+            categoryCode: 'A03',
+            title: 'Review a Change',
             description: '',
+            variantAxes: ['executionContext'],
+            defaultVariantId: 'USR-A03-review-change',
+            variantIds: ['USR-A03-review-change', 'AGT-A03-review-changes'],
+        },
+    ],
+    variants: [
+        {
+            id: 'USR-A03-review-change',
+            kind: 'user',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: '',
+            template: 'Review {{language}}: {{code}}',
+            isMetaPrompt: false,
+            executionContext: 'chat',
+            model: null,
+            subVariant: null,
+            parameters: [
+                { name: 'language', suggestedValues: ['Go', 'TypeScript'], allowCustom: true },
+                { name: 'code', allowCustom: true },
+            ],
+            keywords: ['code review'],
+            recommendedSystemPromptId: 'SYS-A03-code-review',
+            relatedPromptIds: ['AGT-A03-review-changes'],
+            relatedSkillIds: [],
         },
         {
-            id: '4',
-            type: PromptType.USER_PROMPT_PARAMETRIZED,
-            category: PromptCategory.API_DESIGN,
-            tags: ['tag3', 'tag4'],
-            template: 'parametrized example',
-            description: 'Param',
+            id: 'AGT-A03-review-changes',
+            kind: 'agent',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: '',
+            template: 'Autonomously review {{language}}: {{code}}',
+            isMetaPrompt: false,
+            executionContext: 'agent',
+            model: null,
+            subVariant: null,
+            parameters: [
+                { name: 'language', allowCustom: true },
+                { name: 'code', allowCustom: true },
+            ],
+            keywords: ['code review', 'agent'],
+            recommendedSystemPromptId: 'SYS-A03-code-review',
+            relatedPromptIds: ['USR-A03-review-change'],
+            relatedSkillIds: [],
         },
-    ];
+        {
+            id: 'SYS-A03-code-review',
+            kind: 'system',
+            categoryCode: 'A03',
+            title: 'Code Review System Prompt',
+            description: '',
+            template: 'You are a code reviewer.',
+            isMetaPrompt: false,
+            executionContext: 'chat',
+            model: null,
+            subVariant: null,
+            parameters: [],
+            keywords: [],
+        },
+    ],
+};
 
-    test('returns all prompts when no filters are applied', () => {
-        expect(filterPrompts(mockPromptsList, {})).toHaveLength(4);
+const FIXTURE_SKILLS: SkillsData = {
+    skills: [
+        {
+            id: 'SKILL-code-review',
+            slug: 'code-review',
+            domainCode: 'A',
+            title: 'code-review',
+            version: '1.0.0',
+            description: 'Reviews code',
+            tags: ['code-review'],
+            allowedTools: ['Read', 'Grep'],
+            relatedSkillIds: [],
+            files: [{ path: 'SKILL.md', role: 'skill', content: '# skill' }],
+        },
+    ],
+};
+
+describe('selectors', () => {
+    test('listDomains returns all domains', () => {
+        expect(listDomains(FIXTURE_PROMPTS)).toHaveLength(1);
+        expect(listDomains(FIXTURE_PROMPTS)[0].code).toBe('A');
     });
 
-    test('ignores invalid filters', () => {
-        expect(filterPrompts(mockPromptsList, { promptType: 'invalid', category: 'invalid' })).toHaveLength(4);
+    test('categoriesByDomain filters by domain', () => {
+        expect(categoriesByDomain(FIXTURE_PROMPTS, 'A')).toHaveLength(1);
+        expect(categoriesByDomain(FIXTURE_PROMPTS, 'B')).toHaveLength(0);
     });
 
-    test('filters by promptType correctly', () => {
-        const result = filterPrompts(mockPromptsList, { promptType: PromptType.SYSTEM_PROMPT });
-        expect(result.every((p) => p.type === PromptType.SYSTEM_PROMPT)).toBe(true);
-        expect(result).toHaveLength(2);
+    test('logicalByCategory returns logical prompts in a category', () => {
+        expect(logicalByCategory(FIXTURE_PROMPTS, 'A03')).toHaveLength(1);
     });
 
-    test('filters by category correctly', () => {
-        const result = filterPrompts(mockPromptsList, { category: PromptCategory.API_DESIGN });
-        expect(result.every((p) => p.category === PromptCategory.API_DESIGN)).toBe(true);
-        expect(result).toHaveLength(2);
+    test('variantsOf returns variants of a logical prompt', () => {
+        const vs = variantsOf(FIXTURE_PROMPTS, 'LP-A03-review-change');
+        expect(vs).toHaveLength(2);
     });
 
-    test('filters by exact tag match', () => {
-        const result = filterPrompts(mockPromptsList, { tag: 'tag1' });
-        expect(result.every((p) => p.tags.includes('tag1'))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('defaultVariant returns the defaultVariantId variant', () => {
+        const dv = defaultVariant(FIXTURE_PROMPTS, 'LP-A03-review-change');
+        expect(dv?.id).toBe('USR-A03-review-change');
     });
 
-    test('filters by partial tag match', () => {
-        const result = filterPrompts(mockPromptsList, { tag: 'ag2' });
-        expect(result.every((p) => p.tags.some((t) => t.includes('ag2')))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('findVariantById returns correct variant', () => {
+        expect(findVariantById(FIXTURE_PROMPTS, 'AGT-A03-review-changes')?.kind).toBe('agent');
     });
 
-    test('filters by description partial match', () => {
-        const result = filterPrompts(mockPromptsList, { description: 'Prompt' });
-        expect(result.every((p) => p.description.includes('Prompt'))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('findVariantById returns undefined for missing id', () => {
+        expect(findVariantById(FIXTURE_PROMPTS, 'USR-MISSING')).toBeUndefined();
     });
 
-    test('combined filtering', () => {
-        const result = filterPrompts(mockPromptsList, {
-            promptType: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.IMAGE_PROMPT_GENERATION,
-            tag: 'tag2',
-            description: 'testing',
-        });
-        expect(result).toHaveLength(1);
-        const [item] = result;
-        expect(item.type).toBe(PromptType.SYSTEM_PROMPT);
-        expect(item.category).toBe(PromptCategory.IMAGE_PROMPT_GENERATION);
-        expect(item.tags).toContain('tag2');
-        expect(item.description).toBe('Prompt for testing');
-    });
-});
-
-describe('createSystemPrompt', () => {
-    test('creates a valid system prompt object', () => {
-        const prompt = createSystemPrompt(
-            '1',
-            'Test system',
-            PromptCategory.SECURITY_ANALYSIS,
-            'Security check',
-            'sec',
-            'analysis',
-        );
-        expect(prompt).toEqual({
-            id: '1',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.SECURITY_ANALYSIS,
-            tags: ['sec', 'analysis'],
-            template: 'Test system',
-            description: 'Security check',
-        });
-    });
-});
-
-describe('extractParams', () => {
-    test('extracts single parameter', () => {
-        expect(extractParams('Hello {{name}}!')).toEqual(['name']);
+    test('recommendedSystemPromptFor looks up via category', () => {
+        const sys = recommendedSystemPromptFor(FIXTURE_PROMPTS, 'A03');
+        expect(sys?.id).toBe('SYS-A03-code-review');
     });
 
-    test('extracts multiple parameters and removes duplicates', () => {
-        const input = 'A {{one}}, B {{two}}, C {{one}}';
-        const result = extractParams(input).sort();
-        expect(result).toEqual(['one', 'two']);
+    test('relatedOf returns related prompt variants', () => {
+        const userV = findVariantById(FIXTURE_PROMPTS, 'USR-A03-review-change')!;
+        const related = relatedOf(FIXTURE_PROMPTS, userV);
+        expect(related.map((r) => r.id)).toContain('AGT-A03-review-changes');
     });
 
-    test('ignores empty braces and whitespace', () => {
-        expect(extractParams('Empty {{  }} and {{ val }}')).toEqual(['val']);
+    test('skillsByDomain filters skills by domain', () => {
+        expect(skillsByDomain(FIXTURE_SKILLS, 'A')).toHaveLength(1);
+        expect(skillsByDomain(FIXTURE_SKILLS, 'D')).toHaveLength(0);
     });
 
-    test('returns empty array when no params', () => {
-        expect(extractParams('No parameters here')).toEqual([]);
+    test('searchAll finds prompt by title keyword', () => {
+        const results = searchAll(FIXTURE_PROMPTS, FIXTURE_SKILLS, 'code review');
+        expect(results.length).toBeGreaterThan(0);
+        expect(results[0].type).toMatch(/prompt|skill/);
+    });
+
+    test('searchAll finds skill by description', () => {
+        const results = searchAll(FIXTURE_PROMPTS, FIXTURE_SKILLS, 'Reviews code');
+        const skillResult = results.find((r) => r.type === 'skill');
+        expect(skillResult).toBeDefined();
     });
 });
 
 describe('replaceParams', () => {
-    const template = 'User: {{ user }}, Role: {{role}}';
-
-    test('replaces parameters with given values', () => {
-        const result = replaceParams(template, { user: 'Alice', role: 'Admin' });
-        expect(result).toBe('User: Alice, Role: Admin');
+    test('replaces all params with values', () => {
+        const result = replaceParams('Review {{language}}: {{code}}', { language: 'Go', code: 'func main(){}' });
+        expect(result).toBe('Review Go: func main(){}');
     });
 
-    test('replaces missing values with empty string', () => {
-        const result = replaceParams(template, { user: 'Bob' });
-        expect(result).toBe('User: Bob, Role: ');
+    test('leaves unmatched params unreplaced', () => {
+        const result = replaceParams('Review {{language}}', {});
+        expect(result).toBe('Review {{language}}');
     });
 
-    test('handles multiple occurrences', () => {
-        const t = '{{x}} and {{x}}';
-        expect(replaceParams(t, { x: 'repeat' })).toBe('repeat and repeat');
+    test('handles empty values', () => {
+        const result = replaceParams('Hello {{name}}', { name: '' });
+        expect(result).toBe('Hello ');
     });
 });
 
-describe('createUserParametrizedPrompt', () => {
-    test('creates parametrized prompt with parameters field', () => {
-        const input = 'Run {{ cmd }} on {{ target }}';
-        const prompt = createUserParametrizedPrompt(
-            '2',
-            input,
-            PromptCategory.CI_CD_PIPELINE,
-            'CI/CD execution',
-            'ci',
-            'pipeline',
-        );
-        expect(prompt.id).toBe('2');
-        expect(prompt.type).toBe(PromptType.USER_PROMPT_PARAMETRIZED);
-        expect(prompt.parameters.sort()).toEqual(['cmd', 'target']);
-        expect(prompt.template).toBe(input);
-        expect(prompt.tags).toEqual(['ci', 'pipeline']);
-        expect(prompt.description).toBe('CI/CD execution');
-    });
-});
+describe('multi-axis (model) — inherited system prompt', () => {
+    const D02_PROMPTS: PromptsData = {
+        domains: [{ code: 'D', slug: 'ai-flows', title: 'AI Flows', description: '' }],
+        categories: [
+            {
+                code: 'D02',
+                domainCode: 'D',
+                slug: 'image-generation',
+                title: 'Image Generation',
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+            },
+        ],
+        logical: [
+            {
+                id: 'LP-D02-imggen',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                variantAxes: ['model'],
+                defaultVariantId: 'USR-D02-imggen-flux2',
+                variantIds: ['USR-D02-imggen-flux2', 'USR-D02-imggen-gptImage'],
+            },
+        ],
+        variants: [
+            {
+                id: 'USR-D02-imggen-flux2',
+                kind: 'user',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                template: '…',
+                isMetaPrompt: true,
+                executionContext: 'chat',
+                model: 'FLUX.2',
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+                relatedPromptIds: [],
+                relatedSkillIds: [],
+            },
+            {
+                id: 'USR-D02-imggen-gptImage',
+                kind: 'user',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                template: '…',
+                isMetaPrompt: true,
+                executionContext: 'chat',
+                model: 'GPT Image',
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+                relatedPromptIds: [],
+                relatedSkillIds: [],
+            },
+            {
+                id: 'SYS-D02-imggen',
+                kind: 'system',
+                categoryCode: 'D02',
+                title: 'Image Gen System',
+                description: '',
+                template: 'You are…',
+                isMetaPrompt: false,
+                executionContext: 'chat',
+                model: null,
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+            },
+        ],
+    };
 
-describe('joinPromptLines', () => {
-    const lines = ['first', 'second'];
-
-    test('joins with dashes by default', () => {
-        const joined = joinPromptLines(lines);
-        expect(joined).toBe('  — first\n  — second');
-    });
-
-    test('joins without dashes when useDash=false', () => {
-        const joined = joinPromptLines(lines, false);
-        expect(joined).toBe('  first\n  second');
-    });
-
-    test('returns empty string for null or undefined', () => {
-        expect(joinPromptLines(null)).toBe('');
-        expect(joinPromptLines(undefined)).toBe('');
-    });
-
-    test('returns empty string for empty array', () => {
-        expect(joinPromptLines([])).toBe('');
-    });
-});
-
-describe('promptsLibraryList integrity', () => {
-    it('every prompt has a non-empty id, type, category, template, description', () => {
-        for (const p of promptsLibraryList) {
-            expect(p.id.length).toBeGreaterThan(0);
-            expect(p.type.length).toBeGreaterThan(0);
-            expect(p.category.length).toBeGreaterThan(0);
-            expect(p.template.length).toBeGreaterThan(0);
-            expect(p.description.length).toBeGreaterThan(0);
-        }
-    });
-
-    it('every parametrized prompt whose template contains {{...}} declares those params', () => {
-        const parametrized = promptsLibraryList.filter(
-            (p) =>
-                p.type === PromptType.USER_PROMPT_PARAMETRIZED ||
-                p.type === PromptType.USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED,
-        );
-        for (const p of parametrized) {
-            const inTemplate = extractParams(p.template);
-            if (inTemplate.length > 0) {
-                expect(p.parameters?.length ?? 0).toBeGreaterThan(0);
-            }
-        }
-    });
-
-    it('every {{param}} in a parametrized prompt template is listed in parameters', () => {
-        const parametrized = promptsLibraryList.filter(
-            (p) =>
-                p.type === PromptType.USER_PROMPT_PARAMETRIZED ||
-                p.type === PromptType.USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED,
-        );
-        for (const p of parametrized) {
-            const inTemplate = extractParams(p.template);
-            for (const param of inTemplate) {
-                expect(p.parameters).toContain(param);
-            }
-        }
-    });
-
-    it('total library count is in expected range after curation (55–75)', () => {
-        expect(promptsLibraryList.length).toBeGreaterThanOrEqual(55);
-        expect(promptsLibraryList.length).toBeLessThanOrEqual(75);
+    test('recommended system prompt is inherited via category for model variants', () => {
+        const sys = recommendedSystemPromptFor(D02_PROMPTS, 'D02');
+        expect(sys?.id).toBe('SYS-D02-imggen');
     });
 });

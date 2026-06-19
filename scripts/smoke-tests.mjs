@@ -252,38 +252,11 @@ await runSmoke('markdown-mermaid', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__markdown_mermaid_error.png` });
 });
 
-// ── 7. Prompts Collection — AutoTextarea auto-grow ───────────────────────────
+// ── 7. Prompts Collection — stub page renders (T2.x will restore full smoke) ─
 await runSmoke('prompts-autogrow', async (page) => {
     await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.prompts-page', { timeout: 5000 });
     await page.screenshot({ path: `${OUT}/smoke__prompts__before.png` });
-
-    // Click the first prompt item whose hint shows "N params" (parametrized prompts only)
-    await page.waitForSelector('.prompt-list-item', { timeout: 5000 });
-    const paramItem = page
-        .locator('.prompt-list-item')
-        .filter({ has: page.locator('.prompt-list-hint', { hasText: /\d+ param/ }) })
-        .first();
-    await paramItem.click();
-
-    // Wait for the detail panel with an AutoTextarea
-    await page.waitForSelector('.textarea-auto', { timeout: 5000 });
-
-    const textarea = page.locator('.field .textarea-auto').first();
-    const initialHeight = await textarea.evaluate((el) => el.getBoundingClientRect().height);
-
-    // Type a multi-line value to trigger JS auto-grow (scrollHeight > initialHeight)
-    await textarea.click();
-    await textarea.fill(
-        'This is a sufficiently long value to trigger the AutoTextarea auto-grow behavior.\nLine two adds more content.\nLine three makes it taller.',
-    );
-    await page.waitForTimeout(200);
-
-    const newHeight = await textarea.evaluate((el) => el.getBoundingClientRect().height);
-    if (initialHeight > 0 && newHeight <= initialHeight) {
-        throw new Error(`AutoTextarea did not grow: was ${initialHeight}px, now ${newHeight}px`);
-    }
-
-    await page.screenshot({ path: `${OUT}/smoke__prompts__after.png` });
 });
 
 // ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
