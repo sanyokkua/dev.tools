@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 
 export interface PromptsPageState {
     type: 'prompts' | 'skills';
+    view: 'catalog' | null;
     domainSlug: string | null;
     categorySlug: string | null;
     selectedId: string | null; // LogicalPrompt.id (prompts) or Skill.slug (skills)
@@ -23,12 +24,14 @@ export function parseStateFromQuery(query: ParsedUrlQuery): PromptsPageState {
     const variantContext = rawVariant === 'chat' ? 'chat' : rawVariant === 'agent' ? 'agent' : null;
     const variantModel = typeof query['model'] === 'string' ? query['model'] : null;
     const variantSub = typeof query['sub'] === 'string' ? query['sub'] : null;
-    return { type, domainSlug, categorySlug, selectedId, variantContext, variantModel, variantSub };
+    const view = query['view'] === 'catalog' ? 'catalog' : null;
+    return { type, view, domainSlug, categorySlug, selectedId, variantContext, variantModel, variantSub };
 }
 
 export function stateToQuery(state: PromptsPageState): Record<string, string> {
     const q: Record<string, string> = {};
     if (state.type === 'skills') q['type'] = 'skills';
+    if (state.view === 'catalog') q['view'] = 'catalog';
     if (state.domainSlug) q['domain'] = state.domainSlug;
     if (state.categorySlug) q['category'] = state.categorySlug;
     if (state.selectedId) {

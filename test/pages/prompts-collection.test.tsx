@@ -124,6 +124,7 @@ describe('parseStateFromQuery', () => {
         const state = parseStateFromQuery({});
         expect(state).toEqual({
             type: 'prompts',
+            view: null,
             domainSlug: null,
             categorySlug: null,
             selectedId: null,
@@ -141,6 +142,7 @@ describe('parseStateFromQuery', () => {
         });
         expect(state).toEqual({
             type: 'prompts',
+            view: null,
             domainSlug: 'software-engineering',
             categorySlug: 'code-review',
             selectedId: 'LP-A03-review',
@@ -154,6 +156,7 @@ describe('parseStateFromQuery', () => {
         const state = parseStateFromQuery({ type: 'skills', domain: 'software-engineering', skill: 'code-review' });
         expect(state).toEqual({
             type: 'skills',
+            view: null,
             domainSlug: 'software-engineering',
             categorySlug: null,
             selectedId: 'code-review',
@@ -179,7 +182,7 @@ describe('parseStateFromQuery', () => {
 // -------------------------------------------------------------------
 
 describe('stateToQuery', () => {
-    const nullVariantFields = { variantContext: null, variantModel: null, variantSub: null } as const;
+    const nullVariantFields = { view: null, variantContext: null, variantModel: null, variantSub: null } as const;
 
     it('prompts mode → no type key in output', () => {
         const q = stateToQuery({

@@ -26,6 +26,7 @@ const PromptsCollectionView: React.FC = () => {
     const [skillsData, setSkillsData] = useState<SkillsData | null>(null);
     const [pageState, setPageState] = useState<PromptsPageState>({
         type: 'prompts',
+        view: null,
         domainSlug: null,
         categorySlug: null,
         selectedId: null,
@@ -110,6 +111,7 @@ const PromptsCollectionView: React.FC = () => {
         (type: 'prompts' | 'skills') => {
             const next: PromptsPageState = {
                 type,
+                view: null,
                 domainSlug: null,
                 categorySlug: null,
                 selectedId: null,

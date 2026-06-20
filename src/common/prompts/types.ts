@@ -83,3 +83,20 @@ export interface PromptsData {
 export interface SkillsData {
     skills: Skill[];
 }
+
+export interface CatalogRow {
+    id: string;
+    kind: 'prompt' | 'skill';
+    title: string;
+    domainCode: string;
+    domainSlug: string;
+    domainTitle: string;
+    categorySlug: string | null;
+    categoryTitle: string;
+    isMetaPrompt: boolean;
+    hasChat: boolean;
+    hasAgent: boolean;
+    hasModel: boolean;
+    modelCount: number;
+    variantSummary: string;
+}
