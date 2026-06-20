@@ -41,6 +41,7 @@ const ROUTES = [
     '/git-cheat-sheet',
     '/llm-vram-calculator',
     '/prompts-collection',
+    '/prompts-collection?view=catalog',
     '/mermaid-editor',
     '/diff',
     '/html-editor',

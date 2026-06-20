@@ -1132,6 +1132,77 @@ await runSmoke('sidebar-persist-expand', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__sidebar__persisted.png` });
 });
 
+// ── 7i. Prompts Collection — catalog view opens via ?view=catalog ─────────────
+await runSmoke('prompts-catalog-open', async (page) => {
+    await page.goto(BASE + '/prompts-collection?view=catalog', { waitUntil: 'networkidle' });
+
+    const backBtn = page.locator('button', { hasText: /back/i });
+    if (!(await backBtn.count())) throw new Error('"Back" button not found in catalog view');
+
+    await page.waitForSelector('.pc-catalog-table', { timeout: 8000 });
+    const rows = page.locator('.pc-catalog-row');
+    const rowCount = await rows.count();
+    if (rowCount === 0) throw new Error('Catalog table rendered with 0 rows');
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__catalog__open.png` });
+});
+
+// ── 7j. Prompts Collection — catalog row click → detail with correct tabs ────
+await runSmoke('prompts-catalog-row-click', async (page) => {
+    await page.goto(BASE + '/prompts-collection?view=catalog', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.pc-catalog-row', { timeout: 8000 });
+
+    const rows = page.locator('.pc-catalog-row');
+    const count = await rows.count();
+    let clicked = false;
+    for (let i = 0; i < Math.min(count, 10); i++) {
+        const typeCell = rows.nth(i).locator('td').nth(2);
+        const typeText = await typeCell.textContent();
+        if (typeText && !typeText.includes('skill')) {
+            await rows.nth(i).click();
+            clicked = true;
+            break;
+        }
+    }
+    if (!clicked) {
+        await rows.first().click();
+    }
+
+    await page.waitForTimeout(400);
+
+    const domainTabs = page.locator('[role="tab"]');
+    if (!(await domainTabs.count())) throw new Error('Domain tabs not visible after catalog row click');
+
+    const url = page.url();
+    if (url.includes('view=catalog')) throw new Error(`URL still contains "view=catalog" after row click: ${url}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__catalog__row.png` });
+});
+
+// ── 7k. Prompts Collection — catalog facet filter reduces rows ────────────────
+await runSmoke('prompts-catalog-facet', async (page) => {
+    await page.goto(BASE + '/prompts-collection?view=catalog', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.pc-catalog-table', { timeout: 8000 });
+
+    const allRows = page.locator('.pc-catalog-row');
+    const totalCount = await allRows.count();
+
+    const skillChip = page.locator('.pc-catalog-facets .chip', { hasText: /🧩 skill/ });
+    if (!(await skillChip.count())) {
+        process.stdout.write('(skill facet chip not found — skipping) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__catalog__facet__skipped.png` });
+        return;
+    }
+    await skillChip.click();
+    await page.waitForTimeout(300);
+
+    const filteredCount = await page.locator('.pc-catalog-row').count();
+    if (filteredCount >= totalCount)
+        throw new Error(`Facet filter did not reduce rows: ${filteredCount} >= ${totalCount}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__catalog__facet.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
