@@ -320,19 +320,19 @@ describe('PromptListItem META badge', () => {
     it('shows META badge when isMetaPrompt=true', () => {
         const variants = [makeVariant({ isMetaPrompt: true })];
         render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
-        expect(screen.getByText('META')).toBeInTheDocument();
+        expect(screen.getByText('⚗ meta')).toBeInTheDocument();
     });
 
     it('shows META badge when categoryCode is a META code (isMetaPrompt not set)', () => {
         const variants = [makeVariant({ categoryCode: 'D02', isMetaPrompt: undefined })];
         render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
-        expect(screen.getByText('META')).toBeInTheDocument();
+        expect(screen.getByText('⚗ meta')).toBeInTheDocument();
     });
 
     it('does NOT show META badge for non-META variants', () => {
         const variants = [makeVariant({ isMetaPrompt: false })];
         render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
-        expect(screen.queryByText('META')).not.toBeInTheDocument();
+        expect(screen.queryByText('⚗ meta')).not.toBeInTheDocument();
     });
 });
 

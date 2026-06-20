@@ -1,3 +1,4 @@
+import { isMetaPrompt } from '@/common/prompts/meta';
 import type { LogicalPrompt, PromptVariant } from '@/common/prompts/types';
 import React from 'react';
 
@@ -8,13 +9,11 @@ interface Props {
     onClick: () => void;
 }
 
-const META_CODES = new Set(['D01', 'D02', 'D03', 'D05', 'D06']);
-
 const PromptListItem: React.FC<Props> = ({ logical, variants, selected, onClick }) => {
     const hasAgent = variants.some((v) => v.executionContext === 'agent');
     const hasChat = variants.some((v) => v.executionContext === 'chat' || v.kind === 'user');
     const models = [...new Set(variants.map((v) => v.model).filter(Boolean))];
-    const isMeta = variants.some((v) => v.isMetaPrompt ?? META_CODES.has(v.categoryCode));
+    const isMeta = variants.some((v) => isMetaPrompt(v));
 
     return (
         <div
@@ -36,7 +35,7 @@ const PromptListItem: React.FC<Props> = ({ logical, variants, selected, onClick 
                         🎨 {models.length} model{models.length > 1 ? 's' : ''}
                     </span>
                 )}
-                {isMeta && <span className="pc-tag pc-tag-meta">META</span>}
+                {isMeta && <span className="pc-tag pc-tag-meta">⚗ meta</span>}
             </div>
         </div>
     );

@@ -179,12 +179,12 @@ describe('PromptDetailPanel — 8 sections render', () => {
 
     it('S8 META badge: shown for META variant', () => {
         render(<PromptDetailPanel logical={logical} variant={metaVariant} domain={dom} category={cat} />);
-        expect(screen.getByText('META')).toBeInTheDocument();
+        expect(screen.getByText('⚗ Meta-prompt · outputs a prompt')).toBeInTheDocument();
     });
 
     it('S8 META badge: NOT shown for non-META variant', () => {
         setup();
-        expect(screen.queryByText('META')).not.toBeInTheDocument();
+        expect(screen.queryByText('⚗ Meta-prompt · outputs a prompt')).not.toBeInTheDocument();
     });
 });
 

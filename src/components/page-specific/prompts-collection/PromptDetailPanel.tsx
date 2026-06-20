@@ -1,4 +1,5 @@
 import { buildSysPromptHref, replaceParams } from '@/common/prompts/data';
+import { isMetaPrompt } from '@/common/prompts/meta';
 import type { Category, Domain, LogicalPrompt, PromptVariant } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
@@ -11,8 +12,6 @@ interface Props {
     domain: Domain | null;
     category: Category | null;
 }
-
-const META_CODES = new Set(['D01', 'D02', 'D03', 'D05', 'D06']);
 
 const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
     const { showToast } = useToast();
@@ -57,7 +56,7 @@ const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
         );
     }
 
-    const isMeta = variant.isMetaPrompt ?? META_CODES.has(variant.categoryCode);
+    const isMeta = isMetaPrompt(variant);
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
     const sysId = variant.recommendedSystemPromptId;
     const sysHref =
@@ -78,7 +77,7 @@ const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
                     <span className={`pc-tag${variant.executionContext === 'agent' ? ' pc-tag-alt' : ''}`}>
                         {variant.executionContext === 'agent' ? 'agent' : 'chat'}
                     </span>
-                    {isMeta && <span className="pc-tag pc-tag-meta">META</span>}
+                    {isMeta && <span className="pc-tag pc-tag-meta">⚗ Meta-prompt · outputs a prompt</span>}
                 </div>
             </div>
 
