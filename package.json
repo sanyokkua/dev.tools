@@ -11,6 +11,7 @@
         "lint:fix": "next lint --fix",
         "prepare": "husky",
         "test": "jest --coverage --detectOpenHandles",
+        "test:fast": "jest --detectOpenHandles",
         "clean": "tsc --build --clean && rm -rf coverage && rm -rf package && rm -rf devtools-* && rm -rf out",
         "check:format": "prettier --check .",
         "check:lint": "eslint",

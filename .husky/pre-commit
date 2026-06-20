@@ -1,1 +1,1 @@
-npm run format && git add . && npm run check:lint && npm test
+npm run format && git add . && npm run check:lint && npm run test:fast
