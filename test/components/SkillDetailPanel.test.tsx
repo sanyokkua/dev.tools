@@ -102,7 +102,6 @@ describe('SkillDetailPanel', () => {
         render(<SkillDetailPanel skill={FIXTURE_SKILL} skillsData={FIXTURE_SKILLS_DATA} />);
         expect(screen.getByText('SKILL.md')).toBeInTheDocument();
         expect(screen.getByText('helper.js')).toBeInTheDocument();
-        // Each file has Copy and Download buttons
         const copyBtns = screen.getAllByRole('button', { name: /Copy/ });
         expect(copyBtns).toHaveLength(2);
     });

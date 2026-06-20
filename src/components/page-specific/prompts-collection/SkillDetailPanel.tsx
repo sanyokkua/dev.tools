@@ -69,7 +69,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
 
     return (
         <div className="pc-detail" role="region" aria-label={skill.title}>
-            {/* Header */}
             <div className="pc-detail-header-row">
                 <div className="pc-detail-header-main">
                     <h2 className="pc-detail-title">{skill.title}</h2>
@@ -80,12 +79,10 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 <span className="pc-tag">🧩 Skill</span>
             </div>
 
-            {/* Description */}
             <div className="pc-detail-section">
                 <p className="pc-detail-description">{skill.description}</p>
             </div>
 
-            {/* Required Tools */}
             {skill.allowedTools.length > 0 && (
                 <div className="pc-detail-section">
                     <h3 className="pc-section-heading">Required Tools</h3>
@@ -99,7 +96,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 </div>
             )}
 
-            {/* Tags */}
             {skill.tags.length > 0 && (
                 <div className="pc-detail-section">
                     <h3 className="pc-section-heading">Tags</h3>
@@ -113,7 +109,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 </div>
             )}
 
-            {/* Related Skills */}
             {relatedSkills.length > 0 && (
                 <div className="pc-detail-section">
                     <h3 className="pc-section-heading">Related Skills</h3>
@@ -132,7 +127,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 </div>
             )}
 
-            {/* Files */}
             <div className="pc-detail-section">
                 <h3 className="pc-section-heading">Files</h3>
                 <div className="pc-skill-files">
@@ -165,7 +159,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 </div>
             </div>
 
-            {/* Install for */}
             <div className="pc-detail-section">
                 <h3 className="pc-section-heading">Install for</h3>
                 <SegmentedControl
@@ -194,7 +187,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
                 </div>
             </div>
 
-            {/* Download .zip */}
             <div className="pc-skill-zip-section">
                 <button
                     type="button"
