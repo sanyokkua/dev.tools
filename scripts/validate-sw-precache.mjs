@@ -8,7 +8,7 @@
 //
 // Prerequisite: npm run build must have completed first (requires public/sw.js)
 // Wired as:     npm run validate:sw
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 
 const ROUTES = [
     '/',
@@ -59,3 +59,29 @@ if (missing.length) {
     process.exit(1);
 }
 console.log(`sw.js precache OK — all ${ROUTES.length} routes covered.`);
+
+// ── Lazy data chunk check ─────────────────────────────────────────────────────
+// The generated prompts/skills JSON is dynamically imported; webpack bundles it
+// as chunks under out/_next/static/chunks/. Workbox precaches anything < 8 MB.
+// Verify every JS chunk > 50 KB (likely a feature/data bundle) is in the precache.
+const chunksDir = 'out/_next/static/chunks';
+let chunkFiles;
+try {
+    chunkFiles = readdirSync(chunksDir).filter((f) => f.endsWith('.js'));
+} catch {
+    console.error('Could not read ' + chunksDir + ' — run npm run build first');
+    process.exit(1);
+}
+
+const largeChunks = chunkFiles.filter((f) => statSync(`${chunksDir}/${f}`).size > 50 * 1024);
+const uncached = largeChunks.filter((f) => !urls.some((u) => u.endsWith(f)));
+
+if (uncached.length > 0) {
+    console.error('sw.js precache is missing large JS chunks (> 50 KB):');
+    uncached.forEach((f) => {
+        const kb = Math.round(statSync(`${chunksDir}/${f}`).size / 1024);
+        console.error(`  ${f}  (${kb} KB)`);
+    });
+    process.exit(1);
+}
+console.log(`sw.js precache OK — ${largeChunks.length} large chunk(s) covered.`);

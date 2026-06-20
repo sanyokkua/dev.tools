@@ -43,6 +43,7 @@ const ROUTES = [
     '/prompts-collection',
     '/prompts-collection?view=catalog',
     '/prompts-collection?type=skills',
+    '/prompts-collection?domain=software-engineering&category=code-generation&prompt=LP-A01-implement',
     '/mermaid-editor',
     '/diff',
     '/html-editor',

@@ -12,8 +12,10 @@ const IndexPage: React.FC = () => {
         <div className="prompts-page">
             <div className="prompts-page-about">
                 <ToolAbout routeKey="prompts-collection">
-                    Browse a curated library of reusable LLM prompts with variants, fill parameters, and copy. Includes
-                    a skills catalog with per-agent install instructions.
+                    Browse prompts organized by domain and category. Fill editable parameters — predefined picks or free
+                    text — switch between chat and agent variants, copy filled prompts or raw templates, and share
+                    stable deep links. Includes a browse-all catalog and a skills library with per-agent install guides
+                    and file downloads.
                 </ToolAbout>
             </div>
             <PromptsCollectionView />

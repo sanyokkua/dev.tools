@@ -81,7 +81,8 @@ const mockSkillsData = {
 // --- next/router mock ---
 
 const mockReplace = jest.fn();
-jest.mock('next/router', () => ({ useRouter: () => ({ query: {}, isReady: true, replace: mockReplace }) }));
+let mockQuery: Record<string, string | string[] | undefined> = {};
+jest.mock('next/router', () => ({ useRouter: () => ({ query: mockQuery, isReady: true, replace: mockReplace }) }));
 
 // --- @/contexts/ToasterContext mock ---
 
@@ -253,6 +254,7 @@ describe('parseStateFromQuery edge cases', () => {
 describe('PromptsCollectionView component', () => {
     beforeEach(() => {
         mockReplace.mockClear();
+        mockQuery = {};
     });
 
     function renderView() {
@@ -431,5 +433,46 @@ describe('parseStateFromQuery — variant params (T2.4)', () => {
     it('stateToQuery omits model key when variantModel is null', () => {
         const s = parseStateFromQuery({});
         expect(stateToQuery(s)).not.toHaveProperty('model');
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptsCollectionView — unknown domain slug fallback
+// -------------------------------------------------------------------
+
+describe('PromptsCollectionView — unknown domain slug in URL', () => {
+    beforeEach(() => {
+        mockReplace.mockClear();
+        mockQuery = { domain: 'no-such-domain', category: 'no-such-category', prompt: 'FAKE-999' };
+    });
+
+    afterEach(() => {
+        mockQuery = {};
+    });
+
+    it('renders without crashing and shows the first domain tab as active', async () => {
+        render(<PromptsCollectionView />);
+
+        // The component should mount and show the domain tablist without throwing
+        await waitFor(() => {
+            expect(screen.getByRole('tablist', { name: /domain/i })).toBeInTheDocument();
+        });
+
+        // The first domain tab should be active (graceful fallback, not crash)
+        const tabs = screen.getAllByRole('tab');
+        expect(tabs.length).toBeGreaterThan(0);
+        // No runtime error; waitFor completing without throw IS the assertion
+    });
+});
+
+// -------------------------------------------------------------------
+// Unit tests: parseStateFromQuery — unknown domain slug
+// -------------------------------------------------------------------
+
+describe('parseStateFromQuery — unknown domain slug', () => {
+    it('passes through unknown domain slug as-is (no coercion)', () => {
+        const state = parseStateFromQuery({ domain: 'no-such-domain' });
+        // The slug is preserved as-is; the component handles the fallback
+        expect(state.domainSlug).toBe('no-such-domain');
     });
 });

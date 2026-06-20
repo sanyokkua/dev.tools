@@ -1322,6 +1322,50 @@ await runSmoke('prompts-cmdk-escape-closes', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__escaped.png` });
 });
 
+// ── PWA offline deep-link restore ─────────────────────────────────────────────
+// Only runs when TEST_PWA_OFFLINE=true (requires npm run build + npx serve out).
+// Simulates re-opening a previously visited deep link while offline: the SW
+// serves the HTML from NetworkFirst pages cache + JS chunks from precache.
+// (Cold-paste of a never-visited URL is not testable without ignoreSearch on
+// the pages cache — see T4.1 notes. This covers the realistic bookmark case.)
+if (process.env.TEST_PWA_OFFLINE === 'true') {
+    await runSmoke('prompts-offline-pwa', async (page) => {
+        const DOMAIN_SLUG = 'software-engineering';
+        const CATEGORY_SLUG = 'code-generation';
+        const PROMPT_ID = 'LP-A01-implement';
+        const deepLink = `${BASE}/prompts-collection?domain=${DOMAIN_SLUG}&category=${CATEGORY_SLUG}&prompt=${PROMPT_ID}`;
+
+        // 1. Visit the root shell to install and activate the SW.
+        await page.goto(`${BASE}/prompts-collection`, { waitUntil: 'networkidle' });
+        await page.waitForFunction(
+            () =>
+                navigator.serviceWorker.controller !== null && navigator.serviceWorker.controller.state === 'activated',
+            { timeout: 30000 },
+        );
+        await page.waitForTimeout(2000); // let Workbox finish writing precache entries
+
+        // 2. Visit the exact deep link URL while online so the SW caches it in the
+        //    pages (NetworkFirst) cache under this exact cache key.
+        await page.goto(deepLink, { waitUntil: 'networkidle' });
+        await page.waitForTimeout(1000); // let the NetworkFirst cache write complete
+
+        // 3. Go offline and reload the same URL — SW serves HTML from pages cache,
+        //    JS chunks from precache, data from chunked JS bundle precache.
+        await page.context().setOffline(true);
+        await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+
+        // 4. Assert the detail panel rendered — state restored from URL query params.
+        await page.waitForSelector('.pc-detail', { timeout: 15000 });
+        const emptyCount = await page.locator('.pc-detail-empty').count();
+        if (emptyCount > 0) throw new Error('Offline deep link did not restore prompt — panel is empty');
+
+        await page.screenshot({ path: `${OUT}/smoke__prompts__offline_pwa.png` });
+
+        // 5. Restore online so subsequent tests work.
+        await page.context().setOffline(false);
+    });
+}
+
 await browser.close();
 
 if (failures.length) {
@@ -1331,4 +1375,5 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 36 interaction flows passed. Screenshots in ' + OUT);
+const totalFlows = process.env.TEST_PWA_OFFLINE === 'true' ? 37 : 36;
+console.log(`\nSMOKE OK — all ${totalFlows} interaction flows passed. Screenshots in ` + OUT);
