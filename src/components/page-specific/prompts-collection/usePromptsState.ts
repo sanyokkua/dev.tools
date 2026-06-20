@@ -7,6 +7,9 @@ export interface PromptsPageState {
     domainSlug: string | null;
     categorySlug: string | null;
     selectedId: string | null; // LogicalPrompt.id (prompts) or Skill.slug (skills)
+    variantContext: 'chat' | 'agent' | null;
+    variantModel: string | null;
+    variantSub: string | null;
 }
 
 export function parseStateFromQuery(query: ParsedUrlQuery): PromptsPageState {
@@ -16,7 +19,11 @@ export function parseStateFromQuery(query: ParsedUrlQuery): PromptsPageState {
     const promptId = typeof query['prompt'] === 'string' ? query['prompt'] : null;
     const skillSlug = typeof query['skill'] === 'string' ? query['skill'] : null;
     const selectedId = type === 'skills' ? skillSlug : promptId;
-    return { type, domainSlug, categorySlug, selectedId };
+    const rawVariant = query['variant'];
+    const variantContext = rawVariant === 'chat' ? 'chat' : rawVariant === 'agent' ? 'agent' : null;
+    const variantModel = typeof query['model'] === 'string' ? query['model'] : null;
+    const variantSub = typeof query['sub'] === 'string' ? query['sub'] : null;
+    return { type, domainSlug, categorySlug, selectedId, variantContext, variantModel, variantSub };
 }
 
 export function stateToQuery(state: PromptsPageState): Record<string, string> {
@@ -28,6 +35,9 @@ export function stateToQuery(state: PromptsPageState): Record<string, string> {
         if (state.type === 'skills') q['skill'] = state.selectedId;
         else q['prompt'] = state.selectedId;
     }
+    if (state.variantContext) q['variant'] = state.variantContext;
+    if (state.variantModel) q['model'] = state.variantModel;
+    if (state.variantSub) q['sub'] = state.variantSub;
     return q;
 }
 

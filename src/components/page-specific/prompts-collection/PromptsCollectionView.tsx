@@ -28,6 +28,9 @@ const PromptsCollectionView: React.FC = () => {
         domainSlug: null,
         categorySlug: null,
         selectedId: null,
+        variantContext: null,
+        variantModel: null,
+        variantSub: null,
     });
     const [search, setSearch] = useState('');
     const router = useRouter();
@@ -104,7 +107,15 @@ const PromptsCollectionView: React.FC = () => {
 
     const setType = useCallback(
         (type: 'prompts' | 'skills') => {
-            const next: PromptsPageState = { type, domainSlug: null, categorySlug: null, selectedId: null };
+            const next: PromptsPageState = {
+                type,
+                domainSlug: null,
+                categorySlug: null,
+                selectedId: null,
+                variantContext: null,
+                variantModel: null,
+                variantSub: null,
+            };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
         },

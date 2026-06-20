@@ -94,6 +94,30 @@ export function replaceParams(template: string, values: Record<string, string>):
     return template.replace(/\{\{(\w+)\}\}/g, (_, key) => values[key] ?? `{{${key}}}`);
 }
 
+export function selectVariant(
+    variants: PromptVariant[],
+    context?: 'chat' | 'agent' | null,
+    model?: string | null,
+    sub?: string | null,
+): PromptVariant | undefined {
+    if (!variants.length) return undefined;
+    let candidates = variants;
+
+    if (context != null && candidates.some((v) => v.executionContext != null)) {
+        const filtered = candidates.filter((v) => v.executionContext === context);
+        if (filtered.length) candidates = filtered;
+    }
+    if (model != null && candidates.some((v) => v.model != null)) {
+        const filtered = candidates.filter((v) => v.model === model);
+        if (filtered.length) candidates = filtered;
+    }
+    if (sub != null && candidates.some((v) => v.subVariant != null)) {
+        const filtered = candidates.filter((v) => v.subVariant === sub);
+        if (filtered.length) candidates = filtered;
+    }
+    return candidates[0];
+}
+
 export function buildSysPromptHref(
     sysPromptId: string,
     domainSlug: string,

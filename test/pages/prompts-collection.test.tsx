@@ -121,7 +121,15 @@ jest.mock('@/common/prompts/data', () => ({
 describe('parseStateFromQuery', () => {
     it('empty query → defaults to prompts mode with all null fields', () => {
         const state = parseStateFromQuery({});
-        expect(state).toEqual({ type: 'prompts', domainSlug: null, categorySlug: null, selectedId: null });
+        expect(state).toEqual({
+            type: 'prompts',
+            domainSlug: null,
+            categorySlug: null,
+            selectedId: null,
+            variantContext: null,
+            variantModel: null,
+            variantSub: null,
+        });
     });
 
     it('full prompts params → parses domain, category, prompt correctly', () => {
@@ -135,6 +143,9 @@ describe('parseStateFromQuery', () => {
             domainSlug: 'software-engineering',
             categorySlug: 'code-review',
             selectedId: 'LP-A03-review',
+            variantContext: null,
+            variantModel: null,
+            variantSub: null,
         });
     });
 
@@ -145,6 +156,9 @@ describe('parseStateFromQuery', () => {
             domainSlug: 'software-engineering',
             categorySlug: null,
             selectedId: 'code-review',
+            variantContext: null,
+            variantModel: null,
+            variantSub: null,
         });
     });
 
@@ -164,13 +178,27 @@ describe('parseStateFromQuery', () => {
 // -------------------------------------------------------------------
 
 describe('stateToQuery', () => {
+    const nullVariantFields = { variantContext: null, variantModel: null, variantSub: null } as const;
+
     it('prompts mode → no type key in output', () => {
-        const q = stateToQuery({ type: 'prompts', domainSlug: 'eng', categorySlug: null, selectedId: null });
+        const q = stateToQuery({
+            type: 'prompts',
+            domainSlug: 'eng',
+            categorySlug: null,
+            selectedId: null,
+            ...nullVariantFields,
+        });
         expect(q).not.toHaveProperty('type');
     });
 
     it('skills mode → type=skills key present', () => {
-        const q = stateToQuery({ type: 'skills', domainSlug: null, categorySlug: null, selectedId: null });
+        const q = stateToQuery({
+            type: 'skills',
+            domainSlug: null,
+            categorySlug: null,
+            selectedId: null,
+            ...nullVariantFields,
+        });
         expect(q['type']).toBe('skills');
     });
 
@@ -185,7 +213,13 @@ describe('stateToQuery', () => {
     });
 
     it('null fields → empty object (no keys)', () => {
-        const q = stateToQuery({ type: 'prompts', domainSlug: null, categorySlug: null, selectedId: null });
+        const q = stateToQuery({
+            type: 'prompts',
+            domainSlug: null,
+            categorySlug: null,
+            selectedId: null,
+            ...nullVariantFields,
+        });
         expect(q).toEqual({});
     });
 });
@@ -349,5 +383,49 @@ describe('PromptsCollectionView — SYS-variant deep-link fallback', () => {
         await waitFor(() => {
             expect(screen.queryByRole('status')).not.toBeInTheDocument();
         });
+    });
+});
+
+describe('parseStateFromQuery — variant params (T2.4)', () => {
+    it('variant=chat → variantContext: chat', () => {
+        const s = parseStateFromQuery({ variant: 'chat' });
+        expect(s.variantContext).toBe('chat');
+    });
+
+    it('variant=agent → variantContext: agent', () => {
+        const s = parseStateFromQuery({ variant: 'agent' });
+        expect(s.variantContext).toBe('agent');
+    });
+
+    it('variant=unknown → variantContext: null (graceful)', () => {
+        const s = parseStateFromQuery({ variant: 'unknown' });
+        expect(s.variantContext).toBeNull();
+    });
+
+    it('model=gpt-4o → variantModel: gpt-4o', () => {
+        const s = parseStateFromQuery({ model: 'gpt-4o' });
+        expect(s.variantModel).toBe('gpt-4o');
+    });
+
+    it('sub=klein → variantSub: klein', () => {
+        const s = parseStateFromQuery({ sub: 'klein' });
+        expect(s.variantSub).toBe('klein');
+    });
+
+    it('round-trip with all variant params preserves values', () => {
+        const q = { domain: 'eng', category: 'cr', prompt: 'LP-1', variant: 'agent', model: 'gpt-4o', sub: 'klein' };
+        const original = parseStateFromQuery(q);
+        const roundTripped = parseStateFromQuery(stateToQuery(original));
+        expect(roundTripped).toEqual(original);
+    });
+
+    it('stateToQuery omits variant key when variantContext is null', () => {
+        const s = parseStateFromQuery({});
+        expect(stateToQuery(s)).not.toHaveProperty('variant');
+    });
+
+    it('stateToQuery omits model key when variantModel is null', () => {
+        const s = parseStateFromQuery({});
+        expect(stateToQuery(s)).not.toHaveProperty('model');
     });
 });

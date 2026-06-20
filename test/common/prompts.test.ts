@@ -288,3 +288,68 @@ describe('multi-axis (model) — inherited system prompt', () => {
         expect(sys?.id).toBe('SYS-D02-imggen');
     });
 });
+
+import { selectVariant } from '@/common/prompts/data';
+import type { PromptVariant } from '@/common/prompts/types';
+
+const makeV = (id: string, overrides: Partial<PromptVariant> = {}): PromptVariant => ({
+    id,
+    kind: 'user',
+    categoryCode: 'A03',
+    title: id,
+    description: '',
+    template: '',
+    parameters: [],
+    keywords: [],
+    executionContext: 'chat',
+    model: null,
+    subVariant: null,
+    isMetaPrompt: false,
+    ...overrides,
+});
+
+describe('selectVariant (T2.4)', () => {
+    const chatV = makeV('chat', { executionContext: 'chat' });
+    const agentV = makeV('agent', { executionContext: 'agent' });
+    const gptV = makeV('gpt', { executionContext: 'chat', model: 'gpt-4o' });
+    const claudeV = makeV('claude', { executionContext: 'chat', model: 'claude-opus' });
+    const kleinV = makeV('klein', { executionContext: 'chat', subVariant: 'klein' });
+    const proV = makeV('pro', { executionContext: 'chat', subVariant: 'pro' });
+
+    it('single variant → returns it regardless of axes', () => {
+        expect(selectVariant([chatV], 'agent', null, null)).toBe(chatV);
+    });
+
+    it('prefers matching executionContext', () => {
+        expect(selectVariant([chatV, agentV], 'agent', null, null)).toBe(agentV);
+    });
+
+    it('falls back when requested executionContext absent', () => {
+        // only chat exists, request agent → falls back to chat
+        expect(selectVariant([chatV], 'agent', null, null)).toBe(chatV);
+    });
+
+    it('prefers matching model', () => {
+        expect(selectVariant([gptV, claudeV], null, 'gpt-4o', null)).toBe(gptV);
+    });
+
+    it('falls back when model absent', () => {
+        expect(selectVariant([gptV], null, 'unknown-model', null)).toBe(gptV);
+    });
+
+    it('prefers matching subVariant', () => {
+        expect(selectVariant([kleinV, proV], null, null, 'klein')).toBe(kleinV);
+    });
+
+    it('returns undefined for empty array', () => {
+        expect(selectVariant([], 'chat', null, null)).toBeUndefined();
+    });
+
+    it('all axis null → returns first variant', () => {
+        expect(selectVariant([agentV, chatV], null, null, null)).toBe(agentV);
+    });
+
+    // suppress unused variable warnings for unused fixtures
+    void claudeV;
+    void proV;
+});
