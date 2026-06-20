@@ -373,6 +373,60 @@ await runSmoke('prompts-open-newtab', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts__newtab.png` });
 });
 
+// ── 7e. Prompts Collection — META badge + guard note ──────────────────────────
+await runSmoke('prompts-meta-badge', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="tab"]', { timeout: 8000 });
+
+    // Find a domain tab that contains meta-prompt categories (AI & Prompt Workflows)
+    const tabs = page.locator('[role="tab"]');
+    let metaDomain = null;
+    for (let i = 0; i < (await tabs.count()); i++) {
+        const txt = await tabs.nth(i).textContent();
+        if (txt && /AI|Prompt/i.test(txt)) {
+            metaDomain = tabs.nth(i);
+            break;
+        }
+    }
+    if (!metaDomain) {
+        process.stdout.write('(AI domain tab not found — skipping meta-badge check) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__meta__skipped.png` });
+        return;
+    }
+    await metaDomain.click();
+    await page.waitForTimeout(400);
+
+    // Scan up to 20 list items for a .pc-tag-meta badge
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+    const listItems = page.locator('[role="option"]');
+    const count = await listItems.count();
+    let foundMeta = false;
+    for (let i = 0; i < Math.min(count, 20); i++) {
+        if (await listItems.nth(i).locator('.pc-tag-meta').count()) {
+            foundMeta = true;
+            await listItems.nth(i).click();
+            await page.waitForTimeout(250);
+            break;
+        }
+    }
+    if (!foundMeta) {
+        process.stdout.write('(no .pc-tag-meta badge in first 20 items — skipping guard note check) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__meta__skipped.png` });
+        return;
+    }
+
+    // Detail header must show the meta badge
+    const detailBadge = page.locator('.pc-detail .pc-tag-meta');
+    if (!(await detailBadge.count())) throw new Error('META badge missing from detail header');
+
+    // Guard note must be visible
+    const guard = page.locator('.pc-meta-guard');
+    if (!(await guard.count())) throw new Error('.pc-meta-guard not found in detail panel for META prompt');
+    if (!(await guard.isVisible())) throw new Error('.pc-meta-guard is not visible');
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__meta__badge.png` });
+});
+
 // ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
 await runSmoke('json-formatter-query', async (page) => {
     await page.goto(BASE + '/json-formatter', { waitUntil: 'networkidle' });
