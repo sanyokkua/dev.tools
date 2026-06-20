@@ -10,10 +10,12 @@ const IndexPage: React.FC = () => {
     }, [setPageTitle]);
     return (
         <div className="prompts-page">
-            <ToolAbout routeKey="prompts-collection">
-                Browse a curated library of reusable LLM prompts with variants, fill parameters, and copy. Includes a
-                skills catalog with per-agent install instructions.
-            </ToolAbout>
+            <div className="prompts-page-about">
+                <ToolAbout routeKey="prompts-collection">
+                    Browse a curated library of reusable LLM prompts with variants, fill parameters, and copy. Includes
+                    a skills catalog with per-agent install instructions.
+                </ToolAbout>
+            </div>
             <PromptsCollectionView />
         </div>
     );
