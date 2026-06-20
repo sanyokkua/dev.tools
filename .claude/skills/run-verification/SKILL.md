@@ -47,7 +47,7 @@ npm run dev   # leave running in a separate terminal; default port 3000
     npm run verify:ui
     ```
 
-    Expected: exits 0 — zero overflow / console-error / font / Monaco-height failures across 17 routes × 3 widths × 2 themes. Screenshots saved to `.tmp/verify-screens/`. If failures, use Chrome DevTools MCP (`mcp__plugin_chrome-devtools-mcp_chrome-devtools__*`) to inspect root cause.
+    Expected: exits 0 — zero overflow / console-error / font / Monaco-height failures across 24 routes × 3 widths × 2 themes. Screenshots saved to `.tmp/verify-screens/`. If failures, use Chrome DevTools MCP (`mcp__plugin_chrome-devtools-mcp_chrome-devtools__*`) to inspect root cause.
 
 - [ ]   5. **Stage and commit**:
 

@@ -1,80 +1,225 @@
 # How to Add Prompts to the Collection
 
-## Source location
-
-All prompt data lives in `src/common/prompts/`:
-
-| File                       | Purpose                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| `prompts.ts`               | `PromptType` enum, `PromptCategory` enum, `Prompt` / `PromptParametrized` types |
-| `system-prompts.ts`        | System prompt entries                                                           |
-| `user-prompts.ts`          | User prompt entries                                                             |
-| `dev-chat-user-prompts.ts` | Conversation-focused user prompt entries                                        |
-| `prompts-library.ts`       | Aggregates all three arrays, sorts by `id`, exports `promptsLibraryList`        |
+Prompt data lives in `content/prompts-collection/` as Markdown files. Adding a prompt means creating one file; no TypeScript editing is required. After the file is created, run `npm run ingest:prompts` to regenerate the JSON the UI reads at runtime.
 
 ---
 
-## PromptType values
+## Directory layout
 
-| Value                                           | Use when                                                 |
-| ----------------------------------------------- | -------------------------------------------------------- |
-| `SYSTEM_PROMPT`                                 | Core instructions that define AI behavior for a session  |
-| `USER_PROMPT_PARAMETRIZED`                      | Task-focused prompts with variable placeholders          |
-| `USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED` | Conversation-oriented prompts with variable placeholders |
+```
+content/prompts-collection/
+  A_SOFTWARE_ENGINEERING/
+    SYSTEM_PROMPTS/          ← SYS-A* files
+    USER_PROMPTS/            ← USR-A* and AGT-A* files
+    SKILLS/<slug>/SKILL.md
+  B_WRITING_COMMUNICATION/
+    SYSTEM_PROMPTS/
+    USER_PROMPTS/
+  C_THINKING_PRODUCTIVITY/
+    SYSTEM_PROMPTS/
+    USER_PROMPTS/
+  D_AI_PROMPT_WORKFLOWS/
+    SYSTEM_PROMPTS/
+    USER_PROMPTS/
+    SKILLS/<slug>/SKILL.md
+```
+
+Domain code is the prefix letter of the directory name: `A`, `B`, `C`, `D`.
 
 ---
 
-## Steps
+## Domains
 
-1. **Choose the target file** based on the prompt type:
-    - `SYSTEM_PROMPT` → `system-prompts.ts`
-    - `USER_PROMPT_PARAMETRIZED` → `user-prompts.ts`
-    - `USER_PROMPT_PARAMETRIZED_CONVERSATION_FOCUSED` → `dev-chat-user-prompts.ts`
+| Code | Title                   | UI slug                 |
+| ---- | ----------------------- | ----------------------- |
+| A    | Software Engineering    | `software-engineering`  |
+| B    | Writing & Communication | `writing-communication` |
+| C    | Thinking & Productivity | `thinking-productivity` |
+| D    | AI & Prompt Workflows   | `ai-prompt-workflows`   |
 
-2. **Pick or create a `PromptCategory`**. Existing categories:
+---
 
+## Prompt file format
+
+Each prompt file contains eight sections in a fixed order. Only `# Prompt ID` is required; all others default to empty if omitted.
+
+```markdown
+# Prompt ID
+
+USR-A01-my-slug
+
+# Domain / Category
+
+Software Engineering / A01 Code Generation
+
+# Description
+
+One-line summary shown in the UI.
+
+# Prompt
+
+The prompt template text. Use {{param_name}} for placeholders.
+
+# Parameters
+
+- param_name
+    - Description: What this parameter represents.
+- second_param
+    - Description: A second parameter.
+
+# Example Values
+
+param_name:
+
+- "First example value"
+- "Second example value"
+  second_param:
+- "Example"
+
+# Notes
+
+Recommended system prompt: `SYS-A01-code-generation`
+Related: `USR-A03-review-change` `SKILL-aws-expert`
+
+# Keywords
+
+keyword1, keyword2, keyword3
+```
+
+---
+
+## Naming conventions
+
+| Type               | ID prefix           | File location     | Filename example       |
+| ------------------ | ------------------- | ----------------- | ---------------------- |
+| User prompt (chat) | `USR-<code>-<slug>` | `USER_PROMPTS/`   | `USR-A01-implement.md` |
+| Agent variant      | `AGT-<code>-<slug>` | `USER_PROMPTS/`   | `AGT-A01-implement.md` |
+| System prompt      | `SYS-<code>-<slug>` | `SYSTEM_PROMPTS/` | `SYS-A01-code-gen.md`  |
+
+- `<code>` = domain letter + two-digit category number (e.g. `A01`, `B03`, `D06`).
+- `<slug>` = kebab-case, starts with a letter (e.g. `implement`, `review-change`).
+- Filename = ID + `.md`.
+
+Category codes are listed in `content/prompts-collection/INDEX.md` (Inventory table) and `BUILD_STATE.md §2`.
+
+---
+
+## Steps: adding a user or agent prompt
+
+1. **Pick domain and category.** Consult `content/prompts-collection/INDEX.md` (Inventory section) or `BUILD_STATE.md §2` for existing category codes.
+
+2. **Create the file** in `USER_PROMPTS/`:
+
+    ```bash
+    touch content/prompts-collection/A_SOFTWARE_ENGINEERING/USER_PROMPTS/USR-A01-my-slug.md
     ```
-    CODE_GENERATION, CODE_REFACTORING, CODE_REVIEW, CODE_ANALYSIS,
-    SECURITY_ANALYSIS, DEBUGGING_ASSISTANCE, TEST_GENERATION,
-    CODE_DOCUMENTATION, ARCHITECTURE_DESIGN, TECHNICAL_RESEARCH,
-    CI_CD_PIPELINE, FRONTEND_SPECIFIC, API_DESIGN, MIGRATION_GUIDANCE,
-    UX_IMPLEMENTATION, INTERNATIONALIZATION, MONITORING_SETUP,
-    IMAGE_PROMPT_GENERATION, TEXT_PROOFREADING, TEXT_FORMATTING,
-    TEXT_TRANSLATION, TASK_RESEARCH_PROMPT, AGILE_USER_STORY_GENERATION,
-    PROMPT_ENGINEERING
+
+3. **Fill in the 8 sections** following the format above. Key rules:
+
+    - **`# Prompt ID`** — must be globally unique. Check first:
+        ```bash
+        grep -r "USR-A01-my-slug" content/
+        ```
+    - **`# Domain / Category`** — use the format `<Domain Title> / <CODE> <Category Title>`. Only the part after `/` is used for the category title.
+    - **`# Parameters`** — hard cap: **≤ 3 parameters**. Write `None` if the prompt takes no parameters.
+    - **`# Example Values`** — list values per param name, or `N/A` if no parameters.
+    - **`# Notes`** — `Recommended system prompt: \`SYS-A01-slug\``must reference an existing system prompt ID (ingestion fails otherwise).`Related:` references are advisory and silently dropped if unresolved.
+    - **`# Keywords`** — comma-separated list used for search.
+
+4. **Regenerate the JSON**:
+
+    ```bash
+    npm run ingest:prompts
     ```
 
-3. **Add the entry** following the `Prompt` / `PromptParametrized` shape:
+    Expected: `✓ Ingested: System prompts: N | User/agent prompts: N | Logical groups: N | Skills: N`
 
-    ```ts
-    {
-      id: 'my-unique-id',
-      type: PromptType.USER_PROMPT_PARAMETRIZED,
-      category: PromptCategory.CODE_GENERATION,
-      tags: ['typescript', 'generation'],
-      description: 'Generate a TypeScript function for {{task}}',
-      parameters: ['task'],
-      template: 'Write a TypeScript function that {{task}}. ...',
-    }
+5. **Verify in the UI**:
+
+    ```bash
+    npm run verify        # format + lint + tests
+    npm run verify:ui     # open /prompts-collection, confirm the prompt appears
     ```
 
-    - `id` must be unique across all three source files.
-    - `parameters` lists every `{{placeholder}}` used in `template`.
-    - For `SYSTEM_PROMPT` entries, omit `parameters` and use the `Prompt` type instead of `PromptParametrized`.
+6. **Commit**:
 
-4. **No wiring needed** — `prompts-library.ts` aggregates all three arrays automatically.
+    ```bash
+    git add -A && git commit -m "feat(prompts): add USR-A01-my-slug"
+    git status   # must be clean
+    ```
 
-5. **If adding a new `PromptCategory`**:
-    - Add the enum value to `prompts.ts`.
-    - Run `npx jest test/common/prompts.test.ts` to confirm no type errors.
+---
 
-6. **Run the full pipeline**: `npm run verify`.
+## Steps: adding a system prompt
+
+Same as above, with these differences:
+
+- Place the file in `SYSTEM_PROMPTS/`, not `USER_PROMPTS/`.
+- Use the `SYS-` prefix.
+- Write `None` for `# Parameters` — system prompts take no parameters.
+- This system prompt will be offered as the `recommendedSystemPromptId` for its category.
+
+---
+
+## Steps: adding a skill
+
+1. **Create the folder and SKILL.md**:
+
+    ```bash
+    mkdir -p content/prompts-collection/A_SOFTWARE_ENGINEERING/SKILLS/my-skill
+    touch content/prompts-collection/A_SOFTWARE_ENGINEERING/SKILLS/my-skill/SKILL.md
+    ```
+
+2. **Write `SKILL.md`** — YAML frontmatter followed by a Markdown body:
+
+    ```markdown
+    ---
+    name: My Skill Title
+    version: 1.0.0
+    description: One-line description shown in the UI.
+    tags: [tag1, tag2]
+    allowed-tools: [Bash, Read, Write]
+    references: []
+    related-skills: []
+    ---
+
+    ## Overview
+
+    Describe what this skill does and when to trigger it.
+
+    ## Steps
+
+    1. ...
+    ```
+
+    - `name`: display title in the UI.
+    - `allowed-tools`: comma-separated string or JSON array.
+    - `related-skills`: array of `slug: Description` entries.
+    - The skill `id` is auto-derived as `SKILL-<folder-slug>`.
+
+3. **Regenerate and verify**:
+
+    ```bash
+    npm run ingest:prompts
+    npm run verify:ui
+    ```
+
+---
+
+## Validation errors
+
+| Error                                                             | Cause                                                | Fix                                                        |
+| ----------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| `No prompt ID in <file>`                                          | `# Prompt ID` section missing or empty               | Add it as the first section                                |
+| `Unknown prompt ID prefix: <id>`                                  | Doesn't start with `SYS-`, `USR-`, or `AGT-`         | Correct the prefix                                         |
+| `Cannot derive category from ID: <id>`                            | ID format wrong (missing category number, etc.)      | Fix to `USR-A01-slug` format                               |
+| `Dangling recommendedSystemPromptId: <sys-id> in <usr-id>`        | `# Notes` references a SYS prompt that doesn't exist | Fix the SYS ID or add the missing system prompt file       |
+| `INDEX system count mismatch` / `INDEX user/agent count mismatch` | `INDEX.md` inventory counts don't match actual files | Update the counts in `content/prompts-collection/INDEX.md` |
 
 ---
 
 ## Notes
 
-- Keep `id` values kebab-case and descriptive (e.g. `ts-function-generator`, `sql-query-optimizer`).
 - `description` is shown in the UI as a one-line summary — keep it short.
-- `template` supports multi-line strings; use a template literal.
-- `tags` are used for search filtering — prefer existing tags before inventing new ones.
+- `template` (the `# Prompt` body) supports multi-line text.
+- Prefer existing parameter names where they fit: `user_text`, `language`, `code`, `requirements`, `spec`, `problem`, `topic` (see `INDEX.md` § "Parameter conventions").

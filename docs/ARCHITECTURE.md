@@ -138,7 +138,7 @@ Reference implementation: `src/pages/software-installer/index.tsx`
 graph TD
     U[User] --> Page[Tool Page]
     Page --> FC[Factory / utils-factory.ts]
-    FC --> Lib[coreutilsts / llm-vram-calc / prompts-library]
+    FC --> Lib[coreutilsts / llm-vram-calc / data.ts]
     Page --> TV[ToolView component]
     TV --> ME[Monaco Editor × 2]
     Page --> Ctx[React Contexts]
@@ -148,6 +148,50 @@ graph TD
     Ctx --> FO[FileOpenContext]
     Ctx --> FS[FileSaveDialogContext]
 ```
+
+---
+
+## Prompts Data Pipeline
+
+The Prompts Collection uses a file-based pipeline separate from the React component tree. Prompt Markdown files are the source of truth; the ingester produces runtime JSON.
+
+```mermaid
+graph LR
+    MD[content/prompts-collection/\n*.md files] --> ING[scripts/ingest-prompts.mjs]
+    ING --> PD[src/common/prompts/generated/\nprompts-data.json]
+    ING --> SD[src/common/prompts/generated/\nskills-data.json]
+    PD --> DT[src/common/prompts/data.ts]
+    SD --> DT
+    DT --> PCV[PromptsCollectionView.tsx]
+```
+
+Run `npm run ingest:prompts` after adding or editing any file under `content/prompts-collection/`.
+
+**Content directory layout:**
+
+```
+content/prompts-collection/
+  <DOMAIN>/
+    SYSTEM_PROMPTS/   ← SYS-* prompt files
+    USER_PROMPTS/     ← USR-* and AGT-* prompt files
+    SKILLS/<slug>/SKILL.md
+```
+
+Domains: `A_SOFTWARE_ENGINEERING/`, `B_WRITING_COMMUNICATION/`, `C_THINKING_PRODUCTIVITY/`, `D_AI_PROMPT_WORKFLOWS/`.
+
+### Deep-Link Routing
+
+`/prompts-collection` encodes all UI state in query parameters, enabling bookmarkable and shareable URLs:
+
+| Parameter          | Purpose                 | Example                        |
+| ------------------ | ----------------------- | ------------------------------ |
+| `?domain=<slug>`   | Active domain tab       | `?domain=software-engineering` |
+| `?category=<slug>` | Active category         | `?category=code-generation`    |
+| `?prompt=<LP-id>`  | Open logical prompt     | `?prompt=LP-A01-implement`     |
+| `?view=catalog`    | Browse-all catalog view | `?view=catalog`                |
+| `?type=skills`     | Skills library view     | `?type=skills`                 |
+
+Unknown slugs fall back gracefully to the first available domain/category. The service worker caches each visited URL so deep links work offline after the first visit.
 
 ---
 
@@ -222,16 +266,27 @@ graph LR
 ## Directory Structure
 
 ```
+content/
+  prompts-collection/       # Prompt Markdown source files (source of truth for Prompts Collection)
+    <DOMAIN>/
+      SYSTEM_PROMPTS/       # SYS-* prompt files
+      USER_PROMPTS/         # USR-* and AGT-* prompt files
+      SKILLS/<slug>/        # Skill folders (SKILL.md + optional assets)
+    INDEX.md                # Inventory and naming conventions reference
 src/
   pages/                    # Next.js routes, one folder per tool
   components/
     app-layout/             # ApplicationLayout, ApplicationTopBar, ApplicationSidebar
     contexts/               # ThemeProvider, PageProvider, ToasterProvider, FileOpenProvider, FileSaveDialogProvider
-    controls/               # Button, Input, Select, Modal, TextEditor (Monaco wrapper)
+    controls/               # Button, Input, Select, Modal, EditableCombobox, SegmentedControl, TextEditor (Monaco wrapper)
     layouts/                # Flex/grid layout primitives
     elements/column/        # ToolView generic component
     page-specific/          # VRAM calculator, prompts, git cheat sheet
-  common/                   # Pure utility functions, type definitions, utils-factory.ts
+  common/
+    prompts/
+      generated/            # prompts-data.json, skills-data.json (written by ingest-prompts.mjs)
+      data.ts               # React data accessors over generated JSON
+    ...                     # Other pure utility functions, type definitions, utils-factory.ts
   styles/                   # SCSS files; colors.scss for design tokens
 ```
 

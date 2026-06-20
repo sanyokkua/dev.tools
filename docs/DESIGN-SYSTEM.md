@@ -219,6 +219,7 @@ Source: `src/styles/` — all files imported globally in `src/pages/_app.tsx`.
 | `primitives.scss`           | **Design primitives** (buttons, editor chrome, pills, table, form controls)    |
 | `prompts-collection.scss`   | Prompts Collection page                                                        |
 | `qr.scss`                   | QR page                                                                        |
+| `editable-combobox.scss`    | EditableCombobox control (combobox with inline free-text editing)              |
 | `segmented-control.scss`    | Segmented control component                                                    |
 | `select.scss`               | Select dropdown control                                                        |
 | `sidebar.scss`              | Navigation sidebar                                                             |
@@ -234,7 +235,29 @@ Source: `src/styles/` — all files imported globally in `src/pages/_app.tsx`.
 
 ---
 
-## 4. Rules
+## 4. Shared React Controls
+
+Source: `src/components/controls/`
+
+These components are used across multiple pages. Prefer them over one-off implementations.
+
+| Component          | File                   | Description                                                                                       |
+| ------------------ | ---------------------- | ------------------------------------------------------------------------------------------------- |
+| `Button`           | `Button.tsx`           | Primary, tonal, outline, ghost, and danger variants; size modifier                                |
+| `Input`            | `Input.tsx`            | Text input with label and focus ring                                                              |
+| `Select`           | `Select.tsx`           | Styled `<select>` dropdown                                                                        |
+| `Modal`            | `Modal.tsx`            | Overlay modal dialog                                                                              |
+| `Checkbox`         | `Checkbox.tsx`         | Styled checkbox                                                                                   |
+| `Switch`           | `Switch.tsx`           | Toggle switch                                                                                     |
+| `Chip`             | `Chip.tsx`             | Removable or selectable tag chip                                                                  |
+| `EditableCombobox` | `EditableCombobox.tsx` | Combobox that accepts both predefined picks and free-text input; used for prompt parameter fields |
+| `SegmentedControl` | `SegmentedControl.tsx` | Mutually exclusive option selector rendered as a button row                                       |
+| `ToolAbout`        | `ToolAbout.tsx`        | Collapsible info panel shown at the top of each tool page                                         |
+| `TextEditor`       | (directory)            | Monaco Editor wrapper with language, word-wrap, and minimap controls                              |
+
+---
+
+## 5. Rules
 
 1. **No CSS Modules** — all stylesheets are global, imported once in `_app.tsx`.
 2. **Primitives first** — use `.btn`, `.field`, `.input`, `.pill`, etc. before writing custom styles.

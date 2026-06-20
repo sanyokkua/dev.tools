@@ -24,20 +24,21 @@ npm run dev        # localhost:3000
 
 ## Commands
 
-| Command                | Purpose                                                                  |
-| ---------------------- | ------------------------------------------------------------------------ |
-| `npm run dev`          | Dev server on port 3000                                                  |
-| `npm run build`        | Production build (static export to `./out`)                              |
-| `npm run validate:sw`  | Verify `public/sw.js` precache covers all routes (run after every build) |
-| `npm run lint`         | Run ESLint                                                               |
-| `npm run lint:fix`     | Run ESLint with auto-fix                                                 |
-| `npm run test`         | Jest with coverage                                                       |
-| `npm run format`       | Format with Prettier                                                     |
-| `npm run check:format` | Check formatting without writing                                         |
-| `npm run verify`       | Full pipeline: format → lint → test                                      |
-| `npm run clean`        | Remove build artifacts                                                   |
-| `npm run verify:ui`    | Static pass (routes × 3 widths × 2 themes) + interaction smoke tests     |
-| `npm run verify:smoke` | Interaction smoke tests only                                             |
+| Command                  | Purpose                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| `npm run dev`            | Dev server on port 3000                                                        |
+| `npm run build`          | Production build (static export to `./out`)                                    |
+| `npm run validate:sw`    | Verify `public/sw.js` precache covers all routes (run after every build)       |
+| `npm run lint`           | Run ESLint                                                                     |
+| `npm run lint:fix`       | Run ESLint with auto-fix                                                       |
+| `npm run test`           | Jest with coverage                                                             |
+| `npm run format`         | Format with Prettier                                                           |
+| `npm run check:format`   | Check formatting without writing                                               |
+| `npm run verify`         | Full pipeline: format → lint → test                                            |
+| `npm run clean`          | Remove build artifacts                                                         |
+| `npm run verify:ui`      | Static pass (routes × 3 widths × 2 themes) + interaction smoke tests           |
+| `npm run verify:smoke`   | Interaction smoke tests only                                                   |
+| `npm run ingest:prompts` | Regenerate prompt/skill JSON from `content/prompts-collection/` Markdown files |
 
 Run a single test file:
 
@@ -64,6 +65,8 @@ npx jest test/path/to/file.test.ts
 ## Architecture overview
 
 ```
+content/
+└── prompts-collection/ Prompt Markdown source files → npm run ingest:prompts → src/common/prompts/generated/
 src/
 ├── pages/              Next.js routes (24 routes, Pages Router)
 │   ├── index.tsx       Dashboard /
@@ -73,11 +76,12 @@ src/
 ├── components/
 │   ├── app-layout/     ApplicationLayout, ApplicationTopBar, ApplicationSidebar
 │   ├── contexts/       5 React Context providers
-│   ├── controls/       Shared UI controls (Button, Input, Select, Modal, Monaco wrapper)
+│   ├── controls/       Shared UI controls (Button, Input, Select, Modal, EditableCombobox, SegmentedControl, Monaco wrapper)
 │   ├── elements/       ToolView, Sidebar nav elements, column layouts
 │   └── layouts/        Flex/grid container primitives
 ├── common/             Pure utilities, types, catalog, factory functions
-└── styles/             40 SCSS/CSS files — all globally imported in _app.tsx
+│   └── prompts/generated/  prompts-data.json, skills-data.json (generated — do not edit)
+└── styles/             40+ SCSS/CSS files — all globally imported in _app.tsx
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for full details including Mermaid diagrams.
