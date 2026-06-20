@@ -362,9 +362,12 @@ await runSmoke('prompts-open-newtab', async (page) => {
         throw new Error(`Open ↗ href "${href}" does not point to /prompts-collection`);
     }
 
-    // Verify new tab opens when clicked
+    // Verify new tab opens and the SYS variant renders (not an empty panel)
     const [newPage] = await Promise.all([page.context().waitForEvent('page'), openLink.click()]);
     await newPage.waitForLoadState('domcontentloaded');
+    await newPage.waitForSelector('.pc-detail', { timeout: 8000 });
+    const emptyCount = await newPage.locator('.pc-detail-empty').count();
+    if (emptyCount > 0) throw new Error('SYS deep-link rendered empty panel — fallback path broken');
     await newPage.close();
 
     await page.screenshot({ path: `${OUT}/smoke__prompts__newtab.png` });
