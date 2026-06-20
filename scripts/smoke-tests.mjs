@@ -279,7 +279,7 @@ await runSmoke('prompts-hierarchy-nav', async (page) => {
     if (await listItem.count()) {
         await listItem.click();
         await page.waitForTimeout(200);
-        const detail = page.locator('.pc-detail-stub, .pc-detail-empty');
+        const detail = page.locator('.pc-detail, .pc-detail-empty');
         if (!(await detail.count())) throw new Error('Detail panel not rendered after list item click');
     }
 
@@ -307,6 +307,67 @@ await runSmoke('prompts-responsive-stack', async (page) => {
     if (overflow) throw new Error('Horizontal overflow at 375px');
 
     await page.screenshot({ path: `${OUT}/smoke__prompts__375.png` });
+});
+
+// ── 7c. Prompts Collection — copy-prompt smoke ────────────────────────────────
+await runSmoke('prompts-copy-prompt', async (page) => {
+    // Grant clipboard permissions so writeText doesn't throw
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+
+    // Click the first list item to load a prompt
+    await page.locator('[role="option"]').first().click();
+    await page.waitForTimeout(300);
+
+    // Detail panel should now show copy actions
+    const copyBtn = page.locator('button', { hasText: 'Copy prompt' });
+    if (!(await copyBtn.count())) throw new Error('"Copy prompt" button not found after selecting a prompt');
+    await copyBtn.click();
+    await page.waitForTimeout(200);
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__copy.png` });
+});
+
+// ── 7d. Prompts Collection — Open ↗ new-tab smoke ────────────────────────────
+await runSmoke('prompts-open-newtab', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+
+    // Click list items until we find one with an "Open ↗" link (has recommendedSystemPromptId)
+    const listItems = page.locator('[role="option"]');
+    const count = await listItems.count();
+    let foundOpenLink = false;
+
+    for (let i = 0; i < Math.min(count, 10); i++) {
+        await listItems.nth(i).click();
+        await page.waitForTimeout(200);
+        if (await page.locator('a[target="_blank"]', { hasText: /Open/ }).count()) {
+            foundOpenLink = true;
+            break;
+        }
+    }
+
+    if (!foundOpenLink) {
+        // Not all prompts have a system prompt — this is acceptable
+        process.stdout.write('(no sys-prompt link found in first 10 items — skipping open-tab check) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__newtab__skipped.png` });
+        return;
+    }
+
+    const openLink = page.locator('a[target="_blank"]', { hasText: /Open/ });
+    const href = await openLink.getAttribute('href');
+    if (!href?.includes('/prompts-collection')) {
+        throw new Error(`Open ↗ href "${href}" does not point to /prompts-collection`);
+    }
+
+    // Verify new tab opens when clicked
+    const [newPage] = await Promise.all([page.context().waitForEvent('page'), openLink.click()]);
+    await newPage.waitForLoadState('domcontentloaded');
+    await newPage.close();
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__newtab.png` });
 });
 
 // ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
