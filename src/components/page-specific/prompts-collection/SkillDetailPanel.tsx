@@ -4,7 +4,7 @@ import type { Skill, SkillFile, SkillsData } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import SegmentedControl from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface Props {
     skill: Skill | null;
@@ -17,6 +17,11 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
     const [installTarget, setInstallTarget] = useState<InstallTarget>('claude-code');
     const [zipState, setZipState] = useState<'idle' | 'loading' | 'done'>('idle');
     const [copyStates, setCopyStates] = useState<Record<string, boolean>>({});
+
+    useEffect(() => {
+        setCopyStates({});
+        setZipState('idle');
+    }, [skill?.slug]);
 
     const handleFileCopy = useCallback(
         async (file: SkillFile) => {
