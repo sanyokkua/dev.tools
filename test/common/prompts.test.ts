@@ -1,4 +1,5 @@
 import {
+    buildSysPromptHref,
     categoriesByDomain,
     defaultVariant,
     findVariantById,
@@ -186,6 +187,24 @@ describe('replaceParams', () => {
     test('handles empty values', () => {
         const result = replaceParams('Hello {{name}}', { name: '' });
         expect(result).toBe('Hello ');
+    });
+});
+
+describe('buildSysPromptHref', () => {
+    test('builds URL with correct query params (no basePath)', () => {
+        const href = buildSysPromptHref('SYS-A03-cr', 'software-engineering', 'code-review');
+        expect(href).toBe('/prompts-collection?domain=software-engineering&category=code-review&prompt=SYS-A03-cr');
+    });
+
+    test('prepends basePath when provided', () => {
+        const href = buildSysPromptHref('SYS-A03-cr', 'software-engineering', 'code-review', '/dev-tools');
+        expect(href).toBe(
+            '/dev-tools/prompts-collection?domain=software-engineering&category=code-review&prompt=SYS-A03-cr',
+        );
+    });
+
+    test('empty basePath produces same result as no basePath', () => {
+        expect(buildSysPromptHref('SYS-A03-cr', 'eng', 'cr', '')).toBe(buildSysPromptHref('SYS-A03-cr', 'eng', 'cr'));
     });
 });
 

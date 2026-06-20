@@ -93,3 +93,13 @@ export function searchAll(
 export function replaceParams(template: string, values: Record<string, string>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (_, key) => values[key] ?? `{{${key}}}`);
 }
+
+export function buildSysPromptHref(
+    sysPromptId: string,
+    domainSlug: string,
+    categorySlug: string,
+    basePath = '',
+): string {
+    const params = new URLSearchParams({ domain: domainSlug, category: categorySlug, prompt: sysPromptId });
+    return `${basePath}/prompts-collection?${params.toString()}`;
+}
