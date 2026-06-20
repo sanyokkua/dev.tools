@@ -1203,6 +1203,88 @@ await runSmoke('prompts-catalog-facet', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts__catalog__facet.png` });
 });
 
+// ── 7l. Skills surface — file Copy button ─────────────────────────────────
+await runSmoke('prompts-skills-file-copy', async (page) => {
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[aria-label="View type"]', { timeout: 8000 });
+
+    await page.locator('[aria-label="View type"] button', { hasText: 'Skills' }).click();
+    await page.waitForTimeout(300);
+
+    const skillItem = page.locator('[role="option"]').first();
+    if (!(await skillItem.count())) {
+        process.stdout.write('(no skills found — skipping) ');
+        return;
+    }
+    await skillItem.click();
+    await page.waitForTimeout(300);
+
+    const copyFileBtn = page.locator('.pc-skill-file-actions button', { hasText: /Copy/ }).first();
+    if (!(await copyFileBtn.count())) throw new Error('No Copy file button found in skill detail');
+    await copyFileBtn.click();
+    await page.waitForTimeout(200);
+
+    await page.screenshot({ path: `${OUT}/smoke__skills__file_copy.png` });
+});
+
+// ── 7m. Skills surface — Install for switch changes command ───────────────
+await runSmoke('prompts-skills-install-switch', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[aria-label="View type"]', { timeout: 8000 });
+
+    await page.locator('[aria-label="View type"] button', { hasText: 'Skills' }).click();
+    await page.waitForTimeout(300);
+
+    const skillItem = page.locator('[role="option"]').first();
+    if (!(await skillItem.count())) {
+        process.stdout.write('(no skills — skipping) ');
+        return;
+    }
+    await skillItem.click();
+    await page.waitForTimeout(300);
+
+    const installSection = page.locator('.pc-skill-install');
+    if (!(await installSection.count())) throw new Error('Install section not found');
+    const initialText = await installSection.textContent();
+
+    const kiroBtn = page.locator('[aria-label="Install target"] button', { hasText: 'Kiro CLI' });
+    if (!(await kiroBtn.count())) throw new Error('Kiro CLI install target button not found');
+    await kiroBtn.click();
+    await page.waitForTimeout(200);
+
+    const kiroText = await installSection.textContent();
+    if (kiroText === initialText) throw new Error('Install instructions did not change after switching to Kiro CLI');
+    if (!kiroText?.includes('.kiro')) throw new Error('Kiro CLI instructions do not reference .kiro path');
+
+    await page.screenshot({ path: `${OUT}/smoke__skills__install_switch.png` });
+});
+
+// ── 7n. Skills surface — Download .zip button (no JS error) ───────────────
+await runSmoke('prompts-skills-zip', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[aria-label="View type"]', { timeout: 8000 });
+
+    await page.locator('[aria-label="View type"] button', { hasText: 'Skills' }).click();
+    await page.waitForTimeout(300);
+
+    const skillItem = page.locator('[role="option"]').first();
+    if (!(await skillItem.count())) {
+        process.stdout.write('(no skills — skipping) ');
+        return;
+    }
+    await skillItem.click();
+    await page.waitForTimeout(300);
+
+    const zipBtn = page.locator('.pc-skill-zip-section button', { hasText: /zip/ });
+    if (!(await zipBtn.count())) throw new Error('Download .zip button not found');
+
+    await zipBtn.click();
+    await page.waitForTimeout(500);
+
+    await page.screenshot({ path: `${OUT}/smoke__skills__zip.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -1212,4 +1294,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 31 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 34 interaction flows passed. Screenshots in ' + OUT);

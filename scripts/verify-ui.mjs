@@ -42,6 +42,7 @@ const ROUTES = [
     '/llm-vram-calculator',
     '/prompts-collection',
     '/prompts-collection?view=catalog',
+    '/prompts-collection?type=skills',
     '/mermaid-editor',
     '/diff',
     '/html-editor',

@@ -180,6 +180,25 @@ const PromptsCollectionView: React.FC = () => {
         void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
     }, [router, pageState]);
 
+    const navigateToSkill = useCallback(
+        (slug: string) => {
+            if (!skillsData) return;
+            const targetSkill = skillsData.skills.find((s) => s.slug === slug);
+            if (!targetSkill) return;
+            const domain = domains.find((d) => d.code === targetSkill.domainCode);
+            const next: PromptsPageState = {
+                ...pageState,
+                type: 'skills',
+                domainSlug: domain?.slug ?? pageState.domainSlug,
+                categorySlug: null,
+                selectedId: slug,
+            };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [skillsData, domains, pageState, router],
+    );
+
     const handleCatalogRowClick = useCallback(
         (row: CatalogRow) => {
             const next: PromptsPageState = {
@@ -357,7 +376,11 @@ const PromptsCollectionView: React.FC = () => {
                             onVariantSwitch={onVariantSwitch}
                         />
                     ) : (
-                        <SkillDetailPanel skill={selectedSkill} />
+                        <SkillDetailPanel
+                            skill={selectedSkill}
+                            skillsData={skillsData}
+                            onSelectSkill={navigateToSkill}
+                        />
                     )}
                 </div>
             </div>
