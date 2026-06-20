@@ -40,26 +40,33 @@ describe('ApplicationLayout sidebar collapse (desktop)', () => {
         localStorage.clear();
     });
 
-    it('sidebar is not collapsed by default', () => {
+    it('sidebar is collapsed (icon rail) by default', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);
         const nav = screen.getByRole('navigation', { name: /site navigation/i });
-        expect(nav.classList.contains('collapsed')).toBe(false);
+        expect(nav.classList.contains('collapsed')).toBe(true);
     });
 
-    it('collapses sidebar when collapse button is clicked', () => {
+    it('expands then re-collapses sidebar via the toggle button', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);
-        const collapseBtn = screen.getByRole('button', { name: /collapse sidebar/i });
-        fireEvent.click(collapseBtn);
         const nav = screen.getByRole('navigation', { name: /site navigation/i });
+
+        // Default: collapsed
+        expect(nav.classList.contains('collapsed')).toBe(true);
+
+        // Expand
+        fireEvent.click(screen.getByRole('button', { name: /expand sidebar/i }));
+        expect(nav.classList.contains('collapsed')).toBe(false);
+        expect(localStorage.getItem('sidebarCollapsed')).toBe('false');
+
+        // Collapse again
+        fireEvent.click(screen.getByRole('button', { name: /collapse sidebar/i }));
         expect(nav.classList.contains('collapsed')).toBe(true);
         expect(localStorage.getItem('sidebarCollapsed')).toBe('true');
     });
 
     it('hamburger un-collapses sidebar on desktop when collapsed', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);
-        // Collapse first
-        fireEvent.click(screen.getByRole('button', { name: /collapse sidebar/i }));
-        // Now hamburger should un-collapse
+        // Sidebar already collapsed by default; hamburger should un-collapse it
         fireEvent.click(screen.getByRole('button', { name: /open navigation/i }));
         const nav = screen.getByRole('navigation', { name: /site navigation/i });
         expect(nav.classList.contains('collapsed')).toBe(false);
@@ -73,9 +80,9 @@ describe('ApplicationLayout sidebar collapse (desktop)', () => {
         expect(nav.classList.contains('collapsed')).toBe(true);
     });
 
-    it('hamburger has menu-btn--visible class when sidebar is collapsed', () => {
+    it('hamburger has menu-btn--visible class when sidebar is collapsed by default', () => {
         render(<ApplicationLayout>content</ApplicationLayout>);
-        fireEvent.click(screen.getByRole('button', { name: /collapse sidebar/i }));
+        // Collapsed is the default state — menu-btn--visible must be present immediately
         const menuBtn = screen.getByRole('button', { name: /open navigation/i });
         expect(menuBtn.classList.contains('menu-btn--visible')).toBe(true);
     });
@@ -117,7 +124,9 @@ describe('ApplicationLayout mobile nav', () => {
         expect(screen.getByRole('button', { name: /open navigation/i })).toBeInTheDocument();
     });
 
-    it('opens sidebar drawer when hamburger is clicked', () => {
+    it('opens sidebar drawer when hamburger is clicked while sidebar is expanded', () => {
+        // Pre-set expanded state so handleMenuOpen opens drawer instead of un-collapsing
+        localStorage.setItem('sidebarCollapsed', 'false');
         render(<ApplicationLayout>content</ApplicationLayout>);
         const menuBtn = screen.getByRole('button', { name: /open navigation/i });
         fireEvent.click(menuBtn);
@@ -126,6 +135,8 @@ describe('ApplicationLayout mobile nav', () => {
     });
 
     it('closes drawer when backdrop is clicked', () => {
+        // Pre-set expanded state so hamburger opens drawer instead of un-collapsing
+        localStorage.setItem('sidebarCollapsed', 'false');
         render(<ApplicationLayout>content</ApplicationLayout>);
         fireEvent.click(screen.getByRole('button', { name: /open navigation/i }));
         const backdrop = document.querySelector('.nav-backdrop') as HTMLElement;
@@ -135,6 +146,8 @@ describe('ApplicationLayout mobile nav', () => {
     });
 
     it('closes drawer when a nav link is clicked', () => {
+        // Pre-set expanded state so hamburger opens drawer instead of un-collapsing
+        localStorage.setItem('sidebarCollapsed', 'false');
         render(<ApplicationLayout>content</ApplicationLayout>);
         fireEvent.click(screen.getByRole('button', { name: /open navigation/i }));
         fireEvent.click(screen.getByRole('link', { name: /dashboard/i }));

@@ -8,14 +8,24 @@ jest.mock('next/link', () => {
         children,
         className,
         'aria-current': ariaCurrent,
+        'aria-label': ariaLabel,
+        title,
     }: {
         'href': string;
         'children': React.ReactNode;
         'className'?: string;
         'aria-current'?: string;
+        'aria-label'?: string;
+        'title'?: string;
     }): React.JSX.Element {
         return (
-            <a href={href} className={className} aria-current={ariaCurrent}>
+            <a
+                href={href}
+                className={className}
+                aria-current={ariaCurrent as React.AriaAttributes['aria-current']}
+                aria-label={ariaLabel}
+                title={title}
+            >
                 {children}
             </a>
         );
@@ -69,5 +79,20 @@ describe('Sidebar', () => {
         const nav = screen.getByRole('navigation', { name: 'Site navigation' });
         expect(nav).toBeInTheDocument();
         expect(nav.tagName.toLowerCase()).toBe('aside');
+    });
+
+    it('renders nav items with title attribute equal to item name', () => {
+        render(<Sidebar groups={groups} activeLink="" />);
+        const link = screen.getByRole('link', { name: /string utils/i });
+        expect(link).toHaveAttribute('title', 'String Utils');
+    });
+
+    it('renders nav-item-label class on label spans', () => {
+        render(<Sidebar groups={groups} activeLink="" />);
+        // Every link should contain a .nav-item-label span
+        const labels = document.querySelectorAll('.nav-item-label');
+        // 4 items across all groups
+        expect(labels.length).toBe(4);
+        expect(labels[0].textContent).toBe('String Utils');
     });
 });

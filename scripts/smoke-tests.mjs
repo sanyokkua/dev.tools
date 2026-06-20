@@ -777,6 +777,76 @@ await runSmoke('encoding-tools-round-trip', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__encoding_tools_round_trip__after.png` });
 });
 
+// ── Global Sidebar — icon rail default + persist ──────────────────────────
+await runSmoke('sidebar-icon-rail-default', async (page) => {
+    // 1. Clear localStorage to get clean default state
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('sidebarCollapsed'));
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__sidebar__collapsed_default.png` });
+
+    // Sidebar must be collapsed by default on /
+    const isCollapsedHome = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? false,
+    );
+    if (!isCollapsedHome) throw new Error('Sidebar should be collapsed by default on /');
+
+    // Check on a second route (/json-formatter) — still collapsed
+    await page.goto(BASE + '/json-formatter', { waitUntil: 'networkidle' });
+    const isCollapsedJson = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? false,
+    );
+    if (!isCollapsedJson) throw new Error('Sidebar should be collapsed by default on /json-formatter');
+
+    // Check on a third route (/llm-vram-calculator) — still collapsed
+    await page.goto(BASE + '/llm-vram-calculator', { waitUntil: 'networkidle' });
+    const isCollapsedVram = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? false,
+    );
+    if (!isCollapsedVram) throw new Error('Sidebar should be collapsed by default on /llm-vram-calculator');
+
+    // No horizontal overflow on collapsed rail
+    const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    );
+    if (overflow) throw new Error('Horizontal overflow detected with collapsed sidebar');
+
+    await page.screenshot({ path: `${OUT}/smoke__sidebar__three_routes.png` });
+});
+
+await runSmoke('sidebar-persist-expand', async (page) => {
+    // Start from a clean state on /
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('sidebarCollapsed'));
+    await page.reload({ waitUntil: 'networkidle' });
+
+    // Expand the sidebar via the "Expand sidebar" button
+    await page.click('[aria-label="Expand sidebar"]');
+    await page.screenshot({ path: `${OUT}/smoke__sidebar__expanded.png` });
+
+    // Verify expanded
+    const isCollapsedAfterExpand = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? true,
+    );
+    if (isCollapsedAfterExpand) throw new Error('Sidebar should be expanded after clicking Expand');
+
+    // Navigate to another route — expanded state must persist
+    await page.goto(BASE + '/json-formatter', { waitUntil: 'networkidle' });
+    const isCollapsedAfterNav = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? true,
+    );
+    if (isCollapsedAfterNav) throw new Error('Sidebar expansion should persist across navigation');
+
+    // Reload — localStorage must restore expanded state
+    await page.reload({ waitUntil: 'networkidle' });
+    const isCollapsedAfterReload = await page.evaluate(
+        () => document.querySelector('.nav-rail')?.classList.contains('collapsed') ?? true,
+    );
+    if (isCollapsedAfterReload) throw new Error('Sidebar expansion should persist across reload');
+
+    await page.screenshot({ path: `${OUT}/smoke__sidebar__persisted.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -786,4 +856,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 28 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 30 interaction flows passed. Screenshots in ' + OUT);

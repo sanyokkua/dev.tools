@@ -103,14 +103,36 @@
     color: var(--on-surface);
 }
 
-/* Desktop collapse: hide sidebar when collapsed */
+/* Desktop: icon rail when collapsed (~54 px), full rail when expanded */
 @media (min-width: 921px) {
     .nav-collapse-btn {
         display: block;
     }
 
     .nav-rail.collapsed {
+        width: 54px;
+        flex: 0 0 54px;
+        padding: var(--s3) var(--s1);
+    }
+
+    .nav-rail.collapsed .nav-group-label {
         display: none;
+    }
+
+    .nav-rail.collapsed .nav-item {
+        justify-content: center;
+        padding: 9px 0;
+        gap: 0;
+    }
+
+    .nav-rail.collapsed .nav-item-label,
+    .nav-rail.collapsed .nav-badge {
+        display: none;
+    }
+
+    .nav-rail.collapsed .nav-collapse-btn {
+        align-self: center;
+        padding: 8px 0;
     }
 }
 

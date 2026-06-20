@@ -35,10 +35,12 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, activeLink, isOpen, onClose, 
                                     href={item.itemLink}
                                     className={'nav-item' + (isActive ? ' active' : '')}
                                     aria-current={isActive ? 'page' : undefined}
+                                    aria-label={item.itemName}
+                                    title={item.itemName}
                                     onClick={onClose}
                                 >
                                     <span aria-hidden="true">{item.icon}</span>
-                                    <span>{item.itemName}</span>
+                                    <span className="nav-item-label">{item.itemName}</span>
                                     {item.badge && (
                                         <span className={'nav-badge ' + item.badge.toLowerCase()}>{item.badge}</span>
                                     )}

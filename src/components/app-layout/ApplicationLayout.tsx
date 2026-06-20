@@ -12,11 +12,14 @@ interface LayoutProps {
 
 const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
     useEffect(() => {
         try {
-            setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+            const stored = localStorage.getItem('sidebarCollapsed');
+            if (stored !== null) {
+                setSidebarCollapsed(stored === 'true');
+            }
         } catch {
             // localStorage unavailable (private browsing, SSR)
         }
