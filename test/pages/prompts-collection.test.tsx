@@ -1,4 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { PromptVariant } from '../../src/common/prompts/types';
+import PromptListItem from '../../src/components/page-specific/prompts-collection/PromptListItem';
 import PromptsCollectionView from '../../src/components/page-specific/prompts-collection/PromptsCollectionView';
 import {
     parseStateFromQuery,
@@ -283,5 +285,47 @@ describe('PromptsCollectionView component', () => {
 
         // The prompt item should no longer be visible
         expect(screen.queryByRole('option', { name: /Review a Change/i })).not.toBeInTheDocument();
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptListItem META badge
+// -------------------------------------------------------------------
+
+describe('PromptListItem META badge', () => {
+    const baseLogical = mockPromptsData.logical[0];
+
+    const makeVariant = (overrides: Partial<PromptVariant>): PromptVariant => ({
+        id: 'USR-A03-review',
+        kind: 'user',
+        categoryCode: 'A03',
+        title: 'Review a Change',
+        description: '',
+        template: '',
+        parameters: [],
+        keywords: [],
+        executionContext: 'chat',
+        isMetaPrompt: false,
+        model: null,
+        subVariant: null,
+        ...overrides,
+    });
+
+    it('shows META badge when isMetaPrompt=true', () => {
+        const variants = [makeVariant({ isMetaPrompt: true })];
+        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
+        expect(screen.getByText('META')).toBeInTheDocument();
+    });
+
+    it('shows META badge when categoryCode is a META code (isMetaPrompt not set)', () => {
+        const variants = [makeVariant({ categoryCode: 'D02', isMetaPrompt: undefined })];
+        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
+        expect(screen.getByText('META')).toBeInTheDocument();
+    });
+
+    it('does NOT show META badge for non-META variants', () => {
+        const variants = [makeVariant({ isMetaPrompt: false })];
+        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
+        expect(screen.queryByText('META')).not.toBeInTheDocument();
     });
 });
