@@ -31,11 +31,12 @@ const PromptsCollectionView: React.FC = () => {
     const [search, setSearch] = useState('');
     const router = useRouter();
 
-    // Parse URL state once router is ready
+    // Serialize query to a stable string — prevents re-running when router creates a new query object reference
+    const queryStr = JSON.stringify(router.query);
     useEffect(() => {
         if (!router.isReady) return;
         setPageState(parseStateFromQuery(router.query));
-    }, [router.isReady, router.query]);
+    }, [router.isReady, queryStr]); // queryStr is a stable proxy for router.query values
 
     // Load data on mount
     useEffect(() => {
