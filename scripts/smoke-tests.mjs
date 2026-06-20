@@ -427,6 +427,123 @@ await runSmoke('prompts-meta-badge', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts__meta__badge.png` });
 });
 
+// ── 7f. Prompts Collection — variant switch smoke ──────────────────────────────
+await runSmoke('prompts-variant-switch', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+
+    // Find a list item that, when selected, shows the executionContext SegmentedControl
+    const listItems = page.locator('[role="option"]');
+    const count = await listItems.count();
+    let foundSwitcher = false;
+    for (let i = 0; i < Math.min(count, 15); i++) {
+        await listItems.nth(i).click();
+        await page.waitForTimeout(200);
+        // Look for executionContext group — aria-label="Execution context"
+        if (await page.locator('[aria-label="Execution context"]').count()) {
+            foundSwitcher = true;
+            break;
+        }
+    }
+    if (!foundSwitcher) {
+        process.stdout.write('(no multi-variant prompt found in first 15 items — skipping switcher check) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__variant__skipped.png` });
+        return;
+    }
+
+    // Click the non-active button in the executionContext switcher
+    const switcher = page.locator('[aria-label="Execution context"]');
+    const btns = switcher.locator('button');
+    const btnCount = await btns.count();
+    if (btnCount > 1) {
+        // Find the non-pressed button and click it
+        for (let i = 0; i < btnCount; i++) {
+            const pressed = await btns.nth(i).getAttribute('aria-pressed');
+            if (pressed !== 'true') {
+                await btns.nth(i).click();
+                break;
+            }
+        }
+        await page.waitForTimeout(300);
+    }
+
+    // URL should now contain variant= param
+    const url = page.url();
+    if (!url.includes('variant=')) throw new Error(`URL missing variant= param after switch: ${url}`);
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__variant__switch.png` });
+});
+
+// ── 7g. Prompts Collection — Share 🔗 smoke ───────────────────────────────────
+await runSmoke('prompts-share-link', async (page) => {
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+
+    // Select a prompt to get a detail panel
+    await page.locator('[role="option"]').first().click();
+    await page.waitForTimeout(200);
+
+    // Share button must exist
+    const shareBtn = page.locator('button', { hasText: /share/i });
+    if (!(await shareBtn.count())) throw new Error('Share button not found in detail panel');
+
+    await shareBtn.click();
+    await page.waitForTimeout(200);
+
+    // Clipboard should contain the current URL
+    const clipText = await page.evaluate(() => navigator.clipboard.readText());
+    const currentUrl = page.url();
+    if (!clipText.includes('/prompts-collection')) {
+        throw new Error(`Share copied "${clipText}" — expected URL containing /prompts-collection`);
+    }
+    if (clipText !== currentUrl) {
+        throw new Error(`Share copied "${clipText}" but current URL is "${currentUrl}"`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__share.png` });
+});
+
+// ── 7h. Prompts Collection — deep-link restore smoke ──────────────────────────
+await runSmoke('prompts-deep-link-restore', async (page) => {
+    // Navigate to base to discover a real domain/category/prompt combo
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[role="option"]', { timeout: 8000 });
+
+    // Click first item to get a valid URL
+    await page.locator('[role="option"]').first().click();
+    await page.waitForTimeout(300);
+    const deepLink = page.url();
+
+    if (!deepLink.includes('prompt=')) {
+        process.stdout.write('(no prompt param in URL after selection — skipping deep-link restore) ');
+        await page.screenshot({ path: `${OUT}/smoke__prompts__deeplink__skipped.png` });
+        return;
+    }
+
+    // Navigate away and back via the deep link
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    await page.goto(deepLink, { waitUntil: 'networkidle' });
+    await page.waitForSelector('.pc-detail', { timeout: 8000 });
+
+    // Detail panel must render (not empty)
+    const emptyCount = await page.locator('.pc-detail-empty').count();
+    if (emptyCount > 0) throw new Error('Deep link did not restore prompt — panel is empty');
+
+    // Back button should restore previous state (no prompt selected)
+    await page.goBack();
+    await page.waitForTimeout(300);
+    // After back, either empty state or no .pc-detail present (root view)
+    const emptyAfterBack = await page.locator('.pc-detail-empty, .pc-loading').count();
+    if (!emptyAfterBack) {
+        // Just verify no JS errors — acceptable if detail persists
+        const errors = await page.evaluate(() => window.__errors ?? []);
+        if (errors.length) throw new Error(`JS errors after Back: ${errors.join(', ')}`);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__deeplink.png` });
+});
+
 // ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
 await runSmoke('json-formatter-query', async (page) => {
     await page.goto(BASE + '/json-formatter', { waitUntil: 'networkidle' });
