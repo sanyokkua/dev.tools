@@ -85,6 +85,7 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
             </div>
 
             <div className="pc-detail-section">
+                <h3 className="pc-section-heading">What it does · when it triggers</h3>
                 <p className="pc-detail-description">{skill.description}</p>
             </div>
 
