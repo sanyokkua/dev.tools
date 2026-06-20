@@ -1,0 +1,85 @@
+import type { PromptsData, PromptVariant, Skill, SkillsData } from './types';
+
+export interface PaletteResult {
+    type: 'prompt' | 'skill';
+    item: PromptVariant | Skill;
+    score: number;
+    label: string;
+    sublabel: string;
+}
+
+const MAX_PALETTE_RESULTS = 30;
+
+/**
+ * Scores how well `query` matches `target`. Returns ≥0 on match, -1 on no match.
+ * Priority: exact > prefix > contains > fuzzy char-order.
+ */
+export function fuzzyScore(query: string, target: string): number {
+    if (!query) return 0;
+    const q = query.toLowerCase().trim();
+    const t = target.toLowerCase();
+    if (!q) return 0;
+
+    if (t === q) return 100;
+    if (t.startsWith(q)) return 90 + (q.length / t.length) * 5;
+    if (t.includes(q)) return 75 + (1 - t.indexOf(q) / t.length) * 5;
+
+    let qi = 0;
+    let score = 0;
+    let consecutive = 0;
+    for (let ti = 0; ti < t.length && qi < q.length; ti++) {
+        if (t[ti] === q[qi]) {
+            qi++;
+            consecutive++;
+            score += consecutive * 2;
+        } else {
+            consecutive = 0;
+        }
+    }
+    return qi < q.length ? -1 : score;
+}
+
+export function paletteSearch(data: PromptsData, skills: SkillsData, query: string): PaletteResult[] {
+    const trimmed = query.trim();
+    const results: PaletteResult[] = [];
+
+    const categoryMap = new Map(data.categories.map((c) => [c.code, c]));
+    const domainMap = new Map(data.domains.map((d) => [d.code, d]));
+
+    for (const v of data.variants) {
+        if (v.kind === 'system') continue;
+        const cat = categoryMap.get(v.categoryCode);
+        const domain = domainMap.get(cat?.domainCode ?? '');
+        const sublabel = [domain?.title, cat?.title].filter(Boolean).join(' › ');
+
+        if (!trimmed) {
+            results.push({ type: 'prompt', item: v, score: 0, label: v.title, sublabel });
+            continue;
+        }
+
+        const titleScore = fuzzyScore(trimmed, v.title);
+        const descScore = fuzzyScore(trimmed, v.description);
+        const kwScore = v.keywords.length ? Math.max(...v.keywords.map((k) => fuzzyScore(trimmed, k))) : -1;
+        const score = Math.max(titleScore, descScore * 0.6, kwScore * 0.4);
+        if (score >= 0) results.push({ type: 'prompt', item: v, score, label: v.title, sublabel });
+    }
+
+    for (const s of skills.skills) {
+        const domain = domainMap.get(s.domainCode);
+        const sublabel = domain?.title ?? '';
+
+        if (!trimmed) {
+            results.push({ type: 'skill', item: s, score: 0, label: s.title, sublabel });
+            continue;
+        }
+
+        const titleScore = fuzzyScore(trimmed, s.title);
+        const descScore = fuzzyScore(trimmed, s.description);
+        const tagScore = s.tags.length ? Math.max(...s.tags.map((tag) => fuzzyScore(trimmed, tag))) : -1;
+        const score = Math.max(titleScore, descScore * 0.6, tagScore * 0.4);
+        if (score >= 0) results.push({ type: 'skill', item: s, score, label: s.title, sublabel });
+    }
+
+    if (!trimmed) return results.slice(0, MAX_PALETTE_RESULTS);
+    return results.sort((a, b) => b.score - a.score).slice(0, MAX_PALETTE_RESULTS);
+}
