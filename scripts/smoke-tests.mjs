@@ -1285,6 +1285,43 @@ await runSmoke('prompts-skills-zip', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__skills__zip.png` });
 });
 
+// ── Command Palette (⌘K) happy path ──────────────────────────────────────────
+await runSmoke('prompts-cmdk-open-search-select', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__before.png` });
+
+    // Open via the ⌘K button (avoids cross-platform meta/ctrl complexity)
+    await page.locator('[data-testid="cmd-palette-trigger"]').click();
+    await page.waitForSelector('[data-testid="cmd-palette"]', { timeout: 3000 });
+    await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__open.png` });
+
+    // Type a query and wait for results
+    await page.locator('[data-testid="cmd-palette-input"]').fill('code');
+    await page.waitForSelector('[data-testid="cmd-palette-results"]', { timeout: 3000 });
+    await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__results.png` });
+
+    // Navigate to first result and confirm
+    await page.locator('[data-testid="cmd-palette-input"]').press('ArrowDown');
+    await page.locator('[data-testid="cmd-palette-input"]').press('Enter');
+    await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__after-select.png` });
+
+    // Palette must be closed after selection
+    const still = await page.$('[data-testid="cmd-palette"]');
+    if (still) throw new Error('Palette should close after selecting a result');
+});
+
+// ── Command Palette — Escape closes (edge case) ───────────────────────────────
+await runSmoke('prompts-cmdk-escape-closes', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+
+    await page.locator('[data-testid="cmd-palette-trigger"]').click();
+    await page.waitForSelector('[data-testid="cmd-palette"]', { timeout: 3000 });
+
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('[data-testid="cmd-palette"]', { state: 'detached', timeout: 3000 });
+    await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__escaped.png` });
+});
+
 await browser.close();
 
 if (failures.length) {
@@ -1294,4 +1331,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 34 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 36 interaction flows passed. Screenshots in ' + OUT);

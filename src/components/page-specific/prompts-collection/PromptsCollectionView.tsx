@@ -10,11 +10,13 @@ import {
     skillsByDomain,
     variantsOf,
 } from '@/common/prompts/data';
-import type { CatalogRow, PromptsData, SkillsData } from '@/common/prompts/types';
+import type { PaletteResult } from '@/common/prompts/fuzzy';
+import type { CatalogRow, PromptVariant, PromptsData, Skill, SkillsData } from '@/common/prompts/types';
 import Chip from '@/controls/Chip';
 import SegmentedControl from '@/controls/SegmentedControl';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import CommandPalette from './CommandPalette';
 import PromptCatalogView from './PromptCatalogView';
 import PromptDetailPanel from './PromptDetailPanel';
 import PromptListItem from './PromptListItem';
@@ -36,6 +38,7 @@ const PromptsCollectionView: React.FC = () => {
         variantSub: null,
     });
     const [search, setSearch] = useState('');
+    const [paletteOpen, setPaletteOpen] = useState(false);
     const router = useRouter();
 
     // Serialize query to a stable string — prevents re-running when router creates a new query object reference
@@ -49,6 +52,17 @@ const PromptsCollectionView: React.FC = () => {
     useEffect(() => {
         loadPromptsData().then(setPromptsData);
         loadSkillsData().then(setSkillsData);
+    }, []);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                setPaletteOpen((open) => !open);
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
     }, []);
 
     // --- Derived selections ---
@@ -217,6 +231,36 @@ const PromptsCollectionView: React.FC = () => {
         [router],
     );
 
+    const handlePaletteSelect = useCallback(
+        (result: PaletteResult) => {
+            if (!promptsData) return;
+            setPaletteOpen(false);
+            if (result.type === 'prompt') {
+                const v = result.item as PromptVariant;
+                const cat = promptsData.categories.find((c) => c.code === v.categoryCode);
+                const domain = promptsData.domains.find((d) => d.code === (cat?.domainCode ?? ''));
+                const logical = promptsData.logical.find((lp) => lp.variantIds.includes(v.id));
+                if (!logical || !cat || !domain) return;
+                const next: PromptsPageState = {
+                    type: 'prompts',
+                    view: null,
+                    domainSlug: domain.slug,
+                    categorySlug: cat.slug,
+                    selectedId: logical.id,
+                    variantContext: v.executionContext ?? null,
+                    variantModel: v.model ?? null,
+                    variantSub: v.subVariant ?? null,
+                };
+                setPageState(next);
+                void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+            } else {
+                const s = result.item as Skill;
+                navigateToSkill(s.slug);
+            }
+        },
+        [promptsData, navigateToSkill, router],
+    );
+
     // --- Resolved selections for detail panel ---
 
     const selectedLogical = useMemo(
@@ -299,6 +343,15 @@ const PromptsCollectionView: React.FC = () => {
                         />
                         <button className="btn tonal sm" onClick={openCatalog} aria-label="Browse all catalog">
                             ▤ Browse all catalog
+                        </button>
+                        <button
+                            className="btn tonal sm"
+                            onClick={() => setPaletteOpen(true)}
+                            aria-label="Open quick search (⌘K)"
+                            data-testid="cmd-palette-trigger"
+                            title="Quick search ⌘K"
+                        >
+                            ⌘K
                         </button>
                     </div>
                 </div>
@@ -391,6 +444,14 @@ const PromptsCollectionView: React.FC = () => {
                     Loading…
                 </div>
             )}
+
+            <CommandPalette
+                isOpen={paletteOpen}
+                onClose={() => setPaletteOpen(false)}
+                promptsData={promptsData}
+                skillsData={skillsData}
+                onSelect={handlePaletteSelect}
+            />
         </div>
     );
 };
