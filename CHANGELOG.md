@@ -1,5 +1,36 @@
 # Changelog
 
+## [4.0.0] — 2026-06-20
+
+### Updated tools
+
+- **Prompts Collection** (`/prompts-collection`) — complete overhaul:
+    - Hierarchical browser: domain → category → prompt list → detail panel, tabbed navigation
+    - Chat and Agent prompt variants per category
+    - Model-specific variants (e.g. image-generation model targeting)
+    - Filled vs raw template copy; editable combobox parameters (predefined picks or free text, ≤ 3 per prompt)
+    - System-prompt recommendation shown as a tip with a new-tab link
+    - Skills library: per-agent install guides, file downloads, ZIP export
+    - Browse-all catalog with search and facet filters; row click opens detail view
+    - Meta-prompt badges (D01–D03, D05–D06 domain prompts are meta-prompts)
+    - Shareable deep links via query parameters (`?domain=…&category=…&prompt=…`), basePath-safe and PWA-offline-capable
+    - Prompt data generated from `content/prompts-collection/` Markdown files via `npm run ingest:prompts`; no hand-written TypeScript arrays
+
+### Removed
+
+- Legacy hard-coded prompt arrays (`system-prompts.ts`, `user-prompts.ts`, `dev-chat-user-prompts.ts`) and `PromptCategory` enum — replaced by the file-based ingestion pipeline
+
+### UX / shell
+
+- **Global sidebar**: collapses to an icon rail by default on all routes; state persists across sessions via localStorage
+
+### Infrastructure
+
+- `npm run ingest:prompts` — new script: parses `content/prompts-collection/` → generates `src/common/prompts/generated/prompts-data.json` + `skills-data.json`
+- CI pipeline (`nextjs.yml`): ingestion now runs before `next build`; `validate:sw` now runs post-build
+
+---
+
 ## [3.0.0] — 2026-06-17
 
 ### New tools

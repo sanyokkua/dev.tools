@@ -42,10 +42,10 @@
 
 ### AI
 
-| Tool                                                                             | Description                                            |
-| -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [LLM VRAM Calculator](https://sanyokkua.github.io/dev.tools/llm-vram-calculator) | Estimate GPU or unified memory for GGUF-quantized LLMs |
-| [Prompts Collection](https://sanyokkua.github.io/dev.tools/prompts-collection)   | Browse, filter, and build parametrized prompts         |
+| Tool                                                                             | Description                                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [LLM VRAM Calculator](https://sanyokkua.github.io/dev.tools/llm-vram-calculator) | Estimate GPU or unified memory for GGUF-quantized LLMs                                                                                                                                                                                                                        |
+| [Prompts Collection](https://sanyokkua.github.io/dev.tools/prompts-collection)   | Browse hierarchical prompt library by domain/category; fill editable parameters (predefined or free-text); switch chat↔agent and model variants; copy filled or raw templates; explore skills with per-agent install guides; share stable deep links; browse the full catalog |
 
 ---
 
@@ -68,6 +68,7 @@ no network required.
 ![Markdown Tools](docs/screenshots/markdown-tools.png)
 ![Software Installer](docs/screenshots/software-installer.png)
 ![LLM VRAM Calculator](docs/screenshots/vram-calculator.png)
+![Prompts Collection](docs/screenshots/prompts-collection.png)
 
 > See [`docs/screenshots/`](docs/screenshots/) for all screenshots.
 
