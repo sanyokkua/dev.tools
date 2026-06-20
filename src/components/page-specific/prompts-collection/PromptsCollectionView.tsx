@@ -10,11 +10,12 @@ import {
     skillsByDomain,
     variantsOf,
 } from '@/common/prompts/data';
-import type { PromptsData, SkillsData } from '@/common/prompts/types';
+import type { CatalogRow, PromptsData, SkillsData } from '@/common/prompts/types';
 import Chip from '@/controls/Chip';
 import SegmentedControl from '@/controls/SegmentedControl';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import PromptCatalogView from './PromptCatalogView';
 import PromptDetailPanel from './PromptDetailPanel';
 import PromptListItem from './PromptListItem';
 import SkillDetailPanel from './SkillDetailPanel';
@@ -167,6 +168,36 @@ const PromptsCollectionView: React.FC = () => {
         [router, pageState],
     );
 
+    const openCatalog = useCallback(() => {
+        const next: PromptsPageState = { ...pageState, view: 'catalog' };
+        setPageState(next);
+        void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+    }, [router, pageState]);
+
+    const closeCatalog = useCallback(() => {
+        const next: PromptsPageState = { ...pageState, view: null };
+        setPageState(next);
+        void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+    }, [router, pageState]);
+
+    const handleCatalogRowClick = useCallback(
+        (row: CatalogRow) => {
+            const next: PromptsPageState = {
+                type: row.kind === 'skill' ? 'skills' : 'prompts',
+                view: null,
+                domainSlug: row.domainSlug,
+                categorySlug: row.categorySlug,
+                selectedId: row.id,
+                variantContext: null,
+                variantModel: null,
+                variantSub: null,
+            };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [router],
+    );
+
     // --- Resolved selections for detail panel ---
 
     const selectedLogical = useMemo(
@@ -209,6 +240,20 @@ const PromptsCollectionView: React.FC = () => {
         [skills, pageState.selectedId],
     );
 
+    // --- Catalog branch ---
+    if (pageState.view === 'catalog' && promptsData && skillsData) {
+        return (
+            <div className="pc-view">
+                <PromptCatalogView
+                    promptsData={promptsData}
+                    skillsData={skillsData}
+                    onRowClick={handleCatalogRowClick}
+                    onBack={closeCatalog}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="pc-view">
             {/* Header */}
@@ -233,6 +278,9 @@ const PromptsCollectionView: React.FC = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             aria-label="Search prompts"
                         />
+                        <button className="btn tonal sm" onClick={openCatalog} aria-label="Browse all catalog">
+                            ▤ Browse all catalog
+                        </button>
                     </div>
                 </div>
 
