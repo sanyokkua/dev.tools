@@ -252,11 +252,61 @@ await runSmoke('markdown-mermaid', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__markdown_mermaid_error.png` });
 });
 
-// ── 7. Prompts Collection — stub page renders (T2.x will restore full smoke) ─
-await runSmoke('prompts-autogrow', async (page) => {
+// ── 7. Prompts Collection — hierarchy navigation ──────────────────────────────
+await runSmoke('prompts-hierarchy-nav', async (page) => {
     await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
-    await page.waitForSelector('.prompts-page', { timeout: 5000 });
-    await page.screenshot({ path: `${OUT}/smoke__prompts__before.png` });
+
+    // 1. Domain tabs render
+    await page.waitForSelector('[role="tab"]', { timeout: 8000 });
+    const activeDomainTab = page.locator('[role="tab"][aria-selected="true"]').first();
+    if (!(await activeDomainTab.count())) throw new Error('No active domain tab rendered');
+
+    // 2. Sub-tabs (categories) render
+    await page.waitForSelector('.pc-subtabs', { timeout: 5000 });
+
+    // 3. Click second domain tab if available
+    const tabs = page.locator('[role="tab"]');
+    const tabCount = await tabs.count();
+    if (tabCount > 1) {
+        await tabs.nth(1).click();
+        await page.waitForTimeout(300);
+        const subtabs = page.locator('.pc-subtabs .chip');
+        if (!(await subtabs.count())) throw new Error('Sub-tabs did not update after domain switch');
+    }
+
+    // 4. Click a list item if one exists
+    const listItem = page.locator('[role="option"]').first();
+    if (await listItem.count()) {
+        await listItem.click();
+        await page.waitForTimeout(200);
+        const detail = page.locator('.pc-detail-stub, .pc-detail-empty');
+        if (!(await detail.count())) throw new Error('Detail panel not rendered after list item click');
+    }
+
+    // 5. Switch to Skills mode
+    const skillsBtn = page.locator('[aria-label="View type"] button', { hasText: 'Skills' });
+    if (await skillsBtn.count()) {
+        await skillsBtn.click();
+        await page.waitForTimeout(300);
+    }
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__hierarchy.png` });
+});
+
+// ── 7b. Prompts Collection — responsive stacking at 375px ─────────────────────
+await runSmoke('prompts-responsive-stack', async (page) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('.pc-body', { timeout: 8000 });
+
+    // At 375px, .pc-body should be single column (no '264px' in grid columns)
+    const bodyGrid = await page.locator('.pc-body').evaluate((el) => window.getComputedStyle(el).gridTemplateColumns);
+    if (bodyGrid.includes('264px')) throw new Error(`Expected single-column grid at 375px, got: ${bodyGrid}`);
+
+    const overflow = await page.evaluate(() => document.body.scrollWidth > document.body.clientWidth + 1);
+    if (overflow) throw new Error('Horizontal overflow at 375px');
+
+    await page.screenshot({ path: `${OUT}/smoke__prompts__375.png` });
 });
 
 // ── 8. JSON Formatter — JSONPath query ────────────────────────────────────────
@@ -856,4 +906,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-console.log('\nSMOKE OK — all 30 interaction flows passed. Screenshots in ' + OUT);
+console.log('\nSMOKE OK — all 31 interaction flows passed. Screenshots in ' + OUT);
