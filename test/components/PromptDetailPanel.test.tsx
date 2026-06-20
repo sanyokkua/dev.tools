@@ -38,6 +38,34 @@ jest.mock('@/controls/EditableCombobox', () => ({
     ),
 }));
 
+jest.mock('@/controls/SegmentedControl', () => ({
+    __esModule: true,
+    default: ({
+        value,
+        onChange,
+        options,
+        'aria-label': ariaLabel,
+    }: {
+        'value': string;
+        'onChange': (v: string) => void;
+        'options': { value: string; label: string }[];
+        'aria-label'?: string;
+    }) => (
+        <div role="group" aria-label={ariaLabel}>
+            {options.map((o) => (
+                <button
+                    key={o.value}
+                    data-value={o.value}
+                    aria-pressed={value === o.value}
+                    onClick={() => onChange(o.value)}
+                >
+                    {o.label}
+                </button>
+            ))}
+        </div>
+    ),
+}));
+
 // --- Fixtures ---
 
 const dom: Domain = { code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' };
@@ -323,5 +351,237 @@ describe('PromptDetailPanel — renders with logical=null (SYS deep-link)', () =
         render(<PromptDetailPanel logical={null} variant={sysVariant} domain={dom} category={cat} />);
         expect(screen.queryByRole('status')).not.toBeInTheDocument();
         expect(screen.getByRole('heading', { name: 'Generate Code' })).toBeInTheDocument();
+    });
+});
+
+// --- T2.4 fixtures ---
+
+const chatVariant: PromptVariant = {
+    ...variant,
+    id: 'USR-A03-gen-chat',
+    executionContext: 'chat',
+    parameters: [{ name: 'language', optional: false }],
+};
+
+const agentVariant: PromptVariant = {
+    ...variant,
+    id: 'AGT-A03-gen',
+    executionContext: 'agent',
+    parameters: [
+        { name: 'language', optional: false },
+        { name: 'repo_path', optional: false },
+    ],
+};
+
+const logicalMultiAxis: LogicalPrompt = {
+    id: 'LP-A03-gen-multi',
+    categoryCode: 'A03',
+    title: 'Generate Code',
+    description: '',
+    variantAxes: ['executionContext'],
+    variantIds: ['USR-A03-gen-chat', 'AGT-A03-gen'],
+    defaultVariantId: 'USR-A03-gen-chat',
+};
+
+const noOpSwitch = jest.fn();
+
+describe('PromptDetailPanel — variant switcher (T2.4)', () => {
+    beforeEach(() => noOpSwitch.mockClear());
+
+    it('shows SegmentedControl for executionContext when axis has multiple values', () => {
+        render(
+            <PromptDetailPanel
+                logical={logicalMultiAxis}
+                variant={chatVariant}
+                variants={[chatVariant, agentVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.getByRole('group', { name: /execution context/i })).toBeInTheDocument();
+    });
+
+    it('does NOT show executionContext control when single variant', () => {
+        render(
+            <PromptDetailPanel
+                logical={{ ...logicalMultiAxis, variantAxes: [] }}
+                variant={chatVariant}
+                variants={[chatVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.queryByRole('group', { name: /execution context/i })).not.toBeInTheDocument();
+    });
+
+    it('switching to agent calls onVariantSwitch with agent context', () => {
+        render(
+            <PromptDetailPanel
+                logical={logicalMultiAxis}
+                variant={chatVariant}
+                variants={[chatVariant, agentVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'agent' }));
+        expect(noOpSwitch).toHaveBeenCalledWith('agent', null, null);
+    });
+
+    it('shows model select when model axis has multiple values', () => {
+        const gptV = { ...chatVariant, id: 'gpt', model: 'gpt-4o' };
+        const claudeV = { ...chatVariant, id: 'claude', model: 'claude-opus' };
+        render(
+            <PromptDetailPanel
+                logical={{ ...logicalMultiAxis, variantAxes: ['model'] }}
+                variant={gptV}
+                variants={[gptV, claudeV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.getByRole('combobox', { name: /target model/i })).toBeInTheDocument();
+    });
+
+    it('selecting a model calls onVariantSwitch with model value', () => {
+        const gptV = { ...chatVariant, id: 'gpt', model: 'gpt-4o' };
+        const claudeV = { ...chatVariant, id: 'claude', model: 'claude-opus' };
+        render(
+            <PromptDetailPanel
+                logical={{ ...logicalMultiAxis, variantAxes: ['model'] }}
+                variant={gptV}
+                variants={[gptV, claudeV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.change(screen.getByRole('combobox', { name: /target model/i }), { target: { value: 'claude-opus' } });
+        expect(noOpSwitch).toHaveBeenCalledWith(null, 'claude-opus', null);
+    });
+});
+
+describe('PromptDetailPanel — param preservation on variant switch (T2.4)', () => {
+    it('preserves param values with matching names when variant switches', async () => {
+        const { rerender } = render(
+            <PromptDetailPanel
+                logical={logicalMultiAxis}
+                variant={chatVariant}
+                variants={[chatVariant, agentVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        // Fill 'language' param
+        fireEvent.change(screen.getByLabelText('language'), { target: { value: 'TypeScript' } });
+        expect(screen.getByLabelText('language')).toHaveValue('TypeScript');
+
+        // Switch to agent variant (also has 'language' + adds 'repo_path')
+        rerender(
+            <PromptDetailPanel
+                logical={logicalMultiAxis}
+                variant={agentVariant}
+                variants={[chatVariant, agentVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+
+        // 'language' value preserved
+        await waitFor(() => {
+            expect(screen.getByLabelText('language')).toHaveValue('TypeScript');
+        });
+    });
+
+    it('resets params when a different logical prompt is selected', async () => {
+        const differentLogical: LogicalPrompt = { ...logicalMultiAxis, id: 'LP-B01-different' };
+        const { rerender } = render(
+            <PromptDetailPanel
+                logical={logicalMultiAxis}
+                variant={chatVariant}
+                variants={[chatVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.change(screen.getByLabelText('language'), { target: { value: 'TypeScript' } });
+
+        rerender(
+            <PromptDetailPanel
+                logical={differentLogical}
+                variant={{ ...chatVariant, parameters: [{ name: 'language', optional: false }] }}
+                variants={[chatVariant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('language')).toHaveValue('');
+        });
+    });
+});
+
+describe('PromptDetailPanel — Share button (T2.4)', () => {
+    const SHARE_PATH = '/prompts-collection?domain=eng&variant=chat';
+
+    beforeEach(() => {
+        window.history.pushState({}, '', SHARE_PATH);
+    });
+
+    it('renders Share button in detail panel', () => {
+        render(
+            <PromptDetailPanel
+                logical={logical}
+                variant={variant}
+                variants={[variant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
+    });
+
+    it('Share button copies window.location.href to clipboard', async () => {
+        render(
+            <PromptDetailPanel
+                logical={logical}
+                variant={variant}
+                variants={[variant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.click(screen.getByRole('button', { name: /share/i }));
+        await waitFor(() => {
+            expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining(SHARE_PATH));
+        });
+    });
+
+    it('Share button shows "Link copied!" toast', async () => {
+        render(
+            <PromptDetailPanel
+                logical={logical}
+                variant={variant}
+                variants={[variant]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.click(screen.getByRole('button', { name: /share/i }));
+        await waitFor(() => {
+            expect(mockShowToast).toHaveBeenCalledWith(expect.objectContaining({ message: 'Link copied!' }));
+        });
     });
 });

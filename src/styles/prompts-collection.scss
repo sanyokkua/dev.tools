@@ -487,3 +487,45 @@
     color: var(--on-surface-variant);
     border: 1px solid var(--outline-soft);
 }
+
+/* T2.4 — variant switcher + share */
+.pc-detail-header-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-detail-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.pc-variant-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pc-model-select {
+    padding: 4px 8px;
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 4px;
+    background: var(--color-input-bg, #fff);
+    color: var(--color-text, #111);
+    font-size: 13px;
+    cursor: pointer;
+
+    [data-theme='dark'] & {
+        background: var(--color-input-bg-dark, #222);
+        color: var(--color-text-dark, #eee);
+        border-color: var(--color-border-dark, #555);
+    }
+}
+
+.pc-share-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}

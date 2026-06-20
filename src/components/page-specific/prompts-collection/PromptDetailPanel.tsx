@@ -3,29 +3,46 @@ import { isMetaPrompt } from '@/common/prompts/meta';
 import type { Category, Domain, LogicalPrompt, PromptVariant } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
+import SegmentedControl from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useState } from 'react';
 
 interface Props {
     logical: LogicalPrompt | null;
     variant: PromptVariant | null;
+    variants?: PromptVariant[];
     domain: Domain | null;
     category: Category | null;
+    onVariantSwitch?: (ctx: 'chat' | 'agent' | null, model: string | null, sub: string | null) => void;
 }
 
-const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
+const PromptDetailPanel: React.FC<Props> = ({
+    variant,
+    domain,
+    category,
+    logical,
+    variants = [],
+    onVariantSwitch = () => {},
+}) => {
     const { showToast } = useToast();
     const [paramValues, setParamValues] = useState<Record<string, string>>({});
 
+    // Reset all params when the selected logical prompt changes (new prompt selected in list)
     useEffect(() => {
-        if (!variant) {
-            setParamValues({});
-            return;
-        }
-        const init: Record<string, string> = {};
-        for (const p of variant.parameters) init[p.name] = '';
-        setParamValues(init);
-    }, [variant]);
+        setParamValues({});
+    }, [logical?.id]);
+
+    // When variant changes within the same logical (axis switch), preserve matching param values
+    useEffect(() => {
+        if (!variant) return;
+        setParamValues((prev) => {
+            const next: Record<string, string> = {};
+            for (const p of variant.parameters) {
+                next[p.name] = prev[p.name] ?? '';
+            }
+            return next;
+        });
+    }, [variant?.id]);
 
     const filledText = variant ? replaceParams(variant.template, paramValues) : '';
 
@@ -48,6 +65,16 @@ const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
         setParamValues(empty);
     }, [variant]);
 
+    const handleShare = useCallback(async () => {
+        if (typeof window === 'undefined') return;
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            showToast({ message: 'Link copied!', type: ToastType.SUCCESS });
+        } catch {
+            showToast({ message: 'Copy failed', type: ToastType.ERROR });
+        }
+    }, [showToast]);
+
     if (!variant) {
         return (
             <div className="pc-detail-empty" role="status">
@@ -63,20 +90,93 @@ const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
         sysId && domain && category ? buildSysPromptHref(sysId, domain.slug, category.slug, basePath) : null;
     const sysFullUrl = sysHref && typeof window !== 'undefined' ? window.location.origin + sysHref : sysHref;
 
+    // Axis control derived values
+    const activeAxes = logical?.variantAxes ?? [];
+    const hasContextAxis = activeAxes.includes('executionContext');
+    const hasModelAxis = activeAxes.includes('model');
+    const hasSubAxis = activeAxes.includes('subVariant');
+
+    const contextOptions = hasContextAxis
+        ? ([...new Set(variants.map((v) => v.executionContext).filter(Boolean))] as ('chat' | 'agent')[])
+        : [];
+    const modelOptions = hasModelAxis ? ([...new Set(variants.map((v) => v.model).filter(Boolean))] as string[]) : [];
+    const subOptions = hasSubAxis ? ([...new Set(variants.map((v) => v.subVariant).filter(Boolean))] as string[]) : [];
+
     return (
         <div className="pc-detail">
             {/* S1 Header */}
             <div className="pc-detail-header-row">
-                <div>
-                    <h2 className="pc-detail-title">{variant.title}</h2>
+                <div className="pc-detail-header-main">
+                    <div className="pc-detail-title-row">
+                        <h2 className="pc-detail-title">{variant.title}</h2>
+                        <button className="pc-btn pc-share-btn" onClick={() => void handleShare()}>
+                            Share 🔗
+                        </button>
+                    </div>
                     <div className="pc-detail-breadcrumb">
                         {domain?.title} › {category?.title} · <span className="pc-mono">{variant.id}</span>
                     </div>
+
+                    {/* Variant axis controls — only rendered when axis has >1 unique value */}
+                    {(contextOptions.length > 1 || modelOptions.length > 1 || subOptions.length > 1) && (
+                        <div className="pc-variant-controls">
+                            {contextOptions.length > 1 && (
+                                <SegmentedControl
+                                    options={contextOptions.map((v) => ({ value: v, label: v }))}
+                                    value={variant.executionContext ?? contextOptions[0]}
+                                    onChange={(v) =>
+                                        onVariantSwitch(
+                                            v as 'chat' | 'agent',
+                                            hasModelAxis ? (variant.model ?? null) : null,
+                                            hasSubAxis ? (variant.subVariant ?? null) : null,
+                                        )
+                                    }
+                                    aria-label="Execution context"
+                                />
+                            )}
+                            {modelOptions.length > 1 && (
+                                <select
+                                    className="pc-model-select"
+                                    value={variant.model ?? ''}
+                                    onChange={(e) =>
+                                        onVariantSwitch(
+                                            hasContextAxis ? (variant.executionContext ?? null) : null,
+                                            e.target.value || null,
+                                            hasSubAxis ? (variant.subVariant ?? null) : null,
+                                        )
+                                    }
+                                    aria-label="Target model"
+                                >
+                                    {modelOptions.map((m) => (
+                                        <option key={m} value={m}>
+                                            {m}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                            {subOptions.length > 1 && (
+                                <SegmentedControl
+                                    options={subOptions.map((v) => ({ value: v, label: v }))}
+                                    value={variant.subVariant ?? subOptions[0]}
+                                    onChange={(v) =>
+                                        onVariantSwitch(
+                                            hasContextAxis ? (variant.executionContext ?? null) : null,
+                                            hasModelAxis ? (variant.model ?? null) : null,
+                                            v || null,
+                                        )
+                                    }
+                                    aria-label="Variant"
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
                 <div className="pc-detail-badges">
-                    <span className={`pc-tag${variant.executionContext === 'agent' ? ' pc-tag-alt' : ''}`}>
-                        {variant.executionContext === 'agent' ? 'agent' : 'chat'}
-                    </span>
+                    {!hasContextAxis && (
+                        <span className={`pc-tag${variant.executionContext === 'agent' ? ' pc-tag-alt' : ''}`}>
+                            {variant.executionContext === 'agent' ? 'agent' : 'chat'}
+                        </span>
+                    )}
                     {isMeta && <span className="pc-tag pc-tag-meta">⚗ Meta-prompt · outputs a prompt</span>}
                 </div>
             </div>
