@@ -6,6 +6,7 @@ import {
     loadPromptsData,
     loadSkillsData,
     logicalByCategory,
+    selectVariant,
     skillsByDomain,
     variantsOf,
 } from '@/common/prompts/data';
@@ -142,7 +143,22 @@ const PromptsCollectionView: React.FC = () => {
 
     const setSelected = useCallback(
         (id: string) => {
-            const next: PromptsPageState = { ...pageState, selectedId: id };
+            const next: PromptsPageState = {
+                ...pageState,
+                selectedId: id,
+                variantContext: null,
+                variantModel: null,
+                variantSub: null,
+            };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [router, pageState],
+    );
+
+    const onVariantSwitch = useCallback(
+        (ctx: 'chat' | 'agent' | null, model: string | null, sub: string | null) => {
+            const next: PromptsPageState = { ...pageState, variantContext: ctx, variantModel: model, variantSub: sub };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
         },
@@ -156,12 +172,35 @@ const PromptsCollectionView: React.FC = () => {
         [logicals, pageState.selectedId],
     );
 
+    const allVariants = useMemo(
+        () => (promptsData && selectedLogical ? variantsOf(promptsData, selectedLogical.id) : []),
+        [promptsData, selectedLogical],
+    );
+
     const selectedVariant = useMemo(() => {
         if (!promptsData) return null;
-        if (selectedLogical) return defaultVariant(promptsData, selectedLogical.id) ?? null;
+        if (selectedLogical) {
+            return (
+                selectVariant(
+                    variantsOf(promptsData, selectedLogical.id),
+                    pageState.variantContext,
+                    pageState.variantModel,
+                    pageState.variantSub,
+                ) ??
+                defaultVariant(promptsData, selectedLogical.id) ??
+                null
+            );
+        }
         if (pageState.selectedId) return findVariantById(promptsData, pageState.selectedId) ?? null;
         return null;
-    }, [promptsData, selectedLogical, pageState.selectedId]);
+    }, [
+        promptsData,
+        selectedLogical,
+        pageState.selectedId,
+        pageState.variantContext,
+        pageState.variantModel,
+        pageState.variantSub,
+    ]);
 
     const selectedSkill = useMemo(
         () => (pageState.selectedId ? (skills.find((s) => s.slug === pageState.selectedId) ?? null) : null),
@@ -262,8 +301,10 @@ const PromptsCollectionView: React.FC = () => {
                         <PromptDetailPanel
                             logical={selectedLogical}
                             variant={selectedVariant}
+                            variants={allVariants}
                             domain={activeDomain}
                             category={activeCategory}
+                            onVariantSwitch={onVariantSwitch}
                         />
                     ) : (
                         <SkillDetailPanel skill={selectedSkill} />

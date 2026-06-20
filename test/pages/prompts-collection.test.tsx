@@ -109,6 +109,7 @@ jest.mock('@/common/prompts/data', () => ({
     },
     skillsByDomain: (data: typeof mockSkillsData, code: string) => data.skills.filter((s) => s.domainCode === code),
     findVariantById: (data: typeof mockPromptsData, id: string) => data.variants.find((v) => v.id === id),
+    selectVariant: (variants: typeof mockPromptsData.variants) => variants[0],
     buildSysPromptHref: () => '/prompts-collection?domain=x&category=y&prompt=z',
     recommendedSystemPromptFor: () => undefined,
     replaceParams: (t: string) => t,
