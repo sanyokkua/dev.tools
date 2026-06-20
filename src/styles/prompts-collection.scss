@@ -824,3 +824,128 @@
     padding-top: 4px;
     padding-bottom: 16px;
 }
+
+/* ── Command Palette (⌘K / Ctrl+K) ──────────────────────────────────────────── */
+
+.cp-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+}
+
+.cp-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.cp-panel {
+    position: relative;
+    width: min(640px, calc(100vw - var(--s4)));
+    background: var(--card);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 120px);
+}
+
+.cp-input {
+    width: 100%;
+    padding: var(--s3) var(--s4);
+    font-size: 1.1rem;
+    border: none;
+    border-bottom: 1px solid var(--outline-variant);
+    background: var(--card);
+    color: var(--on-surface);
+    outline: none;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: var(--muted);
+    }
+}
+
+.cp-results {
+    list-style: none;
+    margin: 0;
+    padding: var(--s1) 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.cp-result {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--s2) var(--s4);
+    cursor: pointer;
+    transition: background 0.12s;
+
+    &:hover,
+    &.active {
+        background: var(--primary-container);
+    }
+}
+
+.cp-result-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cp-result-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+}
+
+.cp-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: var(--r-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &.prompt {
+        background: var(--primary-container);
+        color: var(--on-primary-container);
+    }
+
+    &.skill {
+        background: var(--info-container, #d1ecf1);
+        color: var(--on-info-container, #0c5460);
+    }
+}
+
+.cp-result-sublabel {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.cp-empty {
+    padding: var(--s4);
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.cp-footer {
+    border-top: 1px solid var(--outline-variant);
+    padding: var(--s2) var(--s4);
+}
+
+.cp-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: var(--font-mono, monospace);
+}
