@@ -127,3 +127,21 @@ The component applies `.editorpane`, `.eh`, and `.eb` CSS primitives from `primi
 ## Static Export
 
 The app builds as a static export (`next.config.mjs`: `output: 'export'`). No server-side APIs, no `getServerSideProps`. Use `getStaticProps` / `getStaticPaths` if needed, or client-side data fetching only.
+
+## SDD Per-Task Review Policy
+
+When running Subagent-Driven Development sessions, skip the per-task reviewer dispatch when ALL of the following hold:
+
+- The brief contains the exact code to write (transcription task, not a design task)
+- The task touches ≤ 2 files
+- The implementer reports DONE (not DONE_WITH_CONCERNS or BLOCKED)
+
+Keep per-task reviews when:
+
+- The task requires design judgment (multi-file coordination, new component with interaction logic)
+- The implementer reports DONE_WITH_CONCERNS
+- The brief describes behavior without specifying exact implementation
+
+**Final review:** Focus the final whole-branch reviewer on correctness bugs and spec completeness only — not style, formatting, or naming (those are lint/Prettier's job). Skip Minor style findings in the final review dispatch.
+
+**Rationale:** In T3.2 (Jun 2026), 3 per-task reviews took ~2m 47s and found only Minor style issues (JSX comments, import order — all lint-catchable). The final review caught the actual correctness bug. Per-task reviews add proportional value only on design-judgment tasks.
