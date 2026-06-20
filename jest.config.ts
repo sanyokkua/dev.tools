@@ -16,6 +16,11 @@ const config: Config = {
         '^uuid$': '<rootDir>/test/__mocks__/uuid.js',
         // browser-fs-access is ESM-only; use a CJS shim for Jest
         '^browser-fs-access$': '<rootDir>/test/__mocks__/browser-fs-access.js',
+        '^@/contexts/(.*)$': '<rootDir>/src/components/contexts/$1',
+        '^@/controls/(.*)$': '<rootDir>/src/components/controls/$1',
+        '^@/layouts/(.*)$': '<rootDir>/src/components/layouts/$1',
+        '^@/elements/(.*)$': '<rootDir>/src/components/elements/$1',
+        '^@/page-specific/(.*)$': '<rootDir>/src/components/page-specific/$1',
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@/common/(.*)$': '<rootDir>/src/common/$1',
         '^@/components/(.*)$': '<rootDir>/src/components/$1',

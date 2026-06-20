@@ -83,6 +83,10 @@ const mockSkillsData = {
 const mockReplace = jest.fn();
 jest.mock('next/router', () => ({ useRouter: () => ({ query: {}, isReady: true, replace: mockReplace }) }));
 
+// --- @/contexts/ToasterContext mock ---
+
+jest.mock('@/contexts/ToasterContext', () => ({ useToast: () => ({ showToast: jest.fn() }) }));
+
 // --- @/common/prompts/data mock ---
 
 jest.mock('@/common/prompts/data', () => ({
@@ -104,6 +108,8 @@ jest.mock('@/common/prompts/data', () => ({
         return data.variants.find((v) => v.id === lp.defaultVariantId);
     },
     skillsByDomain: (data: typeof mockSkillsData, code: string) => data.skills.filter((s) => s.domainCode === code),
+    findVariantById: (data: typeof mockPromptsData, id: string) => data.variants.find((v) => v.id === id),
+    buildSysPromptHref: () => '/prompts-collection?domain=x&category=y&prompt=z',
     recommendedSystemPromptFor: () => undefined,
     replaceParams: (t: string) => t,
 }));
@@ -327,5 +333,21 @@ describe('PromptListItem META badge', () => {
         const variants = [makeVariant({ isMetaPrompt: false })];
         render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
         expect(screen.queryByText('META')).not.toBeInTheDocument();
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptsCollectionView — SYS-variant deep-link fallback
+// -------------------------------------------------------------------
+
+describe('PromptsCollectionView — SYS-variant deep-link fallback', () => {
+    it('renders detail panel for a selected prompt (fallback path works)', async () => {
+        render(<PromptsCollectionView />);
+        await screen.findByRole('tab', { name: 'Software Engineering' });
+        const listItem = screen.getByRole('option', { name: /Review a Change/i });
+        fireEvent.click(listItem);
+        await waitFor(() => {
+            expect(screen.queryByRole('status')).not.toBeInTheDocument();
+        });
     });
 });

@@ -1,6 +1,7 @@
 import {
     categoriesByDomain,
     defaultVariant,
+    findVariantById,
     listDomains,
     loadPromptsData,
     loadSkillsData,
@@ -144,10 +145,12 @@ const PromptsCollectionView: React.FC = () => {
         [logicals, pageState.selectedId],
     );
 
-    const selectedVariant = useMemo(
-        () => (promptsData && selectedLogical ? (defaultVariant(promptsData, selectedLogical.id) ?? null) : null),
-        [promptsData, selectedLogical],
-    );
+    const selectedVariant = useMemo(() => {
+        if (!promptsData) return null;
+        if (selectedLogical) return defaultVariant(promptsData, selectedLogical.id) ?? null;
+        if (pageState.selectedId) return findVariantById(promptsData, pageState.selectedId) ?? null;
+        return null;
+    }, [promptsData, selectedLogical, pageState.selectedId]);
 
     const selectedSkill = useMemo(
         () => (pageState.selectedId ? (skills.find((s) => s.slug === pageState.selectedId) ?? null) : null),
