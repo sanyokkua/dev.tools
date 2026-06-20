@@ -250,6 +250,23 @@
     color: #efd9ff;
 }
 
+// Meta-prompt guard note (callout below header)
+.pc-meta-guard {
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    border-left: 3px solid #9333ea;
+    border-radius: var(--r-sm);
+    padding: 9px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--on-surface-variant);
+    margin-top: 10px;
+}
+
+[data-theme='dark'] .pc-meta-guard {
+    border-left-color: #c084fc;
+}
+
 // Loading state
 .pc-loading {
     position: absolute;

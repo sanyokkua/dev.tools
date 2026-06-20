@@ -81,6 +81,15 @@ const PromptDetailPanel: React.FC<Props> = ({ variant, domain, category }) => {
                 </div>
             </div>
 
+            {/* Meta-prompt guard note */}
+            {isMeta && (
+                <div className="pc-meta-guard" role="note" aria-label="Meta-prompt notice">
+                    ⚗ <strong>Meta-prompt.</strong> The output of this prompt is itself a prompt — not the final result.{' '}
+                    <strong>Step 1:</strong> fill in parameters and copy. <strong>Step 2:</strong> paste the output into
+                    your target model.
+                </div>
+            )}
+
             {/* S2 Description */}
             {variant.description && (
                 <section aria-label="Description">

@@ -188,6 +188,39 @@ describe('PromptDetailPanel — 8 sections render', () => {
     });
 });
 
+describe('PromptDetailPanel — meta-prompt guard note', () => {
+    it('shows guard note when isMetaPrompt=true', () => {
+        render(<PromptDetailPanel logical={logical} variant={metaVariant} domain={dom} category={cat} />);
+        expect(screen.getByRole('note')).toBeInTheDocument();
+    });
+
+    it('guard note is NOT shown for non-meta variant', () => {
+        render(<PromptDetailPanel logical={logical} variant={variant} domain={dom} category={cat} />);
+        expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    });
+
+    it('guard note shows via category code fallback (D01, isMetaPrompt unset)', () => {
+        const d01Variant = { ...variant, categoryCode: 'D01', isMetaPrompt: undefined as unknown as boolean };
+        render(<PromptDetailPanel logical={logical} variant={d01Variant} domain={dom} category={cat} />);
+        expect(screen.getByRole('note')).toBeInTheDocument();
+    });
+
+    it('guard note contains Step 1 and Step 2 instructions', () => {
+        render(<PromptDetailPanel logical={logical} variant={metaVariant} domain={dom} category={cat} />);
+        const note = screen.getByRole('note');
+        expect(note).toHaveTextContent(/Step 1/i);
+        expect(note).toHaveTextContent(/Step 2/i);
+    });
+
+    it('guard note appears before the parameters section', () => {
+        render(<PromptDetailPanel logical={logical} variant={metaVariant} domain={dom} category={cat} />);
+        const note = screen.getByRole('note');
+        const params = screen.getByLabelText('Parameters');
+        // compareDocumentPosition: 4 = note precedes params
+        expect(note.compareDocumentPosition(params) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+});
+
 describe('PromptDetailPanel — system prompt tip', () => {
     it('shows system prompt tip when recommendedSystemPromptId is set', () => {
         render(<PromptDetailPanel logical={logical} variant={variant} domain={dom} category={cat} />);
