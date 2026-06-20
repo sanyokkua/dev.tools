@@ -1,10 +1,12 @@
 import {
     buildCatalogRowHref,
     buildCatalogRows,
+    buildInstallInstructions,
     buildSysPromptHref,
     categoriesByDomain,
     defaultVariant,
     filterCatalogRows,
+    findSkillBySlug,
     findVariantById,
     listDomains,
     logicalByCategory,
@@ -549,4 +551,45 @@ describe('catalog helpers', () => {
 
     // suppress unused import warning
     void ({} as CatalogRow);
+});
+
+describe('findSkillBySlug', () => {
+    test('returns correct skill for known slug', () => {
+        const result = findSkillBySlug(FIXTURE_SKILLS, 'code-review');
+        expect(result).toBeDefined();
+        expect(result?.slug).toBe('code-review');
+    });
+
+    test('returns undefined for unknown slug', () => {
+        expect(findSkillBySlug(FIXTURE_SKILLS, 'nonexistent-slug')).toBeUndefined();
+    });
+});
+
+describe('buildInstallInstructions', () => {
+    const skillStub = FIXTURE_SKILLS.skills[0]; // use first fixture skill
+
+    test('claude-code: placement contains slug', () => {
+        const inst = buildInstallInstructions(skillStub, 'claude-code');
+        expect(inst.placement).toContain(skillStub.slug);
+        expect(inst.steps.length).toBeGreaterThan(0);
+        expect(inst.notes.length).toBeGreaterThan(0);
+    });
+
+    test('kiro: placement starts with .kiro/', () => {
+        const inst = buildInstallInstructions(skillStub, 'kiro');
+        expect(inst.placement).toMatch(/^\.kiro\//);
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('other: placement contains agent-config-dir', () => {
+        const inst = buildInstallInstructions(skillStub, 'other');
+        expect(inst.placement).toContain('agent-config-dir');
+    });
+
+    test('slug with hyphens: no double slashes in placement', () => {
+        const hyphenSkill = { ...skillStub, slug: 'my-hyphen-skill' };
+        const inst = buildInstallInstructions(hyphenSkill, 'claude-code');
+        expect(inst.placement).not.toContain('//');
+        expect(inst.placement).toContain('my-hyphen-skill');
+    });
 });

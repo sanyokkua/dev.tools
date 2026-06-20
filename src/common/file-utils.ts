@@ -1,5 +1,6 @@
 import { DEFAULT_EXTENSION, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo, FileSaveProperties, OnErrorHandler, OnSuccessHandler } from '@/common/file-types';
+import type { Skill } from '@/common/prompts/types';
 import { fileSave } from 'browser-fs-access';
 
 /**
@@ -211,3 +212,21 @@ export const handleFileOpenFailure: (error: unknown) => FileInfo = (error) => {
     console.error('Error reading file:', error);
     return createEmptyFile();
 };
+
+export async function downloadSkillZip(skill: Skill): Promise<void> {
+    const { strToU8, zipSync } = await import('fflate');
+    const entries: Record<string, Uint8Array> = {};
+    for (const file of skill.files) {
+        entries[`${skill.slug}/${file.path}`] = strToU8(file.content);
+    }
+    const zipped = zipSync(entries);
+    const blob = new Blob([zipped], { type: 'application/zip' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${skill.slug}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}

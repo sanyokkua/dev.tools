@@ -257,3 +257,45 @@ export function buildCatalogRowHref(row: CatalogRow, basePath = ''): string {
     if (row.categorySlug) params['category'] = row.categorySlug;
     return `${basePath}/prompts-collection?${new URLSearchParams(params).toString()}`;
 }
+
+export function findSkillBySlug(skills: SkillsData, slug: string): Skill | undefined {
+    return skills.skills.find((s) => s.slug === slug);
+}
+
+export type InstallTarget = 'claude-code' | 'kiro' | 'other';
+export interface InstallInstructions {
+    placement: string;
+    steps: string[];
+    notes: string;
+}
+
+export function buildInstallInstructions(skill: Skill, target: InstallTarget): InstallInstructions {
+    const slug = skill.slug;
+    switch (target) {
+        case 'claude-code':
+            return {
+                placement: `.claude/skills/${slug}/`,
+                steps: [
+                    `mkdir -p .claude/skills/${slug}`,
+                    `# Paste SKILL.md content into .claude/skills/${slug}/SKILL.md`,
+                    `# Or use the Download .zip button and extract there`,
+                ],
+                notes: 'Claude Code auto-discovers skills in .claude/skills/. No additional config needed.',
+            };
+        case 'kiro':
+            return {
+                placement: `.kiro/steering/`,
+                steps: [`mkdir -p .kiro/steering`, `# Copy SKILL.md content to .kiro/steering/${slug}.md`],
+                notes: 'Kiro loads steering files from .kiro/steering/ as persistent agent context.',
+            };
+        case 'other':
+            return {
+                placement: `<agent-config-dir>/${slug}/`,
+                steps: [
+                    `# Place SKILL.md in your agent's skill or rules directory`,
+                    `# Refer to your agent's documentation for the exact path`,
+                ],
+                notes: "Each agent has its own convention for skill placement. Check your agent's docs.",
+            };
+    }
+}

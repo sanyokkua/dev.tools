@@ -75,6 +75,7 @@
         "smol-toml": "^1.6.1",
         "sql-formatter": "^15.4.9",
         "uuid": "^13.0.0",
+        "fflate": "^0.8.2",
         "yaml": "^2.9.0"
     },
     "prettier": {
