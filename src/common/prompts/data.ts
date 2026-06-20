@@ -1,4 +1,13 @@
-import type { Category, Domain, LogicalPrompt, PromptVariant, PromptsData, Skill, SkillsData } from './types';
+import type {
+    CatalogRow,
+    Category,
+    Domain,
+    LogicalPrompt,
+    PromptVariant,
+    PromptsData,
+    Skill,
+    SkillsData,
+} from './types';
 
 let _prompts: PromptsData | null = null;
 let _skills: SkillsData | null = null;
@@ -126,4 +135,125 @@ export function buildSysPromptHref(
 ): string {
     const params = new URLSearchParams({ domain: domainSlug, category: categorySlug, prompt: sysPromptId });
     return `${basePath}/prompts-collection?${params.toString()}`;
+}
+
+export function buildCatalogRows(data: PromptsData, skills: SkillsData): CatalogRow[] {
+    const rows: CatalogRow[] = [];
+
+    for (const lp of data.logical) {
+        const category = data.categories.find((c) => c.code === lp.categoryCode);
+        if (!category) continue;
+        const domain = data.domains.find((d) => d.code === category.domainCode);
+        if (!domain) continue;
+
+        const lpVariants = variantsOf(data, lp.id).filter((v) => v.kind !== 'system');
+        const isMetaPrompt = lpVariants.some((v) => v.isMetaPrompt);
+        const hasChat = lpVariants.some((v) => v.executionContext === 'chat');
+        const hasAgent = lpVariants.some((v) => v.executionContext === 'agent');
+        const hasModel = lp.variantAxes.includes('model');
+        const modelCount = hasModel ? new Set(lpVariants.map((v) => v.model).filter(Boolean)).size : 0;
+
+        let variantSummary = '—';
+        if (hasModel) {
+            variantSummary = `${modelCount} model${modelCount !== 1 ? 's' : ''}`;
+        } else if (hasChat && hasAgent) {
+            variantSummary = 'chat · agent';
+        } else if (hasChat) {
+            variantSummary = 'chat';
+        } else if (hasAgent) {
+            variantSummary = 'agent';
+        }
+
+        rows.push({
+            id: lp.id,
+            kind: 'prompt',
+            title: lp.title,
+            domainCode: domain.code,
+            domainSlug: domain.slug,
+            domainTitle: domain.title,
+            categorySlug: category.slug,
+            categoryTitle: category.title,
+            isMetaPrompt,
+            hasChat,
+            hasAgent,
+            hasModel,
+            modelCount,
+            variantSummary,
+        });
+    }
+
+    for (const skill of skills.skills) {
+        const domain = data.domains.find((d) => d.code === skill.domainCode);
+        const domainTitle = domain?.title ?? skill.domainCode;
+        const domainSlug = domain?.slug ?? skill.domainCode;
+        const toolList = skill.allowedTools.slice(0, 3).join(' · ');
+        const toolSuffix = skill.allowedTools.length > 3 ? ' +…' : '';
+        const variantSummary = skill.allowedTools.length ? toolList + toolSuffix : '—';
+
+        rows.push({
+            id: skill.slug,
+            kind: 'skill',
+            title: skill.title,
+            domainCode: skill.domainCode,
+            domainSlug,
+            domainTitle,
+            categorySlug: null,
+            categoryTitle: 'Skills',
+            isMetaPrompt: false,
+            hasChat: false,
+            hasAgent: false,
+            hasModel: false,
+            modelCount: 0,
+            variantSummary,
+        });
+    }
+
+    return rows;
+}
+
+export function filterCatalogRows(
+    rows: CatalogRow[],
+    text: string,
+    domainFacet: string | null,
+    typeFacets: ReadonlySet<string>,
+): CatalogRow[] {
+    let result = rows;
+
+    if (text.trim()) {
+        const q = text.toLowerCase();
+        result = result.filter(
+            (r) =>
+                r.title.toLowerCase().includes(q) ||
+                r.domainTitle.toLowerCase().includes(q) ||
+                r.categoryTitle.toLowerCase().includes(q) ||
+                r.variantSummary.toLowerCase().includes(q),
+        );
+    }
+
+    if (domainFacet) {
+        result = result.filter((r) => r.domainSlug === domainFacet);
+    }
+
+    if (typeFacets.size > 0) {
+        result = result.filter((r) => {
+            if (typeFacets.has('chat') && r.hasChat) return true;
+            if (typeFacets.has('agent') && r.hasAgent) return true;
+            if (typeFacets.has('model') && r.hasModel) return true;
+            if (typeFacets.has('meta') && r.isMetaPrompt) return true;
+            if (typeFacets.has('skill') && r.kind === 'skill') return true;
+            return false;
+        });
+    }
+
+    return result;
+}
+
+export function buildCatalogRowHref(row: CatalogRow, basePath = ''): string {
+    if (row.kind === 'skill') {
+        const p = new URLSearchParams({ type: 'skills', domain: row.domainSlug, skill: row.id });
+        return `${basePath}/prompts-collection?${p.toString()}`;
+    }
+    const params: Record<string, string> = { domain: row.domainSlug, prompt: row.id };
+    if (row.categorySlug) params['category'] = row.categorySlug;
+    return `${basePath}/prompts-collection?${new URLSearchParams(params).toString()}`;
 }

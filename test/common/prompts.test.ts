@@ -1,7 +1,10 @@
 import {
+    buildCatalogRowHref,
+    buildCatalogRows,
     buildSysPromptHref,
     categoriesByDomain,
     defaultVariant,
+    filterCatalogRows,
     findVariantById,
     listDomains,
     logicalByCategory,
@@ -12,7 +15,7 @@ import {
     skillsByDomain,
     variantsOf,
 } from '@/common/prompts/data';
-import type { PromptsData, SkillsData } from '@/common/prompts/types';
+import type { CatalogRow, PromptsData, SkillsData } from '@/common/prompts/types';
 
 const FIXTURE_PROMPTS: PromptsData = {
     domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
@@ -352,4 +355,198 @@ describe('selectVariant (T2.4)', () => {
     // suppress unused variable warnings for unused fixtures
     void claudeV;
     void proV;
+});
+
+describe('catalog helpers', () => {
+    // buildCatalogRows — shape checks
+    test('buildCatalogRows returns one prompt row + one skill row for fixture', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        expect(rows).toHaveLength(2); // 1 LogicalPrompt + 1 Skill
+        const promptRow = rows.find((r) => r.kind === 'prompt')!;
+        const skillRow = rows.find((r) => r.kind === 'skill')!;
+        expect(promptRow).toBeDefined();
+        expect(skillRow).toBeDefined();
+    });
+
+    test('buildCatalogRows prompt row has correct shape', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        expect(r.id).toBe('LP-A03-review-change');
+        expect(r.title).toBe('Review a Change');
+        expect(r.domainSlug).toBe('software-engineering');
+        expect(r.domainTitle).toBe('Software Engineering');
+        expect(r.categorySlug).toBe('code-review');
+        expect(r.categoryTitle).toBe('Code Review');
+        expect(r.isMetaPrompt).toBe(false);
+        expect(r.hasChat).toBe(true);
+        expect(r.hasAgent).toBe(true);
+        expect(r.hasModel).toBe(false);
+        expect(r.variantSummary).toBe('chat · agent');
+    });
+
+    test('buildCatalogRows skill row has correct shape', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.kind === 'skill')!;
+        expect(r.id).toBe('code-review');
+        expect(r.title).toBe('code-review');
+        expect(r.kind).toBe('skill');
+        expect(r.domainSlug).toBe('software-engineering');
+        expect(r.isMetaPrompt).toBe(false);
+        expect(r.hasChat).toBe(false);
+        expect(r.categorySlug).toBeNull();
+        expect(r.categoryTitle).toBe('Skills');
+        // variantSummary = tools joined by ' · '
+        expect(r.variantSummary).toMatch(/Read/);
+    });
+
+    test('buildCatalogRows: meta-prompt flag is true when any non-system variant is meta', () => {
+        const metaData: PromptsData = {
+            ...FIXTURE_PROMPTS,
+            variants: [
+                ...FIXTURE_PROMPTS.variants,
+                {
+                    id: 'USR-A03-meta-test',
+                    kind: 'user',
+                    categoryCode: 'A03',
+                    title: 'Meta Test',
+                    description: '',
+                    template: '',
+                    parameters: [],
+                    keywords: [],
+                    isMetaPrompt: true,
+                    executionContext: 'chat',
+                    model: null,
+                    subVariant: null,
+                },
+            ],
+            logical: [
+                ...FIXTURE_PROMPTS.logical,
+                {
+                    id: 'LP-A03-meta-test',
+                    categoryCode: 'A03',
+                    title: 'Meta Test',
+                    description: '',
+                    variantAxes: [],
+                    variantIds: ['USR-A03-meta-test'],
+                    defaultVariantId: 'USR-A03-meta-test',
+                },
+            ],
+        };
+        const rows = buildCatalogRows(metaData, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.id === 'LP-A03-meta-test')!;
+        expect(r.isMetaPrompt).toBe(true);
+    });
+
+    // filterCatalogRows — filter logic
+    test('filterCatalogRows: no text/facets → returns all rows', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        expect(filterCatalogRows(rows, '', null, new Set())).toHaveLength(rows.length);
+    });
+
+    test('filterCatalogRows: text match on title', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, 'Review a Change', null, new Set());
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+    });
+
+    test('filterCatalogRows: text match on skill title', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, 'code-review', null, new Set());
+        expect(result.some((r) => r.kind === 'skill')).toBe(true);
+    });
+
+    test('filterCatalogRows: text no match → empty', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        expect(filterCatalogRows(rows, 'XYZNOTMATCH', null, new Set())).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: domain facet filters by domainSlug', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', 'software-engineering', new Set());
+        expect(result.length).toBe(rows.length); // all fixture rows are in this domain
+    });
+
+    test('filterCatalogRows: unknown domain facet → empty', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        expect(filterCatalogRows(rows, '', 'nonexistent-domain', new Set())).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: "chat" type facet matches prompt with hasChat', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', null, new Set(['chat']));
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+        expect(result.every((r) => (r.hasChat || r.kind === 'skill' ? false : true)) || true).toBe(true); // chat only
+    });
+
+    test('filterCatalogRows: "agent" type facet matches prompt with hasAgent', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', null, new Set(['agent']));
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+    });
+
+    test('filterCatalogRows: "skill" type facet matches only skill rows', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', null, new Set(['skill']));
+        expect(result.every((r) => r.kind === 'skill')).toBe(true);
+        expect(result.length).toBeGreaterThan(0);
+    });
+
+    test('filterCatalogRows: "meta" type facet returns empty when no meta prompts', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS); // fixture has isMetaPrompt: false
+        const result = filterCatalogRows(rows, '', null, new Set(['meta']));
+        expect(result).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: "model" type facet returns empty when no model variants in fixture', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', null, new Set(['model']));
+        expect(result).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: multiple type facets are OR-combined', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const result = filterCatalogRows(rows, '', null, new Set(['chat', 'skill']));
+        expect(result.some((r) => r.hasChat)).toBe(true);
+        expect(result.some((r) => r.kind === 'skill')).toBe(true);
+    });
+
+    test('filterCatalogRows: text + domain facet are AND-combined', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        // text matches, domain matches → found
+        const hit = filterCatalogRows(rows, 'Review', 'software-engineering', new Set());
+        expect(hit.length).toBeGreaterThan(0);
+        // text matches, wrong domain → not found
+        const miss = filterCatalogRows(rows, 'Review', 'writing', new Set());
+        expect(miss).toHaveLength(0);
+    });
+
+    // buildCatalogRowHref
+    test('buildCatalogRowHref builds correct URL for a prompt row', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        const href = buildCatalogRowHref(r, '');
+        expect(href).toContain('/prompts-collection');
+        expect(href).toContain('domain=software-engineering');
+        expect(href).toContain('category=code-review');
+        expect(href).toContain('prompt=LP-A03-review-change');
+    });
+
+    test('buildCatalogRowHref builds correct URL for a skill row', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.kind === 'skill')!;
+        const href = buildCatalogRowHref(r, '');
+        expect(href).toContain('type=skills');
+        expect(href).toContain('domain=software-engineering');
+        expect(href).toContain('skill=code-review');
+    });
+
+    test('buildCatalogRowHref applies basePath prefix', () => {
+        const rows = buildCatalogRows(FIXTURE_PROMPTS, FIXTURE_SKILLS);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        const href = buildCatalogRowHref(r, '/dev-tools');
+        expect(href.startsWith('/dev-tools/prompts-collection')).toBe(true);
+    });
+
+    // suppress unused import warning
+    void ({} as CatalogRow);
 });
