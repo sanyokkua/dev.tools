@@ -697,3 +697,130 @@
         }
     }
 }
+
+// ── Skills detail additions ──────────────────────────────────────────────────
+
+.pc-skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.pc-tag-tool {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.pc-skill-related {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.pc-skill-related-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    color: var(--primary);
+    text-align: left;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+        color: var(--primary-hover);
+    }
+}
+
+.pc-skill-files {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pc-skill-file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--r-sm);
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+}
+
+.pc-skill-file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-skill-file-path {
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pc-skill-file-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.pc-skill-install {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pc-skill-install-placement {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pc-section-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.pc-skill-install-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pc-skill-install-cmd {
+    display: block;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: var(--r-sm);
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.pc-skill-install-notes {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+}
+
+.pc-skill-zip-section {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 4px;
+    padding-bottom: 16px;
+}
