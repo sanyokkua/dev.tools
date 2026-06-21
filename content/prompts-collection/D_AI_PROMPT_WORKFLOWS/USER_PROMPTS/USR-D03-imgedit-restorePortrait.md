@@ -20,7 +20,7 @@ N/A — attach a damaged/old portrait image.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional — this prompt is self-contained).
-- **Per-model ready-to-paste versions** (tuned to each model's paradigm: negatives/weights vs natural language) live in `../New Image Prompts/<model>/01-restoration-portrait.md` for: Nano-Banana-Pro, GPT-Image, Qwen-Image-Edit-2511, FLUX.2, FLUX.2-Klein-4B, Stable-Diffusion, JoyAI-Image-Edit.
+- **Per-model versions:** `USR-D03-imgedit-restorePortrait-nanoBananaPro`, `USR-D03-imgedit-restorePortrait-gptImage`, `USR-D03-imgedit-restorePortrait-qwenImageEdit`, `USR-D03-imgedit-restorePortrait-flux2`, `USR-D03-imgedit-restorePortrait-flux2Klein`, `USR-D03-imgedit-restorePortrait-stableDiffusion`, `USR-D03-imgedit-restorePortrait-joyai`
 - Constraints: lock identity/pose/composition; repair damage only; honesty — generative restoration invents plausible detail, do not present as documentary truth.
 - Related: `USR-D03-imgedit-improvePortrait` (quality boost, no damage), `USR-D03-imgedit-colorize`.
 

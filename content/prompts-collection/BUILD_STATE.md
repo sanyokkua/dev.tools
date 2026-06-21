@@ -89,7 +89,7 @@ Legend: [ ] todo · [~] drafting · [x] done · [v] validated
 **C04 research:** [x] synthesize [x] sourceEval [x] matrix [x] questions
 **D01 prompt-eng:** [x] improveText [x] improveAgentic [x] compress [x] expand [x] critique
 **D02 imggen (per-model):** [x] geminiNanoBananaPro [x] gptImage [x] qwenImage [x] flux2 [x] flux2Klein [x] stableDiffusion [x] joyai
-**D03 imgedit (9 task entries; per-model files in ../New Image Prompts/ per decision D6):** tasks [x] restorePortrait [x] restoreScene [x] improvePortrait [x] improveScene [x] restylePortraitPro [x] restyleSceneCinematic [x] photoToAnime [x] cartoonToPhoto [x] colorize — each points to `New Image Prompts/<model>/NN-*.md` (7 models)
+**D03 imgedit (10 generic + 70 per-model = 80 entries):** tasks [x] restorePortrait [x] restoreScene [x] improvePortrait [x] improveScene [x] restylePortraitPro [x] restyleSceneCinematic [x] photoToAnime [x] cartoonToPhoto [x] colorize — each generic file references 7 per-model collection IDs (e.g. `USR-D03-imgedit-restorePortrait-nanoBananaPro`); per-model files are now IN the collection
 **D04 diagrams:** [x] mermaid [x] drawioExplain
 **D05 skill-authoring:** [x] buildLite
 **D06 vidgen (per-model):** [x] veo [x] runway [x] kling [x] seedance [x] hailuo [x] luma [x] pika [x] wanLocal [x] wanApi [x] hunyuan [x] ltx [x] cogvideox [x] mochi
@@ -138,7 +138,7 @@ Automated checks run over the whole collection:
 - [x] **Param discipline:** ≤3 params per user prompt (flagged exception: `USR-D01-prompt-improveAgentic` accepts optional inline metadata — documented power-user exception).
 - [x] **Overlap/dedup:** near-overlaps are deliberately differentiated and cross-referenced (e.g., B01-readability vs B04-simplify vs B07-simple; A07-tradeoff vs C02-weightedMatrix; B07-summary vs C04-synthesize). Documented in each file's Notes.
 - [x] **Intent preserved:** sourced from `../PROMPT_GENERATION_LIST.md` + handbooks; every manifest item placed.
-Manual spot-notes: image-editing (D03) uses 9 task entries pointing to the validated per-model files in `../New Image Prompts/` (decision D6); Sora video intentionally excluded (discontinued).
+Manual spot-notes: image-editing (D03) now has 10 generic + 70 per-model = 80 entries in-collection (decision D6 updated); Sora video intentionally excluded (discontinued).
 
 ### Deep validation (2026-06-19, second pass — PASSED)
 - [x] **No empty/thin files:** 0 files < 200 bytes; smallest prompt file = 160 words. Total: 215 `.md` files (213 prompts + INDEX + BUILD_STATE), ~60,093 words.
@@ -152,7 +152,7 @@ Manual spot-notes: image-editing (D03) uses 9 task entries pointing to the valid
 - **STATUS: BUILD COMPLETE & VALIDATED (all 4 domains + validation).** 213 prompt files (30 SYS · 156 USR · 14 AGT · 13 SKILL) + INDEX + BUILD_STATE. Validation §9 PASSED.
 - **DONE:** scaffold; BUILD_STATE; root INDEX.md; **Domain A COMPLETE** (80); **Domain B COMPLETE** (66); **Domain C COMPLETE** (21); **Domain D COMPLETE** (6 sys + 37 usr + 3 skills = 46); **validation pass PASSED**.
 - **NEXT:** Domain D — system prompts (SYS-D01..D06) → user prompts: D01 (5), D02 imggen per-model (7), D04 (2: mermaid, drawioExplain), D05 (1: buildLite), D06 vidgen per-model (13) → D03 image-editing (see decision below) → Domain D skills (3: mermaid, drawio, skill-builder) → validation (§9) + finalize INDEX. Resume at `D_AI_PROMPT_WORKFLOWS/SYSTEM_PROMPTS/SYS-D01-prompt-engineering.md`.
-- **DECISION D6 (D03 image-editing):** the 9 tasks × 7 models = 63 ready-to-paste prompts already exist & are validated in `../New Image Prompts/<model>/NN-*.md`. To avoid duplicating 63 near-identical files, D03 will contain the **9 logical task prompts** (format-compliant, model-agnostic instructions) each pointing to the per-model files in `New Image Prompts/`. (If full 63 copies are wanted in-collection, revisit.)
+- **DECISION D6 (D03 image-editing) — UPDATED:** the 9 tasks × 7 models = 63 per-model prompts are now included IN the collection as individual prompt files (IDs `USR-D03-imgedit-<task>-<model>`), plus the 9 generic task prompts and 1 system prompt = 10 generic + 70 per-model = 80 D03 entries total. Each generic file's Notes lists the 7 per-model collection IDs.
 - **META-PROMPT GUARD (decision D5):** SYS-D01 + all `USR-D01-*` + `USR-D05-buildLite` + `SKILL-skill-builder` MUST state they TRANSFORM/PRODUCE a prompt and do NOT execute the task in the input (treat input as data).
 - **Batch policy:** generate per category; after each file, tick its box in §4–§7. Keep ≤3 params, fixed section order, meta-prompt guards (D5).
 - **Resume hint:** Domain A is done. Continue at `B_WRITING_COMMUNICATION/SYSTEM_PROMPTS/SYS-B01-proofreading.md`.

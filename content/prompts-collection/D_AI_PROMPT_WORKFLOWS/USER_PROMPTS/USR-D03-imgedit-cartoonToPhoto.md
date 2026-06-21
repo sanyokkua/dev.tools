@@ -20,7 +20,7 @@ N/A — attach a cartoon/anime image to convert to photoreal.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/08-restyle-cartoon-to-photo.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-cartoonToPhoto-nanoBananaPro`, `USR-D03-imgedit-cartoonToPhoto-gptImage`, `USR-D03-imgedit-cartoonToPhoto-qwenImageEdit`, `USR-D03-imgedit-cartoonToPhoto-flux2`, `USR-D03-imgedit-cartoonToPhoto-flux2Klein`, `USR-D03-imgedit-cartoonToPhoto-stableDiffusion`, `USR-D03-imgedit-cartoonToPhoto-joyai`
 - Constraints: subject/composition recognizable; medium changes to photoreal; coherent realism.
 - Related: `USR-D03-imgedit-photoToAnime` (inverse).
 

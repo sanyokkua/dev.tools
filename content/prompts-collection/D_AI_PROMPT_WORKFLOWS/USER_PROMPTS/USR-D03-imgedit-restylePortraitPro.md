@@ -20,7 +20,7 @@ N/A — attach a portrait to re-grade as a pro/cinematic shot.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/05-restyle-professional-camera-portrait.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-restylePortraitPro-nanoBananaPro`, `USR-D03-imgedit-restylePortraitPro-gptImage`, `USR-D03-imgedit-restylePortraitPro-qwenImageEdit`, `USR-D03-imgedit-restylePortraitPro-flux2`, `USR-D03-imgedit-restylePortraitPro-flux2Klein`, `USR-D03-imgedit-restylePortraitPro-stableDiffusion`, `USR-D03-imgedit-restylePortraitPro-joyai`
 - Constraints: identity locked; photographic look may change; photorealistic.
 - Related: `USR-D03-imgedit-improvePortrait` (faithful quality boost), `USR-D03-imgedit-photoToAnime`.
 

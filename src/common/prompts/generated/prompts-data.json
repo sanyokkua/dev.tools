@@ -1811,100 +1811,601 @@
       "id": "LP-D03-imgedit-cartoonToPhoto",
       "categoryCode": "D03",
       "title": "Imgedit CartoonToPhoto",
-      "description": "Single-shot image-editing prompt that converts a cartoon/anime image into a realistic photo while keeping the subject and composition recognizable. Attach the source image.",
-      "variantAxes": [],
+      "description": "Transform a cartoon/anime image into a photorealistic real photograph, character identity intact. Use when you have a cartoon or anime illustration you want rendered as a believable real photo.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-cartoonToPhoto-flux2",
+        "USR-D03-imgedit-cartoonToPhoto-flux2Klein",
+        "USR-D03-imgedit-cartoonToPhoto-gptImage",
         "USR-D03-imgedit-cartoonToPhoto"
       ],
-      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto"
+      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-cartoonToPhoto-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto Joyai",
+      "description": "Convert a cartoon or anime illustration into a photorealistic image while preserving the pose, outfit, and character. Use when you have an anime/cartoon drawing and want a believable real-photo version of the same character and scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-cartoonToPhoto-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-cartoonToPhoto-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto NanoBananaPro",
+      "description": "Transform a cartoon or anime image into a photorealistic real photograph while preserving pose, outfit, and character identity. Use when you have an illustrated or anime image and want a believable real-photo version of it.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-cartoonToPhoto-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-cartoonToPhoto-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto QwenImageEdit",
+      "description": "Transform a cartoon/anime image into a photorealistic real photograph while preserving pose, outfit, and character identity. Use when you have a cartoon or anime illustration and want a realistic photographic version of the same character and scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-cartoonToPhoto-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-cartoonToPhoto-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto StableDiffusion",
+      "description": "Convert a cartoon or anime image into a photorealistic photograph with realistic skin, fabric, and lighting, while preserving the pose, outfit, and character. Use when you have an anime or cartoon image and want a believable real-photo version of the same character and scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-cartoonToPhoto-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-cartoonToPhoto-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-colorize",
       "categoryCode": "D03",
       "title": "Imgedit Colorize",
-      "description": "Single-shot image-editing prompt that adds natural color to a black-and-white image while preserving content, detail, and composition. Attach the source image.",
-      "variantAxes": [],
+      "description": "Add natural, realistic, era-appropriate color to a black-and-white photo with all detail intact. Use when you have a grayscale or black-and-white photo of people, scenes, or cityscapes.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-colorize-flux2",
+        "USR-D03-imgedit-colorize-flux2Klein",
+        "USR-D03-imgedit-colorize-gptImage",
         "USR-D03-imgedit-colorize"
       ],
-      "defaultVariantId": "USR-D03-imgedit-colorize"
+      "defaultVariantId": "USR-D03-imgedit-colorize-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-colorize-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize Joyai",
+      "description": "Add natural, era-appropriate color to a black-and-white photo while keeping faces, composition, and detail identical. Use when you have a grayscale or sepia photo you want colorized realistically without changing anything else.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-colorize-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-colorize-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-colorize-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize NanoBananaPro",
+      "description": "Add natural, realistic, era-appropriate color to a black-and-white photo while keeping faces, composition, and all detail identical. Use when you have a grayscale or sepia photo and want a believable, naturally colorized version.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-colorize-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-colorize-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-colorize-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize QwenImageEdit",
+      "description": "Convert a black-and-white photo into natural, realistic, era-appropriate color while keeping faces, composition, and all detail identical. Use when you have a grayscale or black-and-white photograph and want a believable, naturally colorized version with no other changes.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-colorize-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-colorize-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-colorize-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize StableDiffusion",
+      "description": "Add natural, era-appropriate color to a black-and-white photo with coherent tones, keeping faces, composition, and detail identical. Use when you have a grayscale photograph and want a realistic color version without changing any content.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-colorize-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-colorize-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-improvePortrait",
       "categoryCode": "D03",
       "title": "Imgedit ImprovePortrait",
-      "description": "Single-shot image-editing prompt that raises the quality of an undamaged portrait (sharpness, noise, light, color) without changing identity, pose, or composition. Attach the source portrait.",
-      "variantAxes": [],
+      "description": "Improve a low-quality portrait's clarity and detail while keeping identity and pose unchanged. Use when you have an undamaged but blurry, noisy, hazy, or compressed portrait that needs higher quality.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-improvePortrait-flux2",
+        "USR-D03-imgedit-improvePortrait-flux2Klein",
+        "USR-D03-imgedit-improvePortrait-gptImage",
         "USR-D03-imgedit-improvePortrait"
       ],
-      "defaultVariantId": "USR-D03-imgedit-improvePortrait"
+      "defaultVariantId": "USR-D03-imgedit-improvePortrait-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-improvePortrait-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait Joyai",
+      "description": "Raise the technical quality of an undamaged portrait while keeping identity, pose, and composition exactly the same. Use when you have a portrait with no physical damage that is blurry, noisy, compressed, hazy, soft, or poorly lit and just needs to look sharper and cleaner.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improvePortrait-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improvePortrait-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-improvePortrait-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait NanoBananaPro",
+      "description": "Raise the quality of a portrait — sharpness, detail, clarity, color — without changing identity, pose, or composition. Use when you have an undamaged but soft, noisy, hazy, or low-quality portrait that just needs to look better.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improvePortrait-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improvePortrait-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-improvePortrait-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait QwenImageEdit",
+      "description": "Raise the technical quality of an undamaged portrait (sharpness, clarity, color, dynamic range) while keeping identity, pose, and composition unchanged. Use when you have an intact but low-quality portrait — blurry, noisy, compressed, hazy, or flat — and want a clean, high-quality version with no restyling.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improvePortrait-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improvePortrait-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-improvePortrait-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait StableDiffusion",
+      "description": "Raise the quality of an undamaged portrait by removing blur, compression, noise, and haze, sharpening eyes, skin, and hair, and recovering detail and dynamic range with natural skin texture. Use when the portrait has no physical damage but is soft, noisy, compressed, hazy, or poorly lit.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improvePortrait-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improvePortrait-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-improveScene",
       "categoryCode": "D03",
       "title": "Imgedit ImproveScene",
-      "description": "Single-shot image-editing prompt that raises the quality of an undamaged nature/city photo (sharpness, noise, light, color) without changing content or composition. Attach the source photo.",
-      "variantAxes": [],
+      "description": "Improve a low-quality nature or city photo's clarity and detail while keeping the scene exactly. Use when you have an undamaged but soft, hazy, noisy, or compressed landscape/cityscape needing higher quality.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-improveScene-flux2",
+        "USR-D03-imgedit-improveScene-flux2Klein",
+        "USR-D03-imgedit-improveScene-gptImage",
         "USR-D03-imgedit-improveScene"
       ],
-      "defaultVariantId": "USR-D03-imgedit-improveScene"
+      "defaultVariantId": "USR-D03-imgedit-improveScene-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-improveScene-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene Joyai",
+      "description": "Raise the technical quality of an undamaged landscape or cityscape while keeping the scene and composition exactly the same. Use when you have a nature/city photo with no physical damage that is soft, noisy, hazy, flat, or dull and just needs more clarity and detail.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improveScene-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improveScene-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-improveScene-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene NanoBananaPro",
+      "description": "Raise the quality of a nature or city photo — clarity, detail, dynamic range, natural color — without changing the scene or composition. Use when you have an undamaged but soft, hazy, flat, or low-quality landscape/cityscape that just needs to look better.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improveScene-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improveScene-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-improveScene-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene QwenImageEdit",
+      "description": "Raise the technical quality of an undamaged nature/city photo (clarity, detail, dynamic range, dehaze) while keeping the scene and composition exactly. Use when you have an intact but low-quality landscape or city photo — blurry, noisy, compressed, hazy, or flat — and want a crisp, high-quality version with no restyling.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improveScene-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improveScene-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-improveScene-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene StableDiffusion",
+      "description": "Raise the quality of an undamaged landscape or city photo by improving clarity, detail, and dynamic range, dehazing, restoring natural colors, and sharpening, while keeping the scene exactly as-is. Use when the source scene has no physical damage but is soft, hazy, low-contrast, or noisy.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-improveScene-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-improveScene-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-photoToAnime",
       "categoryCode": "D03",
       "title": "Imgedit PhotoToAnime",
-      "description": "Single-shot image-editing prompt that converts a real photo into an anime/cartoon style while keeping the subject and composition recognizable. Attach the source photo.",
-      "variantAxes": [],
+      "description": "Transform a real photo into an anime/cartoon illustration while keeping the subject recognizable. Use when you have a real photo you want rendered as anime or cartoon art.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-photoToAnime-flux2",
+        "USR-D03-imgedit-photoToAnime-flux2Klein",
+        "USR-D03-imgedit-photoToAnime-gptImage",
         "USR-D03-imgedit-photoToAnime"
       ],
-      "defaultVariantId": "USR-D03-imgedit-photoToAnime"
+      "defaultVariantId": "USR-D03-imgedit-photoToAnime-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-photoToAnime-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime Joyai",
+      "description": "Convert a real photo into an anime/cartoon illustration while keeping the subject, pose, and composition recognizable. Use when you want a stylized anime or cartoon version of a real photograph that still clearly reads as the same scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-photoToAnime-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-photoToAnime-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-photoToAnime-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime NanoBananaPro",
+      "description": "Transform a real photo into an anime/cartoon illustration while keeping the same subject(s), pose, and composition recognizable. Use when you have a real photograph and want a stylized anime or cartoon version of it.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-photoToAnime-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-photoToAnime-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-photoToAnime-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime QwenImageEdit",
+      "description": "Transform a real photograph into an anime/cartoon illustration while keeping the same subject(s), pose, and composition recognizable. Use when you have a real photo and want a stylized anime or cartoon illustration of the same scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-photoToAnime-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-photoToAnime-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-photoToAnime-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime StableDiffusion",
+      "description": "Convert a real photo into an anime or cartoon illustration while keeping the subject, pose, and composition recognizable. Use when you want an anime or cartoon rendering of a real photograph, retaining the original layout.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-photoToAnime-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-photoToAnime-stableDiffusion"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreColorizeModernizeBW",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "variantAxes": [
+        "model"
+      ],
+      "variantIds": [
+        "USR-D03-imgedit-restoreColorizeModernizeBW-flux2",
+        "USR-D03-imgedit-restoreColorizeModernizeBW-flux2Klein",
+        "USR-D03-imgedit-restoreColorizeModernizeBW-gptImage",
+        "USR-D03-imgedit-restoreColorizeModernizeBW"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreColorizeModernizeBW-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreColorizeModernizeBW-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW Joyai",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreColorizeModernizeBW-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreColorizeModernizeBW-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreColorizeModernizeBW-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW NanoBananaPro",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreColorizeModernizeBW-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreColorizeModernizeBW-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreColorizeModernizeBW-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW QwenImageEdit",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreColorizeModernizeBW-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreColorizeModernizeBW-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreColorizeModernizeBW-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW StableDiffusion",
+      "description": "Revive an old black-and-white photo in one pass by repairing damage, adding natural color, and bringing it to modern flagship-camera quality, while keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreColorizeModernizeBW-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreColorizeModernizeBW-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-restorePortrait",
       "categoryCode": "D03",
       "title": "Imgedit RestorePortrait",
-      "description": "Single-shot image-editing prompt that restores a damaged or old portrait while locking identity, pose, and composition. Paste it into an image-editing model and attach the source portrait.",
-      "variantAxes": [],
+      "description": "Repair a damaged old portrait while keeping the person's identity and composition exactly the same. Use when you have a scanned or printed portrait with scratches, tears, creases, dust, stains, fading, or noise.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-restorePortrait-flux2",
+        "USR-D03-imgedit-restorePortrait-flux2Klein",
+        "USR-D03-imgedit-restorePortrait-gptImage",
         "USR-D03-imgedit-restorePortrait"
       ],
-      "defaultVariantId": "USR-D03-imgedit-restorePortrait"
+      "defaultVariantId": "USR-D03-imgedit-restorePortrait-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-restorePortrait-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait Joyai",
+      "description": "Repair physical damage in an old or damaged portrait while keeping the person's identity, expression, and composition exactly the same. Use when you have a scanned or aged portrait with scratches, tears, dust, creases, fading, stains, or heavy noise that needs faithful restoration (not beautification).",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restorePortrait-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restorePortrait-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-restorePortrait-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait NanoBananaPro",
+      "description": "Repair a damaged old portrait while keeping the people's faces, identity, expression, and composition exactly the same. Use when you have a scanned or aged portrait photo with scratches, tears, creases, dust, fading, stains, or heavy grain.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restorePortrait-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restorePortrait-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-restorePortrait-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait QwenImageEdit",
+      "description": "Repair physical damage in an old or damaged portrait while keeping the person's identity, expression, and composition exactly the same. Use when you have a scanned, aged, or physically damaged portrait (scratches, tears, dust, creases, fading, stains, noise) that needs faithful repair, not beautification.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restorePortrait-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restorePortrait-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-restorePortrait-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait StableDiffusion",
+      "description": "Repair physical damage on an old or damaged portrait while preserving the person's identity, expression, and composition. Use when the source portrait has scratches, tears, dust, creases, fading, stains, or heavy noise that must be removed without restyling.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restorePortrait-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restorePortrait-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-restoreScene",
       "categoryCode": "D03",
       "title": "Imgedit RestoreScene",
-      "description": "Single-shot image-editing prompt that restores a damaged or old nature/city photo while preserving the scene's content and composition. Attach the source photo.",
-      "variantAxes": [],
+      "description": "Repair a damaged nature or city photo while preserving composition and era-appropriate detail. Use when you have an old or damaged landscape/cityscape with scratches, dust, creases, fading, stains, or noise.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-restoreScene-flux2",
+        "USR-D03-imgedit-restoreScene-flux2Klein",
+        "USR-D03-imgedit-restoreScene-gptImage",
         "USR-D03-imgedit-restoreScene"
       ],
-      "defaultVariantId": "USR-D03-imgedit-restoreScene"
+      "defaultVariantId": "USR-D03-imgedit-restoreScene-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreScene-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene Joyai",
+      "description": "Repair physical damage in an old or damaged landscape or cityscape photo while preserving the scene, composition, and era exactly. Use when you have a scanned or aged nature/city photo with scratches, dust, creases, fading, or stains that needs faithful restoration (not modernization).",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreScene-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreScene-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreScene-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene NanoBananaPro",
+      "description": "Repair a damaged nature or city photo while preserving the scene, composition, and era-appropriate details exactly. Use when you have an aged or scanned landscape/cityscape with scratches, tears, dust, fading, stains, or noise.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreScene-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreScene-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreScene-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene QwenImageEdit",
+      "description": "Repair physical damage in an old or damaged nature/cityscape photo while preserving composition and era-appropriate details. Use when you have a damaged or aged landscape or city photograph (scratches, dust, creases, fading, stains, noise) that needs faithful repair.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreScene-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreScene-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-restoreScene-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene StableDiffusion",
+      "description": "Repair physical damage on an old or damaged landscape or city photo while preserving composition and era-accurate detail. Use when the source nature or cityscape has scratches, dust, fading, stains, creases, or noise to remove without altering the scene.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restoreScene-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restoreScene-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-restylePortraitPro",
       "categoryCode": "D03",
       "title": "Imgedit RestylePortraitPro",
-      "description": "Single-shot image-editing prompt that re-renders a portrait as a modern professional/cinematic camera shot, preserving identity while allowing lighting/look to change. Attach the source portrait.",
-      "variantAxes": [],
+      "description": "Re-render a casual portrait as a high-end professional studio/editorial headshot, identity intact. Use when you have a snapshot you want to look like a modern professional camera portrait.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-restylePortraitPro-flux2",
+        "USR-D03-imgedit-restylePortraitPro-flux2Klein",
+        "USR-D03-imgedit-restylePortraitPro-gptImage",
         "USR-D03-imgedit-restylePortraitPro"
       ],
-      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro"
+      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-restylePortraitPro-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro Joyai",
+      "description": "Re-render a casual portrait as a modern high-end professional camera shot while keeping the exact face and identity. Use when you have a snapshot or casual portrait you want to look like a studio/editorial headshot, without changing who the person is.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restylePortraitPro-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-restylePortraitPro-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro NanoBananaPro",
+      "description": "Re-render a casual portrait as a modern high-end / professional camera headshot while keeping the exact face and identity. Use when you have an everyday phone snapshot of a person and want a studio / editorial-quality portrait look.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restylePortraitPro-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-restylePortraitPro-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro QwenImageEdit",
+      "description": "Re-render a casual portrait as a modern high-end / professional camera shot (studio or editorial headshot) while keeping the exact face and identity. Use when you have a casual snapshot portrait and want it to look like a professional studio or editorial photograph without changing who the person is.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restylePortraitPro-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-restylePortraitPro-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro StableDiffusion",
+      "description": "Re-render a casual portrait as a modern high-end or cinematic camera studio or editorial headshot while keeping the exact facial features and identity. Use when you have a casual snapshot portrait and want a polished studio or editorial look without changing who the person is.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restylePortraitPro-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restylePortraitPro-stableDiffusion"
     },
     {
       "id": "LP-D03-imgedit-restyleSceneCinematic",
       "categoryCode": "D03",
       "title": "Imgedit RestyleSceneCinematic",
-      "description": "Single-shot image-editing prompt that gives a nature/city photo a cinematic / pro-camera re-grade, preserving the scene's content while changing the look. Attach the source photo.",
-      "variantAxes": [],
+      "description": "Give a nature or city scene a professional cinematic camera look and color grade, content unchanged. Use when you have a landscape/cityscape you want to look like a high-end cinematic film frame.",
+      "variantAxes": [
+        "model"
+      ],
       "variantIds": [
+        "USR-D03-imgedit-restyleSceneCinematic-flux2",
+        "USR-D03-imgedit-restyleSceneCinematic-flux2Klein",
+        "USR-D03-imgedit-restyleSceneCinematic-gptImage",
         "USR-D03-imgedit-restyleSceneCinematic"
       ],
-      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic"
+      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic-flux2"
+    },
+    {
+      "id": "LP-D03-imgedit-restyleSceneCinematic-joyai",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic Joyai",
+      "description": "Give a landscape or cityscape a professional cinematic camera look and color grade while keeping content and composition exactly the same. Use when you have a flat or ordinary scene you want to look like a high-end cinematic frame, without altering what is in the shot.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restyleSceneCinematic-joyai"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic-joyai"
+    },
+    {
+      "id": "LP-D03-imgedit-restyleSceneCinematic-nanoBananaPro",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic NanoBananaPro",
+      "description": "Apply a professional cinematic camera look and color grade to a nature or city scene while keeping all content and composition the same. Use when you have a flat or ordinary landscape/cityscape and want a high-end, film-like cinematic look.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restyleSceneCinematic-nanoBananaPro"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic-nanoBananaPro"
+    },
+    {
+      "id": "LP-D03-imgedit-restyleSceneCinematic-qwenImageEdit",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic QwenImageEdit",
+      "description": "Apply a professional cinematic camera look and color grade to a nature/city scene while keeping all content and composition the same. Use when you have a flat or ordinary landscape or city photo and want a high-end, film-like cinematic version.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restyleSceneCinematic-qwenImageEdit"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic-qwenImageEdit"
+    },
+    {
+      "id": "LP-D03-imgedit-restyleSceneCinematic-stableDiffusion",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic StableDiffusion",
+      "description": "Give a landscape or city photo a pro or cinematic camera look with a color grade (teal-orange or golden-hour) and subtle film grain, while keeping the content and composition intact. Use when you want a movie-still or cinematic mood on an existing scene without changing what is in it.",
+      "variantAxes": [],
+      "variantIds": [
+        "USR-D03-imgedit-restyleSceneCinematic-stableDiffusion"
+      ],
+      "defaultVariantId": "USR-D03-imgedit-restyleSceneCinematic-stableDiffusion"
     },
     {
       "id": "LP-D04-drawioExplain",
@@ -10896,6 +11397,193 @@
       "relatedSkillIds": []
     },
     {
+      "id": "USR-D03-imgedit-cartoonToPhoto-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto",
+      "description": "Transform a cartoon/anime image into a photorealistic real photograph, character identity intact. Use when you have a cartoon or anime illustration you want rendered as a believable real photo.",
+      "template": "Transform the cartoon or anime image in this image into a photorealistic real photograph, shot on Sony A7IV with natural lighting, rendering realistic skin with pores and texture, real fabric and material detail, lifelike hair, accurate shadows, and natural color and depth of field. Keep the same character identity, pose, expression, outfit, and the overall composition and framing, while converting the medium from illustration to a believable real-world photograph.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to real",
+        "photorealism",
+        "style transfer",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto",
+      "description": "Turn a cartoon or anime image into a photorealistic photo while preserving the character. Use when you want a realistic photo version of a cartoon or anime illustration.",
+      "template": "Re-render the cartoon or anime subject in this image as a photorealistic photograph with realistic skin, fabric, and natural lighting. Preserve the pose, outfit, and character exactly as shown.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "photorealistic conversion",
+        "character",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto",
+      "description": "Transform a cartoon or anime image into a photorealistic real photograph while preserving the pose, outfit, and character identity. Use this when you have a cartoon, anime, or illustrated character and want a believable real-life photographic version of the same character and scene.",
+      "template": "This is a cartoon / anime illustration. Re-render it as a photorealistic real photograph, as if the same character and scene were captured with a professional camera in real life. Convert the medium fully from drawing to photography: replace flat or cel-shaded coloring with realistic three-dimensional lighting, real skin with natural texture and visible pores, real hair with individual strands, and real fabric with believable weave, folds, and material detail. Keep the same character identity, the same pose and gesture, the same facial expression, the same hairstyle and hair color, the same outfit, accessories, and the same composition, framing, and background layout so it is clearly the same character and scene made real. Translate stylized anime proportions into natural, realistic human proportions while keeping the character recognizable. Use natural, physically believable lighting and shadows and realistic, true-to-life colors and skin tones. Output a photorealistic, high-resolution photograph at the same aspect ratio as the uploaded image, with professional-camera quality and no remaining cartoon or illustrated look.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "photorealism",
+        "restyle",
+        "character",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto Joyai",
+      "description": "Convert a cartoon or anime illustration into a photorealistic image while preserving the pose, outfit, and character. Use when you have an anime/cartoon drawing and want a believable real-photo version of the same character and scene.",
+      "template": "Transform the cartoon or anime illustration in this image into a photorealistic photograph while preserving the character, pose, and composition. Re-render the subject as a real person (or real object) with natural, lifelike detail: realistic skin with visible pores and natural skin tones, real individual strands of hair, true-to-life fabric and material texture on the clothing, and physically accurate lighting, shadows, and reflections. Convert flat cel shading and line art into real three-dimensional form with believable depth and a natural depth of field. Keep the same character: preserve the pose, body position, gesture, gaze direction, expression, hairstyle, outfit, key colors, and the overall framing and composition so the photo is clearly the real-world version of the same character and scene. Translate the original mood and atmosphere into realistic lighting. The result should look like a genuine high-quality photograph, not a drawing or a 3D render. Keep the pose, outfit, and character preserved.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "photorealism conversion",
+        "illustration to photo",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto NanoBananaPro",
+      "description": "Transform a cartoon or anime image into a photorealistic real photograph while preserving pose, outfit, and character identity. Use when you have an illustrated or anime image and want a believable real-photo version of it.",
+      "template": "Edit the provided illustration by converting it into a photorealistic real photograph, as if the character or scene were captured by a camera. Keep the same character or subjects, their pose, facial expression, hairstyle, outfit, accessories, color scheme, and the overall composition and framing as the source — the result must clearly be the same character brought to life realistically. Only change the rendering medium from drawn to photographic, as described below; do not re-stage the scene, change who the character is, or rearrange the layout.\n\nTasks:\n- re-render with real-world physics and materials throughout\n- give lifelike skin with natural texture, pores, and subtle tones\n- render real hair with individual strands and natural shine\n- render fabric with believable weave, folds, and weight\n- render realistic metal, leather, plastic, glass, and other materials\n- use natural, physically plausible lighting with soft shadows, accurate highlights, and proper depth\n- place the subject in a coherent, realistic version of the original setting\n- translate stylized proportions into natural, believable human anatomy while keeping the character's identity and recognizable look intact\n- keep the same pose, outfit, color scheme, expression, and composition as the source\n\nOutput style: convincing photorealistic photograph; realistic skin, hair, and fabric; natural physically plausible lighting; realistic optics and depth; detailed but natural.\n\nNegative constraints: do not keep a cartoon look or any stylization; do not leave cel shading, flat colors, or line art; do not change who the character is; do not change the pose, expression, outfit, accessories, or color scheme; do not rearrange the scene or change the composition; no plastic or waxy skin; no AI-looking skin; no warped anatomy; no extra fingers; no distorted eyes; keep the character's identity, pose, and layout the same while the medium becomes a real photograph.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "photorealistic conversion",
+        "character realism",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto QwenImageEdit",
+      "description": "Transform a cartoon/anime image into a photorealistic real photograph while preserving pose, outfit, and character identity. Use when you have a cartoon or anime illustration and want a realistic photographic version of the same character and scene.",
+      "template": "Transform this cartoon / anime illustration into a photorealistic real photograph while preserving the character's identity, pose, expression, gesture, hairstyle, outfit, key colors, framing, and overall composition. Re-render everything as a real photograph: realistic human skin with natural pores and subsurface detail, realistic eyes and hair, true-to-life fabric textures and materials, accurate physically based lighting and shadows, natural depth of field, realistic proportions and anatomy, and a believable photographic background consistent with the original scene. Convert the illustrated/cel-shaded look into convincing real-world photography while keeping the same character recognizable — same pose, same clothing, same scene layout, same number of subjects. Do not keep any cartoon, anime, line-art, or flat-shading qualities. Output a natural, photorealistic photograph as if shot with a real camera. Preserve pose, outfit, character identity, and composition.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "style transfer",
+        "photorealism",
+        "character",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-cartoonToPhoto-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit CartoonToPhoto StableDiffusion",
+      "description": "Convert a cartoon or anime image into a photorealistic photograph with realistic skin, fabric, and lighting, while preserving the pose, outfit, and character. Use when you have an anime or cartoon image and want a believable real-photo version of the same character and scene.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nphotorealistic photograph, realistic human, natural skin texture, realistic fabric and clothing detail, true-to-life lighting, accurate anatomy, sharp focus, depth of field, professional photography, same pose and outfit, recognizable character\n\n## Positive prompt (SD 3.5 — natural sentence)\nA photorealistic photograph of the same character in the same pose and outfit, with realistic skin texture, natural fabric detail, and true-to-life lighting, rendered as a believable real photo.\n\n## Negative prompt\ncartoon, anime, illustration, 3d render, cel shading, drawing, flat colors, line art, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, plastic skin, watermark, text, changed pose, different character, altered outfit\n\n## Recommended settings\n- Denoising strength: 0.5–0.8\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: Use a photoreal checkpoint; ControlNet Lineart (and optionally Depth/Canny, weight 0.6–0.9) to hold the original pose, outfit, and composition.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cartoon to photo",
+        "anime to realistic",
+        "photorealistic conversion",
+        "character restyle",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
       "id": "USR-D03-imgedit-cartoonToPhoto",
       "kind": "user",
       "categoryCode": "D03",
@@ -10924,6 +11612,193 @@
       "relatedSkillIds": []
     },
     {
+      "id": "USR-D03-imgedit-colorize-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize",
+      "description": "Add natural, realistic, era-appropriate color to a black-and-white photo with all detail intact. Use when you have a grayscale or black-and-white photo of people, scenes, or cityscapes.",
+      "template": "Colorize the black-and-white image in this image with natural, realistic, era-appropriate color, giving believable skin tones, coherent clothing colors, and a consistent environment and lighting. Keep the color subtle and photographic, matching the period of the photo. Preserve the exact same faces, expressions, composition, framing, and all existing detail and texture, changing only the color and adding nothing new to the scene.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white to color",
+        "photo colorize",
+        "era-appropriate color",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize",
+      "description": "Add natural, era-appropriate color to a black-and-white photo without changing its content. Use when you have a B&W or grayscale photo you want colorized realistically.",
+      "template": "Colorize the black-and-white photo in this image with natural, era-appropriate colors and coherent skin, fabric, and background tones. Keep the faces, composition, and all detail exactly the same.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white",
+        "grayscale",
+        "era-appropriate color",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize",
+      "description": "Add natural, realistic, era-appropriate color to a black-and-white photo while keeping faces, composition, and all detail identical. Use this when you have a grayscale or sepia photo (portrait, group, landscape, or city) and want a believable color version without altering anything in the image.",
+      "template": "This is a black-and-white (or sepia) photograph. Add realistic, natural color to it as if it had originally been photographed in color, without changing any of the content. Apply believable, era-appropriate colors throughout: natural and accurate skin tones, realistic hair and eye colors, plausible clothing colors suited to the period and setting, and natural colors for sky, foliage, water, wood, metal, stone, and architecture. Keep the coloring coherent and physically consistent with the lighting and shadows already in the photo. Do not change, add, remove, sharpen away, or move any detail — keep the exact same composition, framing, people, objects, textures, expressions, and grain structure. Keep the facial features exactly as they appear in the uploaded image — same eyes, nose, mouth, and face shape — for every person. Preserve the original tonal range and detail; only introduce color. Output a photorealistic, naturally colorized photograph at the same aspect ratio as the uploaded image, with subtle, realistic colors rather than over-saturated or artificial tones.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white to color",
+        "grayscale",
+        "sepia",
+        "era-appropriate color",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize Joyai",
+      "description": "Add natural, era-appropriate color to a black-and-white photo while keeping faces, composition, and detail identical. Use when you have a grayscale or sepia photo you want colorized realistically without changing anything else.",
+      "template": "Colorize the black-and-white photograph in this image with natural, realistic, era-appropriate color. Add believable color to every element: render natural skin tones for all faces and hands, realistic hair colors, true-to-life colors for clothing and fabrics, and natural colors for the background, foliage, sky, water, architecture, and any objects. Keep the colors coherent and physically plausible across the whole image, with consistent lighting and white balance, and choose tones appropriate to the period and setting of the photo. Do not change anything except color: keep every face, identity, expression, pose, object, structure, texture, fine detail, framing, and the overall composition exactly identical to the original. Do not alter brightness or contrast beyond what is needed for natural color, and do not over-saturate. The result should look like a genuine color photograph of the same scene — natural, subtle, and realistic. Keep faces, composition, and detail identical.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white to color",
+        "photo colorizing",
+        "era-appropriate color",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize NanoBananaPro",
+      "description": "Add natural, realistic, era-appropriate color to a black-and-white photo while keeping faces, composition, and all detail identical. Use when you have a grayscale or sepia photo and want a believable, naturally colorized version.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent new people, objects, or detail. This is a colorization only: apply only the addition of color described below as a non-destructive edit, and keep every face, identity, expression, all people and objects, the detail, textures, tonal values, lighting, and the exact composition and framing pixel-faithful to the source. Do not repair, sharpen, restyle, or alter the image in any way other than adding color.\n\nTasks:\n- add natural, lifelike skin tones with subtle variation and healthy warmth\n- add realistic hair, eye, and lip colors\n- add plausible, period-appropriate colors for clothing, fabrics, and accessories\n- add natural greens for foliage, realistic sky and water tones, and true-to-life colors for wood, stone, metal, and other materials\n- match all colors to the apparent era and setting of the photo\n- keep colors consistent across the whole image, with smooth, accurate color where edges and details meet\n- preserve the original tonal values, shadows, highlights, lighting, and mood exactly\n- keep all faces, people, objects, detail, and the composition exactly as in the source\n\nOutput style: photorealistic, natural, restrained color; era-appropriate palette; lifelike skin tones; consistent and convincing; the same photo, now in color.\n\nNegative constraints: do not regenerate or restage the scene; do not change identity, faces, or expressions; do not change detail, textures, or composition; do not repair damage, sharpen, denoise, or restyle; do not alter the original tonal values, shadows, highlights, or lighting; no over-saturation; no artificial or neon colors; no anachronistic colors; keep everything else unchanged and only add color.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white",
+        "grayscale",
+        "era-appropriate color",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize QwenImageEdit",
+      "description": "Convert a black-and-white photo into natural, realistic, era-appropriate color while keeping faces, composition, and all detail identical. Use when you have a grayscale or black-and-white photograph and want a believable, naturally colorized version with no other changes.",
+      "template": "Colorize this black-and-white photograph with natural, realistic, era-appropriate color while preserving all existing detail, faces, identities, expressions, textures, and composition exactly. Add believable, coherent color only — do not alter, sharpen away, smooth, restyle, or recompose anything. Tasks: render natural and accurate skin tones suited to each person; apply realistic, period-appropriate colors to clothing, fabrics, and accessories; give coherent, true-to-life colors to the environment — foliage, grass, trees, sky, water, wood, stone, metal, and architecture; keep color consistent across the whole image with correct white balance and no color bleeding across edges. Preserve every face, feature, and fine detail exactly as in the original; do not change identity, expression, pose, or layout. Avoid oversaturation, neon or artificial hues, and any monochrome or sepia tint in the result. Output a fully and naturally colorized photorealistic photograph. Keep faces, composition, and all detail identical.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white to color",
+        "photo colorization",
+        "era-appropriate",
+        "skin tones",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-colorize-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit Colorize StableDiffusion",
+      "description": "Add natural, era-appropriate color to a black-and-white photo with coherent tones, keeping faces, composition, and detail identical. Use when you have a grayscale photograph and want a realistic color version without changing any content.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nnaturally colorized photograph, realistic era-appropriate colors, accurate skin tones, coherent natural color palette, true-to-period clothing colors, balanced color, photographic, detail preserved, same faces and composition\n\n## Positive prompt (SD 3.5 — natural sentence)\nA naturally colorized version of the black-and-white photograph with realistic, era-appropriate colors and accurate skin tones, keeping the faces, composition, and all detail exactly the same.\n\n## Negative prompt\nmonochrome, sepia, grayscale, oversaturated, unnatural colors, blurry, low quality, jpeg artifacts, noise, deformed, watermark, text, cartoon, 3d render, illustration, changed faces, altered composition, modern colors, neon colors\n\n## Recommended settings\n- Denoising strength: 0.2–0.3 (low — keep structure intact) or use a colorization ControlNet\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile or a dedicated colorization/recolor ControlNet (preprocessor: none, \"My prompt is more important\") to keep structure perfectly; the SD 3.5 sentence prompt works well here.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "colorization",
+        "black and white to color",
+        "era-appropriate color",
+        "grayscale",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
       "id": "USR-D03-imgedit-colorize",
       "kind": "user",
       "categoryCode": "D03",
@@ -10948,6 +11823,193 @@
       "relatedPromptIds": [
         "USR-D03-imgedit-restorePortrait"
       ],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait",
+      "description": "Improve a low-quality portrait's clarity and detail while keeping identity and pose unchanged. Use when you have an undamaged but blurry, noisy, hazy, or compressed portrait that needs higher quality.",
+      "template": "Enhance the portrait of the person in this image to crisp, high-quality modern photograph quality, removing blur, motion blur, compression artifacts, sensor noise, haze, and chromatic aberration, increasing sharpness and micro-contrast on the eyes, skin, and hair, and recovering fine detail and dynamic range. Keep natural realistic skin texture with no plastic smoothing, and improve lighting, white balance, and color accuracy. Preserve the exact same facial features, expression, pose, framing, and identity.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait enhancement",
+        "quality improvement",
+        "upscale",
+        "sharpening",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait",
+      "description": "Raise the technical quality of an undamaged portrait while keeping identity and pose intact. Use when a portrait is blurry, noisy, compressed, hazy, or low-detail, but has no physical damage.",
+      "template": "Improve the quality of the portrait of the person in this image. Remove blur, compression, noise, and haze, sharpen the eyes, hair, and skin, recover fine detail and dynamic range, and improve lighting and color with natural skin texture. Keep the identity, pose, and composition exactly the same.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait enhancement",
+        "quality improvement",
+        "sharpening",
+        "noise reduction",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait",
+      "description": "Raise the technical quality of an undamaged portrait — sharpness, clarity, detail, lighting, and color — without changing the person, pose, or composition. Use this when you have an intact but low-quality portrait (blurry, noisy, compressed, hazy, dim, or flat) and you want a clean, high-quality version that still looks like the same real photo.",
+      "template": "This is a real, undamaged portrait photo — likely a casual smartphone or compressed image — that simply needs higher quality. Do not treat this as damaged; just improve the image quality. Remove blur, motion blur, focus softness, JPEG compression artifacts, sensor noise, grain, haze, and color fringing or chromatic aberration. Increase real sharpness and micro-contrast on the eyes, eyelashes, eyebrows, lips, hair strands, and skin so fine detail is crisp. Recover detail and dynamic range in any too-dark or too-bright areas, and improve the lighting realism, white balance, and color accuracy for natural, true-to-life tones. Render natural skin texture with visible pores and fine wrinkles — do not smooth, airbrush, or plastic-ify the skin, and do not change facial proportions. Keep the facial features exactly as they appear in the uploaded image — same eyes, nose, mouth, and face shape — and keep the same expression, pose, head angle, hairstyle, makeup, clothing, background, framing, and composition unchanged. Do not beautify, restyle, add or remove anything. Output a photorealistic, high-resolution photograph at the same aspect ratio as the uploaded image, with natural colors, realistic skin tones, and clean, professional-camera clarity.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait enhancement",
+        "image quality improvement",
+        "sharpness",
+        "upscale",
+        "photo clarity",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait Joyai",
+      "description": "Raise the technical quality of an undamaged portrait while keeping identity, pose, and composition exactly the same. Use when you have a portrait with no physical damage that is blurry, noisy, compressed, hazy, soft, or poorly lit and just needs to look sharper and cleaner.",
+      "template": "Improve the technical quality of the portrait in this image without changing the person or the scene. There is no physical damage to repair — focus only on image quality. Remove blur, motion blur, lens softness, JPEG compression artifacts, sensor noise, color noise, and haze; reduce chromatic aberration. Recover fine detail and sharpen the eyes, eyelashes, eyebrows, lips, individual strands of hair, and clothing texture. Keep natural skin texture with visible pores and realistic detail — do not apply plastic smoothing or airbrushing. Recover lost detail and dynamic range: open up shadows, recover highlights, and add subtle tonal depth. Improve lighting, white balance, local contrast, and color so skin tones look natural and accurate. Keep the person's face, identity, facial features, expression, gaze, pose, hairstyle, clothing, framing, and the background and composition exactly as they are. The result should look like the same photo taken with a much better camera and clean processing — natural, realistic, and photorealistic. Keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait enhancement",
+        "image quality improvement",
+        "sharpening",
+        "denoising",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait NanoBananaPro",
+      "description": "Raise the quality of a portrait — sharpness, detail, clarity, color — without changing identity, pose, or composition. Use when you have an undamaged but soft, noisy, hazy, or low-quality portrait that just needs to look better.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent a new person or setting. Assume there is no physical damage to repair; this is purely a non-destructive quality upgrade. Apply only the quality improvements described below and keep everything else pixel-faithful to the source image.\n\nTasks:\n- remove blur, motion softness, JPEG and compression artifacts, sensor noise, color noise, haze, chromatic aberration\n- increase real sharpness and micro-contrast where it matters most — eyes, eyelashes, eyebrows, skin pores, lips, individual strands of hair\n- recover fine detail and texture in skin, hair, and fabric\n- restore dynamic range so shadows and highlights both hold detail\n- keep skin texture natural and realistic with visible pores and fine detail\n- improve lighting realism, white balance, and color accuracy so skin tones look true and natural\n- create clean, subtle HDR-like tonal depth while remaining photorealistic\n- keep the same person, identity, expression, pose, camera angle, framing, and composition exactly as in the source\n\nOutput style: ultra-clean modern flagship-camera quality; realistic optics; natural colors; realistic skin tones; subtle HDR; high clarity; photorealistic; detailed but natural.\n\nNegative constraints: do not regenerate or restage the scene; do not change identity; do not change facial structure or features; do not change expression; do not change pose, body shape, or proportions; do not change hairstyle, clothing, background, or composition; do not beautify, slim, retouch, or restyle anyone; no plastic, waxy, or airbrushed skin; no AI-looking skin; no overprocessing; no excessive sharpening; no fake bokeh; no cartoon look; no stylization; no warped anatomy; no extra fingers; no distorted eyes; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait enhancement",
+        "quality improvement",
+        "sharpening",
+        "denoising",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait QwenImageEdit",
+      "description": "Raise the technical quality of an undamaged portrait (sharpness, clarity, color, dynamic range) while keeping identity, pose, and composition unchanged. Use when you have an intact but low-quality portrait — blurry, noisy, compressed, hazy, or flat — and want a clean, high-quality version with no restyling.",
+      "template": "Improve the technical quality of this portrait photograph while preserving the person's exact identity, facial structure, expression, pose, camera angle, framing, and composition. Assume no physical damage — focus only on raising image quality. Tasks: remove blur, motion blur, out-of-focus softness, compression artifacts, blocking, banding, sensor noise, grain, haze, and chromatic aberration; increase sharpness, clarity, and micro-contrast on the eyes, eyelashes, eyebrows, skin pores, hair, and lips; recover fine detail and realistic textures; expand dynamic range and recover detail in shadows and highlights; improve lighting realism, local contrast, white balance, and color accuracy; render natural, realistic skin tones and skin texture with visible pores — no plastic smoothing, no airbrushing, no beautification. Keep the face, identity, age, expression, hairstyle, clothing, pose, and layout exactly the same. Do not reshape features, do not restyle, do not add or remove anything. Output ultra-clean, natural, photorealistic quality with subtle HDR-like tonal depth. Preserve identity and composition exactly; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait quality improvement",
+        "sharpness",
+        "upscaling",
+        "noise removal",
+        "identity preservation",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improvePortrait-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImprovePortrait StableDiffusion",
+      "description": "Raise the quality of an undamaged portrait by removing blur, compression, noise, and haze, sharpening eyes, skin, and hair, and recovering detail and dynamic range with natural skin texture. Use when the portrait has no physical damage but is soft, noisy, compressed, hazy, or poorly lit.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nhigh quality portrait, crisp focus, (sharp eyes:1.2), natural skin texture, fine hair detail, clean clear image, accurate skin tones, balanced dynamic range, soft natural lighting, dehazed, denoised, professional photograph, true-to-source identity\n\n## Positive prompt (SD 3.5 — natural sentence)\nA high-quality version of the portrait with the blur, compression, noise, and haze removed, sharp detailed eyes and natural skin texture, fine hair detail and balanced dynamic range, keeping the same person, pose, and composition.\n\n## Negative prompt\nblurry, low quality, jpeg artifacts, noise, haze, deformed, mutated, extra fingers, bad anatomy, plastic skin, waxy skin, oversharpened, watermark, text, cartoon, 3d render, illustration, different face, altered identity, changed pose, over-smoothed\n\n## Recommended settings\n- Denoising strength: 0.4–0.55 (portraits — avoid melting faces)\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile (preprocessor: none, \"My prompt is more important\") to recover faithful detail; IP-Adapter-Face to lock identity; finish with Face Detailer / CodeFormer (w≈0.7) or GFPGAN.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait quality improvement",
+        "sharpening",
+        "denoising",
+        "dehaze",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
       "relatedSkillIds": []
     },
     {
@@ -10981,6 +12043,193 @@
       "relatedSkillIds": []
     },
     {
+      "id": "USR-D03-imgedit-improveScene-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene",
+      "description": "Improve a low-quality nature or city photo's clarity and detail while keeping the scene exactly. Use when you have an undamaged but soft, hazy, noisy, or compressed landscape/cityscape needing higher quality.",
+      "template": "Enhance the landscape or city scene in this image to crisp, high-quality modern photograph quality, removing blur, compression artifacts, noise, haze, and chromatic aberration, increasing clarity and recovering fine detail and dynamic range in foliage, architecture, water, and sky. Sharpen edges of buildings and natural textures, and restore natural realistic color and balanced contrast. Keep the exact same scene, composition, framing, structures, and all elements unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "scene enhancement",
+        "landscape quality",
+        "cityscape upscale",
+        "sharpening",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene",
+      "description": "Raise the technical quality of an undamaged landscape or city photo while keeping the scene intact. Use when a nature or cityscape photo is hazy, soft, noisy, or low-detail, but has no physical damage.",
+      "template": "Improve the quality of the landscape or cityscape in this image. Remove haze, blur, and noise, increase clarity and fine detail, recover dynamic range, and render natural colors with crisp sharpening. Keep the scene and composition exactly the same.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape enhancement",
+        "cityscape quality",
+        "haze removal",
+        "clarity",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene",
+      "description": "Raise the technical quality of an undamaged landscape or cityscape photo — clarity, detail, dynamic range, and color — while keeping the scene and composition exactly the same. Use this when you have an intact but low-quality nature or city photo (soft, noisy, compressed, hazy, flat, or dull) and you want a crisp, high-quality version of the same shot.",
+      "template": "This is a real, undamaged outdoor photo — a landscape or city scene, likely a casual smartphone or compressed image — that simply needs higher quality. Do not treat this as damaged; just improve the image quality. Remove blur, focus softness, JPEG compression artifacts, sensor noise, grain, atmospheric haze, and color fringing or chromatic aberration; dehaze distant areas for clearer visibility. Increase real clarity, sharpness, and micro-contrast on architecture, brickwork, windows, signage, roads, foliage, trees, grass, water, rock, and clouds so textures look detailed and natural. Recover detail and dynamic range in shadows and bright skies, and improve lighting realism, white balance, and color accuracy for natural, believable tones with good depth. Keep the scene exactly as it is — same composition, framing, perspective, horizon, structures, objects, people, and layout — and do not add, remove, move, recolor, or restyle anything. Output a photorealistic, high-resolution photograph at the same aspect ratio as the uploaded image, with natural colors and clean, professional-camera clarity. Avoid an over-saturated or over-processed HDR look.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape enhancement",
+        "cityscape quality",
+        "image clarity",
+        "sharpness",
+        "photo improvement",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene Joyai",
+      "description": "Raise the technical quality of an undamaged landscape or cityscape while keeping the scene and composition exactly the same. Use when you have a nature/city photo with no physical damage that is soft, noisy, hazy, flat, or dull and just needs more clarity and detail.",
+      "template": "Improve the technical quality of the landscape or cityscape in this image without changing the scene. There is no physical damage to repair — focus only on image quality. Remove blur, lens softness, JPEG compression artifacts, sensor noise, and haze; dehaze the atmosphere to reveal distant detail; reduce chromatic aberration. Recover fine detail and sharpen foliage, leaves, grass, water, rock, building facades, windows, brickwork, rooftops, and textures throughout. Recover lost dynamic range: open up shadows, recover blown-out skies and highlights, and add subtle tonal depth and local contrast. Improve white balance and color so the sky, greenery, water, and structures look natural and accurate, not oversaturated. Keep the composition, framing, horizon, perspective, and every structure and natural element exactly where they are — do not add, remove, or move anything. The result should look like the same scene captured with a much better camera and clean processing — crisp, natural, and photorealistic. Keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape enhancement",
+        "cityscape quality improvement",
+        "dehazing",
+        "sharpening",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene NanoBananaPro",
+      "description": "Raise the quality of a nature or city photo — clarity, detail, dynamic range, natural color — without changing the scene or composition. Use when you have an undamaged but soft, hazy, flat, or low-quality landscape/cityscape that just needs to look better.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent new buildings, terrain, or sky. Assume there is no physical damage to repair; this is purely a non-destructive quality upgrade. Apply only the quality improvements described below and keep everything else pixel-faithful to the source image.\n\nTasks:\n- remove blur, JPEG and compression artifacts, sensor noise, color noise, chromatic aberration\n- dehaze the image to restore clarity and visibility into the distance\n- increase real sharpness and fine detail in foliage, trees, grass, water, stone, brick, building facades, windows, railings, roads, and surface textures\n- recover dynamic range so the sky, shadows, and highlights all hold detail\n- create clean, subtle HDR-like tonal depth while remaining photorealistic\n- improve white balance and color accuracy so greens, blues, skies, and materials look natural and true\n- preserve good depth separation and natural local contrast\n- keep the scene, composition, framing, perspective, and every element exactly as in the source\n\nOutput style: ultra-clean modern flagship-camera quality; realistic optics; natural colors; subtle HDR; high clarity; fully photorealistic; detailed but natural.\n\nNegative constraints: do not regenerate or restage the scene; do not change the composition, framing, or perspective; do not change the time of day, weather, or mood; do not add, remove, or move any buildings, objects, vehicles, or elements; do not restyle or apply a cinematic grade; no oversaturation; no overprocessing; no excessive sharpening; no stylization; no AI-looking textures; no warped geometry; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape enhancement",
+        "cityscape quality",
+        "dehazing",
+        "HDR",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene QwenImageEdit",
+      "description": "Raise the technical quality of an undamaged nature/city photo (clarity, detail, dynamic range, dehaze) while keeping the scene and composition exactly. Use when you have an intact but low-quality landscape or city photo — blurry, noisy, compressed, hazy, or flat — and want a crisp, high-quality version with no restyling.",
+      "template": "Improve the technical quality of this landscape or cityscape photograph while preserving the original scene, composition, framing, and perspective exactly. Assume no physical damage — focus only on raising image quality. Tasks: remove blur, out-of-focus softness, compression artifacts, blocking, banding, sensor noise, grain, atmospheric haze, and chromatic aberration; dehaze and increase clarity; sharpen and recover fine detail in architecture, building edges, windows, textures, foliage, trees, grass, rocks, water, and clouds; expand dynamic range and recover detail in shadows and bright skies; improve lighting realism, local contrast, white balance, and color accuracy with natural, true-to-life colors. Keep all content, structures, vehicles, signage, and the layout exactly the same. Do not add or remove anything, do not restyle, do not recompose. Output ultra-clean, natural, photorealistic quality with subtle HDR-like tonal depth and crisp detail. Preserve the scene and composition exactly; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape quality improvement",
+        "cityscape enhancement",
+        "dehaze",
+        "sharpness",
+        "noise removal",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-improveScene-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit ImproveScene StableDiffusion",
+      "description": "Raise the quality of an undamaged landscape or city photo by improving clarity, detail, and dynamic range, dehazing, restoring natural colors, and sharpening, while keeping the scene exactly as-is. Use when the source scene has no physical damage but is soft, hazy, low-contrast, or noisy.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nhigh quality landscape photograph, crisp clarity, fine detail in foliage and architecture, balanced dynamic range, dehazed, natural accurate colors, sharp textures, clean clear sky, well-exposed, denoised, professional photograph, true-to-source composition\n\n## Positive prompt (SD 3.5 — natural sentence)\nA high-quality version of the landscape or cityscape with improved clarity and fine detail, haze removed and natural balanced colors restored, sharper textures and wider dynamic range, keeping the exact same scene and composition.\n\n## Negative prompt\nblurry, low quality, jpeg artifacts, noise, haze, oversharpened, watermark, text, cartoon, 3d render, illustration, oversaturated, unnatural colors, changed composition, altered architecture, added elements\n\n## Recommended settings\n- Denoising strength: 0.2–0.45\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile (preprocessor: none, \"My prompt is more important\") for faithful detail recovery and to hold the exact composition.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape quality improvement",
+        "cityscape enhancement",
+        "dehaze",
+        "clarity",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
       "id": "USR-D03-imgedit-improveScene",
       "kind": "user",
       "categoryCode": "D03",
@@ -11011,6 +12260,194 @@
       "relatedSkillIds": []
     },
     {
+      "id": "USR-D03-imgedit-photoToAnime-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime",
+      "description": "Transform a real photo into an anime/cartoon illustration while keeping the subject recognizable. Use when you have a real photo you want rendered as anime or cartoon art.",
+      "template": "Transform the photo in this image into a polished anime and cartoon illustration, with clean line art, cel shading, vibrant stylized colors, expressive features, and a hand-drawn animated look. Keep the same subject or subjects, their pose, expression, outfit, and the overall composition and framing, so they stay clearly recognizable, while changing only the medium from photograph to anime-style artwork.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "cartoon style",
+        "cel shading",
+        "style transfer",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime",
+      "description": "Turn a real photo into an anime or cartoon illustration while keeping the subject recognizable. Use when you want an anime or cartoon version of a real photograph.",
+      "template": "Re-render the scene in this image as a clean anime/cartoon illustration with bold outlines, flat cel shading, and vivid colors. Keep the subject, pose, and composition clearly recognizable.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "cartoon conversion",
+        "cel shading",
+        "illustration",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime",
+      "description": "Transform a real photo into an anime / cartoon illustration while keeping the same subject(s), pose, and composition recognizable. Use this when you have a real photograph and want a stylized anime or cartoon version of it that still clearly depicts the same scene and people.",
+      "template": "This is a real photograph. Re-draw it as a high-quality anime / cartoon illustration, as if it were hand-drawn and digitally colored in a modern Japanese animation style. Transform the medium fully into illustration: clean line art, smooth cel-shaded coloring, expressive anime-style eyes and features, simplified but appealing shapes, and soft stylized lighting and shadows. Keep the same subject or subjects, the same pose, gesture, head angle, and facial expression, the same clothing and notable accessories, the same number of people, and the same overall composition, framing, and background layout so the scene stays clearly recognizable as the original photo. You may stylize faces, hair, skin, and background into the anime aesthetic, but keep each person recognizable — preserve their general likeness, hairstyle, hair color, and outfit. Render a polished, vibrant illustration with appealing colors and clean shading. Output the image at the same aspect ratio as the uploaded photo.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "anime style",
+        "cartoon illustration",
+        "restyle",
+        "cel shading",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime Joyai",
+      "description": "Convert a real photo into an anime/cartoon illustration while keeping the subject, pose, and composition recognizable. Use when you want a stylized anime or cartoon version of a real photograph that still clearly reads as the same scene.",
+      "template": "Transform the real photograph in this image into a polished anime and cartoon illustration while keeping the subject, pose, and composition clearly recognizable. Re-render everything in a clean hand-drawn anime style: bold confident line art, smooth cel-shaded coloring with soft gradients, expressive stylized eyes, simplified yet characterful features, and vibrant harmonious colors. Stylize the background to match the same anime aesthetic. Preserve the layout faithfully — keep the same subject(s), their pose, body position, gesture, gaze direction, clothing, key colors, and the overall framing and composition the same as in the photo, so the stylized version is instantly identifiable as the same scene. Capture the original mood and atmosphere (calm, energetic, dramatic, cheerful) in the anime rendering. The result should look like a high-quality anime artwork of the same scene, not a filtered photo. Keep the subject and composition recognizable.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "anime conversion",
+        "cartoon style",
+        "cel shading",
+        "illustration",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime NanoBananaPro",
+      "description": "Transform a real photo into an anime/cartoon illustration while keeping the same subject(s), pose, and composition recognizable. Use when you have a real photograph and want a stylized anime or cartoon version of it.",
+      "template": "Edit the provided photograph by converting it into an anime / cartoon illustration. Keep the same people, poses, expressions, clothing, key features, framing, and overall composition as the source — anyone who knows the original should immediately recognize it as the same scene rendered in an illustrated style. Only change the rendering medium from photographic to drawn, as described below; do not re-stage the scene, change who is in it, or rearrange the layout.\n\nTasks:\n- re-draw in a clean, appealing anime / cartoon aesthetic with smooth line art\n- use cel-style shading with soft gradients\n- give expressive, stylized eyes and features while keeping each person recognizable\n- render skin and hair as flattering illustration rather than photographic detail\n- use vibrant, harmonious colors\n- stylize the background to match the same illustrated look while keeping its layout and main elements in the same places\n- keep proportions natural and the characters recognizable\n- keep the same subjects, poses, expressions, clothing, framing, and composition as the source\n\nOutput style: polished anime / cartoon illustration; clean line art; cel shading with soft gradients; vibrant harmonious colors; appealing and consistent.\n\nNegative constraints: do not rearrange the scene or change the composition; do not change the pose, expression, or framing; do not change who or what is in the image; do not add or remove people or objects; do not change clothing design or color scheme; keep proportions natural; no warped anatomy; no extra fingers; no distorted eyes; keep the identity, pose, layout, and story of the image the same while the medium becomes illustration.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "cartoon conversion",
+        "anime style",
+        "cel shading",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime QwenImageEdit",
+      "description": "Transform a real photograph into an anime/cartoon illustration while keeping the same subject(s), pose, and composition recognizable. Use when you have a real photo and want a stylized anime or cartoon illustration of the same scene.",
+      "template": "Transform this real photograph into a high-quality anime / cartoon illustration while keeping the same subject(s), pose, expression, gesture, framing, and overall composition recognizable. Re-render everything in a clean, polished anime/cartoon art style: smooth cel-shaded coloring, bold confident line art, simplified stylized shapes, expressive anime-style eyes and features, vibrant harmonious colors, soft anime lighting and shading, and a coherently illustrated background that matches the original scene. Preserve who and what is in the image — keep the same people, their poses, hairstyles, outfits, key colors, and the same scene layout — so the subject stays recognizable as an anime version of the original. You may fully change the medium and rendering from photographic to illustrated; do not change the pose, the number of people, or the composition. Output a crisp, well-drawn anime/cartoon illustration. Keep subjects, pose, and composition consistent with the original.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "style transfer",
+        "anime illustration",
+        "cartoon",
+        "cel-shading",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-photoToAnime-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit PhotoToAnime StableDiffusion",
+      "description": "Convert a real photo into an anime or cartoon illustration while keeping the subject, pose, and composition recognizable. Use when you want an anime or cartoon rendering of a real photograph, retaining the original layout.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nanime illustration, cel shaded, clean line art, vibrant flat colors, expressive anime eyes, stylized hair, soft anime shading, detailed background, high quality anime art, same subject and pose, recognizable composition\n\n## Positive prompt (SD 3.5 — natural sentence)\nAn anime-style illustration of the same subject in the same pose and composition, with clean line art, cel shading, vibrant flat colors, and expressive stylized features.\n\n## Negative prompt\nphotorealistic, realistic, photo, 3d render, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, watermark, text, oversaturated, changed pose, changed composition, different subject\n\n## Recommended settings\n- Denoising strength: 0.5–0.8\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: Use an anime checkpoint (e.g., an SDXL anime model); ControlNet Canny / Lineart / Depth (weight 0.6–0.9) to hold structure, pose, and composition.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "photo to anime",
+        "cartoon conversion",
+        "cel shading",
+        "anime illustration",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
       "id": "USR-D03-imgedit-photoToAnime",
       "kind": "user",
       "categoryCode": "D03",
@@ -11036,6 +12473,410 @@
       "relatedPromptIds": [
         "USR-D03-imgedit-cartoonToPhoto"
       ],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "Restore, colorize, and modernize this old damaged black-and-white photograph in one pass, keeping the exact same people, faces, identities, expressions, poses, clothing, objects, background, composition, camera angle, and framing. Repair all scratches, tears, creases, dust, stains, grain, and fading; reconstruct lost detail. Add natural, realistic, era-appropriate color — believable skin tones, hair, clothing, environment. Recover crisp fine texture, accurate white balance, wide dynamic range, real skin pores and fabric weave, no plastic smoothing. Make it look shot today on a Canon 5D Mark IV, 85mm f/1.8, photorealistic. Keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "all-in-one",
+        "black and white revival",
+        "old photo",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality while keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "Restore this old damaged black-and-white photo: remove scratches, tears, dust, stains, grain, and fading, and rebuild lost detail. Add natural, realistic, era-appropriate color with believable skin tones, hair, clothing, and background. Modernize it to look shot today on a Sony A7IV — sharp fine detail, accurate white balance, wide dynamic range, real skin texture, no plastic smoothing. Keep the exact same people, faces, expressions, poses, clothing, objects, background, composition, and framing unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "old photo",
+        "black and white",
+        "damage repair",
+        "colorization",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use this when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "I'm uploading an old, damaged black-and-white (or faded/sepia) photograph, and I'd like you to revive it in a single pass so it looks like the exact same scene photographed today on a high-end modern camera.\n\nPlease do three things at once. First, restore it: carefully remove the scratches, tears, creases, fold lines, dust, spots, stains, grain, and noise, reconstruct any missing or worn detail, and reverse the fading, haze, and yellowing. Second, colorize it: add natural, realistic, era-appropriate color across the whole image — believable skin tones, natural hair and eye color, and coherent colors for clothing, fabrics, objects, background, plants, and sky — kept grounded and plausible for the time period so it still feels true to the original era. Third, modernize the technical quality: clean sharpness, recovered fine detail, accurate white balance, realistic lighting, wide dynamic range with subtle HDR-like depth, and faithful material realism in skin, fabric, metal, wood, glass, and foliage.\n\nMake sure real texture stays intact and visible — skin pores, fine facial detail, and fabric weave — with no plastic smoothing, no waxy or AI-looking skin, no overprocessing.\n\nPreserve everything real about the original. Keep the faces exactly as they appear in the uploaded image — same eyes, nose, mouth, and face shape. Keep the same people, identities, expressions, ages, poses, body proportions, hairstyles, and clothing design. Keep the same objects, background, scene layout, composition, camera angle, and framing. Don't add, remove, move, or restyle anyone or anything — only repair the damage, add the color, and lift the quality.\n\nOutput a clean, photorealistic image in the same aspect ratio as the original so nothing is cropped, looking like a sharp modern professional camera shot.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "old photo revival",
+        "black and white",
+        "all-in-one",
+        "photo restoration",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW Joyai",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "Take this old, damaged photograph and bring it fully back to life in a single pass, as if the very same moment were being photographed today on a top-tier modern camera. Keep the warm, authentic feeling of the original scene, but make it look clean, vivid, and alive.\n\nFirst, repair every sign of age and damage. Carefully remove scratches, tears, cracks, creases, dust, spots, stains, water marks, and fading, and gently rebuild any detail that has been lost or torn away. Clean away film grain, noise, blur, and haze.\n\nThen add natural, realistic, era-appropriate color to this black-and-white and faded image. Give the people believable, healthy skin tones, dress them in period-correct clothing colors, and let the background and environment take on natural, coherent colors that feel true to the time and place.\n\nFinally, modernize the technical quality. Recover sharp fine detail and realistic textures in faces, hair, skin, eyes, and fabric, keeping skin looking natural and never plastic. Improve the lighting, dynamic range, local contrast, white balance, and color accuracy so the photo has rich, clean depth and looks crisp and professional.\n\nThroughout all of this, keep everything real exactly the same. Do not change the people or their identities, faces, expressions, ages, poses, or hairstyles. Keep the same clothing design, the same objects, the same background, the same scene layout, composition, camera angle, and framing. Do not add, remove, or rearrange anything — only repair it, color it, and upgrade its quality. The final result should be photorealistic, with natural colors and realistic skin tones.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "old photo revival",
+        "black and white restoration",
+        "all-in-one photo enhancement",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW NanoBananaPro",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent new people, objects, or setting. In one pass, apply only the three families of edits described below — damage repair, era-appropriate colorization, and quality modernization — as a careful non-destructive revival, and keep every real element pixel-faithful to the source image. The result should look like the same scene, with the same people, photographed today on a top-tier camera.\n\nTasks:\n- restore physical condition: remove scratches, tears, creases, fold lines, dust, spots, stains, water marks, mold, grain, and noise\n- reconstruct missing or worn-away detail seamlessly, matching surrounding texture and lighting\n- reverse aging: lift fading, clear haze and yellowing, recover detail lost in the brightest highlights and deepest shadows\n- add natural, realistic, era-appropriate color: believable healthy skin tones, natural hair and eye color, lifelike lips\n- color clothing, fabrics, accessories, furniture, walls, plants, sky, and every surface in coherent, period-plausible hues\n- keep colors grounded and convincing rather than vivid or stylized\n- modernize quality: crisp natural sharpness, recovered fine texture, accurate white balance, pleasing realistic lighting, wide dynamic range, clean gentle HDR-like tonal depth\n- keep material realism in skin, fabric, metal, wood, glass, and foliage; keep skin texture natural with real pores\n- keep the same people with their exact identities, faces, facial structure, features, expressions, and ages\n- keep the same poses, body proportions, hairstyles, clothing design, objects, background, scene layout, composition, camera angle, and framing\n\nOutput style: ultra-clean modern flagship-camera quality; realistic optics; natural era-appropriate color; realistic skin tones; subtle HDR; high clarity; photorealistic; detailed but natural.\n\nNegative constraints: do not regenerate or restage the scene; do not change identity, facial structure, features, expression, or age; do not change pose, body proportions, hairstyle, or clothing design; do not add, remove, move, restyle, or invent anyone or anything; do not change the background, scene layout, composition, camera angle, or framing; no plastic, waxy, or AI-looking skin; no overprocessing; no excessive sharpening; no over-saturation; no neon or anachronistic colors; no stylization; no cartoon look; no warped anatomy; no extra fingers; no distorted eyes; only repair the damage, add the color, and lift the quality, and keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "old photo revival",
+        "black and white",
+        "all-in-one",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW QwenImageEdit",
+      "description": "Revive an old black-and-white photo in one pass — repair damage, add natural color, and bring it to modern flagship-camera quality, keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "Restore, colorize, and modernize this old photograph in a single pass. Do all of the following:\n\nRepair physical damage: remove scratches, tears, cracks, creases, dust, spots, stains, water marks, mold, and fading. Reconstruct missing or torn areas using surrounding detail.\nClean the image: remove film grain, noise, blur, haze, compression artifacts, and chromatic aberration.\nRecover detail: rebuild realistic fine detail and sharp textures in faces, hair, skin, eyes, clothing, fabric, and background.\nColorize: add natural, realistic, era-appropriate color to this black-and-white / faded / sepia image — coherent realistic skin tones, period-correct clothing colors, natural environment and background colors. Make color distribution physically plausible and consistent across the whole scene.\nModernize quality: improve sharpness, dynamic range, local contrast, white balance, and color accuracy. Add clean HDR-like tonal depth and realistic lighting. Enhance material realism for fabric, skin, metal, wood, glass, and foliage so the result looks like the exact same scene photographed today on a top-tier modern camera.\n\nPreserve everything real and unchanged: same people, identities, faces, facial structure, expressions, ages, poses, hairstyles, clothing design, accessories, objects, background, scene layout, composition, camera angle, and framing. Keep natural skin texture without plastic smoothing. Do not add, remove, restyle, or rearrange anything — only repair, colorize, and upgrade quality.\n\nOutput: ultra-clean photorealistic professional camera quality, natural colors, realistic skin tones.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "old photo revival",
+        "black and white",
+        "damage repair",
+        "colorization",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW StableDiffusion",
+      "description": "Revive an old black-and-white photo in one pass by repairing damage, adding natural color, and bringing it to modern flagship-camera quality, while keeping the scene and people exactly the same. Use when you have an old, damaged, faded, or black-and-white photograph and want a single prompt that restores, colorizes, and modernizes it at once.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nrestored vintage photograph, fully colorized, natural realistic color, era-appropriate colors, realistic skin tones, damage removed, no scratches, no dust, no tears, no creases, no stains, fading corrected, sharp focus, fine detail recovered, natural skin texture, detailed eyes, detailed hair, detailed fabric, high dynamic range, balanced contrast, accurate white balance, realistic lighting, clean HDR tonal depth, material realism, fabric metal wood glass foliage, modern flagship camera, DSLR, mirrorless, ultra detailed, photorealistic, professional photo, same person, same face, same pose, same composition, same scene, same background, same framing, same camera angle, identity preserved\n\n## Positive prompt (SD 3.5 — natural sentence)\nRestore, colorize, and modernize this old black-and-white photograph in a single pass so it looks like the exact same scene photographed today on a top-tier modern camera. Repair all physical damage: remove scratches, tears, cracks, creases, dust, spots, stains, and fading, and reconstruct any missing detail. Add natural, realistic, era-appropriate color with coherent skin tones, period-correct clothing colors, and natural background colors. Recover sharp fine detail and realistic textures in faces, hair, skin, eyes, and clothing while keeping natural skin texture without plastic smoothing. Improve dynamic range, local contrast, white balance, color accuracy, and lighting realism. Keep the same people, identities, faces, expressions, poses, clothing design, objects, background, scene layout, composition, camera angle, and framing exactly unchanged — only repair, colorize, and upgrade quality. Photorealistic, natural colors, realistic skin tones.\n\n## Negative prompt\nmonochrome, grayscale, sepia, scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, extra fingers, bad anatomy, plastic skin, oversaturated, unnatural colors, watermark, text, cartoon, 3d render, different person, altered face, changed pose\n\n## Recommended settings\n- Denoise: 0.35–0.5 (portraits 0.4–0.5 to avoid melting faces; lean higher because color must be invented)\n- CFG: SDXL 6–8 / SD 3.5 4–7\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet Tile: preprocessor none, \"My prompt is more important\" — holds structure while adding detail + color\n- IP-Adapter-Face: lock identity on portraits\n- Face fix: Face Detailer / CodeFormer (w ≈ 0.7) or GFPGAN as a finishing pass",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "restore colorize modernize",
+        "all-in-one",
+        "black and white revival",
+        "vintage photo",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreColorizeModernizeBW",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreColorizeModernizeBW",
+      "description": "Single-shot image-editing prompt that restores physical damage, adds era-appropriate natural color, and modernizes technical quality in one pass — turning an old, damaged, or black-and-white photograph into a clean, photorealistic image that looks like the same scene shot today on a modern camera.",
+      "template": "Restore, colorize, and modernize this old photograph in a single pass. Keep every person, face, identity, expression, age, pose, body proportion, hairstyle, clothing design, object, background, scene layout, composition, camera angle, and framing exactly as in the source — do not add, remove, rearrange, or reinvent anything.\n\nApply these three families of edits only:\n\n1. Repair physical damage: remove scratches, tears, cracks, creases, fold lines, dust, spots, stains, water marks, and fading; reconstruct any missing or worn-away detail seamlessly using surrounding texture and lighting; remove film grain, noise, blur, haze, and compression artifacts; recover detail lost in blown highlights and crushed shadows.\n\n2. Colorize: add natural, realistic, era-appropriate color across the whole image — believable healthy skin tones, natural hair and eye color, period-correct clothing colors, coherent colors for fabrics, accessories, furniture, walls, plants, sky, and every surface. Keep colors grounded and plausible for the time period; avoid oversaturation, color bleeding, and anachronistic hues.\n\n3. Modernize quality: recover crisp natural sharpness and fine textures (skin pores, fabric weave, hair strands, detailed eyes); improve white balance, dynamic range, local contrast, and lighting realism; add subtle HDR-like tonal depth; maintain faithful material realism in skin, fabric, metal, wood, glass, and foliage. Keep skin texture natural — no plastic, waxy, or overprocessed look.\n\nThe result should read as the exact same scene, naturally restored and colorized, looking as if photographed today on a top-tier modern camera.\n\n(Attach the source image. This is a three-step revival: damage repair, colorization, and quality modernization.)",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "image editing",
+        "restore",
+        "colorize",
+        "modernize",
+        "black and white",
+        "vintage",
+        "revival",
+        "img2img",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [
+        "USR-D03-imgedit-restorePortrait",
+        "USR-D03-imgedit-colorize"
+      ],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait",
+      "description": "Repair a damaged old portrait while keeping the person's identity and composition exactly the same. Use when you have a scanned or printed portrait with scratches, tears, creases, dust, stains, fading, or noise.",
+      "template": "Restore the damaged portrait of the person in this image to a clean, natural modern photograph, repairing all scratches, tears, creases, dust spots, stains, and fading, removing film grain and noise, and reconstructing missing or torn detail in the face, hair, and clothing. Recover realistic skin texture and balanced exposure with natural color. Keep the exact same facial features, expression, hairstyle, pose, framing, and identity, without beautifying or restyling.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "photo repair",
+        "old photo",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait",
+      "description": "Repair physical damage in an old portrait while keeping the person's face and identity exactly the same. Use when a portrait photo has scratches, tears, creases, dust, stains, fading, or noise.",
+      "template": "Restore the old portrait photo of the person in this image. Remove scratches, tears, creases, dust, stains, and noise, and reconstruct any missing detail. Keep the face, identity, expression, and composition exactly the same, with a natural realistic look.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "scratch removal",
+        "old photo",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait",
+      "description": "Repair physical damage on an old or damaged portrait photo while keeping the person's identity, expression, and framing exactly as they are. Use this when you have a scanned or aged portrait with scratches, tears, creases, dust, stains, fading, or heavy noise and you want a clean, natural modern photographic restoration — not a restyle or beauty edit.",
+      "template": "This is an old, damaged portrait photograph that has been scanned. Carefully restore it to look like a clean, well-preserved photograph. Repair all physical damage: remove scratches, tears, rips, creases, fold lines, dust specks, spots, stains, water marks, mold, and film grain or scan noise; fix faded and discolored areas and rebuild any missing or torn parts of the image by reconstructing the surrounding detail realistically. Recover lost fine detail in the skin, eyes, hair, eyebrows, eyelashes, and clothing so the portrait reads as a sharp, natural photograph. Gently rebalance the contrast, exposure, and tonal range so the image is even and lifelike, with realistic shadows and highlights. Keep the facial features exactly as they appear in the uploaded image — same eyes, nose, mouth, and face shape — and keep the same expression, pose, head angle, hairstyle, clothing, background, and composition. Do not beautify, slim, smooth, restyle, age, or change the person in any way; do not move or crop anything. Keep natural skin texture with visible pores and fine lines — no plastic or airbrushed look. Output a photorealistic, modern-quality photograph at the same aspect ratio as the uploaded image, with natural colors and realistic skin tones.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "photo restoration",
+        "old photo",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait Joyai",
+      "description": "Repair physical damage in an old or damaged portrait while keeping the person's identity, expression, and composition exactly the same. Use when you have a scanned or aged portrait with scratches, tears, dust, creases, fading, stains, or heavy noise that needs faithful restoration (not beautification).",
+      "template": "Restore the damaged portrait in this image to its original condition. Repair all physical damage: remove scratches, tears, rips, creases, fold lines, dust spots, specks, stains, water marks, mold, and chemical discoloration. Reduce film grain and scanning noise while keeping authentic photographic texture. Reconstruct any missing or torn areas by plausibly extending the surrounding detail (skin, hair, clothing, background) so the repair is seamless. Correct fading and uneven exposure: restore lost contrast, recover detail in shadows and highlights, and rebalance brightness for a clean, natural look. Keep the person's face, identity, age, facial features, expression, gaze, pose, hairstyle, clothing, and the overall composition and framing exactly as they are — do not beautify, reshape, restyle, or change anyone. Preserve the original era and period details. The result should look like a well-preserved version of the same photograph, natural and realistic, not retouched or modernized. Keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "scratch removal",
+        "photo repair",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait NanoBananaPro",
+      "description": "Repair a damaged old portrait while keeping the people's faces, identity, expression, and composition exactly the same. Use when you have a scanned or aged portrait photo with scratches, tears, creases, dust, fading, stains, or heavy grain.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent new people or a new setting. Apply only the damage-repair edits described below as a careful, non-destructive restoration, and keep everything else pixel-faithful to the source image. This is a repair job, not a makeover or a quality restyle.\n\nTasks:\n- remove scratches, scuff lines, tears, rips, fold and crease lines\n- remove dust specks, dirt, spots, water stains, mildew and mold marks, foxing, surface blemishes\n- reduce film grain and noise to a clean but natural level\n- correct fading and discoloration so tones look balanced again; fix uneven exposure and color shifts\n- recover lost contrast and detail in shadows and highlights\n- reconstruct small missing or destroyed areas of face, hair, skin, eyes, and clothing plausibly, matching the surrounding texture, lighting direction, and grain\n- restore believable skin texture, hair detail, and fabric detail where damage erased them\n- keep all people, faces, objects, positions, and scene layout exactly as in the source\n\nOutput style: clean, undamaged, naturally lit photograph; believable skin texture and fabric detail; realistic, balanced tones; photorealistic; faithful to the original era and lighting.\n\nNegative constraints: do not regenerate or restage the scene; do not change identity; do not change facial structure or features; do not change expression; do not change hairstyle, clothing, pose, or composition; do not beautify, slim, smooth, or retouch anyone; do not restyle; do not change the lighting mood, background, or era of clothing and setting; do not add or remove people or objects; no AI-looking or waxy skin; no over-smoothing; no over-sharpening; no stylization; no warped anatomy; no extra fingers; no distorted eyes; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "scratch removal",
+        "photo repair",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait QwenImageEdit",
+      "description": "Repair physical damage in an old or damaged portrait while keeping the person's identity, expression, and composition exactly the same. Use when you have a scanned, aged, or physically damaged portrait (scratches, tears, dust, creases, fading, stains, noise) that needs faithful repair, not beautification.",
+      "template": "Restore this damaged portrait photograph. Repair all physical damage and reconstruct missing detail while preserving the person's exact identity, facial structure, expression, pose, camera angle, framing, and composition. Tasks: remove scratches, tears, cracks, creases, fold lines, dust, spots, stains, water marks, mold, and emulsion damage; fill in and reconstruct missing or torn areas using surrounding context; remove film grain, scan noise, and discoloration; fix fading and restore balanced contrast and natural tonal range; correct color casts and uneven exposure; recover lost fine detail in skin, eyes, hair, eyebrows, lips, and clothing. Keep skin texture natural and realistic — no plastic smoothing, no beautification, no reshaping of the face. Do not change identity, age, facial features, expression, or hairstyle. Do not restyle, recompose, or add or remove people or objects. Output a clean, naturally restored photograph with a modern photographic look. Preserve face, identity, and composition exactly; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "photo restoration",
+        "identity preservation",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restorePortrait-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestorePortrait StableDiffusion",
+      "description": "Repair physical damage on an old or damaged portrait while preserving the person's identity, expression, and composition. Use when the source portrait has scratches, tears, dust, creases, fading, stains, or heavy noise that must be removed without restyling.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nrestored vintage portrait, clean undamaged photograph, original facial features preserved, natural skin texture, sharp eyes, accurate skin tones, intact details, even tonal balance, recovered fine detail, faithful reconstruction, true-to-source lighting, high fidelity, photographic\n\n## Positive prompt (SD 3.5 — natural sentence)\nA faithfully restored portrait photograph with all physical damage removed, showing the same person with their original facial features, expression, and natural skin texture intact, balanced tones and recovered fine detail, kept true to the source image.\n\n## Negative prompt\nscratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, plastic skin, oversharpened, watermark, text, cartoon, 3d render, illustration, beautified, different face, altered identity, changed composition\n\n## Recommended settings\n- Denoising strength: 0.4–0.55 (portraits — high enough to repair, low enough to avoid melting the face)\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile (preprocessor: none, \"My prompt is more important\") to recover faithful detail; IP-Adapter-Face to lock identity; finish with Face Detailer / CodeFormer (w≈0.7) or GFPGAN to avoid waxiness.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restoration",
+        "damage repair",
+        "photo restoration",
+        "identity preservation",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
       "relatedSkillIds": []
     },
     {
@@ -11068,6 +12909,193 @@
       "relatedSkillIds": []
     },
     {
+      "id": "USR-D03-imgedit-restoreScene-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene",
+      "description": "Repair a damaged nature or city photo while preserving composition and era-appropriate detail. Use when you have an old or damaged landscape/cityscape with scratches, dust, creases, fading, stains, or noise.",
+      "template": "Restore the damaged landscape or city scene in this image to a clean, natural modern photograph, repairing all scratches, tears, creases, dust, stains, and fading, removing grain and noise, and reconstructing missing detail in foliage, architecture, water, and sky. Recover fine texture, balance contrast and lighting, and restore natural realistic color. Keep the exact same composition, framing, structures, and era-appropriate details, without restyling or adding new elements.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "scene restoration",
+        "landscape repair",
+        "cityscape repair",
+        "old photo",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene",
+      "description": "Repair physical damage in an old landscape or city photo while preserving the scene and era. Use when a nature or cityscape photo has scratches, dust, fading, stains, or noise.",
+      "template": "Restore the old landscape or cityscape photo in this image. Remove scratches, dust, stains, fading, and noise, recover detail in foliage, architecture, and sky, and balance the contrast. Keep the composition and original era details exactly the same, with a natural realistic look.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape repair",
+        "damage removal",
+        "old photo",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene",
+      "description": "Repair physical damage on an old or damaged landscape or cityscape photo while preserving the exact scene, composition, and era-appropriate details. Use this when you have an aged or scanned nature or city photo with scratches, dust, fading, stains, creases, or noise and you want a clean, natural restoration that keeps the original place and period intact.",
+      "template": "This is an old, damaged photograph of an outdoor scene — a landscape or a city view — that has been scanned. Carefully restore it to look like a clean, well-preserved photograph. Repair all physical damage: remove scratches, tears, creases, fold lines, dust, spots, stains, water marks, mold, and film grain or scan noise; fix faded, yellowed, or discolored areas and reconstruct any missing or torn regions by realistically extending the surrounding detail. Recover lost fine detail in foliage, trees, grass, rock, water, buildings, brickwork, windows, signage, roads, and the sky so textures look sharp and natural. Rebalance contrast, exposure, and tonal range for an even, lifelike result with realistic shadows, highlights, and depth. Keep the scene exactly as it is — same composition, framing, perspective, horizon, structures, objects, and any era-appropriate details such as vintage vehicles, clothing of people, period architecture, or signage. Do not modernize, add, remove, or rearrange anything, and do not crop or restyle the image. Output a photorealistic, modern-quality photograph at the same aspect ratio as the uploaded image, with natural, believable colors.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape restoration",
+        "scene repair",
+        "old photo",
+        "photo restoration",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene Joyai",
+      "description": "Repair physical damage in an old or damaged landscape or cityscape photo while preserving the scene, composition, and era exactly. Use when you have a scanned or aged nature/city photo with scratches, dust, creases, fading, or stains that needs faithful restoration (not modernization).",
+      "template": "Restore the damaged landscape or cityscape in this image to its original condition. Repair all physical damage: remove scratches, tears, creases, fold lines, dust, specks, stains, water marks, mold, and chemical discoloration. Reduce scanning noise and grain while keeping authentic photographic texture. Reconstruct missing or torn regions by plausibly continuing the surrounding content — recover fine detail in foliage, trees, grass, water, rock, soil, building facades, windows, rooftops, streets, and sky. Correct fading and uneven exposure: rebalance contrast, recover detail in dark shadows and blown-out skies, and even out brightness for a clean, natural result. Keep the composition, framing, horizon line, perspective, and all structures and natural elements exactly where they are. Preserve the original era, architectural style, vehicles, signage, and period details — do not modernize or add anything new. The result should look like a well-preserved version of the same photograph, natural and realistic. Keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape repair",
+        "scene damage repair",
+        "photo restoration",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene NanoBananaPro",
+      "description": "Repair a damaged nature or city photo while preserving the scene, composition, and era-appropriate details exactly. Use when you have an aged or scanned landscape/cityscape with scratches, tears, dust, fading, stains, or noise.",
+      "template": "Edit the provided photograph. Treat it as the source and keep it the same photograph — do not regenerate, reinterpret, replace, or re-stage the scene, and do not invent new buildings, terrain, or sky. Apply only the damage-repair edits described below as a careful, non-destructive restoration, and keep everything else pixel-faithful to the source image. This is a repair job, not a reinterpretation or a cinematic restyle.\n\nTasks:\n- remove scratches, scuff lines, tears, fold and crease lines\n- remove dust specks, dirt, spots, water stains, mold and mildew marks, foxing, surface blemishes\n- reduce grain and noise to a clean but natural level\n- correct fading, color shifts, and discoloration so the image looks balanced again\n- recover lost contrast and detail in shadows and highlights\n- restore detail in foliage, trees, grass, water, stone and brick, building facades, windows, roads, and sky\n- reconstruct small missing or destroyed areas plausibly, matching the surrounding architecture, terrain, texture, and lighting direction\n- keep all era-appropriate details — buildings, signage, vehicles, vegetation, period look — exactly as in the source\n- keep the composition, framing, perspective, and all content exactly as in the source\n\nOutput style: clean, undamaged, naturally lit photograph; believable materials, depth, and tones; faithful to the original era, time of day, and weather; photorealistic.\n\nNegative constraints: do not regenerate or restage the scene; do not change the composition, framing, or perspective; do not modernize the scene; do not change the time of day, weather, or mood; do not add, remove, or move any buildings, objects, vehicles, or elements; do not restyle or apply a cinematic grade; no stylization; no over-sharpening; no AI-looking textures; no warped geometry; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape repair",
+        "scene restoration",
+        "damage repair",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene QwenImageEdit",
+      "description": "Repair physical damage in an old or damaged nature/cityscape photo while preserving composition and era-appropriate details. Use when you have a damaged or aged landscape or city photograph (scratches, dust, creases, fading, stains, noise) that needs faithful repair.",
+      "template": "Restore this damaged landscape or cityscape photograph. Repair all physical damage and reconstruct missing detail while preserving the original scene, composition, framing, perspective, and all era-appropriate content exactly. Tasks: remove scratches, tears, cracks, creases, fold lines, dust, spots, stains, water marks, mold, and emulsion damage; fill in and reconstruct missing or torn areas using surrounding context; remove film grain, scan noise, and discoloration; fix fading and restore balanced contrast and natural tonal range; correct color casts and uneven exposure; recover lost fine detail in foliage, trees, grass, water, sky, clouds, buildings, architecture, roads, and signage. Keep all structures, vehicles, signs, and period details true to the original era — do not modernize or add anachronistic elements. Do not add or remove buildings, people, or objects, and do not recompose the scene. Output a clean, naturally restored photograph with a modern photographic look while staying faithful to the original. Preserve composition and all content exactly; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape restoration",
+        "damage repair",
+        "photo restoration",
+        "era-appropriate",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restoreScene-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestoreScene StableDiffusion",
+      "description": "Repair physical damage on an old or damaged landscape or city photo while preserving composition and era-accurate detail. Use when the source nature or cityscape has scratches, dust, fading, stains, creases, or noise to remove without altering the scene.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nrestored landscape photograph, clean undamaged scene, recovered detail in foliage and architecture, balanced contrast, intact sky gradient, accurate period detail, even exposure, true-to-source colors, faithful reconstruction, sharp natural textures, high fidelity, photographic\n\n## Positive prompt (SD 3.5 — natural sentence)\nA faithfully restored landscape or cityscape photograph with all physical damage removed, recovering detail in the foliage, architecture, and sky, with balanced contrast and the original composition and era-accurate details preserved.\n\n## Negative prompt\nscratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, oversharpened, watermark, text, cartoon, 3d render, illustration, modern additions, changed composition, altered architecture, unnatural colors\n\n## Recommended settings\n- Denoising strength: 0.2–0.45\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile (preprocessor: none, \"My prompt is more important\") for faithful detail recovery across foliage, architecture, and sky.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "landscape restoration",
+        "cityscape repair",
+        "scene restoration",
+        "era-accurate",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
       "id": "USR-D03-imgedit-restoreScene",
       "kind": "user",
       "categoryCode": "D03",
@@ -11094,6 +13122,193 @@
         "USR-D03-imgedit-improveScene",
         "USR-D03-imgedit-colorize"
       ],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro",
+      "description": "Re-render a casual portrait as a high-end professional studio/editorial headshot, identity intact. Use when you have a snapshot you want to look like a modern professional camera portrait.",
+      "template": "Re-render the person in this image as a high-end professional studio portrait, shot on Canon 5D Mark IV, 85mm f/1.8, with soft directional key light, gentle fill, a clean neutral backdrop, and a shallow depth of field with smooth background blur. Give it a polished editorial headshot look with natural realistic skin texture, accurate color, and crisp focus on the eyes, while keeping the exact same facial features, expression, hairstyle, and identity.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "professional portrait",
+        "studio headshot",
+        "editorial photography",
+        "restyle",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro",
+      "description": "Re-render a casual portrait as a modern high-end studio headshot while keeping the exact face. Use when you want a snapshot turned into a pro or editorial portrait look.",
+      "template": "Re-render the portrait of the person in this image as a modern high-end studio headshot, shot on an 85mm f/1.8 lens with soft key lighting, a clean backdrop, and shallow depth of field. Keep the exact facial features, identity, and expression unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "studio headshot",
+        "professional photography",
+        "editorial",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro",
+      "description": "Re-render a casual portrait as a modern high-end professional / editorial camera shot while keeping the exact same face and identity. Use this when you have a plain snapshot of a person and want it to look like a polished studio or editorial headshot — soft key light, clean backdrop, 85mm shallow depth of field — without changing who the person is.",
+      "template": "This is a casual, everyday portrait photo of a person. Re-render it as a modern, high-end professional portrait that looks like it was captured with a full-frame mirrorless camera and an 85mm f/1.8 lens. Keep the facial features exactly as they appear in the uploaded image — same eyes, nose, mouth, and face shape — and keep the same person, identity, expression, head angle, hairstyle, and overall pose. You may upgrade the lighting and look: add soft, flattering studio key light with a gentle fill and subtle rim light, a clean and slightly out-of-focus professional backdrop, and a natural shallow depth of field with smooth, creamy background blur (bokeh). Keep skin texture realistic and natural with visible pores and fine detail — no plastic smoothing, no beauty-filter look — and keep realistic, true-to-life skin tones. Refine clarity, micro-contrast, dynamic range, and color so the result is crisp and editorial. Do not change the person's identity, facial structure, age, body shape, or clothing; do not add accessories or alter the face. Output a photorealistic, high-resolution professional portrait at the same aspect ratio as the uploaded image, with cinematic, high-end-camera quality and natural color.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "professional headshot",
+        "studio lighting",
+        "bokeh",
+        "editorial portrait",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro Joyai",
+      "description": "Re-render a casual portrait as a modern high-end professional camera shot while keeping the exact face and identity. Use when you have a snapshot or casual portrait you want to look like a studio/editorial headshot, without changing who the person is.",
+      "template": "Re-render the portrait in this image as a modern, high-end professional camera photograph while keeping the person's face and identity exactly the same. Transform the look into a polished studio or editorial headshot: soft, flattering key light with gentle fill and a subtle catchlight in the eyes, a clean and uncluttered backdrop, and a shallow depth of field with smooth background blur (bokeh) as if shot on a full-frame camera with an 85mm f/1.8 lens. Render crisp, natural detail in the eyes, hair, and clothing, with realistic skin texture and natural skin tones — no plastic smoothing, no heavy makeup. Apply professional, color-accurate grading with balanced contrast and pleasing tonal depth. Keep the person's exact facial features, identity, bone structure, expression, gaze, age, hairstyle, and pose unchanged — only the lighting, background, focus, and overall photographic quality should look professional. The result should be indistinguishable from a high-end DSLR or mirrorless portrait of the same person. Keep the subject recognizable and unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "professional headshot",
+        "studio lighting",
+        "bokeh",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro NanoBananaPro",
+      "description": "Re-render a casual portrait as a modern high-end / professional camera headshot while keeping the exact face and identity. Use when you have an everyday phone snapshot of a person and want a studio / editorial-quality portrait look.",
+      "template": "Edit the provided photograph. Keep the same person, exact face, identity, pose, head angle, expression, hairstyle, and the overall framing and composition as the source — do not regenerate a different person or re-stage the shot. Only change the rendering: lighting, optics, and photographic quality, as described below. The person must stay instantly recognizable as the same individual; everything about WHO this is and HOW they are posed is preserved, and only the photographic look changes.\n\nTasks:\n- relight with a soft, flattering key light and gentle fill that wraps naturally around the face\n- add clean catchlights in the eyes and smooth, believable shadow falloff\n- render with the look of a premium full-frame camera and an 85mm f/1.8 portrait lens\n- create a shallow depth of field: face tack-sharp, background softly and creamily blurred, with natural lens compression and realistic optics\n- place the subject against a clean, simple, uncluttered professional backdrop\n- keep skin texture natural and realistic with visible pores and fine detail; crisp eyes, eyebrows, and hair\n- use accurate, natural skin tones, balanced color, and subtle photorealistic tonal depth\n- keep the exact same face, identity, pose, head angle, expression, and framing as the source\n\nOutput style: polished modern studio / editorial portrait; high-end full-frame camera and 85mm look; soft key light; clean backdrop; shallow depth of field; realistic skin tones; photorealistic; detailed but natural.\n\nNegative constraints: do not change identity; do not change facial structure, features, age, or expression; do not change the pose, head angle, or framing; do not beautify, slim, or reshape features; do not swap the person for someone else; no plastic, waxy, or airbrushed skin; no AI-looking skin; no overprocessing; no distorted eyes; no warped anatomy; no extra fingers; keep the person and pose unchanged while the lighting, lens look, and backdrop are upgraded.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "professional headshot",
+        "studio lighting",
+        "85mm look",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro QwenImageEdit",
+      "description": "Re-render a casual portrait as a modern high-end / professional camera shot (studio or editorial headshot) while keeping the exact face and identity. Use when you have a casual snapshot portrait and want it to look like a professional studio or editorial photograph without changing who the person is.",
+      "template": "Re-render this casual portrait as a modern high-end professional camera photograph while preserving the person's exact identity, facial features, facial structure, expression, and pose. Transform the look and lighting into a professional studio or editorial headshot: soft directional key light with gentle fill, flattering and even illumination, a clean uncluttered backdrop, 85mm portrait lens look at f/1.8 with shallow depth of field and smooth background blur (bokeh), pleasing tonal contrast, and natural, accurate color. Render high-end DSLR / mirrorless image quality with crisp focus on the eyes, realistic skin texture with visible pores, natural skin tones, and refined detail in hair and clothing. Keep the exact same face and identity — do not reshape, beautify, or alter facial features, age, or expression. You may refine framing slightly for a headshot crop, improve the lighting, and clean or blur the background, but keep the subject recognizable and the pose the same. Output a polished, photorealistic professional portrait. Preserve face and identity exactly; keep the subject unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "professional headshot",
+        "studio lighting",
+        "bokeh",
+        "identity preservation",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restylePortraitPro-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestylePortraitPro StableDiffusion",
+      "description": "Re-render a casual portrait as a modern high-end or cinematic camera studio or editorial headshot while keeping the exact facial features and identity. Use when you have a casual snapshot portrait and want a polished studio or editorial look without changing who the person is.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\nprofessional studio portrait, editorial headshot, shot on 85mm lens, shallow depth of field, soft key light, clean seamless backdrop, flattering rim light, crisp sharp eyes, natural skin texture, high-end retouching, cinematic color, photographic, same person, preserved facial features\n\n## Positive prompt (SD 3.5 — natural sentence)\nA modern high-end studio portrait of the same person with identical facial features, lit with a soft key light and gentle rim light against a clean backdrop, shot on an 85mm lens with shallow depth of field and natural skin texture, in a polished editorial style.\n\n## Negative prompt\nblurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, plastic skin, waxy skin, oversharpened, watermark, text, cartoon, 3d render, illustration, different face, altered identity, distorted features, busy background\n\n## Recommended settings\n- Denoising strength: 0.45–0.6 (portrait)\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: IP-Adapter-Face to lock identity; optional ControlNet Tile/Depth to hold pose; finish with Face Detailer / CodeFormer (w≈0.7) for clean, non-waxy skin.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "portrait restyle",
+        "professional headshot",
+        "studio portrait",
+        "editorial",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
       "relatedSkillIds": []
     },
     {
@@ -11124,6 +13339,196 @@
         "USR-D03-imgedit-improvePortrait",
         "USR-D03-imgedit-photoToAnime"
       ],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-flux2",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic",
+      "description": "Give a nature or city scene a professional cinematic camera look and color grade, content unchanged. Use when you have a landscape/cityscape you want to look like a high-end cinematic film frame.",
+      "template": "Re-render the landscape or city scene in this image with a cinematic professional camera look, shot on a high-end full-frame camera with an anamorphic feel, applying a rich teal-and-orange or warm golden-hour color grade, gentle film grain, deep dynamic range, and soft natural light falloff. Make it feel like a polished film still with crisp detail and atmospheric depth, while keeping all the same content, structures, framing, and composition exactly unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic grade",
+        "film look",
+        "color grading",
+        "landscape restyle",
+        "FLUX.2",
+        "Kontext",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-flux2Klein",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic",
+      "description": "Give a landscape or city photo a professional cinematic camera look and color grade. Use when you want a film-like, graded version of an outdoor or urban scene.",
+      "template": "Re-render the landscape or cityscape in this image with a professional cinematic camera look, applying a teal-and-orange color grade, golden-hour warmth, subtle film grain, and high-end camera sharpness. Keep the content and composition exactly the same.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "FLUX.2 Klein",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic restyle",
+        "color grade",
+        "film look",
+        "landscape",
+        "cityscape",
+        "FLUX.2 Klein 4B",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-gptImage",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic",
+      "description": "Apply a professional cinematic camera look and color grade to a landscape or cityscape while keeping all content and composition exactly the same. Use this when you have a flat or ordinary nature or city photo and want it to look like a cinematic film still — rich color grade, anamorphic feel, subtle grain — without changing the scene itself.",
+      "template": "This is an ordinary outdoor photo — a landscape or city scene. Re-render it as a cinematic film still that looks like it was captured with a high-end cinema camera and anamorphic lenses. Keep the scene exactly the same — same composition, framing, perspective, horizon, buildings, objects, people, and layout — and do not add, remove, or move anything. Apply a professional cinematic color grade: rich, moody contrast with a teal-and-orange palette or a warm golden-hour tone, deep but detailed shadows, controlled highlights, and atmospheric depth. Add a gentle anamorphic widescreen feel, a soft cinematic glow on the brightest areas, and subtle, fine film grain for a filmic texture — keep it tasteful, not heavy. Improve clarity, dynamic range, and material detail in architecture, foliage, water, and sky while keeping everything photorealistic and believable. Do not change the actual content, time of day beyond grading, season, or geometry of the scene. Output a photorealistic, high-resolution cinematic image at the same aspect ratio as the uploaded image (or a subtle widescreen crop only if it does not cut important detail), with a polished, high-end-camera color grade.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": "GPT Image",
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic restyle",
+        "color grade",
+        "film still",
+        "landscape",
+        "cityscape",
+        "anamorphic",
+        "image editing",
+        "GPT Image",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-joyai",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic Joyai",
+      "description": "Give a landscape or cityscape a professional cinematic camera look and color grade while keeping content and composition exactly the same. Use when you have a flat or ordinary scene you want to look like a high-end cinematic frame, without altering what is in the shot.",
+      "template": "Re-render the landscape or cityscape in this image with a professional, cinematic camera look while keeping the content and composition exactly the same. Apply a high-end cinematic color grade — a refined teal-and-orange palette or a warm golden-hour glow — with rich but natural contrast, deep balanced shadows, and gentle film-like highlight rolloff. Add subtle, fine film grain and a slight, tasteful atmospheric depth for a premium motion-picture feel. Render the scene with the clarity and tonal depth of a high-end cinema camera and lens: crisp detail in foliage, architecture, and surfaces, smooth tonal gradients in the sky, and a wide, controlled dynamic range. Keep every structure, natural element, horizon line, perspective, and the overall framing and composition exactly where they are — do not add, remove, or move anything in the scene. The result should look like a polished cinematic still of the same place, dramatic yet believable and photorealistic. Keep the scene and composition unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic color grade",
+        "landscape restyle",
+        "cityscape restyle",
+        "teal-orange",
+        "film grain",
+        "JoyAI",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-nanoBananaPro",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic NanoBananaPro",
+      "description": "Apply a professional cinematic camera look and color grade to a nature or city scene while keeping all content and composition the same. Use when you have a flat or ordinary landscape/cityscape and want a high-end, film-like cinematic look.",
+      "template": "Edit the provided photograph. Keep the same scene, the same landscape or cityscape, every building, object, and element, and the exact composition, framing, and perspective as the source — do not regenerate, re-stage, or invent a different scene. Only change the rendering: the photographic quality, mood, and color grade, as described below. The content and layout are preserved; only the cinematic look changes.\n\nTasks:\n- render with a premium cinema-camera look: rich depth, natural optical falloff, a gentle widescreen feel, clean realistic detail\n- apply a polished cinematic color grade — a warm golden-hour glow OR a refined teal-and-orange grade\n- use deep but detailed shadows, controlled highlights, and a filmic tonal curve that feels expensive and atmospheric\n- add a very subtle, fine film grain for texture\n- keep contrast and saturation tasteful rather than overdone\n- enhance natural atmosphere — soft light, gentle haze, or glow — only where it fits the existing scene\n- keep all content, geometry, objects, buildings, and the composition exactly as in the source\n\nOutput style: high-end cinematic, professionally graded photograph; filmic tonal curve; teal-orange or golden-hour grade; subtle film grain; atmospheric; photorealistic and believable.\n\nNegative constraints: do not regenerate or restage the scene; do not add, remove, move, or replace any objects, buildings, or elements; do not change the geometry, perspective, or composition; do not change the basic structure of the time of day; do not over-saturate or over-contrast; no surreal or fantasy elements; no stylization beyond a realistic film grade; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic grade",
+        "color grading",
+        "teal orange",
+        "golden hour",
+        "Nano Banana Pro",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-qwenImageEdit",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic QwenImageEdit",
+      "description": "Apply a professional cinematic camera look and color grade to a nature/city scene while keeping all content and composition the same. Use when you have a flat or ordinary landscape or city photo and want a high-end, film-like cinematic version.",
+      "template": "Re-render this landscape or cityscape photograph with a professional cinematic camera look and color grade while preserving all content, scene, composition, framing, and perspective exactly. Apply a high-end cinematic treatment: a refined teal-and-orange or warm golden-hour color grade, rich but controlled contrast, deep balanced shadows and gentle highlight rolloff, cinematic dynamic range, a subtle anamorphic widescreen feel, soft atmospheric depth, and very subtle film grain. Render high-end professional camera image quality with crisp detail in architecture, foliage, water, and sky, and natural yet stylized lighting that feels like a movie still. Keep every building, structure, object, and element in place — do not add, remove, move, or recompose anything, and do not distort architecture or perspective. Only change the lighting mood, color grade, and overall cinematic finish. Output a polished, photorealistic cinematic photograph. Preserve all content and composition exactly; keep everything else unchanged.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic restyle",
+        "color grade",
+        "teal-orange",
+        "landscape",
+        "cityscape",
+        "Qwen-Image-Edit-2511",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
+      "relatedSkillIds": []
+    },
+    {
+      "id": "USR-D03-imgedit-restyleSceneCinematic-stableDiffusion",
+      "kind": "user",
+      "categoryCode": "D03",
+      "title": "Imgedit RestyleSceneCinematic StableDiffusion",
+      "description": "Give a landscape or city photo a pro or cinematic camera look with a color grade (teal-orange or golden-hour) and subtle film grain, while keeping the content and composition intact. Use when you want a movie-still or cinematic mood on an existing scene without changing what is in it.",
+      "template": "## Positive prompt (SDXL — comma-tag style)\ncinematic landscape photograph, film still, professional camera look, teal and orange color grade, golden hour lighting, soft atmospheric haze, subtle film grain, wide dynamic range, dramatic natural light, anamorphic feel, high detail, photographic, same scene and composition\n\n## Positive prompt (SD 3.5 — natural sentence)\nA cinematic film-still version of the same landscape or cityscape with a professional color grade, either teal-and-orange or warm golden-hour tones, with soft atmospheric light and subtle film grain, keeping the exact same content and composition.\n\n## Negative prompt\nblurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, cartoon, 3d render, illustration, oversaturated, unnatural colors, changed composition, altered architecture, added elements, flat lighting\n\n## Recommended settings\n- Denoising strength: 0.6–0.8 (scene restyle)\n- CFG: 6–8 (SDXL) / 4–7 (SD 3.5)\n- Sampler: DPM++ 2M Karras, 25–40 steps\n- ControlNet / add-ons: ControlNet Tile or Depth/Canny (weight 0.6–0.9) to hold composition while the grade and mood change.",
+      "isMetaPrompt": true,
+      "executionContext": "chat",
+      "model": null,
+      "subVariant": null,
+      "parameters": [],
+      "examples": {},
+      "keywords": [
+        "cinematic restyle",
+        "color grade",
+        "film still",
+        "teal orange",
+        "stable diffusion",
+        "SDXL",
+        "SD 3.5",
+        "image editing",
+        "D03"
+      ],
+      "recommendedSystemPromptId": "SYS-D03-image-editing",
+      "relatedPromptIds": [],
       "relatedSkillIds": []
     },
     {

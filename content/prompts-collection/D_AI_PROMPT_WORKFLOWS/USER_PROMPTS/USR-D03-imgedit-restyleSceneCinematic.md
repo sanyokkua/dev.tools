@@ -20,7 +20,7 @@ N/A — attach a nature or city photo to re-grade cinematically.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/06-restyle-cinematic-landscape-city.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-restyleSceneCinematic-nanoBananaPro`, `USR-D03-imgedit-restyleSceneCinematic-gptImage`, `USR-D03-imgedit-restyleSceneCinematic-qwenImageEdit`, `USR-D03-imgedit-restyleSceneCinematic-flux2`, `USR-D03-imgedit-restyleSceneCinematic-flux2Klein`, `USR-D03-imgedit-restyleSceneCinematic-stableDiffusion`, `USR-D03-imgedit-restyleSceneCinematic-joyai`
 - Constraints: content/composition locked; look may change; photorealistic.
 - Related: `USR-D03-imgedit-improveScene` (faithful), `USR-D03-imgedit-restylePortraitPro`.
 

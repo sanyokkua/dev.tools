@@ -20,7 +20,7 @@ N/A — attach a soft/noisy/low-quality portrait.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/03-improvement-portrait.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-improvePortrait-nanoBananaPro`, `USR-D03-imgedit-improvePortrait-gptImage`, `USR-D03-imgedit-improvePortrait-qwenImageEdit`, `USR-D03-imgedit-improvePortrait-flux2`, `USR-D03-imgedit-improvePortrait-flux2Klein`, `USR-D03-imgedit-improvePortrait-stableDiffusion`, `USR-D03-imgedit-improvePortrait-joyai`
 - Constraints: lock identity/pose/composition; quality only; no beautification.
 - Related: `USR-D03-imgedit-restorePortrait` (when there IS damage), `USR-D03-imgedit-restylePortraitPro`.
 

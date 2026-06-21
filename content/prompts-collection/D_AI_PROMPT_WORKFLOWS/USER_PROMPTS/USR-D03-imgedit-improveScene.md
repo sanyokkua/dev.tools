@@ -20,7 +20,7 @@ N/A — attach a soft/noisy nature or city photo.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/04-improvement-landscape-city.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-improveScene-nanoBananaPro`, `USR-D03-imgedit-improveScene-gptImage`, `USR-D03-imgedit-improveScene-qwenImageEdit`, `USR-D03-imgedit-improveScene-flux2`, `USR-D03-imgedit-improveScene-flux2Klein`, `USR-D03-imgedit-improveScene-stableDiffusion`, `USR-D03-imgedit-improveScene-joyai`
 - Constraints: lock content/composition; quality only; photorealistic.
 - Related: `USR-D03-imgedit-restoreScene`, `USR-D03-imgedit-restyleSceneCinematic`.
 

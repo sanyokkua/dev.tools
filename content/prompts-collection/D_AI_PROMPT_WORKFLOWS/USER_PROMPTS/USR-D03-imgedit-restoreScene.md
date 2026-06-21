@@ -20,7 +20,7 @@ N/A — attach a damaged/old landscape or city photo.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/02-restoration-landscape-city.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-restoreScene-nanoBananaPro`, `USR-D03-imgedit-restoreScene-gptImage`, `USR-D03-imgedit-restoreScene-qwenImageEdit`, `USR-D03-imgedit-restoreScene-flux2`, `USR-D03-imgedit-restoreScene-flux2Klein`, `USR-D03-imgedit-restoreScene-stableDiffusion`, `USR-D03-imgedit-restoreScene-joyai`
 - Constraints: lock scene/composition; repair only; honesty about invented detail.
 - Related: `USR-D03-imgedit-improveScene`, `USR-D03-imgedit-colorize`.
 

@@ -20,7 +20,7 @@ N/A — attach a black-and-white photo to colorize.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/09-colorization.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-colorize-nanoBananaPro`, `USR-D03-imgedit-colorize-gptImage`, `USR-D03-imgedit-colorize-qwenImageEdit`, `USR-D03-imgedit-colorize-flux2`, `USR-D03-imgedit-colorize-flux2Klein`, `USR-D03-imgedit-colorize-stableDiffusion`, `USR-D03-imgedit-colorize-joyai`
 - Constraints: content/detail locked; plausible natural color; honesty — AI colorization is inferred, not documentary truth.
 - Related: `USR-D03-imgedit-restorePortrait`/`-restoreScene` (often paired with restoration).
 

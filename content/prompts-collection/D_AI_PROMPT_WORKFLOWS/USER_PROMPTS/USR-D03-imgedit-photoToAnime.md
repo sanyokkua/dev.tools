@@ -20,7 +20,7 @@ N/A — attach a real photo to convert to anime/cartoon.
 
 # Notes
 - Recommended system prompt: `SYS-D03-image-editing` (optional).
-- **Per-model versions:** `../New Image Prompts/<model>/07-restyle-photo-to-anime.md` (7 models).
+- **Per-model versions:** `USR-D03-imgedit-photoToAnime-nanoBananaPro`, `USR-D03-imgedit-photoToAnime-gptImage`, `USR-D03-imgedit-photoToAnime-qwenImageEdit`, `USR-D03-imgedit-photoToAnime-flux2`, `USR-D03-imgedit-photoToAnime-flux2Klein`, `USR-D03-imgedit-photoToAnime-stableDiffusion`, `USR-D03-imgedit-photoToAnime-joyai`
 - Constraints: subject/composition recognizable; high stylistic change expected (this is the "creative" end of the fidelity dial).
 - Related: `USR-D03-imgedit-cartoonToPhoto` (inverse).
 
