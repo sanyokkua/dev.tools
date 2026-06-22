@@ -16,6 +16,7 @@ npm run check:format  # Check formatting without writing
 npm run verify        # Full pipeline: format → lint → test
 npm run clean         # Remove build artifacts
 npm run ingest:prompts  # Regenerate prompt/skill JSON from content/prompts-collection/ Markdown files
+npm run build:prompts  # Validate TS catalog modules + emit manifest.generated.ts / loaders.generated.ts
 npm run verify:smoke  # Playwright interaction smoke tests only (28+ flows); requires dev server
 npm run verify:ui     # Responsive check (24 routes × 3 widths × 2 themes) + smoke tests; requires dev server
 ```
