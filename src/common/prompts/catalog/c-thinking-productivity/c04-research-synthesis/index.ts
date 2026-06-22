@@ -1,10 +1,10 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
-import { prompt as matrixPrompt } from './matrix.prompt.js';
-import { prompt as researchQuestionsPrompt } from './research-questions.prompt.js';
-import { prompt as sourceEvalPrompt } from './source-eval.prompt.js';
-import { prompt as synthesizePrompt } from './synthesize.prompt.js';
-import { prompt as sysPrompt } from './sys.prompt.js';
+import { prompt as matrixPrompt } from './matrix.prompt.ts';
+import { prompt as researchQuestionsPrompt } from './research-questions.prompt.ts';
+import { prompt as sourceEvalPrompt } from './source-eval.prompt.ts';
+import { prompt as synthesizePrompt } from './synthesize.prompt.ts';
+import { prompt as sysPrompt } from './sys.prompt.ts';
 
 export const prompts: LogicalPromptDef[] = [
     sysPrompt,

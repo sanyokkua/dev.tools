@@ -1,14 +1,14 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
-import { prompt as adrPrompt } from './adr.prompt.js';
-import { prompt as apiDesignPrompt } from './api-design.prompt.js';
-import { prompt as designPrompt } from './design.prompt.js';
-import { prompt as migrationPrompt } from './migration.prompt.js';
-import { prompt as qualityScenariosPrompt } from './quality-scenarios.prompt.js';
-import { prompt as reviewPrompt } from './review.prompt.js';
-import { prompt as rfcPrompt } from './rfc.prompt.js';
-import { prompt as sysPrompt } from './sys.prompt.js';
-import { prompt as tradeoffPrompt } from './tradeoff.prompt.js';
+import { prompt as adrPrompt } from './adr.prompt.ts';
+import { prompt as apiDesignPrompt } from './api-design.prompt.ts';
+import { prompt as designPrompt } from './design.prompt.ts';
+import { prompt as migrationPrompt } from './migration.prompt.ts';
+import { prompt as qualityScenariosPrompt } from './quality-scenarios.prompt.ts';
+import { prompt as reviewPrompt } from './review.prompt.ts';
+import { prompt as rfcPrompt } from './rfc.prompt.ts';
+import { prompt as sysPrompt } from './sys.prompt.ts';
+import { prompt as tradeoffPrompt } from './tradeoff.prompt.ts';
 
 export const prompts: LogicalPromptDef[] = [
     sysPrompt,

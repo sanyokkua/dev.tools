@@ -67,7 +67,10 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
     }
 
     const relatedSkills = skill.relatedSkillIds
-        .map((id) => skillsData?.skills.find((s) => s.slug === id))
+        .map((id) => {
+            const slug = id.startsWith('SKILL-') ? id.slice(6) : id;
+            return skillsData?.skills.find((s) => s.slug === slug);
+        })
         .filter(Boolean) as Skill[];
 
     const installInstructions = buildInstallInstructions(skill, installTarget);

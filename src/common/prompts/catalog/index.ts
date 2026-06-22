@@ -1,15 +1,15 @@
 import type { Category, Domain, LogicalPromptDef } from '../model/types';
-import { ABBREVIATIONS } from '../registries/abbreviations.js';
-import { CONTEXTS } from '../registries/contexts.js';
-import { MODELS } from '../registries/models.js';
-import { STYLES } from '../registries/styles.js';
-import { TONES } from '../registries/tones.js';
-import { VALUE_SETS } from '../registries/value-sets.js';
-import { skills as allSkills } from '../skills/index.js';
-import { prompts as aPrompts } from './a-software-engineering/index.js';
-import { prompts as bPrompts } from './b-writing-communication/index.js';
-import { prompts as cPrompts } from './c-thinking-productivity/index.js';
-import { prompts as dPrompts } from './d-ai-prompt-workflows/index.js';
+import { ABBREVIATIONS } from '../registries/abbreviations.ts';
+import { CONTEXTS } from '../registries/contexts.ts';
+import { MODELS } from '../registries/models.ts';
+import { STYLES } from '../registries/styles.ts';
+import { TONES } from '../registries/tones.ts';
+import { VALUE_SETS } from '../registries/value-sets.ts';
+import { skills as allSkills } from '../skills/index.ts';
+import { prompts as aPrompts } from './a-software-engineering/index.ts';
+import { prompts as bPrompts } from './b-writing-communication/index.ts';
+import { prompts as cPrompts } from './c-thinking-productivity/index.ts';
+import { prompts as dPrompts } from './d-ai-prompt-workflows/index.ts';
 
 export { ABBREVIATIONS, CONTEXTS, MODELS, STYLES, TONES, VALUE_SETS };
 

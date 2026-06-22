@@ -36,6 +36,7 @@ const nextConfig = {
     assetPrefix: assetPrefix,
     basePath: basePath,
     env: { NEXT_PUBLIC_BASE_PATH: basePath },
+    turbopack: {},
     webpack(config) {
         // Catalog TS files use .js extensions for ts-node ESM compat; webpack needs this alias to resolve them.
         config.resolve.extensionAlias = { '.js': ['.ts', '.tsx', '.js'] };

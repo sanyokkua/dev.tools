@@ -1,4 +1,4 @@
-import type { SkillDef } from '../../model/types.js';
+import type { SkillDef } from '../../model/types.ts';
 
 export const skill: SkillDef = {
     id: 'SKILL-oracle-expert',
