@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`assemblePrompt snapshot assembles a prompt with style + tone + params (snapshot) 1`] = `
+"Apply the following exactly.
+[STYLE — Formal]
+Impersonal, rule-correct prose with no contractions or slang, for high-stakes or ceremonial text.
+Use no contractions (write "do not", not "don't"; "we will", not "we'll").
+Use no slang, idioms, phrasal-verb casualness ("get done", "sort out"), or filler ("stuff", "things", "a lot").
+Prefer precise, often Latinate vocabulary ("unable", "regret", "request" over "can't", "sorry", "want").
+Allow longer, fully-formed sentences with subordinate clauses; never use fragments.
+Use third person or impersonal constructions where natural; passive voice is acceptable.
+Spell out every abbreviation on first use as "Full Name (ABBR)".
+Use no emoji, exclamation marks, or rhetorical questions.
+Do: State requests and conclusions explicitly and completely.
+Do: Maintain a consistent, neutral register from greeting to close.
+Don't: Use exclamation marks, emoji, "!", or casual interjections ("heads up", "btw").
+Don't: Use second-person breeziness or jokes.
+
+[TONE — Professional]
+Competent and composed — the default workplace attitude.
+Project competence and calm; no overstatement.
+Stay courteous and even, neither cold nor effusive.
+Use measured word choice; avoid slang and emotional intensifiers.
+Keep the focus on the task and the outcome.
+Allow light contractions; no emoji in formal threads.
+Do: Acknowledge briefly, then move to substance.
+Do: Keep a steady, reliable register.
+Don't: Sound either robotic or overly chummy.
+Don't: Let emotion color factual statements.
+
+Your task: Summarize this document"
+`;
