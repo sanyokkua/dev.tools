@@ -1,5 +1,7 @@
 import { prompts as aAllPrompts } from '@/common/prompts/catalog/a-software-engineering';
 import { prompts as a01Prompts } from '@/common/prompts/catalog/a-software-engineering/a01-code-generation';
+import { prompts as bAllPrompts } from '@/common/prompts/catalog/b-writing-communication';
+import { prompts as b01Prompts } from '@/common/prompts/catalog/b-writing-communication/b01-proofreading';
 import { prompts as cAllPrompts } from '@/common/prompts/catalog/c-thinking-productivity';
 import { prompts as c01Prompts } from '@/common/prompts/catalog/c-thinking-productivity/c01-ideation';
 import type { LogicalPromptDef } from '@/common/prompts/model/types';
@@ -108,6 +110,41 @@ describe('Domain A barrel', () => {
 
     it('all entries pass shape validation', () => {
         for (const def of aAllPrompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('B01 Proofreading catalog module', () => {
+    it('exports a non-empty prompts array', () => {
+        expect(Array.isArray(b01Prompts)).toBe(true);
+        expect(b01Prompts.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of b01Prompts) {
+            validateDef(def);
+        }
+    });
+
+    it('all logical IDs are unique within B01', () => {
+        const ids = b01Prompts.map((d) => d.id);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
+});
+
+describe('Domain B barrel', () => {
+    it('exports all 9 categories worth of prompts', () => {
+        expect(bAllPrompts.length).toBeGreaterThan(80);
+    });
+
+    it('all logical IDs are unique across Domain B', () => {
+        const ids = bAllPrompts.map((d) => d.id);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of bAllPrompts) {
             validateDef(def);
         }
     });

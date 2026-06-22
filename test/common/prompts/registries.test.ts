@@ -204,10 +204,9 @@ describe('registries/contexts', () => {
 // ─── VALUE_SETS ────────────────────────────────────────────────────────────
 
 describe('registries/value-sets', () => {
-    it('has exactly 33 entries', () => {
-        // Verified: value-sets.md has 19 core + 14 addendum = 33 total.
-        // Spec says 34 — flagged in commit message for content review.
-        expect(VALUE_SETS).toHaveLength(33);
+    it('has exactly 36 entries', () => {
+        // 33 original + 3 added for Domain B: tone, style, context
+        expect(VALUE_SETS).toHaveLength(36);
     });
 
     it('every entry has required fields', () => {

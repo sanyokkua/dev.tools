@@ -68,7 +68,15 @@ function parseFrontmatter(lines) {
     return fm;
 }
 
-function parseEntry(sectionText) {
+function extractSharedTemplate(content) {
+    // Find a fenced code block in the file header (before any ### heading)
+    const firstHeadingIdx = content.indexOf('\n### ');
+    const header = firstHeadingIdx !== -1 ? content.slice(0, firstHeadingIdx) : content;
+    const match = header.match(/```\n([\s\S]+?)\n```/);
+    return match ? match[1] : null;
+}
+
+function parseEntry(sectionText, sharedTemplate) {
     const lines = sectionText.split('\n');
     const headerIdx = lines.findIndex((l) => l.startsWith('### '));
     if (headerIdx === -1) return null;
@@ -91,12 +99,63 @@ function parseEntry(sectionText) {
     for (let i = 0; i < variantIndices.length; i++) {
         const start = variantIndices[i];
         const end = i + 1 < variantIndices.length ? variantIndices[i + 1] : lines.length;
-        const block = lines.slice(start, end).join('\n');
+        // Strip 'notes:' and its continuation lines — we don't use it and it may contain
+        // unquoted colons that confuse the YAML parser in some contexts.
+        const blockLines = lines.slice(start, end);
+        const filteredLines = [];
+        let skipNote = false;
+        for (const bl of blockLines) {
+            if (/^  notes:/.test(bl)) {
+                skipNote = true;
+                continue;
+            }
+            if (skipNote && (bl.startsWith('    ') || bl.trim() === '')) continue;
+            skipNote = false;
+            filteredLines.push(bl);
+        }
+        // Strip --- section separators: they appear at the end of context entries and
+        // cause yaml.parse() to report "multiple documents".
+        const block = filteredLines.join('\n').split('\n---\n')[0];
         try {
             const parsed = yaml.parse(block);
-            if (parsed && parsed.variant) variants.push(parsed.variant);
+            if (parsed && parsed.variant) {
+                const v = parsed.variant;
+                // Expand shared template reference (used in b-communication-contexts.md)
+                if (sharedTemplate && typeof v.template === 'string' && v.template.startsWith('(shared context core')) {
+                    v.template = sharedTemplate;
+                }
+                variants.push(v);
+            }
         } catch (e) {
             console.error(`  [YAML error] ${id} variant block ${i}: ${e.message}`);
+        }
+    }
+
+    // If no variant: blocks found, try to extract a top-level template (B domain SYS format).
+    // These entries store the template as a YAML block scalar directly in the frontmatter.
+    if (variants.length === 0) {
+        // Re-parse the full section as YAML (excluding the ### heading line).
+        const sectionWithoutHeading = lines
+            .slice(headerIdx + 1)
+            .join('\n')
+            .split('\n---\n')[0];
+        try {
+            const parsed = yaml.parse(sectionWithoutHeading);
+            if (parsed && typeof parsed.template === 'string' && parsed.template.length > 10) {
+                // Parse keywords array from simple frontmatter (the YAML parser already has it)
+                const kws = Array.isArray(parsed.keywords) ? parsed.keywords : [];
+                variants.push({
+                    id,
+                    kind: parsed.kind || 'system',
+                    mode: parsed.mode || 'chat',
+                    template: parsed.template,
+                    keywords: kws,
+                    parameters: [],
+                    model: null,
+                });
+            }
+        } catch {
+            // Not valid YAML — skip
         }
     }
 
@@ -105,11 +164,34 @@ function parseEntry(sectionText) {
 
 function parseMarkdownFile(filePath) {
     const content = readFileSync(filePath, 'utf8');
-    const sections = content.split('\n---\n');
+    const sharedTemplate = extractSharedTemplate(content);
+
+    // Split at each unindented ### heading so each entry is its own section.
+    // Handles both A/C format (--- separators) and B format (no --- between entries).
+    const lines = content.split('\n');
+    const sections = [];
+    let current = [];
+    for (const line of lines) {
+        if (line.startsWith('### ') && current.length > 0) {
+            // Trim trailing --- separators before closing the section
+            while (
+                current.length > 0 &&
+                (current[current.length - 1] === '---' || current[current.length - 1].trim() === '')
+            ) {
+                current.pop();
+            }
+            sections.push(current.join('\n'));
+            current = [line];
+        } else {
+            current.push(line);
+        }
+    }
+    if (current.length > 0) sections.push(current.join('\n'));
+
     const entries = [];
     for (const section of sections) {
         if (!section.includes('### ')) continue;
-        const entry = parseEntry(section);
+        const entry = parseEntry(section, sharedTemplate);
         if (entry && entry.id) entries.push(entry);
     }
     return entries;
@@ -143,11 +225,16 @@ function slugFromId(id, isSys) {
 }
 
 // ── ID filtering ──────────────────────────────────────────────────────────────
-const INCLUDE_PREFIXES = ['LP-A', 'SYS-A', 'AGT-A', 'LP-C', 'SYS-C', 'AGT-C'];
+const INCLUDE_PREFIXES = ['LP-A', 'SYS-A', 'AGT-A', 'LP-B', 'SYS-B', 'AGT-B', 'LP-C', 'SYS-C', 'AGT-C'];
+
+// Correct known ID mismatches between library source and generated catalog
+const RELATED_ID_CORRECTIONS = { 'LP-B-context-message': 'LP-B-context-write' };
 
 function filterRelatedIds(related) {
     if (!Array.isArray(related)) return [];
-    return related.filter((ref) => INCLUDE_PREFIXES.some((p) => ref.startsWith(p)));
+    return related
+        .map((ref) => RELATED_ID_CORRECTIONS[ref] || ref)
+        .filter((ref) => INCLUDE_PREFIXES.some((p) => ref.startsWith(p)));
 }
 
 // ── TypeScript serialization ──────────────────────────────────────────────────
@@ -189,25 +276,53 @@ function serializeValue(val, indent = 0) {
     return String(val);
 }
 
+// Map library valueSet IDs that don't match our registry to correct ones
+const VALUE_SET_ID_MAP = { 'tone-id': 'tone', 'style-id': 'style', 'context-id': 'context' };
+
+// Replace [[INJECT_RULES]] with the appropriate {{param}} token(s) based on declared params
+function resolveInjectRules(template, parameters) {
+    if (!template.includes('[[INJECT_RULES]]')) return template;
+    const paramNames = (parameters || []).map((p) => p.name);
+    const injectionParts = [];
+    if (paramNames.includes('style')) injectionParts.push('{{style}}');
+    if (paramNames.includes('tone')) injectionParts.push('{{tone}}');
+    if (paramNames.includes('context')) injectionParts.push('{{context}}');
+    const replacement = injectionParts.length > 0 ? injectionParts.join('\n\n') : '{{injectedRules}}';
+    return template.replace('[[INJECT_RULES]]', replacement);
+}
+
+// Expand known abbreviations that the V13 lint requires spelled out on first use.
+// Replace TL;DR (with any optional following parenthetical) so the full form always appears.
+function expandAbbreviations(text) {
+    if (!text) return text;
+    return text
+        .replace(/\bTL;DR\b(?:\s*\([^)]*\))?/g, "Too Long; Didn't Read (TL;DR)")
+        .replace(/\bBLUF\b(?!\s*\()/g, 'Bottom Line Up Front (BLUF)');
+}
+
 function buildVariantObj(v, entry, catCode, relatedPromptIds) {
     const isFirst = v === entry.variants[0];
     const isDual = entry.modeClass === 'dual';
-    // Title: agent variants get 'Agent: ' prefix for dual prompts
-    const title = isDual && !isFirst ? `Agent: ${entry.title}` : entry.title;
-    // Description: use title (always fully expanded); subtitle may contain bare abbreviations
-    const description = entry.title;
+    // Title: agent variants get 'Agent: ' prefix for dual prompts; expand abbreviations for V13
+    const rawTitle = isDual && !isFirst ? `Agent: ${entry.title}` : entry.title;
+    const title = expandAbbreviations(rawTitle);
+    // Description: use title (always fully expanded)
+    const description = title;
 
     const parameters = (v.parameters || []).map((p) => {
         const param = {
             name: p.name,
-            label: p.label || null,
-            description: p.description || null,
             control: p.control,
             optional: typeof p.optional === 'boolean' ? p.optional : false,
         };
-        if (p.valueSet) param.valueSetId = p.valueSet;
+        if (p.label) param.label = p.label;
+        if (p.description) param.description = p.description;
+        if (p.valueSet) param.valueSetId = VALUE_SET_ID_MAP[p.valueSet] || p.valueSet;
         return param;
     });
+
+    // Resolve [[INJECT_RULES]] marker to proper {{param}} tokens
+    const template = resolveInjectRules(v.template || '', v.parameters || []);
 
     const recommendedSystemPromptId = entry.recommendedSystemPrompt ?? null;
 
@@ -217,7 +332,7 @@ function buildVariantObj(v, entry, catCode, relatedPromptIds) {
         categoryCode: catCode,
         title,
         description,
-        template: v.template || '',
+        template,
         parameters,
         examples: v.examples && Object.keys(v.examples).length > 0 ? v.examples : {},
         keywords: v.keywords || [],
@@ -312,27 +427,59 @@ const mdFiles = readdirSync(contentDir)
     .filter((f) => f.endsWith('.md'))
     .sort();
 
-const categoryFolders = [];
-
+// Step 1: Build catCode → slug map from standard filenames (e.g. b01-proofreading.md → B01:proofreading)
+const catSlugMap = new Map();
 for (const mdFile of mdFiles) {
-    const { code: catCode, slug: catSlug } = categoryFromFilename(mdFile);
+    if (/^[a-z]\d+-/.test(mdFile)) {
+        const { code, slug } = categoryFromFilename(mdFile);
+        catSlugMap.set(code, slug);
+    }
+}
+
+// Step 2: Parse all files and group entries by entry.category (handles cross-file categories)
+const categoryEntriesMap = new Map();
+for (const mdFile of mdFiles) {
+    const entries = parseMarkdownFile(join(contentDir, mdFile));
+    for (const entry of entries) {
+        const catCode = entry.category || null;
+        if (!catCode) {
+            console.warn(`  [SKIP] ${entry.id}: no category field`);
+            continue;
+        }
+        if (!categoryEntriesMap.has(catCode)) {
+            categoryEntriesMap.set(catCode, []);
+        }
+        categoryEntriesMap.get(catCode).push(entry);
+    }
+}
+
+// Step 3: Emit each category folder in sorted order
+const categoryFolders = [];
+const sortedCats = [...categoryEntriesMap.keys()].sort();
+
+for (const catCode of sortedCats) {
+    const catSlug = catSlugMap.get(catCode);
+    if (!catSlug) {
+        console.warn(`  [SKIP] unknown category code: ${catCode} (no matching standard file)`);
+        continue;
+    }
+
     const catFolder = `${catCode.toLowerCase()}-${catSlug}`;
     const catOutDir = join(domainOutDir, catFolder);
     mkdirSync(catOutDir, { recursive: true });
 
-    const entries = parseMarkdownFile(join(contentDir, mdFile));
+    const entries = categoryEntriesMap.get(catCode);
     const promptFiles = [];
 
     for (const entry of entries) {
         const isSys = isSystemEntry(entry);
         const slug = slugFromId(entry.id, isSys);
-        const filename = slug;
         const ts = emitPromptTs(entry, catCode);
 
-        writeFileSync(join(catOutDir, `${filename}.prompt.ts`), ts, 'utf8');
+        writeFileSync(join(catOutDir, `${slug}.prompt.ts`), ts, 'utf8');
 
-        const varName = varNameFromFilename(filename);
-        promptFiles.push({ filename, varName });
+        const varName = varNameFromFilename(slug);
+        promptFiles.push({ filename: slug, varName });
     }
 
     // Emit category index.ts

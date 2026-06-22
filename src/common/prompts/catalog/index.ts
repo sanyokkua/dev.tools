@@ -6,6 +6,7 @@ import { STYLES } from '../registries/styles.js';
 import { TONES } from '../registries/tones.js';
 import { VALUE_SETS } from '../registries/value-sets.js';
 import { prompts as aPrompts } from './a-software-engineering/index.js';
+import { prompts as bPrompts } from './b-writing-communication/index.js';
 import { prompts as cPrompts } from './c-thinking-productivity/index.js';
 
 export { ABBREVIATIONS, CONTEXTS, MODELS, STYLES, TONES, VALUE_SETS };
@@ -17,6 +18,13 @@ export const domains: Domain[] = [
         description:
             'Code generation, refactoring, review, debugging, testing, documentation, architecture, and delivery.',
         slug: 'software-engineering',
+    },
+    {
+        code: 'B',
+        title: 'Writing & Communication',
+        description:
+            'Proofreading, rewriting, tone, style, formatting, document structuring, summarization, translation, and workplace communication.',
+        slug: 'writing-communication',
     },
     {
         code: 'C',
@@ -99,6 +107,57 @@ export const categories: Category[] = [
         recommendedSystemPromptId: 'SYS-A11-log-querying',
     },
     {
+        code: 'B01',
+        domainCode: 'B',
+        slug: 'proofreading',
+        title: 'Proofreading',
+        recommendedSystemPromptId: 'SYS-B01-proofreading',
+    },
+    {
+        code: 'B02',
+        domainCode: 'B',
+        slug: 'rewriting',
+        title: 'Rewriting',
+        recommendedSystemPromptId: 'SYS-B02-rewriting',
+    },
+    { code: 'B03', domainCode: 'B', slug: 'tone', title: 'Tone', recommendedSystemPromptId: 'SYS-B03-tone' },
+    { code: 'B04', domainCode: 'B', slug: 'style', title: 'Style', recommendedSystemPromptId: 'SYS-B04-style' },
+    {
+        code: 'B05',
+        domainCode: 'B',
+        slug: 'formatting',
+        title: 'Formatting',
+        recommendedSystemPromptId: 'SYS-B05-formatting',
+    },
+    {
+        code: 'B06',
+        domainCode: 'B',
+        slug: 'document-structuring',
+        title: 'Document Structuring',
+        recommendedSystemPromptId: 'SYS-B06-document-structuring',
+    },
+    {
+        code: 'B07',
+        domainCode: 'B',
+        slug: 'summarization',
+        title: 'Summarization',
+        recommendedSystemPromptId: 'SYS-B07-summarization',
+    },
+    {
+        code: 'B08',
+        domainCode: 'B',
+        slug: 'translation',
+        title: 'Translation',
+        recommendedSystemPromptId: 'SYS-B08-translation',
+    },
+    {
+        code: 'B09',
+        domainCode: 'B',
+        slug: 'workplace-communication',
+        title: 'Workplace Communication',
+        recommendedSystemPromptId: 'SYS-B09-workplace-communication',
+    },
+    {
         code: 'C01',
         domainCode: 'C',
         slug: 'ideation',
@@ -128,6 +187,6 @@ export const categories: Category[] = [
     },
 ];
 
-export const prompts: LogicalPromptDef[] = [...aPrompts, ...cPrompts];
+export const prompts: LogicalPromptDef[] = [...aPrompts, ...bPrompts, ...cPrompts];
 
 export const skills = [];
