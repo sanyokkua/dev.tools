@@ -17,6 +17,9 @@ export interface Category {
 
 export interface Param {
     name: string;
+    label?: string;
+    control?: 'textarea' | 'text' | 'select' | 'combobox';
+    valueSetId?: string;
     description?: string;
     suggestedValues?: string[];
     allowCustom?: boolean;

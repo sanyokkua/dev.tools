@@ -1,5 +1,6 @@
 import { buildSysPromptHref, replaceParams } from '@/common/prompts/data';
 import { isMetaPrompt } from '@/common/prompts/meta';
+import { VALUE_SETS } from '@/common/prompts/registries/value-sets';
 import type { Category, Domain, LogicalPrompt, PromptVariant } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
@@ -202,37 +203,70 @@ const PromptDetailPanel: React.FC<Props> = ({
                 <section className="pc-detail-section" aria-label="Parameters">
                     <h3 className="pc-section-heading">Parameters</h3>
                     <div className="pc-param-list">
-                        {variant.parameters.map((param) => (
-                            <div key={param.name} className="pc-param-row">
-                                <label className="pc-param-label" htmlFor={`param-${param.name}`}>
-                                    <span className="pc-mono">{param.name}</span>
-                                    {param.optional && <span className="pc-param-optional">(optional)</span>}
-                                </label>
-                                {param.description && <p className="pc-param-help">{param.description}</p>}
-                                {param.suggestedValues && param.suggestedValues.length > 0 ? (
-                                    <EditableCombobox
-                                        id={`param-${param.name}`}
-                                        value={paramValues[param.name] ?? ''}
-                                        onChange={(val) => setParamValues((prev) => ({ ...prev, [param.name]: val }))}
-                                        options={param.suggestedValues}
-                                        allowCustom={param.allowCustom ?? false}
-                                        placeholder={param.optional ? 'Leave blank to omit…' : undefined}
-                                        aria-label={param.name}
-                                    />
-                                ) : (
-                                    <input
-                                        id={`param-${param.name}`}
-                                        className="pc-param-input"
-                                        value={paramValues[param.name] ?? ''}
-                                        onChange={(e) =>
-                                            setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
-                                        }
-                                        placeholder={param.optional ? 'Leave blank to omit…' : undefined}
-                                        aria-label={param.name}
-                                    />
-                                )}
-                            </div>
-                        ))}
+                        {variant.parameters.map((param) => {
+                            const valueSet = param.valueSetId
+                                ? VALUE_SETS.find((vs) => vs.id === param.valueSetId)
+                                : undefined;
+                            const displayLabel = param.label ?? param.name;
+                            const placeholder = param.optional ? 'Leave blank to omit…' : undefined;
+                            const val = paramValues[param.name] ?? '';
+                            const onChange = (v: string) => setParamValues((prev) => ({ ...prev, [param.name]: v }));
+                            return (
+                                <div key={param.name} className="pc-param-row">
+                                    <label className="pc-param-label" htmlFor={`param-${param.name}`}>
+                                        <span>{displayLabel}</span>
+                                        {param.optional && <span className="pc-param-optional">(optional)</span>}
+                                    </label>
+                                    {param.description && <p className="pc-param-help">{param.description}</p>}
+                                    {param.control === 'textarea' ? (
+                                        <textarea
+                                            id={`param-${param.name}`}
+                                            className="pc-param-textarea"
+                                            value={val}
+                                            onChange={(e) => onChange(e.target.value)}
+                                            placeholder={placeholder}
+                                            aria-label={displayLabel}
+                                            rows={4}
+                                        />
+                                    ) : param.control === 'select' && valueSet ? (
+                                        <select
+                                            id={`param-${param.name}`}
+                                            className="pc-param-select"
+                                            value={val}
+                                            onChange={(e) => onChange(e.target.value)}
+                                            aria-label={displayLabel}
+                                        >
+                                            {param.optional && <option value="">—</option>}
+                                            {valueSet.values.map((v) => (
+                                                <option key={v} value={v}>
+                                                    {v}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (param.control === 'combobox' || param.suggestedValues?.length) &&
+                                      (valueSet || param.suggestedValues?.length) ? (
+                                        <EditableCombobox
+                                            id={`param-${param.name}`}
+                                            value={val}
+                                            onChange={onChange}
+                                            options={valueSet?.values ?? param.suggestedValues ?? []}
+                                            allowCustom={valueSet?.allowCustom ?? param.allowCustom ?? true}
+                                            placeholder={placeholder}
+                                            aria-label={displayLabel}
+                                        />
+                                    ) : (
+                                        <input
+                                            id={`param-${param.name}`}
+                                            className="pc-param-input"
+                                            value={val}
+                                            onChange={(e) => onChange(e.target.value)}
+                                            placeholder={placeholder}
+                                            aria-label={displayLabel}
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </section>
             )}
