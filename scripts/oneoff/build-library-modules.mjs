@@ -6,7 +6,7 @@
 //     --library .tmp/Specification/library \
 //     --out src/common/prompts/catalog
 
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import yaml from 'yaml';
 
@@ -210,11 +210,7 @@ function categoryFromFilename(filename) {
 }
 
 function isSystemEntry(entry) {
-    return (
-        entry.id.startsWith('SYS-') ||
-        entry.modeClass === 'chat-only-meta' ||
-        (entry.variants.length > 0 && entry.variants[0].kind === 'system')
-    );
+    return entry.id.startsWith('SYS-') || (entry.variants.length > 0 && entry.variants[0].kind === 'system');
 }
 
 function slugFromId(id, isSys) {
@@ -423,23 +419,46 @@ function varNameFromFilename(filename) {
 
 // ── Main processing ───────────────────────────────────────────────────────────
 
-const mdFiles = readdirSync(contentDir)
-    .filter((f) => f.endsWith('.md'))
-    .sort();
+// Collect all .md files from contentDir and any immediate subdirectories (e.g. media/)
+function collectMdFilesSync(dir) {
+    const results = [];
+    try {
+        for (const entry of readdirSync(dir)) {
+            const full = join(dir, entry);
+            try {
+                if (statSync(full).isDirectory()) {
+                    for (const sub of readdirSync(full).filter((f) => f.endsWith('.md'))) {
+                        results.push(join(full, sub));
+                    }
+                } else if (entry.endsWith('.md')) {
+                    results.push(full);
+                }
+            } catch {
+                // skip unreadable entries
+            }
+        }
+    } catch {
+        // contentDir doesn't exist — return empty
+    }
+    return results.sort();
+}
+
+const allMdPaths = collectMdFilesSync(contentDir);
 
 // Step 1: Build catCode → slug map from standard filenames (e.g. b01-proofreading.md → B01:proofreading)
 const catSlugMap = new Map();
-for (const mdFile of mdFiles) {
-    if (/^[a-z]\d+-/.test(mdFile)) {
-        const { code, slug } = categoryFromFilename(mdFile);
+for (const mdPath of allMdPaths) {
+    const basename = mdPath.split('/').pop();
+    if (/^[a-z]\d+-/.test(basename)) {
+        const { code, slug } = categoryFromFilename(basename);
         catSlugMap.set(code, slug);
     }
 }
 
 // Step 2: Parse all files and group entries by entry.category (handles cross-file categories)
 const categoryEntriesMap = new Map();
-for (const mdFile of mdFiles) {
-    const entries = parseMarkdownFile(join(contentDir, mdFile));
+for (const mdPath of allMdPaths) {
+    const entries = parseMarkdownFile(mdPath);
     for (const entry of entries) {
         const catCode = entry.category || null;
         if (!catCode) {

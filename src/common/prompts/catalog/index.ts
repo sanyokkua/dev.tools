@@ -8,6 +8,7 @@ import { VALUE_SETS } from '../registries/value-sets.js';
 import { prompts as aPrompts } from './a-software-engineering/index.js';
 import { prompts as bPrompts } from './b-writing-communication/index.js';
 import { prompts as cPrompts } from './c-thinking-productivity/index.js';
+import { prompts as dPrompts } from './d-ai-prompt-workflows/index.js';
 
 export { ABBREVIATIONS, CONTEXTS, MODELS, STYLES, TONES, VALUE_SETS };
 
@@ -31,6 +32,13 @@ export const domains: Domain[] = [
         title: 'Thinking & Productivity',
         description: 'Ideation, decision support, planning, and research synthesis.',
         slug: 'thinking-productivity',
+    },
+    {
+        code: 'D',
+        title: 'AI & Prompt Workflows',
+        description:
+            'Prompt engineering, image generation, image editing, diagrams, skill authoring, and video generation.',
+        slug: 'ai-prompt-workflows',
     },
 ];
 
@@ -185,8 +193,50 @@ export const categories: Category[] = [
         title: 'Research Synthesis',
         recommendedSystemPromptId: 'SYS-C04-research-synthesis',
     },
+    {
+        code: 'D01',
+        domainCode: 'D',
+        slug: 'prompt-engineering',
+        title: 'Prompt Engineering',
+        recommendedSystemPromptId: 'SYS-D01-prompt-engineering',
+    },
+    {
+        code: 'D02',
+        domainCode: 'D',
+        slug: 'image-generation',
+        title: 'Image Generation',
+        recommendedSystemPromptId: 'SYS-D02-image-generation',
+    },
+    {
+        code: 'D03',
+        domainCode: 'D',
+        slug: 'image-editing',
+        title: 'Image Editing',
+        recommendedSystemPromptId: 'SYS-D03-image-editing',
+    },
+    {
+        code: 'D04',
+        domainCode: 'D',
+        slug: 'diagrams',
+        title: 'Diagrams & Visualization',
+        recommendedSystemPromptId: 'SYS-D04-diagrams-visualization',
+    },
+    {
+        code: 'D05',
+        domainCode: 'D',
+        slug: 'skill-authoring',
+        title: 'Skill Authoring',
+        recommendedSystemPromptId: 'SYS-D05-skill-authoring',
+    },
+    {
+        code: 'D06',
+        domainCode: 'D',
+        slug: 'video-generation',
+        title: 'Video Generation',
+        recommendedSystemPromptId: 'SYS-D06-video-generation',
+    },
 ];
 
-export const prompts: LogicalPromptDef[] = [...aPrompts, ...bPrompts, ...cPrompts];
+export const prompts: LogicalPromptDef[] = [...aPrompts, ...bPrompts, ...cPrompts, ...dPrompts];
 
 export const skills = [];
