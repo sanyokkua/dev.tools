@@ -11,6 +11,7 @@ const config: Config = {
     setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
     testMatch: ['**/test/**/*.test.ts', '**/test/**/*.test.tsx'],
     coverageThreshold: { global: { lines: 93, functions: 73, branches: 87, statements: 93 } },
+    coveragePathIgnorePatterns: ['/node_modules/', '\\.generated\\.ts$'],
     moduleNameMapper: {
         // TypeScript ESM uses explicit .js extensions; Jest can't resolve .js → .ts without this
         '^(\\.{1,2}/.*)\\.js$': '$1',
