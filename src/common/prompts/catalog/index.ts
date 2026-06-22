@@ -5,6 +5,7 @@ import { MODELS } from '../registries/models.js';
 import { STYLES } from '../registries/styles.js';
 import { TONES } from '../registries/tones.js';
 import { VALUE_SETS } from '../registries/value-sets.js';
+import { skills as allSkills } from '../skills/index.js';
 import { prompts as aPrompts } from './a-software-engineering/index.js';
 import { prompts as bPrompts } from './b-writing-communication/index.js';
 import { prompts as cPrompts } from './c-thinking-productivity/index.js';
@@ -239,4 +240,4 @@ export const categories: Category[] = [
 
 export const prompts: LogicalPromptDef[] = [...aPrompts, ...bPrompts, ...cPrompts, ...dPrompts];
 
-export const skills = [];
+export const skills = allSkills;
