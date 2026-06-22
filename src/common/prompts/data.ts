@@ -1,3 +1,4 @@
+import { loadCategory, loadManifest, loadSkill } from './loader';
 import type {
     CatalogRow,
     Category,
@@ -14,16 +15,34 @@ let _skills: SkillsData | null = null;
 
 export async function loadPromptsData(): Promise<PromptsData> {
     if (!_prompts) {
-        const mod = await import('./generated/prompts-data.json');
-        _prompts = mod.default as unknown as PromptsData;
+        const manifest = loadManifest();
+        const categoryModules = await Promise.all(
+            manifest.categories.map((cat) => loadCategory(cat.code).catch(() => ({ prompts: [] }))),
+        );
+        const allDefs = categoryModules.flatMap((m) => m.prompts);
+        _prompts = {
+            domains: manifest.domains as Domain[],
+            categories: manifest.categories as Category[],
+            logical: allDefs.map((lp) => ({
+                id: lp.id,
+                categoryCode: lp.categoryCode,
+                title: lp.title,
+                description: lp.description,
+                variantAxes: lp.variantAxes as LogicalPrompt['variantAxes'],
+                variantIds: lp.variants.map((v) => v.id),
+                defaultVariantId: lp.defaultVariantId,
+            })),
+            variants: allDefs.flatMap((lp) => lp.variants) as unknown as PromptVariant[],
+        };
     }
     return _prompts;
 }
 
 export async function loadSkillsData(): Promise<SkillsData> {
     if (!_skills) {
-        const mod = await import('./generated/skills-data.json');
-        _skills = mod.default as unknown as SkillsData;
+        const manifest = loadManifest();
+        const skillDefs = await Promise.all(manifest.skills.map((s) => loadSkill(s.slug).catch(() => null)));
+        _skills = { skills: skillDefs.filter(Boolean) as unknown as Skill[] };
     }
     return _skills;
 }
