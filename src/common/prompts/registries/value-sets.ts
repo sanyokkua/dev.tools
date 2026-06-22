@@ -318,12 +318,7 @@ export const VALUE_SETS: ValueSet[] = [
         allowCustom: true,
         values: ['Non-native English speakers', 'Children (age 8-10)', 'Non-experts', 'Busy executives'],
     },
-    {
-        id: 'scenario-type',
-        label: 'Scenario type',
-        allowCustom: true,
-        values: ['Best case', 'Worst case', 'Most likely', 'Edge case'],
-    },
+    { id: 'scenario-type', label: 'Scenario type', allowCustom: false, values: ['positive', 'negative', 'edge'] },
     {
         id: 'prioritization-model',
         label: 'Prioritization model',

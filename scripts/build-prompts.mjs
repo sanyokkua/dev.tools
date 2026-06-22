@@ -39,7 +39,7 @@ const ABBR_ALLOWLIST = new Set([
 
 // ── Load source module ────────────────────────────────────────────────────────
 async function loadSrc(path) {
-    for (const candidate of [path, path + '.mjs', path + '.js']) {
+    for (const candidate of [path, path + '.ts', path + '.mjs', path + '.js']) {
         if (existsSync(candidate)) {
             return await import(pathToFileURL(candidate).href);
         }

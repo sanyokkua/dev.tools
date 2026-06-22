@@ -21,7 +21,7 @@
         "verify:ui": "node scripts/verify-ui.mjs && node scripts/smoke-tests.mjs",
         "validate:sw": "node scripts/validate-sw-precache.mjs",
         "ingest:prompts": "node scripts/ingest-prompts.mjs",
-        "build:prompts": "node scripts/build-prompts.mjs",
+        "build:prompts": "node --loader ts-node/esm --no-warnings scripts/build-prompts.mjs",
         "prebuild": "npm run build:prompts",
         "predev": "npm run build:prompts"
     },
