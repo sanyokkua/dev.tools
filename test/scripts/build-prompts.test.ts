@@ -4,7 +4,7 @@ import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../..');
-const SCRIPT = 'node scripts/build-prompts.mjs';
+const SCRIPT = 'TS_NODE_PROJECT=tsconfig.build.json node --loader ts-node/esm --no-warnings scripts/build-prompts.mjs';
 const FIXTURES = 'test/fixtures/build-prompts-src';
 
 function run(fixtureName: string, outDir: string) {
@@ -64,7 +64,11 @@ describe('build-prompts — empty catalog (absent src)', () => {
 
     beforeAll(() => {
         out = tempOut();
-        execSync(`${SCRIPT} --out "${out}"`, { cwd: ROOT, encoding: 'utf8', stdio: 'pipe' });
+        execSync(`${SCRIPT} --src "/nonexistent/catalog/path" --out "${out}"`, {
+            cwd: ROOT,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        });
     });
 
     afterAll(() => rmSync(out, { recursive: true, force: true }));

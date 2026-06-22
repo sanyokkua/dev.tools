@@ -12,6 +12,8 @@ const config: Config = {
     testMatch: ['**/test/**/*.test.ts', '**/test/**/*.test.tsx'],
     coverageThreshold: { global: { lines: 93, functions: 73, branches: 87, statements: 93 } },
     moduleNameMapper: {
+        // TypeScript ESM uses explicit .js extensions; Jest can't resolve .js → .ts without this
+        '^(\\.{1,2}/.*)\\.js$': '$1',
         // uuid v13 is pure ESM; Jest can't parse it — use a CJS shim
         '^uuid$': '<rootDir>/test/__mocks__/uuid.js',
         // browser-fs-access is ESM-only; use a CJS shim for Jest
