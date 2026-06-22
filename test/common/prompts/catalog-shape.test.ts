@@ -1,7 +1,10 @@
+import { assemblePrompt } from '@/common/prompts/assemble';
 import { prompts as aAllPrompts } from '@/common/prompts/catalog/a-software-engineering';
 import { prompts as a01Prompts } from '@/common/prompts/catalog/a-software-engineering/a01-code-generation';
 import { prompts as bAllPrompts } from '@/common/prompts/catalog/b-writing-communication';
 import { prompts as b01Prompts } from '@/common/prompts/catalog/b-writing-communication/b01-proofreading';
+import { prompts as b04Prompts } from '@/common/prompts/catalog/b-writing-communication/b04-style';
+import { prompts as b09Prompts } from '@/common/prompts/catalog/b-writing-communication/b09-workplace-communication';
 import { prompts as cAllPrompts } from '@/common/prompts/catalog/c-thinking-productivity';
 import { prompts as c01Prompts } from '@/common/prompts/catalog/c-thinking-productivity/c01-ideation';
 import type { LogicalPromptDef } from '@/common/prompts/model/types';
@@ -164,5 +167,70 @@ describe('Domain C barrel', () => {
         for (const def of cAllPrompts) {
             validateDef(def);
         }
+    });
+});
+
+describe('B driver prompts — [[INJECT_RULES]] and supports flags', () => {
+    it('LP-B-style-tone-rewrite has [[INJECT_RULES]] in template', () => {
+        const p = b04Prompts.find((d) => d.id === 'LP-B-style-tone-rewrite');
+        expect(p).toBeDefined();
+        expect(p!.variants[0].template).toContain('[[INJECT_RULES]]');
+        expect(p!.variants[0].template).not.toContain('{{style}}');
+        expect(p!.variants[0].template).not.toContain('{{tone}}');
+    });
+
+    it('LP-B-style-tone-rewrite supports style and tone injection', () => {
+        const p = b04Prompts.find((d) => d.id === 'LP-B-style-tone-rewrite');
+        expect(p!.variants[0].supports?.style).toBe(true);
+        expect(p!.variants[0].supports?.tone).toBe(true);
+        expect(p!.variants[0].supports?.context).toBe(false);
+    });
+
+    it('LP-B-context-write has [[INJECT_RULES]] in template', () => {
+        const p = b09Prompts.find((d) => d.id === 'LP-B-context-write');
+        expect(p).toBeDefined();
+        expect(p!.variants[0].template).toContain('[[INJECT_RULES]]');
+        expect(p!.variants[0].template).not.toContain('{{context}}');
+    });
+
+    it('LP-B-context-write supports context injection', () => {
+        const p = b09Prompts.find((d) => d.id === 'LP-B-context-write');
+        expect(p!.variants[0].supports?.context).toBe(true);
+    });
+
+    it('all LP-B-context-* dedicated prompts have [[INJECT_RULES]] and supports.context', () => {
+        const ctxPrompts = b09Prompts.filter((d) => d.id.startsWith('LP-B-context-') && d.id !== 'LP-B-context-write');
+        expect(ctxPrompts.length).toBeGreaterThanOrEqual(10);
+        for (const def of ctxPrompts) {
+            const v = def.variants[0];
+            expect(v.template).toContain('[[INJECT_RULES]]');
+            expect(v.template).not.toContain('{{context}}');
+            expect(v.supports?.context).toBe(true);
+        }
+    });
+});
+
+describe('B driver prompt assembly — assemblePrompt integration', () => {
+    it('assemblePrompt injects style+tone rule blocks via [[INJECT_RULES]]', () => {
+        const p = b04Prompts.find((d) => d.id === 'LP-B-style-tone-rewrite')!;
+        const result = assemblePrompt(p.variants[0], {
+            paramValues: { user_text: 'hello world', user_format: 'Plain text' },
+            style: 'formal',
+            tone: 'warm',
+        });
+        expect(result).toContain('STYLE');
+        expect(result).toContain('TONE');
+        expect(result).toContain('hello world');
+        expect(result).not.toContain('[[INJECT_RULES]]');
+    });
+
+    it('assemblePrompt injects context rule block for LP-B-context-write', () => {
+        const p = b09Prompts.find((d) => d.id === 'LP-B-context-write')!;
+        const result = assemblePrompt(p.variants[0], {
+            paramValues: { user_text: 'test message', user_format: 'Plain text' },
+            context: 'manager',
+        });
+        expect(result).not.toContain('[[INJECT_RULES]]');
+        expect(result).toContain('test message');
     });
 });

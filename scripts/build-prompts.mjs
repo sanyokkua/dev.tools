@@ -151,9 +151,15 @@ for (const p of prompts) {
             if (!declaredNames.has(token))
                 err(`"${v.id}": template uses {{${token}}} but no parameter named "${token}" declared`);
         }
-        // V9: unused declared param
+        // V9: unused declared param (assembly-driver params exempt when [[INJECT_RULES]] is present)
+        const hasInjectMarker = v.template.includes('[[INJECT_RULES]]');
         for (const param of v.parameters ?? []) {
-            if (!usedNames.has(param.name))
+            const isAssemblyDriver =
+                hasInjectMarker &&
+                ((param.name === 'style' && v.supports?.style) ||
+                    (param.name === 'tone' && v.supports?.tone) ||
+                    (param.name === 'context' && v.supports?.context));
+            if (!usedNames.has(param.name) && !isAssemblyDriver)
                 err(`"${v.id}": parameter "${param.name}" declared but not used in template`);
         }
         // V10: param.control validity
