@@ -215,9 +215,12 @@ export const handleFileOpenFailure: (error: unknown) => FileInfo = (error) => {
 
 export async function downloadSkillZip(skill: SkillDef): Promise<void> {
     const { strToU8, zipSync } = await import('fflate');
-    const entries: Record<string, Uint8Array> = {};
+    const entries: Record<string, Uint8Array | [Uint8Array, { attrs: number }]> = {};
     for (const file of skill.files) {
-        entries[`${skill.slug}/${file.path}`] = strToU8(file.content);
+        const isScript = file.path.startsWith('scripts/');
+        entries[`${skill.slug}/${file.path}`] = isScript
+            ? [strToU8(file.content), { attrs: 0o755 << 16 }]
+            : strToU8(file.content);
     }
     const zipped = zipSync(entries);
     const blob = new Blob([zipped], { type: 'application/zip' });
