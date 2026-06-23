@@ -596,7 +596,7 @@ const variantWithTextarea: PromptVariant = {
     template: 'Context: {{context}}.',
     parameters: [{ name: 'context', label: 'Code Context', control: 'textarea', optional: false }],
     examples: {},
-    notes: null,
+    notes: undefined,
     keywords: [],
 };
 
@@ -606,7 +606,7 @@ const variantWithSelect: PromptVariant = {
     template: 'Use {{output_format}}.',
     parameters: [{ name: 'output_format', control: 'select', valueSetId: 'output-format', optional: false }],
     examples: {},
-    notes: null,
+    notes: undefined,
     keywords: [],
 };
 
