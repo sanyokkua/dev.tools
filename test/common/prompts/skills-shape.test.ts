@@ -50,7 +50,15 @@ describe('Skill completeness — all 13 authored skills', () => {
         }
     });
 
-    it.each(ALL_SKILLS)('$slug: script descriptors match files array', (skill) => {
+    it.each(ALL_SKILLS)('$slug: skills with script files have scripts descriptors populated', (skill) => {
+        const hasScriptFiles = skill.files.some((f) => f.role === 'script');
+        if (hasScriptFiles) {
+            expect(skill.scripts).toBeDefined();
+            expect(skill.scripts!.length).toBeGreaterThan(0);
+        }
+    });
+
+    it.each(ALL_SKILLS)('$slug: script descriptors reference actual script files', (skill) => {
         if (!skill.scripts || skill.scripts.length === 0) return;
         const scriptPaths = new Set(skill.files.filter((f) => f.role === 'script').map((f) => f.path));
         for (const descriptor of skill.scripts) {

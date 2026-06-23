@@ -28,7 +28,9 @@ const FIXTURE_SKILL: SkillDef = {
     files: [
         { path: 'SKILL.md', role: 'skill', content: '# Code Review Skill\nContent here.' },
         { path: 'helper.js', role: 'reference', content: '// helper content' },
+        { path: 'scripts/get-review-target.sh', role: 'script', content: '#!/bin/sh\n# get-review-target.sh\n' },
     ],
+    scripts: [{ name: 'get-review-target.sh', purpose: 'Resolve the scope of a code review' }],
 };
 
 beforeEach(() => {
@@ -146,5 +148,81 @@ describe('SkillDetailPanel', () => {
         const noToolsSkill = { ...FIXTURE_SKILL, allowedTools: [] };
         render(<SkillDetailPanel skill={noToolsSkill} />);
         expect(screen.queryByText('Required Tools')).not.toBeInTheDocument();
+    });
+
+    // ─── Install section: agent Select + scope SegmentedControl ───────────────
+
+    test('renders agent Select combobox and scope SegmentedControl for install', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        const agentSelect = screen.getByRole('combobox', { name: /Install target/i });
+        expect(agentSelect).toBeInTheDocument();
+        const scopeControl = screen.getByRole('group', { name: /Install scope/i });
+        expect(scopeControl).toBeInTheDocument();
+        expect(screen.getByText('Project')).toBeInTheDocument();
+        expect(screen.getByText('User-global')).toBeInTheDocument();
+    });
+
+    test('claude-code + project scope shows .claude/skills/ path by default', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByText(`.claude/skills/${FIXTURE_SKILL.slug}/`)).toBeInTheDocument();
+    });
+
+    test('opencode + project scope shows .opencode/skills/ path', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        const select = screen.getByRole('combobox', { name: /Install target/i });
+        fireEvent.change(select, { target: { value: 'opencode' } });
+        expect(screen.getByText(`.opencode/skills/${FIXTURE_SKILL.slug}/`)).toBeInTheDocument();
+    });
+
+    test('copy install prompt button is present', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByRole('button', { name: /Copy install prompt/i })).toBeInTheDocument();
+    });
+
+    // ─── Invoke section ───────────────────────────────────────────────────────
+
+    test('renders invoke section with task input and copy button', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByRole('textbox', { name: /Task description/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Copy invoke prompt/i })).toBeInTheDocument();
+        expect(screen.getByText('Invoke')).toBeInTheDocument();
+    });
+
+    test('invoke prompt shows skill title without task when task is empty', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByText(`Use the ${FIXTURE_SKILL.title} skill.`)).toBeInTheDocument();
+    });
+
+    test('invoke prompt updates when task text is entered', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        const input = screen.getByRole('textbox', { name: /Task description/i });
+        fireEvent.change(input, { target: { value: 'review my changes' } });
+        expect(screen.getByText(`Use the ${FIXTURE_SKILL.title} skill to review my changes.`)).toBeInTheDocument();
+    });
+
+    // ─── Scripts section ──────────────────────────────────────────────────────
+
+    test('renders Scripts section with name and purpose when skill.scripts populated', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByText('Scripts')).toBeInTheDocument();
+        expect(screen.getByText('get-review-target.sh')).toBeInTheDocument();
+        expect(screen.getByText('Resolve the scope of a code review')).toBeInTheDocument();
+    });
+
+    test('renders running-the-scripts note when scripts present', () => {
+        render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
+        expect(screen.getByText(/Run via interpreter/)).toBeInTheDocument();
+    });
+
+    test('Scripts section absent when skill.scripts is undefined', () => {
+        const noScriptsSkill = { ...FIXTURE_SKILL, scripts: undefined };
+        render(<SkillDetailPanel skill={noScriptsSkill} />);
+        expect(screen.queryByText('Scripts')).not.toBeInTheDocument();
+    });
+
+    test('Scripts section absent when skill.scripts is empty array', () => {
+        const noScriptsSkill = { ...FIXTURE_SKILL, scripts: [] };
+        render(<SkillDetailPanel skill={noScriptsSkill} />);
+        expect(screen.queryByText('Scripts')).not.toBeInTheDocument();
     });
 });
