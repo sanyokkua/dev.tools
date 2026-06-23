@@ -1,6 +1,7 @@
 import { buildSysPromptHref, replaceParams } from '@/common/prompts/data';
 import { isMetaPrompt } from '@/common/prompts/meta';
 import type { Category, Domain, LogicalPromptDef, PromptVariant } from '@/common/prompts/model/types';
+import { MODELS } from '@/common/prompts/registries/models';
 import { VALUE_SETS } from '@/common/prompts/registries/value-sets';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
@@ -109,6 +110,10 @@ const PromptDetailPanel: React.FC<Props> = ({
         ? ([...new Set(variants.map((v) => v.executionContext).filter(Boolean))] as ('chat' | 'agent')[])
         : [];
     const modelOptions = hasModelAxis ? ([...new Set(variants.map((v) => v.model).filter(Boolean))] as string[]) : [];
+    const modelItems = modelOptions.map((id) => {
+        const def = MODELS.find((m) => m.id === id);
+        return { itemId: id, displayText: def?.label ?? id };
+    });
     const subOptions = hasSubAxis ? ([...new Set(variants.map((v) => v.subVariant).filter(Boolean))] as string[]) : [];
 
     return (
@@ -144,24 +149,19 @@ const PromptDetailPanel: React.FC<Props> = ({
                                 />
                             )}
                             {modelOptions.length > 1 && (
-                                <select
-                                    className="pc-model-select"
-                                    value={variant.model ?? ''}
-                                    onChange={(e) =>
+                                <Select
+                                    items={modelItems}
+                                    selectedItem={variant.model ?? ''}
+                                    onSelect={(item) =>
                                         onVariantSwitch(
                                             hasContextAxis ? (variant.executionContext ?? null) : null,
-                                            e.target.value || null,
+                                            item.itemId || null,
                                             hasSubAxis ? (variant.subVariant ?? null) : null,
                                         )
                                     }
                                     aria-label="Target model"
-                                >
-                                    {modelOptions.map((m) => (
-                                        <option key={m} value={m}>
-                                            {m}
-                                        </option>
-                                    ))}
-                                </select>
+                                    block
+                                />
                             )}
                             {subOptions.length > 1 && (
                                 <SegmentedControl

@@ -497,22 +497,6 @@
     margin-top: 8px;
 }
 
-.pc-model-select {
-    padding: 4px 8px;
-    border: 1px solid var(--color-border, #ccc);
-    border-radius: 4px;
-    background: var(--color-input-bg, #fff);
-    color: var(--color-text, #111);
-    font-size: 13px;
-    cursor: pointer;
-
-    [data-theme='dark'] & {
-        background: var(--color-input-bg-dark, #222);
-        color: var(--color-text-dark, #eee);
-        border-color: var(--color-border-dark, #555);
-    }
-}
-
 .pc-share-btn {
     flex-shrink: 0;
     white-space: nowrap;

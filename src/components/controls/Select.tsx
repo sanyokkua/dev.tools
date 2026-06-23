@@ -31,15 +31,16 @@ type Size = 'small' | 'default' | 'large';
  * Properties for configuring a select dropdown component.
  */
 interface SelectProps {
-    items: SelectItem[];
-    selectedItem: string | SelectItem;
-    onSelect: (selectItem: SelectItem) => void;
+    'items': SelectItem[];
+    'selectedItem': string | SelectItem;
+    'onSelect': (selectItem: SelectItem) => void;
 
-    id?: string;
-    size?: Size;
-    colorStyle?: Color;
-    disabled?: boolean;
-    block?: boolean;
+    'id'?: string;
+    'aria-label'?: string;
+    'size'?: Size;
+    'colorStyle'?: Color;
+    'disabled'?: boolean;
+    'block'?: boolean;
 }
 
 /**
@@ -57,6 +58,7 @@ const Select: React.FC<SelectProps> = ({
     selectedItem,
     onSelect,
     id,
+    'aria-label': ariaLabel,
     size = 'default',
     colorStyle = '',
     disabled = false,
@@ -84,7 +86,14 @@ const Select: React.FC<SelectProps> = ({
         .join(' ');
 
     return (
-        <select id={id} value={selectedItemId} onChange={handleChange} className={classes} disabled={disabled}>
+        <select
+            id={id}
+            value={selectedItemId}
+            onChange={handleChange}
+            className={classes}
+            disabled={disabled}
+            aria-label={ariaLabel}
+        >
             {items.map((item) => (
                 <option key={item.itemId} value={item.itemId}>
                     {item.displayText}
