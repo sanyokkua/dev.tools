@@ -66,6 +66,19 @@ jest.mock('@/controls/SegmentedControl', () => ({
     ),
 }));
 
+jest.mock('@/common/prompts/registries/models', () => ({
+    MODELS: [
+        { id: 'flux-2', label: 'FLUX.2', slug: 'flux-2', modality: ['image-gen'], defaults: {} },
+        {
+            id: 'nano-banana-pro',
+            label: 'Nano Banana Pro',
+            slug: 'nano-banana-pro',
+            modality: ['image-gen', 'image-edit'],
+            defaults: {},
+        },
+    ],
+}));
+
 // --- Fixtures ---
 
 const dom: Domain = { code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' };
@@ -670,5 +683,78 @@ describe('PromptDetailPanel — param control: select (T12)', () => {
         await waitFor(() => {
             expect(screen.getByRole('combobox')).toHaveValue('PlainText');
         });
+    });
+});
+
+// --- T13 fixtures ---
+
+const fluxV: PromptVariant = { ...chatVariant, id: 'flux', model: 'flux-2' };
+const nanoV: PromptVariant = { ...chatVariant, id: 'nano', model: 'nano-banana-pro' };
+const modelLogical: LogicalPromptDef = { ...logicalMultiAxis, variantAxes: ['model'] };
+
+describe('PromptDetailPanel — model Select shows registry labels (T13)', () => {
+    beforeEach(() => noOpSwitch.mockClear());
+
+    it('shows registry label instead of raw model ID', () => {
+        render(
+            <PromptDetailPanel
+                logical={modelLogical}
+                variant={fluxV}
+                variants={[fluxV, nanoV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.getByRole('option', { name: 'FLUX.2' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Nano Banana Pro' })).toBeInTheDocument();
+    });
+
+    it('falls back to raw id when model is not in registry', () => {
+        const unknownV: PromptVariant = { ...chatVariant, id: 'u1', model: 'unknown-model-x' };
+        const knownV: PromptVariant = { ...chatVariant, id: 'u2', model: 'flux-2' };
+        render(
+            <PromptDetailPanel
+                logical={modelLogical}
+                variant={unknownV}
+                variants={[unknownV, knownV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.getByRole('option', { name: 'unknown-model-x' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'FLUX.2' })).toBeInTheDocument();
+    });
+
+    it('Select is hidden when only one model variant', () => {
+        render(
+            <PromptDetailPanel
+                logical={modelLogical}
+                variant={fluxV}
+                variants={[fluxV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        expect(screen.queryByRole('combobox', { name: /target model/i })).not.toBeInTheDocument();
+    });
+
+    it('selecting a model via Select calls onVariantSwitch with model id', () => {
+        render(
+            <PromptDetailPanel
+                logical={modelLogical}
+                variant={fluxV}
+                variants={[fluxV, nanoV]}
+                domain={dom}
+                category={cat}
+                onVariantSwitch={noOpSwitch}
+            />,
+        );
+        fireEvent.change(screen.getByRole('combobox', { name: /target model/i }), {
+            target: { value: 'nano-banana-pro' },
+        });
+        expect(noOpSwitch).toHaveBeenCalledWith(null, 'nano-banana-pro', null);
     });
 });
