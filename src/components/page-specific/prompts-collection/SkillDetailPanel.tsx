@@ -237,10 +237,13 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
                     type="button"
                     className="btn sm"
                     onClick={() =>
-                        void navigator.clipboard.writeText(installInstructions.copyablePrompt).then(() => {
-                            setInstallCopied(true);
-                            setTimeout(() => setInstallCopied(false), 1500);
-                        })
+                        void navigator.clipboard
+                            .writeText(installInstructions.copyablePrompt)
+                            .then(() => {
+                                setInstallCopied(true);
+                                setTimeout(() => setInstallCopied(false), 1500);
+                            })
+                            .catch(() => showToast({ message: 'Copy failed', type: ToastType.ERROR }))
                     }
                     aria-label="Copy install prompt"
                 >
@@ -264,10 +267,13 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
                         type="button"
                         className="btn sm"
                         onClick={() =>
-                            void navigator.clipboard.writeText(buildInvokePrompt(skill, invokeTask)).then(() => {
-                                setInvokeCopied(true);
-                                setTimeout(() => setInvokeCopied(false), 1500);
-                            })
+                            void navigator.clipboard
+                                .writeText(buildInvokePrompt(skill, invokeTask))
+                                .then(() => {
+                                    setInvokeCopied(true);
+                                    setTimeout(() => setInvokeCopied(false), 1500);
+                                })
+                                .catch(() => showToast({ message: 'Copy failed', type: ToastType.ERROR }))
                         }
                         aria-label="Copy invoke prompt"
                     >
