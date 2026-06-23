@@ -587,3 +587,88 @@ describe('PromptDetailPanel — Share button (T2.4)', () => {
         });
     });
 });
+
+// --- T12 fixtures ---
+
+const variantWithTextarea: PromptVariant = {
+    ...variant,
+    id: 'USR-A03-ta-test',
+    template: 'Context: {{context}}.',
+    parameters: [{ name: 'context', label: 'Code Context', control: 'textarea', optional: false }],
+    examples: {},
+    notes: null,
+    keywords: [],
+};
+
+const variantWithSelect: PromptVariant = {
+    ...variant,
+    id: 'USR-A03-sel-test',
+    template: 'Use {{output_format}}.',
+    parameters: [{ name: 'output_format', control: 'select', valueSetId: 'output-format', optional: false }],
+    examples: {},
+    notes: null,
+    keywords: [],
+};
+
+const variantWithOptionalSelect: PromptVariant = {
+    ...variantWithSelect,
+    id: 'USR-A03-sel-opt',
+    parameters: [{ name: 'output_format', control: 'select', valueSetId: 'output-format', optional: true }],
+};
+
+describe('PromptDetailPanel — param control: textarea (T12)', () => {
+    it('renders <textarea> for control=textarea', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithTextarea} domain={dom} category={cat} />);
+        expect(screen.getByRole('textbox', { name: 'Code Context' })).toBeInTheDocument();
+        expect(screen.getByRole('textbox', { name: 'Code Context' }).tagName.toLowerCase()).toBe('textarea');
+    });
+
+    it('textarea id is linked to its label via htmlFor', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithTextarea} domain={dom} category={cat} />);
+        const label = screen.getByText('Code Context').closest('label');
+        expect(label).toHaveAttribute('for', 'param-context');
+        expect(screen.getByRole('textbox', { name: 'Code Context' })).toHaveAttribute('id', 'param-context');
+    });
+
+    it('typing in textarea updates the preview', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithTextarea} domain={dom} category={cat} />);
+        fireEvent.change(screen.getByRole('textbox', { name: 'Code Context' }), { target: { value: 'my code' } });
+        expect(screen.getByLabelText('Prompt')).toHaveTextContent('Context: my code.');
+    });
+
+    it('copy after textarea fill copies filled text', async () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithTextarea} domain={dom} category={cat} />);
+        fireEvent.change(screen.getByRole('textbox', { name: 'Code Context' }), { target: { value: 'my code' } });
+        fireEvent.click(screen.getByRole('button', { name: /Copy prompt/i }));
+        await waitFor(() => {
+            expect(navigator.clipboard.writeText).toHaveBeenCalledWith('Context: my code.');
+        });
+    });
+});
+
+describe('PromptDetailPanel — param control: select (T12)', () => {
+    it('renders <select> for control=select + valueSetId', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithSelect} domain={dom} category={cat} />);
+        // Select renders a native <select> (role=combobox)
+        expect(screen.getByRole('combobox')).toBeInTheDocument();
+    });
+
+    it('select shows options from the value-set (PlainText, Markdown)', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithSelect} domain={dom} category={cat} />);
+        expect(screen.getByRole('option', { name: 'PlainText' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Markdown' })).toBeInTheDocument();
+    });
+
+    it('optional select has blank — first option', () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithOptionalSelect} domain={dom} category={cat} />);
+        const options = screen.getAllByRole('option');
+        expect(options[0]).toHaveTextContent('—');
+    });
+
+    it('non-optional select initializes to first value-set value', async () => {
+        render(<PromptDetailPanel logical={logical} variant={variantWithSelect} domain={dom} category={cat} />);
+        await waitFor(() => {
+            expect(screen.getByRole('combobox')).toHaveValue('PlainText');
+        });
+    });
+});
