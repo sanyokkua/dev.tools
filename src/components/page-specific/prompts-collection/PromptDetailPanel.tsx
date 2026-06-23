@@ -1,7 +1,11 @@
-import { buildSysPromptHref, replaceParams } from '@/common/prompts/data';
+import { assemblePrompt } from '@/common/prompts/assemble';
+import { buildSysPromptHref } from '@/common/prompts/data';
 import { isMetaPrompt } from '@/common/prompts/meta';
 import type { Category, Domain, LogicalPromptDef, PromptVariant } from '@/common/prompts/model/types';
+import { CONTEXTS } from '@/common/prompts/registries/contexts';
 import { MODELS } from '@/common/prompts/registries/models';
+import { STYLES } from '@/common/prompts/registries/styles';
+import { TONES } from '@/common/prompts/registries/tones';
 import { VALUE_SETS } from '@/common/prompts/registries/value-sets';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
@@ -19,6 +23,12 @@ interface Props {
     domain: Domain | null;
     category: Category | null;
     onVariantSwitch?: (ctx: 'chat' | 'agent' | null, model: string | null, sub: string | null) => void;
+    style?: string | null;
+    tone?: string | null;
+    context?: string | null;
+    onStyleChange?: (id: string | null) => void;
+    onToneChange?: (id: string | null) => void;
+    onContextChange?: (id: string | null) => void;
 }
 
 const PromptDetailPanel: React.FC<Props> = ({
@@ -28,6 +38,12 @@ const PromptDetailPanel: React.FC<Props> = ({
     logical,
     variants = [],
     onVariantSwitch = () => {},
+    style = null,
+    tone = null,
+    context = null,
+    onStyleChange = () => {},
+    onToneChange = () => {},
+    onContextChange = () => {},
 }) => {
     const { showToast } = useToast();
     const [paramValues, setParamValues] = useState<Record<string, string>>({});
@@ -54,7 +70,23 @@ const PromptDetailPanel: React.FC<Props> = ({
         });
     }, [variant?.id]);
 
-    const filledText = variant ? replaceParams(variant.template, paramValues) : '';
+    const showPickers = !!(variant?.supports?.style || variant?.supports?.tone || variant?.supports?.context);
+
+    const resolvedContextDef = context ? (CONTEXTS.find((c) => c.id === context) ?? null) : null;
+    const effectiveStyleId = resolvedContextDef?.styleId ?? style ?? null;
+    const effectiveToneId = resolvedContextDef?.toneId ?? tone ?? null;
+    const disclosureStyleDef = effectiveStyleId ? (STYLES.find((s) => s.id === effectiveStyleId) ?? null) : null;
+    const disclosureToneDef = effectiveToneId ? (TONES.find((t) => t.id === effectiveToneId) ?? null) : null;
+    const hasInjection = !!(style || tone || context);
+
+    const filledText = variant
+        ? assemblePrompt(variant, {
+              paramValues,
+              style: style ?? undefined,
+              tone: tone ?? undefined,
+              context: context ?? undefined,
+          })
+        : '';
 
     const handleCopy = useCallback(
         async (text: string, label: string) => {
@@ -273,6 +305,139 @@ const PromptDetailPanel: React.FC<Props> = ({
                             );
                         })}
                     </div>
+                </section>
+            )}
+
+            {/* S3.5 Rewrite characteristics */}
+            {showPickers && (
+                <section className="pc-detail-section pc-rewrite-section" aria-label="Rewrite characteristics">
+                    <h3 className="pc-section-heading">Rewrite characteristics</h3>
+                    <div className="pc-rewrite-pickers">
+                        {variant.supports?.style && (
+                            <div className="pc-picker-row">
+                                <label className="pc-picker-label" htmlFor="picker-style">
+                                    Style
+                                </label>
+                                <Select
+                                    id="picker-style"
+                                    items={[
+                                        { itemId: '', displayText: '— default —' },
+                                        ...STYLES.map((s) => ({ itemId: s.id, displayText: s.label })),
+                                    ]}
+                                    selectedItem={style ?? ''}
+                                    onSelect={(item) => onStyleChange(item.itemId || null)}
+                                    aria-label="Style"
+                                    block
+                                />
+                            </div>
+                        )}
+                        {variant.supports?.tone && (
+                            <div className="pc-picker-row">
+                                <label className="pc-picker-label" htmlFor="picker-tone">
+                                    Tone
+                                </label>
+                                <Select
+                                    id="picker-tone"
+                                    items={[
+                                        { itemId: '', displayText: '— default —' },
+                                        ...TONES.map((t) => ({ itemId: t.id, displayText: t.label })),
+                                    ]}
+                                    selectedItem={tone ?? ''}
+                                    onSelect={(item) => onToneChange(item.itemId || null)}
+                                    aria-label="Tone"
+                                    block
+                                />
+                            </div>
+                        )}
+                        {variant.supports?.context && (
+                            <div className="pc-picker-row">
+                                <label className="pc-picker-label" htmlFor="picker-context">
+                                    Context
+                                </label>
+                                <Select
+                                    id="picker-context"
+                                    items={[
+                                        { itemId: '', displayText: '— default —' },
+                                        ...CONTEXTS.map((c) => ({ itemId: c.id, displayText: c.label })),
+                                    ]}
+                                    selectedItem={context ?? ''}
+                                    onSelect={(item) => onContextChange(item.itemId || null)}
+                                    aria-label="Context"
+                                    block
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* "What this injects" collapsible disclosure */}
+                    {hasInjection && (
+                        <details className="pc-injects-disclosure">
+                            <summary className="pc-injects-summary">What this injects</summary>
+                            <div className="pc-injects-content">
+                                {disclosureStyleDef && (
+                                    <div className="pc-injects-block">
+                                        <div className="pc-injects-block-title">
+                                            [STYLE — {disclosureStyleDef.label}]
+                                        </div>
+                                        <div className="pc-injects-rule">{disclosureStyleDef.definition}</div>
+                                        {disclosureStyleDef.rules.map((r, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                {r}
+                                            </div>
+                                        ))}
+                                        {disclosureStyleDef.do?.map((d, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                Do: {d}
+                                            </div>
+                                        ))}
+                                        {disclosureStyleDef.dont?.map((d, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                {"Don't"}: {d}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {disclosureToneDef && (
+                                    <div className="pc-injects-block">
+                                        <div className="pc-injects-block-title">[TONE — {disclosureToneDef.label}]</div>
+                                        <div className="pc-injects-rule">{disclosureToneDef.definition}</div>
+                                        {disclosureToneDef.rules.map((r, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                {r}
+                                            </div>
+                                        ))}
+                                        {disclosureToneDef.do?.map((d, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                Do: {d}
+                                            </div>
+                                        ))}
+                                        {disclosureToneDef.dont?.map((d, i) => (
+                                            <div key={i} className="pc-injects-rule">
+                                                {"Don't"}: {d}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {resolvedContextDef &&
+                                    (resolvedContextDef.structure.length > 0 ||
+                                        (resolvedContextDef.extraRules?.length ?? 0) > 0) && (
+                                        <div className="pc-injects-block">
+                                            <div className="pc-injects-block-title">[STRUCTURE]</div>
+                                            {resolvedContextDef.structure.map((s, i) => (
+                                                <div key={i} className="pc-injects-rule">
+                                                    {s}
+                                                </div>
+                                            ))}
+                                            {resolvedContextDef.extraRules?.map((r, i) => (
+                                                <div key={i} className="pc-injects-rule">
+                                                    {r}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                            </div>
+                        </details>
+                    )}
                 </section>
             )}
 

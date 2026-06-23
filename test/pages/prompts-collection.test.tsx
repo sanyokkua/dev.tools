@@ -223,6 +223,9 @@ describe('parseStateFromQuery', () => {
             variantContext: null,
             variantModel: null,
             variantSub: null,
+            style: null,
+            tone: null,
+            context: null,
         });
     });
 
@@ -241,6 +244,9 @@ describe('parseStateFromQuery', () => {
             variantContext: null,
             variantModel: null,
             variantSub: null,
+            style: null,
+            tone: null,
+            context: null,
         });
     });
 
@@ -255,6 +261,9 @@ describe('parseStateFromQuery', () => {
             variantContext: null,
             variantModel: null,
             variantSub: null,
+            style: null,
+            tone: null,
+            context: null,
         });
     });
 
@@ -274,7 +283,15 @@ describe('parseStateFromQuery', () => {
 // -------------------------------------------------------------------
 
 describe('stateToQuery', () => {
-    const nullVariantFields = { view: null, variantContext: null, variantModel: null, variantSub: null } as const;
+    const nullVariantFields = {
+        view: null,
+        variantContext: null,
+        variantModel: null,
+        variantSub: null,
+        style: null,
+        tone: null,
+        context: null,
+    } as const;
 
     it('prompts mode → no type key in output', () => {
         const q = stateToQuery({

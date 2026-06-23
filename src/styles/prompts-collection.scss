@@ -921,3 +921,66 @@
     color: var(--muted);
     font-family: var(--font-mono, monospace);
 }
+
+// ─── S3.5 Rewrite characteristics ─────────────────────────────────────────
+
+.pc-rewrite-pickers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pc-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pc-picker-label {
+    flex: 0 0 4.5rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.pc-injects-disclosure {
+    margin-top: 12px;
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-sm);
+    padding: 8px 12px;
+    background: var(--surface);
+}
+
+.pc-injects-summary {
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    user-select: none;
+
+    &:hover {
+        color: var(--on-surface);
+    }
+}
+
+.pc-injects-content {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pc-injects-block {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.pc-injects-block-title {
+    font-weight: 700;
+    color: var(--on-surface);
+    margin-bottom: 3px;
+}
+
+.pc-injects-rule {
+    color: var(--on-surface-variant, var(--muted));
+    padding-left: 10px;
+}

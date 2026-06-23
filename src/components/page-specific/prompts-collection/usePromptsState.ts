@@ -11,6 +11,9 @@ export interface PromptsPageState {
     variantContext: 'chat' | 'agent' | null;
     variantModel: string | null;
     variantSub: string | null;
+    style: string | null; // NEW
+    tone: string | null; // NEW
+    context: string | null; // NEW
 }
 
 export function parseStateFromQuery(query: ParsedUrlQuery): PromptsPageState {
@@ -25,7 +28,22 @@ export function parseStateFromQuery(query: ParsedUrlQuery): PromptsPageState {
     const variantModel = typeof query['model'] === 'string' ? query['model'] : null;
     const variantSub = typeof query['sub'] === 'string' ? query['sub'] : null;
     const view = query['view'] === 'catalog' ? 'catalog' : null;
-    return { type, view, domainSlug, categorySlug, selectedId, variantContext, variantModel, variantSub };
+    const style = typeof query['style'] === 'string' ? query['style'] : null;
+    const tone = typeof query['tone'] === 'string' ? query['tone'] : null;
+    const context = typeof query['context'] === 'string' ? query['context'] : null;
+    return {
+        type,
+        view,
+        domainSlug,
+        categorySlug,
+        selectedId,
+        variantContext,
+        variantModel,
+        variantSub,
+        style,
+        tone,
+        context,
+    };
 }
 
 export function stateToQuery(state: PromptsPageState): Record<string, string> {
@@ -41,6 +59,9 @@ export function stateToQuery(state: PromptsPageState): Record<string, string> {
     if (state.variantContext) q['variant'] = state.variantContext;
     if (state.variantModel) q['model'] = state.variantModel;
     if (state.variantSub) q['sub'] = state.variantSub;
+    if (state.style) q['style'] = state.style;
+    if (state.tone) q['tone'] = state.tone;
+    if (state.context) q['context'] = state.context;
     return q;
 }
 

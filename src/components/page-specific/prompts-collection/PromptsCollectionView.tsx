@@ -9,6 +9,7 @@ import type {
     PromptVariant,
     SkillDef,
 } from '@/common/prompts/model/types';
+import { CONTEXTS } from '@/common/prompts/registries';
 import type { CatalogRow } from '@/common/prompts/types';
 import Chip from '@/controls/Chip';
 import SegmentedControl from '@/controls/SegmentedControl';
@@ -35,6 +36,9 @@ const PromptsCollectionView: React.FC = () => {
         variantContext: null,
         variantModel: null,
         variantSub: null,
+        style: null,
+        tone: null,
+        context: null,
     });
     const [search, setSearch] = useState('');
     const [paletteOpen, setPaletteOpen] = useState(false);
@@ -169,6 +173,9 @@ const PromptsCollectionView: React.FC = () => {
                 variantContext: null,
                 variantModel: null,
                 variantSub: null,
+                style: null,
+                tone: null,
+                context: null,
             };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
@@ -202,6 +209,9 @@ const PromptsCollectionView: React.FC = () => {
                 variantContext: null,
                 variantModel: null,
                 variantSub: null,
+                style: null,
+                tone: null,
+                context: null,
             };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
@@ -212,6 +222,39 @@ const PromptsCollectionView: React.FC = () => {
     const onVariantSwitch = useCallback(
         (ctx: 'chat' | 'agent' | null, model: string | null, sub: string | null) => {
             const next: PromptsPageState = { ...pageState, variantContext: ctx, variantModel: model, variantSub: sub };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [router, pageState],
+    );
+
+    const onStyleChange = useCallback(
+        (styleId: string | null) => {
+            const next: PromptsPageState = { ...pageState, style: styleId, context: null };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [router, pageState],
+    );
+
+    const onToneChange = useCallback(
+        (toneId: string | null) => {
+            const next: PromptsPageState = { ...pageState, tone: toneId, context: null };
+            setPageState(next);
+            void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
+        },
+        [router, pageState],
+    );
+
+    const onContextChange = useCallback(
+        (contextId: string | null) => {
+            const ctx = contextId ? (CONTEXTS.find((c) => c.id === contextId) ?? null) : null;
+            const next: PromptsPageState = {
+                ...pageState,
+                context: contextId,
+                style: ctx?.styleId ?? null,
+                tone: ctx?.toneId ?? null,
+            };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
         },
@@ -259,6 +302,9 @@ const PromptsCollectionView: React.FC = () => {
                 variantContext: null,
                 variantModel: null,
                 variantSub: null,
+                style: null,
+                tone: null,
+                context: null,
             };
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
@@ -283,6 +329,9 @@ const PromptsCollectionView: React.FC = () => {
                     variantContext: null,
                     variantModel: null,
                     variantSub: null,
+                    style: null,
+                    tone: null,
+                    context: null,
                 };
                 setPageState(next);
                 void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
@@ -412,6 +461,12 @@ const PromptsCollectionView: React.FC = () => {
                             domain={activeDomain}
                             category={activeCategory}
                             onVariantSwitch={onVariantSwitch}
+                            style={pageState.style}
+                            tone={pageState.tone}
+                            context={pageState.context}
+                            onStyleChange={onStyleChange}
+                            onToneChange={onToneChange}
+                            onContextChange={onContextChange}
                         />
                     ) : (
                         <SkillDetailPanel
