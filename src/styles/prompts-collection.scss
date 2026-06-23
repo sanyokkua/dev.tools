@@ -363,30 +363,6 @@
     margin: 0 0 4px;
 }
 
-.pc-param-input,
-.pc-param-select,
-.pc-param-textarea {
-    font: inherit;
-    font-size: 13px;
-    padding: 6px 8px;
-    border: 1px solid var(--outline);
-    border-radius: var(--r-sm);
-    background: var(--surface);
-    color: var(--on-surface);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.pc-param-textarea {
-    resize: vertical;
-    min-height: 80px;
-    line-height: 1.5;
-}
-
-.pc-param-select {
-    appearance: auto;
-}
-
 .pc-prompt-preview {
     font-family: var(--mono);
     font-size: 12.5px;

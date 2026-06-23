@@ -33,30 +33,31 @@ type InputType =
  * Props interface for configuring input components with various styling and behavior options.
  */
 interface InputProps {
-    defaultValue?: string;
-    value?: string;
-    type?: InputType;
-    onChange?: (text: string) => void;
-    onChangeDefault?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    disabled?: boolean;
-    readOnly?: boolean;
-    variant?: 'outlined' | 'underlined';
-    size?: 'small' | 'default' | 'large';
-    block?: boolean;
-    colorStyle?: Color;
-    placeholder?: string;
-    id?: string;
-    name?: string;
-    form?: string;
-    autoComplete?: string;
-    autoFocus?: boolean;
-    minLength?: number;
-    maxLength?: number;
-    min?: number;
-    max?: number;
-    step?: number;
-    required?: boolean;
-    checked?: boolean;
+    'defaultValue'?: string;
+    'value'?: string;
+    'type'?: InputType;
+    'onChange'?: (text: string) => void;
+    'onChangeDefault'?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    'disabled'?: boolean;
+    'readOnly'?: boolean;
+    'variant'?: 'outlined' | 'underlined';
+    'size'?: 'small' | 'default' | 'large';
+    'block'?: boolean;
+    'colorStyle'?: Color;
+    'placeholder'?: string;
+    'id'?: string;
+    'name'?: string;
+    'form'?: string;
+    'autoComplete'?: string;
+    'autoFocus'?: boolean;
+    'aria-label'?: string;
+    'minLength'?: number;
+    'maxLength'?: number;
+    'min'?: number;
+    'max'?: number;
+    'step'?: number;
+    'required'?: boolean;
+    'checked'?: boolean;
 }
 
 /**
@@ -104,6 +105,7 @@ const Input: React.FC<InputProps> = ({
     form,
     autoComplete,
     autoFocus,
+    'aria-label': ariaLabel,
     minLength,
     maxLength,
     min,
@@ -152,6 +154,7 @@ const Input: React.FC<InputProps> = ({
             form={form}
             autoComplete={autoComplete}
             autoFocus={autoFocus}
+            aria-label={ariaLabel}
             minLength={minLength}
             maxLength={maxLength}
             min={min}

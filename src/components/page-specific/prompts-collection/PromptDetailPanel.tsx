@@ -4,7 +4,10 @@ import type { Category, Domain, LogicalPromptDef, PromptVariant } from '@/common
 import { VALUE_SETS } from '@/common/prompts/registries/value-sets';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
+import Input from '@/controls/Input';
 import SegmentedControl from '@/controls/SegmentedControl';
+import Select, { createSelectItemsFromStringArray } from '@/controls/Select';
+import Textarea from '@/controls/Textarea';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -39,7 +42,12 @@ const PromptDetailPanel: React.FC<Props> = ({
         setParamValues((prev) => {
             const next: Record<string, string> = {};
             for (const p of variant.parameters) {
-                next[p.name] = prev[p.name] ?? '';
+                let defaultVal = prev[p.name] ?? '';
+                if (!defaultVal && p.control === 'select' && !p.optional && p.valueSetId) {
+                    const vs = VALUE_SETS.find((s) => s.id === p.valueSetId);
+                    defaultVal = vs?.values[0] ?? '';
+                }
+                next[p.name] = defaultVal;
             }
             return next;
         });
@@ -219,30 +227,24 @@ const PromptDetailPanel: React.FC<Props> = ({
                                     </label>
                                     {param.description && <p className="pc-param-help">{param.description}</p>}
                                     {param.control === 'textarea' ? (
-                                        <textarea
+                                        <Textarea
                                             id={`param-${param.name}`}
-                                            className="pc-param-textarea"
                                             value={val}
-                                            onChange={(e) => onChange(e.target.value)}
+                                            onChange={onChange}
                                             placeholder={placeholder}
                                             aria-label={displayLabel}
-                                            rows={4}
                                         />
                                     ) : param.control === 'select' && valueSet ? (
-                                        <select
+                                        <Select
                                             id={`param-${param.name}`}
-                                            className="pc-param-select"
-                                            value={val}
-                                            onChange={(e) => onChange(e.target.value)}
-                                            aria-label={displayLabel}
-                                        >
-                                            {param.optional && <option value="">—</option>}
-                                            {valueSet.values.map((v) => (
-                                                <option key={v} value={v}>
-                                                    {v}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            items={[
+                                                ...(param.optional ? [{ itemId: '', displayText: '—' }] : []),
+                                                ...createSelectItemsFromStringArray(valueSet.values),
+                                            ]}
+                                            selectedItem={val}
+                                            onSelect={(item) => onChange(item.itemId)}
+                                            block
+                                        />
                                     ) : (param.control === 'combobox' || param.suggestedValues?.length) &&
                                       (valueSet || param.suggestedValues?.length) ? (
                                         <EditableCombobox
@@ -255,13 +257,13 @@ const PromptDetailPanel: React.FC<Props> = ({
                                             aria-label={displayLabel}
                                         />
                                     ) : (
-                                        <input
+                                        <Input
                                             id={`param-${param.name}`}
-                                            className="pc-param-input"
                                             value={val}
-                                            onChange={(e) => onChange(e.target.value)}
+                                            onChange={onChange}
                                             placeholder={placeholder}
                                             aria-label={displayLabel}
+                                            block
                                         />
                                     )}
                                 </div>
