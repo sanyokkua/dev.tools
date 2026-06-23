@@ -1,5 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ManifestLogical } from '../../src/common/prompts/model/types';
+import PromptCatalogView from '../../src/components/page-specific/prompts-collection/PromptCatalogView';
+import PromptDetailPanel from '../../src/components/page-specific/prompts-collection/PromptDetailPanel';
 import PromptListItem from '../../src/components/page-specific/prompts-collection/PromptListItem';
 import PromptsCollectionView from '../../src/components/page-specific/prompts-collection/PromptsCollectionView';
 import {
@@ -74,6 +76,83 @@ const mockLogicalPromptDef = {
     defaultVariantId: 'USR-A03-review',
 };
 
+const mockDualLogicalDef = {
+    id: 'LP-A03-review',
+    categoryCode: 'A03',
+    title: 'Review a Change',
+    description: 'Reviews code',
+    variantAxes: ['mode'],
+    variants: [
+        {
+            id: 'USR-A03-review-chat',
+            kind: 'user',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: 'desc',
+            template: 'CHAT: {{topic}}',
+            parameters: [{ name: 'topic', label: 'Topic', control: 'text' }],
+            keywords: [],
+            executionContext: 'chat' as const,
+            isMetaPrompt: false,
+            model: null,
+            subVariant: null,
+        },
+        {
+            id: 'AGT-A03-review-agent',
+            kind: 'agent',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: 'desc',
+            template: 'AGENT: {{topic}}',
+            parameters: [{ name: 'topic', label: 'Topic', control: 'text' }],
+            keywords: [],
+            executionContext: 'agent' as const,
+            isMetaPrompt: false,
+            model: null,
+            subVariant: null,
+        },
+    ],
+    defaultVariantId: 'USR-A03-review-chat',
+};
+
+const mockManifestWithModes = {
+    ...mockManifest,
+    logical: [
+        { ...mockManifest.logical[0], hasChat: true, hasAgent: true },
+        {
+            id: 'LP-A01-chat-only',
+            categoryCode: 'A01',
+            domainCode: 'A',
+            title: 'Chat Only Prompt',
+            description: '',
+            keywords: [],
+            tags: [],
+            variantAxes: [],
+            hasChat: true,
+            hasAgent: false,
+            hasModel: false,
+            modelCount: 0,
+            isMetaPrompt: false,
+        },
+        {
+            id: 'LP-A01-agent-only',
+            categoryCode: 'A01',
+            domainCode: 'A',
+            title: 'Agent Only Prompt',
+            description: '',
+            keywords: [],
+            tags: [],
+            variantAxes: [],
+            hasChat: false,
+            hasAgent: true,
+            hasModel: false,
+            modelCount: 0,
+            isMetaPrompt: false,
+        },
+    ],
+    skills: [],
+};
+
 // --- next/router mock ---
 
 const mockReplace = jest.fn();
@@ -106,6 +185,26 @@ jest.mock('@/common/prompts/data', () => ({
         steps: ['cp SKILL.md .claude/skills/'],
         notes: 'Copy files manually.',
     }),
+    buildCatalogRows: jest.fn((manifest: { logical?: any[]; skills?: any[] }) => [
+        ...(manifest.logical ?? []).map((l: any) => ({
+            id: l.id,
+            kind: 'prompt' as const,
+            title: l.title,
+            domainCode: l.domainCode ?? 'A',
+            domainSlug: 'software-engineering',
+            domainTitle: 'Software Engineering',
+            categorySlug: null,
+            categoryTitle: '',
+            isMetaPrompt: !!l.isMetaPrompt,
+            hasChat: !!l.hasChat,
+            hasAgent: !!l.hasAgent,
+            hasModel: !!l.hasModel,
+            modelCount: l.modelCount ?? 0,
+            variantSummary: '',
+        })),
+    ]),
+    filterCatalogRows: jest.fn((rows: any[]) => rows),
+    buildCatalogRowHref: jest.fn(() => 'http://localhost/test'),
 }));
 
 // -------------------------------------------------------------------
@@ -456,5 +555,196 @@ describe('parseStateFromQuery — unknown domain slug', () => {
         const state = parseStateFromQuery({ domain: 'no-such-domain' });
         // The slug is preserved as-is; the component handles the fallback
         expect(state.domainSlug).toBe('no-such-domain');
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptDetailPanel — mode toggle axis (T14)
+// -------------------------------------------------------------------
+
+describe('PromptDetailPanel — mode toggle axis', () => {
+    const chatVariant = mockDualLogicalDef.variants[0];
+    const agentVariant = mockDualLogicalDef.variants[1];
+    const dualVariants = mockDualLogicalDef.variants as Parameters<typeof PromptDetailPanel>[0]['variants'];
+
+    it('shows mode SegmentedControl when prompt has both chat and agent variants', () => {
+        render(
+            <PromptDetailPanel
+                logical={mockDualLogicalDef as any}
+                variant={chatVariant as any}
+                variants={dualVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={jest.fn()}
+            />,
+        );
+        expect(screen.getByRole('group', { name: 'Execution mode' })).toBeInTheDocument();
+    });
+
+    it('mode toggle labels are "ChatBot" and "AI Agent", not raw chat/agent', () => {
+        render(
+            <PromptDetailPanel
+                logical={mockDualLogicalDef as any}
+                variant={chatVariant as any}
+                variants={dualVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={jest.fn()}
+            />,
+        );
+        expect(screen.getByRole('button', { name: 'ChatBot' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'AI Agent' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'chat' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'agent' })).not.toBeInTheDocument();
+    });
+
+    it('does NOT show mode toggle when prompt is chat-only (single context)', () => {
+        const chatOnlyVariants = [chatVariant] as Parameters<typeof PromptDetailPanel>[0]['variants'];
+        const chatOnlyLogical = { ...mockDualLogicalDef, variantAxes: [], variants: [chatVariant] };
+        render(
+            <PromptDetailPanel
+                logical={chatOnlyLogical as any}
+                variant={chatVariant as any}
+                variants={chatOnlyVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={jest.fn()}
+            />,
+        );
+        expect(screen.queryByRole('group', { name: 'Execution mode' })).not.toBeInTheDocument();
+    });
+
+    it('clicking "AI Agent" button calls onVariantSwitch with agent context', () => {
+        const onVariantSwitch = jest.fn();
+        render(
+            <PromptDetailPanel
+                logical={mockDualLogicalDef as any}
+                variant={chatVariant as any}
+                variants={dualVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={onVariantSwitch}
+            />,
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'AI Agent' }));
+        expect(onVariantSwitch).toHaveBeenCalledWith('agent', null, null);
+    });
+
+    it('shows static "ChatBot" badge (no toggle) for chat-only prompt', () => {
+        const chatOnlyVariants = [chatVariant] as Parameters<typeof PromptDetailPanel>[0]['variants'];
+        const chatOnlyLogical = { ...mockDualLogicalDef, variantAxes: [], variants: [chatVariant] };
+        render(
+            <PromptDetailPanel
+                logical={chatOnlyLogical as any}
+                variant={chatVariant as any}
+                variants={chatOnlyVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={jest.fn()}
+            />,
+        );
+        expect(screen.getByText('ChatBot')).toBeInTheDocument();
+    });
+
+    it('shows static "AI Agent" badge for agent-only prompt', () => {
+        const agentOnlyVariants = [agentVariant] as Parameters<typeof PromptDetailPanel>[0]['variants'];
+        const agentOnlyLogical = { ...mockDualLogicalDef, variantAxes: [], variants: [agentVariant] };
+        render(
+            <PromptDetailPanel
+                logical={agentOnlyLogical as any}
+                variant={agentVariant as any}
+                variants={agentOnlyVariants}
+                domain={null}
+                category={null}
+                onVariantSwitch={jest.fn()}
+            />,
+        );
+        expect(screen.getByText('AI Agent')).toBeInTheDocument();
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptListItem — mode badge (T14)
+// -------------------------------------------------------------------
+
+describe('PromptListItem mode badge', () => {
+    it('shows "Chat" for chat-only prompt', () => {
+        render(
+            <PromptListItem
+                logical={makeLogical({ hasChat: true, hasAgent: false })}
+                selected={false}
+                onClick={jest.fn()}
+            />,
+        );
+        expect(screen.getByText('Chat')).toBeInTheDocument();
+        expect(screen.queryByText('Agent')).not.toBeInTheDocument();
+        expect(screen.queryByText('Dual')).not.toBeInTheDocument();
+    });
+
+    it('shows "Agent" for agent-only prompt', () => {
+        render(
+            <PromptListItem
+                logical={makeLogical({ hasChat: false, hasAgent: true })}
+                selected={false}
+                onClick={jest.fn()}
+            />,
+        );
+        expect(screen.getByText('Agent')).toBeInTheDocument();
+        expect(screen.queryByText('Chat')).not.toBeInTheDocument();
+        expect(screen.queryByText('Dual')).not.toBeInTheDocument();
+    });
+
+    it('shows "Dual" (single badge) for dual-mode prompt', () => {
+        render(
+            <PromptListItem
+                logical={makeLogical({ hasChat: true, hasAgent: true })}
+                selected={false}
+                onClick={jest.fn()}
+            />,
+        );
+        expect(screen.getByText('Dual')).toBeInTheDocument();
+        expect(screen.queryByText('Chat')).not.toBeInTheDocument();
+        expect(screen.queryByText('Agent')).not.toBeInTheDocument();
+    });
+
+    it('shows no mode badge when both hasChat and hasAgent are false', () => {
+        render(
+            <PromptListItem
+                logical={makeLogical({ hasChat: false, hasAgent: false })}
+                selected={false}
+                onClick={jest.fn()}
+            />,
+        );
+        expect(screen.queryByText('Chat')).not.toBeInTheDocument();
+        expect(screen.queryByText('Agent')).not.toBeInTheDocument();
+        expect(screen.queryByText('Dual')).not.toBeInTheDocument();
+    });
+});
+
+// -------------------------------------------------------------------
+// Component tests: PromptCatalogView — Mode column (T14)
+// -------------------------------------------------------------------
+
+describe('PromptCatalogView Mode column', () => {
+    const noop = jest.fn();
+
+    it('renders a "Mode" column header in the catalog table', () => {
+        render(<PromptCatalogView manifest={mockManifestWithModes as any} onRowClick={noop} onBack={noop} />);
+        expect(screen.getByRole('columnheader', { name: 'Mode' })).toBeInTheDocument();
+    });
+
+    it('shows "Dual" in Mode column for dual-mode prompt', () => {
+        render(<PromptCatalogView manifest={mockManifestWithModes as any} onRowClick={noop} onBack={noop} />);
+        expect(screen.getByText('Dual')).toBeInTheDocument();
+    });
+
+    it('shows "Chat" in Mode column for chat-only prompt', () => {
+        render(<PromptCatalogView manifest={mockManifestWithModes as any} onRowClick={noop} onBack={noop} />);
+        expect(screen.getByText('Chat')).toBeInTheDocument();
+    });
+
+    it('shows "Agent" in Mode column for agent-only prompt', () => {
+        render(<PromptCatalogView manifest={mockManifestWithModes as any} onRowClick={noop} onBack={noop} />);
+        expect(screen.getByText('Agent')).toBeInTheDocument();
     });
 });
