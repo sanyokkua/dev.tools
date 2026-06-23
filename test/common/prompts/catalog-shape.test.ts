@@ -7,7 +7,15 @@ import { prompts as b04Prompts } from '@/common/prompts/catalog/b-writing-commun
 import { prompts as b09Prompts } from '@/common/prompts/catalog/b-writing-communication/b09-workplace-communication';
 import { prompts as cAllPrompts } from '@/common/prompts/catalog/c-thinking-productivity';
 import { prompts as c01Prompts } from '@/common/prompts/catalog/c-thinking-productivity/c01-ideation';
+import { prompts as dAllPrompts } from '@/common/prompts/catalog/d-ai-prompt-workflows';
+import { prompts as d01Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d01-prompt-engineering';
+import { prompts as d02Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d02-image-generation';
+import { prompts as d03Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d03-image-editing';
+import { prompts as d04Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d04-diagrams';
+import { prompts as d05Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d05-skill-authoring';
+import { prompts as d06Prompts } from '@/common/prompts/catalog/d-ai-prompt-workflows/d06-video-generation';
 import type { LogicalPromptDef } from '@/common/prompts/model/types';
+import { MODELS } from '@/common/prompts/registries/models';
 
 const VALID_CONTROLS = ['textarea', 'text', 'select', 'combobox'];
 const VALID_EXECUTION_CONTEXTS = ['chat', 'agent'];
@@ -232,5 +240,212 @@ describe('B driver prompt assembly — assemblePrompt integration', () => {
         });
         expect(result).not.toContain('[[INJECT_RULES]]');
         expect(result).toContain('test message');
+    });
+});
+
+describe('D01 Prompt Engineering catalog module', () => {
+    it('exports 6 prompts (1 system + 5 logical)', () => {
+        expect(d01Prompts.length).toBe(6);
+    });
+
+    it('system prompt has correct id and kind', () => {
+        const sys = d01Prompts.find((d) => d.id === 'SYS-D01-prompt-engineering');
+        expect(sys).toBeDefined();
+        expect(sys!.variants[0].kind).toBe('system');
+    });
+
+    it('all 5 logical prompts are meta-prompts with no model or style/tone/context', () => {
+        const logicals = d01Prompts.filter((d) => d.id !== 'SYS-D01-prompt-engineering');
+        expect(logicals.length).toBe(5);
+        for (const def of logicals) {
+            expect(def.modeClass).toBe('chat-only-meta');
+            expect(def.variantAxes).toEqual([]);
+            expect(def.variants[0].isMetaPrompt).toBe(true);
+            expect(def.variants[0].model).toBeNull();
+            expect(def.variants[0].supports?.style).toBe(false);
+            expect(def.variants[0].supports?.tone).toBe(false);
+            expect(def.variants[0].supports?.context).toBe(false);
+        }
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d01Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('D02 Image Generation catalog module', () => {
+    const validModelIds = new Set(MODELS.map((m) => m.id));
+
+    it('exports 2 prompts (1 system + 1 logical)', () => {
+        expect(d02Prompts.length).toBe(2);
+    });
+
+    it('LP-D02-generate-image has exactly 7 variants', () => {
+        const lp = d02Prompts.find((d) => d.id === 'LP-D02-generate-image');
+        expect(lp).toBeDefined();
+        expect(lp!.variants.length).toBe(7);
+    });
+
+    it('all LP-D02-generate-image variants use valid MODELS ids', () => {
+        const lp = d02Prompts.find((d) => d.id === 'LP-D02-generate-image')!;
+        for (const v of lp.variants) {
+            expect(v.model).not.toBeNull();
+            expect(validModelIds.has(v.model!)).toBe(true);
+        }
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d02Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('D03 Image Editing catalog module', () => {
+    const validModelIds = new Set(MODELS.map((m) => m.id));
+
+    it('exports 11 prompts (1 system + 10 logical)', () => {
+        expect(d03Prompts.length).toBe(11);
+    });
+
+    it('each of the 10 logical prompts has exactly 7 model variants', () => {
+        const logicals = d03Prompts.filter((d) => !d.variants.some((v) => v.kind === 'system'));
+        expect(logicals.length).toBe(10);
+        for (const def of logicals) {
+            expect(def.variants.length).toBe(7);
+        }
+    });
+
+    it('all logical prompt variants use valid MODELS ids', () => {
+        const logicals = d03Prompts.filter((d) => !d.variants.some((v) => v.kind === 'system'));
+        for (const def of logicals) {
+            for (const v of def.variants) {
+                expect(v.model).not.toBeNull();
+                expect(validModelIds.has(v.model!)).toBe(true);
+            }
+        }
+    });
+
+    it('LP-D03-restore-modernize is present', () => {
+        const p = d03Prompts.find((d) => d.id === 'LP-D03-restore-modernize');
+        expect(p).toBeDefined();
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d03Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('D04 Diagrams catalog module', () => {
+    it('exports 4 prompts (1 system + 3 logical)', () => {
+        expect(d04Prompts.length).toBe(4);
+    });
+
+    it('LP-D04-mermaid is dual-mode with chat and agent variants', () => {
+        const mermaid = d04Prompts.find((d) => d.id === 'LP-D04-mermaid');
+        expect(mermaid).toBeDefined();
+        expect(mermaid!.modeClass).toBe('dual');
+        expect(mermaid!.variantAxes).toContain('mode');
+        const contexts = mermaid!.variants.map((v) => v.executionContext);
+        expect(contexts).toContain('chat');
+        expect(contexts).toContain('agent');
+    });
+
+    it('LP-D04-drawio-build is dual-mode with chat and agent variants', () => {
+        const drawioBuild = d04Prompts.find((d) => d.id === 'LP-D04-drawio-build');
+        expect(drawioBuild).toBeDefined();
+        expect(drawioBuild!.modeClass).toBe('dual');
+        expect(drawioBuild!.variantAxes).toContain('mode');
+        const contexts = drawioBuild!.variants.map((v) => v.executionContext);
+        expect(contexts).toContain('chat');
+        expect(contexts).toContain('agent');
+    });
+
+    it('LP-D04-drawio-explain is chat-only with no variantAxes', () => {
+        const drawioExplain = d04Prompts.find((d) => d.id === 'LP-D04-drawio-explain');
+        expect(drawioExplain).toBeDefined();
+        expect(drawioExplain!.modeClass).toBe('chat-only');
+        expect(drawioExplain!.variantAxes).toEqual([]);
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d04Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('D05 Skill Authoring catalog module', () => {
+    it('exports 3 prompts (1 system + 2 logical)', () => {
+        expect(d05Prompts.length).toBe(3);
+    });
+
+    it('both logical prompts are meta-prompts with non-empty templates', () => {
+        const logicals = d05Prompts.filter((d) => !d.variants.some((v) => v.kind === 'system'));
+        expect(logicals.length).toBe(2);
+        for (const def of logicals) {
+            expect(def.variants[0].isMetaPrompt).toBe(true);
+            expect(def.variants[0].template.length).toBeGreaterThan(0);
+        }
+    });
+
+    it('LP-D05-build-lite-skill and LP-D05-build-full-skill are both present', () => {
+        expect(d05Prompts.find((d) => d.id === 'LP-D05-build-lite-skill')).toBeDefined();
+        expect(d05Prompts.find((d) => d.id === 'LP-D05-build-full-skill')).toBeDefined();
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d05Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('D06 Video Generation catalog module', () => {
+    const validModelIds = new Set(MODELS.map((m) => m.id));
+
+    it('exports 2 prompts (1 system + 1 logical)', () => {
+        expect(d06Prompts.length).toBe(2);
+    });
+
+    it('LP-D06-generate-video has exactly 13 model variants', () => {
+        const lp = d06Prompts.find((d) => d.id === 'LP-D06-generate-video');
+        expect(lp).toBeDefined();
+        expect(lp!.variants.length).toBe(13);
+    });
+
+    it('all LP-D06-generate-video variants use valid MODELS ids', () => {
+        const lp = d06Prompts.find((d) => d.id === 'LP-D06-generate-video')!;
+        for (const v of lp.variants) {
+            expect(v.model).not.toBeNull();
+            expect(validModelIds.has(v.model!)).toBe(true);
+        }
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of d06Prompts) {
+            validateDef(def);
+        }
+    });
+});
+
+describe('Domain D barrel', () => {
+    it('exports all 6 categories worth of prompts', () => {
+        expect(dAllPrompts.length).toBeGreaterThan(25);
+    });
+
+    it('all logical IDs are unique across Domain D', () => {
+        const ids = dAllPrompts.map((d) => d.id);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it('all entries pass shape validation', () => {
+        for (const def of dAllPrompts) {
+            validateDef(def);
+        }
     });
 });
