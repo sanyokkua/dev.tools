@@ -1,14 +1,20 @@
 jest.mock('browser-fs-access', () => ({ __esModule: true, fileSave: jest.fn(), supported: false }));
+jest.mock('fflate', () => ({
+    strToU8: jest.fn((s: string) => new TextEncoder().encode(s)),
+    zipSync: jest.fn(() => new Uint8Array()),
+}));
 
 import {
     createDefaultFile,
     createEmptyFile,
     createFileInfo,
     createFileReadPromise,
+    downloadSkillZip,
     handleFileOpenFailure,
     saveAsFile,
     saveTextFile,
 } from '@/common/file-utils';
+import type { Skill } from '@/common/prompts/types';
 import { fileSave } from 'browser-fs-access';
 
 const mockFileSave = fileSave as jest.MockedFunction<typeof fileSave>;
@@ -193,5 +199,59 @@ describe('createFileReadPromise', () => {
 
         await expect(createFileReadPromise(new File(['x'], 'x.txt'))).rejects.toThrow('Failed to read file');
         (window.FileReader as jest.MockedClass<typeof FileReader>).mockRestore();
+    });
+});
+
+// ─── downloadSkillZip ─────────────────────────────────────────────────────────
+
+describe('downloadSkillZip', () => {
+    const mockSkill: Skill = {
+        id: 'SKILL-my-skill',
+        slug: 'my-skill',
+        domainCode: 'A',
+        title: 'My Skill',
+        version: '1.0.0',
+        description: 'test skill',
+        tags: [],
+        allowedTools: [],
+        relatedSkillIds: [],
+        files: [
+            { path: 'SKILL.md', role: 'skill', content: '# My Skill' },
+            { path: 'references/guide.md', role: 'reference', content: '# Guide' },
+            { path: 'scripts/run.sh', role: 'script', content: '#!/bin/sh\necho hi' },
+        ],
+    };
+
+    let mockAnchor: { href: string; download: string; click: jest.Mock };
+
+    beforeEach(() => {
+        mockAnchor = { href: '', download: '', click: jest.fn() };
+        jest.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLElement);
+        jest.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
+        jest.spyOn(document.body, 'removeChild').mockImplementation((node) => node);
+        global.URL.createObjectURL = jest.fn(() => 'blob:mock');
+        global.URL.revokeObjectURL = jest.fn();
+    });
+
+    it('calls zipSync with slug-prefixed paths for all files', async () => {
+        const { zipSync } = jest.requireMock('fflate') as { zipSync: jest.Mock };
+        await downloadSkillZip(mockSkill);
+        expect(zipSync).toHaveBeenCalledWith(
+            expect.objectContaining({
+                'my-skill/SKILL.md': expect.anything(),
+                'my-skill/references/guide.md': expect.anything(),
+                'my-skill/scripts/run.sh': expect.anything(),
+            }),
+        );
+    });
+
+    it('sets anchor download attribute to slug.zip', async () => {
+        await downloadSkillZip(mockSkill);
+        expect(mockAnchor.download).toBe('my-skill.zip');
+    });
+
+    it('revokes the object URL after triggering download', async () => {
+        await downloadSkillZip(mockSkill);
+        expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock');
     });
 });
