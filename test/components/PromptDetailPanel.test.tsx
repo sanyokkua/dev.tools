@@ -8,10 +8,15 @@ const mockShowToast = jest.fn();
 jest.mock('@/contexts/ToasterContext', () => ({ useToast: () => ({ showToast: mockShowToast }) }));
 
 jest.mock('@/common/prompts/data', () => ({
-    replaceParams: (template: string, values: Record<string, string>) =>
-        template.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => values[key] ?? `{{${key}}}`),
     buildSysPromptHref: (sysId: string, domain: string, cat: string, base = '') =>
         `${base}/prompts-collection?domain=${domain}&category=${cat}&prompt=${sysId}`,
+}));
+
+jest.mock('@/common/prompts/assemble', () => ({
+    assemblePrompt: (variant: { template: string }, { paramValues }: { paramValues: Record<string, string> }) =>
+        variant.template
+            .replace(/\[\[INJECT_RULES\]\]/g, '')
+            .replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => paramValues[key] ?? `{{${key}}}`),
 }));
 
 // EditableCombobox renders as a plain input for test simplicity
@@ -756,5 +761,298 @@ describe('PromptDetailPanel — model Select shows registry labels (T13)', () =>
             target: { value: 'nano-banana-pro' },
         });
         expect(noOpSwitch).toHaveBeenCalledWith(null, 'nano-banana-pro', null);
+    });
+});
+
+// --- T15 fixtures ---
+
+const variantWithStyle: PromptVariant = {
+    id: 'USR-B04-style-adapt',
+    kind: 'user',
+    categoryCode: 'B04',
+    title: 'Adapt Style',
+    description: 'Adapt the style',
+    template: 'Rewrite: {{user_text}}\n\n[[INJECT_RULES]]',
+    parameters: [{ name: 'user_text', control: 'textarea', label: 'Text' }],
+    examples: {},
+    keywords: [],
+    executionContext: 'chat',
+    supports: { style: true, tone: false, context: false },
+};
+
+const variantWithTone: PromptVariant = {
+    ...variantWithStyle,
+    id: 'USR-B03-tone-adjust',
+    categoryCode: 'B03',
+    title: 'Adjust Tone',
+    template: 'Adjust tone: {{user_text}}\n\n[[INJECT_RULES]]',
+    supports: { style: false, tone: true, context: false },
+};
+
+const variantWithContext: PromptVariant = {
+    ...variantWithStyle,
+    id: 'USR-B09-ctx-mgr',
+    categoryCode: 'B09',
+    title: 'Manager Message',
+    template: 'Write:\n\n[[INJECT_RULES]]\n\n{{user_text}}',
+    supports: { style: false, tone: false, context: true },
+};
+
+const variantWithAll: PromptVariant = {
+    ...variantWithStyle,
+    id: 'USR-B01-rewrite-all',
+    categoryCode: 'B01',
+    title: 'General Rewrite',
+    template: 'Rewrite:\n\n[[INJECT_RULES]]\n\n{{user_text}}',
+    supports: { style: true, tone: true, context: true },
+};
+
+describe('T15 — Style/Tone/Context pickers', () => {
+    describe('section visibility', () => {
+        it('hides section when supports is undefined', () => {
+            const v = { ...variantWithStyle, supports: undefined };
+            render(<PromptDetailPanel logical={null} variant={v} domain={null} category={null} />);
+            expect(screen.queryByLabelText('Rewrite characteristics')).not.toBeInTheDocument();
+        });
+
+        it('hides section when all supports are false', () => {
+            const v = { ...variantWithStyle, supports: { style: false, tone: false, context: false } };
+            render(<PromptDetailPanel logical={null} variant={v} domain={null} category={null} />);
+            expect(screen.queryByLabelText('Rewrite characteristics')).not.toBeInTheDocument();
+        });
+
+        it('shows section when supports.style=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithStyle} domain={null} category={null} />);
+            expect(screen.getByLabelText('Rewrite characteristics')).toBeInTheDocument();
+        });
+
+        it('shows section when supports.tone=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithTone} domain={null} category={null} />);
+            expect(screen.getByLabelText('Rewrite characteristics')).toBeInTheDocument();
+        });
+
+        it('shows section when supports.context=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithContext} domain={null} category={null} />);
+            expect(screen.getByLabelText('Rewrite characteristics')).toBeInTheDocument();
+        });
+    });
+
+    describe('picker rendering', () => {
+        it('shows only Style picker when supports.style=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithStyle} domain={null} category={null} />);
+            expect(screen.getByLabelText('Style')).toBeInTheDocument();
+            expect(screen.queryByLabelText('Tone')).not.toBeInTheDocument();
+            expect(screen.queryByLabelText('Context')).not.toBeInTheDocument();
+        });
+
+        it('shows only Tone picker when supports.tone=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithTone} domain={null} category={null} />);
+            expect(screen.getByLabelText('Tone')).toBeInTheDocument();
+            expect(screen.queryByLabelText('Style')).not.toBeInTheDocument();
+            expect(screen.queryByLabelText('Context')).not.toBeInTheDocument();
+        });
+
+        it('shows only Context picker when supports.context=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithContext} domain={null} category={null} />);
+            expect(screen.getByLabelText('Context')).toBeInTheDocument();
+            expect(screen.queryByLabelText('Style')).not.toBeInTheDocument();
+            expect(screen.queryByLabelText('Tone')).not.toBeInTheDocument();
+        });
+
+        it('shows all three pickers when all supports=true', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithAll} domain={null} category={null} />);
+            expect(screen.getByLabelText('Style')).toBeInTheDocument();
+            expect(screen.getByLabelText('Tone')).toBeInTheDocument();
+            expect(screen.getByLabelText('Context')).toBeInTheDocument();
+        });
+
+        it('Style picker includes STYLES registry options', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithStyle} domain={null} category={null} />);
+            expect(screen.getByRole('option', { name: 'Formal' })).toBeInTheDocument();
+        });
+
+        it('Context picker includes CONTEXTS registry options', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithContext} domain={null} category={null} />);
+            expect(screen.getByRole('option', { name: /manager/i })).toBeInTheDocument();
+        });
+    });
+
+    describe('picker callbacks', () => {
+        it('changing Style calls onStyleChange with selected id', () => {
+            const onStyleChange = jest.fn();
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithStyle}
+                    domain={null}
+                    category={null}
+                    onStyleChange={onStyleChange}
+                />,
+            );
+            fireEvent.change(screen.getByLabelText('Style'), { target: { value: 'formal' } });
+            expect(onStyleChange).toHaveBeenCalledWith('formal');
+        });
+
+        it('selecting "— default —" calls onStyleChange with null', () => {
+            const onStyleChange = jest.fn();
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithStyle}
+                    domain={null}
+                    category={null}
+                    style="formal"
+                    onStyleChange={onStyleChange}
+                />,
+            );
+            fireEvent.change(screen.getByLabelText('Style'), { target: { value: '' } });
+            expect(onStyleChange).toHaveBeenCalledWith(null);
+        });
+
+        it('changing Tone calls onToneChange with selected id', () => {
+            const onToneChange = jest.fn();
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithTone}
+                    domain={null}
+                    category={null}
+                    onToneChange={onToneChange}
+                />,
+            );
+            fireEvent.change(screen.getByLabelText('Tone'), { target: { value: 'professional' } });
+            expect(onToneChange).toHaveBeenCalledWith('professional');
+        });
+
+        it('changing Context calls onContextChange with selected id', () => {
+            const onContextChange = jest.fn();
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithContext}
+                    domain={null}
+                    category={null}
+                    onContextChange={onContextChange}
+                />,
+            );
+            fireEvent.change(screen.getByLabelText('Context'), { target: { value: 'manager' } });
+            expect(onContextChange).toHaveBeenCalledWith('manager');
+        });
+    });
+
+    describe('"What this injects" disclosure', () => {
+        it('disclosure hidden when no picker selected', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithStyle} domain={null} category={null} />);
+            expect(screen.queryByText('What this injects')).not.toBeInTheDocument();
+        });
+
+        it('disclosure shown when style selected', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithStyle}
+                    domain={null}
+                    category={null}
+                    style="formal"
+                />,
+            );
+            expect(screen.getByText('What this injects')).toBeInTheDocument();
+        });
+
+        it('disclosure shown when tone selected', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithTone}
+                    domain={null}
+                    category={null}
+                    tone="professional"
+                />,
+            );
+            expect(screen.getByText('What this injects')).toBeInTheDocument();
+        });
+
+        it('disclosure shown when context selected', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithContext}
+                    domain={null}
+                    category={null}
+                    context="manager"
+                />,
+            );
+            expect(screen.getByText('What this injects')).toBeInTheDocument();
+        });
+
+        it('disclosure shows [STYLE — Formal] when style=formal', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithStyle}
+                    domain={null}
+                    category={null}
+                    style="formal"
+                />,
+            );
+            expect(screen.getByText('[STYLE — Formal]')).toBeInTheDocument();
+        });
+
+        it('disclosure shows [TONE — ...] when tone selected', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithTone}
+                    domain={null}
+                    category={null}
+                    tone="professional"
+                />,
+            );
+            expect(screen.getByText(/\[TONE —/)).toBeInTheDocument();
+        });
+
+        it('disclosure shows [STRUCTURE] when context selected', () => {
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithContext}
+                    domain={null}
+                    category={null}
+                    context="manager"
+                />,
+            );
+            expect(screen.getByText('[STRUCTURE]')).toBeInTheDocument();
+        });
+
+        it('context overrides style in disclosure — context styleId shown, not raw style', () => {
+            // manager context has styleId='executive' — NOT 'formal'
+            render(
+                <PromptDetailPanel
+                    logical={null}
+                    variant={variantWithAll}
+                    domain={null}
+                    category={null}
+                    style="formal"
+                    context="manager"
+                />,
+            );
+            expect(screen.queryByText('[STYLE — Formal]')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('DOM ordering', () => {
+        it('Rewrite characteristics section is after Parameters section', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithAll} domain={null} category={null} />);
+            const params = screen.getByLabelText('Parameters');
+            const rewrite = screen.getByLabelText('Rewrite characteristics');
+            expect(params.compareDocumentPosition(rewrite) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        });
+
+        it('Rewrite characteristics section is before Prompt section', () => {
+            render(<PromptDetailPanel logical={null} variant={variantWithAll} domain={null} category={null} />);
+            const rewrite = screen.getByLabelText('Rewrite characteristics');
+            const prompt = screen.getByLabelText('Prompt');
+            expect(rewrite.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        });
     });
 });
