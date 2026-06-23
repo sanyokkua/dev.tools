@@ -43,14 +43,6 @@
     flex-wrap: wrap;
 }
 
-.pc-header-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-    flex-wrap: wrap;
-}
-
 .pc-search-input {
     font: inherit;
     font-size: 13px;
@@ -295,10 +287,6 @@
 
     .pc-header-top {
         flex-wrap: wrap;
-    }
-
-    .pc-header-right {
-        margin-left: 0;
     }
 
     .pc-search-input {
@@ -656,6 +644,7 @@
     gap: 8px;
     flex: 1;
     justify-content: flex-end;
+    flex-wrap: wrap;
 }
 
 // ── Responsive ───────────────────────────────────────────────────────────────
@@ -795,6 +784,70 @@
     justify-content: flex-start;
     padding-top: 4px;
     padding-bottom: 16px;
+}
+
+// ── Skill scripts section ────────────────────────────────────────────────────
+.pc-skill-scripts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.pc-skill-script-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: var(--r-sm);
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    flex-wrap: wrap;
+}
+
+.pc-skill-script-purpose {
+    font-size: 12.5px;
+    color: var(--on-surface-variant);
+    flex: 1;
+    min-width: 0;
+}
+
+.pc-skill-scripts-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 8px 0 0;
+    line-height: 1.5;
+
+    code {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        background: var(--code-bg, var(--card-2));
+        color: var(--code-fg, var(--on-surface));
+        padding: 1px 4px;
+        border-radius: 3px;
+    }
+}
+
+// ── Skill invoke section ─────────────────────────────────────────────────────
+.pc-skill-invoke-prompt {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-sm);
+    padding: 8px 12px;
+    margin-top: 8px;
+
+    code {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 12px;
+        word-break: break-word;
+        line-height: 1.5;
+        color: var(--on-surface);
+    }
 }
 
 /* ── Command Palette (⌘K / Ctrl+K) ──────────────────────────────────────────── */
@@ -983,4 +1036,38 @@
 .pc-injects-rule {
     color: var(--on-surface-variant, var(--muted));
     padding-left: 10px;
+}
+
+// ── Focus-visible: all interactive pc-* elements ─────────────────────────────
+.pc-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.pc-domain-tab:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    border-radius: var(--r-sm);
+}
+
+.pc-list-item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
+.pc-skill-related-link:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+}
+
+.pc-injects-summary:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+}
+
+.pc-catalog-share:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
