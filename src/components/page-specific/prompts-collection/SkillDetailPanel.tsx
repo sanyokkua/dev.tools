@@ -7,6 +7,7 @@ import {
 } from '@/common/prompts/data';
 import type { SkillDef, SkillFile } from '@/common/prompts/model/types';
 import { useToast } from '@/contexts/ToasterContext';
+import Input from '@/controls/Input';
 import SegmentedControl from '@/controls/SegmentedControl';
 import type { SelectItem } from '@/controls/Select';
 import Select from '@/controls/Select';
@@ -253,13 +254,12 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
 
             <div className="pc-detail-section">
                 <h3 className="pc-section-heading">Invoke</h3>
-                <input
-                    type="text"
-                    className="pc-skill-invoke-input"
-                    placeholder="Describe the task (optional)"
+                <Input
                     value={invokeTask}
-                    onChange={(e) => setInvokeTask(e.target.value)}
+                    onChange={setInvokeTask}
+                    placeholder="Describe the task (optional)"
                     aria-label="Task description"
+                    block
                 />
                 <div className="pc-skill-invoke-prompt">
                     <code>{buildInvokePrompt(skill, invokeTask)}</code>
