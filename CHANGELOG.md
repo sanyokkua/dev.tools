@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- T13: Replaced raw `<select>` model picker in `PromptDetailPanel` with the `Select` design-system control; model labels now come from the `MODELS` registry. Removed dead `.pc-model-select` SCSS class. Added `aria-label` prop to `Select` component.
+
 ### Updated tools
 
 - **Prompts Collection** — parameter controls now use design-system components:
