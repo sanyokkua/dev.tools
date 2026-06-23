@@ -4,6 +4,7 @@
 
 ### Changed
 
+- T15: Style/Tone/Context pickers + injected preview — `PromptDetailPanel` shows a "Rewrite characteristics" section with Style, Tone, and Context pickers for variants that declare `supports.style/tone/context = true`. Selecting Context auto-resolves Style + Tone from the registry; selecting Style or Tone manually clears Context. Preview and "Copy prompt" use `assemblePrompt()` — rule blocks injected at `[[INJECT_RULES]]` in the template (or prepended if absent). "What this injects" collapsible `<details>` shows exact STYLE / TONE / STRUCTURE blocks. URL state extended with `?style=&tone=&context=`; Share and deep-links restore picker state. B-domain workplace-communication prompts now declare `supports: { style: true, tone: true, context: true }` and include `[[INJECT_RULES]]` markers.
 - T14: Mode toggle axis — dual prompts now show a labeled **ChatBot / AI Agent** `SegmentedControl` in the detail panel; `PromptListItem` shows a unified **Chat / Agent / Dual** mode badge (replacing separate per-mode tags); the Browse-all catalog table gains a **Mode** column (Chat / Agent / Dual). URL parameter `?variant=chat|agent` was already wired; UI now reflects it.
 - T13: Replaced raw `<select>` model picker in `PromptDetailPanel` with the `Select` design-system control; model labels now come from the `MODELS` registry. Removed dead `.pc-model-select` SCSS class. Added `aria-label` prop to `Select` component.
 
