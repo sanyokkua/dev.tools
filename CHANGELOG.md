@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+### Updated tools
+
+- **Prompts Collection** — parameter controls now use design-system components:
+    - Long text inputs (`control: 'textarea'`) render the new `Textarea` component (vertically resizable, token-styled)
+    - Enum inputs (`control: 'select'`) render `Select` bound to the value-set registry; non-optional selects auto-initialize to the first value
+    - Free text inputs (`control: 'text'`) render `Input` (was raw `<input>`)
+    - `EditableCombobox` params unchanged
+
+### New components
+
+- `Textarea` (`src/components/controls/Textarea.tsx`) — reusable multiline input control with `value`, `onChange`, `disabled`, `readOnly`, `placeholder`, `rows`, `block`, `aria-label` props; uses token variables from `textarea.scss`
+
+### Internal
+
+- Removed dead CSS (`.pc-param-input`, `.pc-param-select`, `.pc-param-textarea`) from `prompts-collection.scss`
+
+---
+
 ## [4.0.0] — 2026-06-20
 
 ### Updated tools
