@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Build-time validator + codegen. Run via: node scripts/build-prompts.mjs [--src <path>] [--out <path>]
 
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join, resolve } from 'path';
+import { spawnSync } from 'child_process';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { extname, join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 
 // ── CLI args ──────────────────────────────────────────────────────────────────
@@ -211,6 +213,34 @@ const toneIds = new Set(TONES.map((t) => t.id));
 for (const ctx of CONTEXTS) {
     if (ctx.styleId && !styleIds.has(ctx.styleId)) err(`Context "${ctx.id}": styleId "${ctx.styleId}" not in STYLES`);
     if (ctx.toneId && !toneIds.has(ctx.toneId)) err(`Context "${ctx.id}": toneId "${ctx.toneId}" not in TONES`);
+}
+
+// V-Skill: script syntax sweep
+const tmpDir = mkdtempSync(join(tmpdir(), 'build-prompts-scripts-'));
+try {
+    for (const skill of skills) {
+        for (const file of skill.files ?? []) {
+            if (file.role !== 'script') continue;
+            const ext = extname(file.path);
+            const tmpFile = join(tmpDir, file.path.replace(/\//g, '_'));
+            writeFileSync(tmpFile, file.content, 'utf8');
+            let result;
+            if (ext === '.sh') {
+                result = spawnSync('bash', ['-n', tmpFile], { encoding: 'utf8' });
+            } else if (ext === '.py') {
+                result = spawnSync('python3', ['-m', 'py_compile', tmpFile], { encoding: 'utf8' });
+            } else if (ext === '.mjs' || ext === '.js') {
+                result = spawnSync('node', ['--check', tmpFile], { encoding: 'utf8' });
+            } else {
+                continue; // .sql, .cql — no standard syntax checker
+            }
+            if (result && result.status !== 0) {
+                err(`${skill.slug}/${file.path}: syntax error — ${(result.stderr || result.stdout || '').trim()}`);
+            }
+        }
+    }
+} finally {
+    rmSync(tmpDir, { recursive: true, force: true });
 }
 
 // ── Report & exit ─────────────────────────────────────────────────────────────
