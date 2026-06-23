@@ -4,6 +4,7 @@
 
 ### Changed
 
+- T14: Mode toggle axis — dual prompts now show a labeled **ChatBot / AI Agent** `SegmentedControl` in the detail panel; `PromptListItem` shows a unified **Chat / Agent / Dual** mode badge (replacing separate per-mode tags); the Browse-all catalog table gains a **Mode** column (Chat / Agent / Dual). URL parameter `?variant=chat|agent` was already wired; UI now reflects it.
 - T13: Replaced raw `<select>` model picker in `PromptDetailPanel` with the `Select` design-system control; model labels now come from the `MODELS` registry. Removed dead `.pc-model-select` SCSS class. Added `aria-label` prop to `Select` component.
 
 ### Updated tools
