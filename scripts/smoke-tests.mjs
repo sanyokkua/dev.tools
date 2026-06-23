@@ -1248,16 +1248,45 @@ await runSmoke('prompts-skills-install-switch', async (page) => {
     if (!(await installSection.count())) throw new Error('Install section not found');
     const initialText = await installSection.textContent();
 
-    const kiroBtn = page.locator('[aria-label="Install target"] button', { hasText: 'Kiro CLI' });
-    if (!(await kiroBtn.count())) throw new Error('Kiro CLI install target button not found');
-    await kiroBtn.click();
+    const agentSelect = page.locator('[aria-label="Install target"]');
+    if (!(await agentSelect.count())) throw new Error('Install target select not found');
+    await agentSelect.selectOption('amazon-kiro');
     await page.waitForTimeout(200);
 
     const kiroText = await installSection.textContent();
-    if (kiroText === initialText) throw new Error('Install instructions did not change after switching to Kiro CLI');
-    if (!kiroText?.includes('.kiro')) throw new Error('Kiro CLI instructions do not reference .kiro path');
+    if (kiroText === initialText) throw new Error('Install instructions did not change after switching to Amazon Kiro');
+    if (!kiroText?.includes('.kiro')) throw new Error('Amazon Kiro instructions do not reference .kiro path');
 
     await page.screenshot({ path: `${OUT}/smoke__skills__install_switch.png` });
+});
+
+// ── 7o. Skills surface — Invoke task input updates prompt ─────────────────
+await runSmoke('prompts-skills-invoke', async (page) => {
+    await page.goto(BASE + '/prompts-collection', { waitUntil: 'networkidle' });
+    await page.waitForSelector('[aria-label="View type"]', { timeout: 8000 });
+
+    await page.locator('[aria-label="View type"] button', { hasText: 'Skills' }).click();
+    await page.waitForTimeout(300);
+
+    const skillItem = page.locator('[role="option"]').first();
+    if (!(await skillItem.count())) {
+        process.stdout.write('(no skills — skipping) ');
+        return;
+    }
+    await skillItem.click();
+    await page.waitForTimeout(300);
+
+    const taskInput = page.locator('[aria-label="Task description"]');
+    if (!(await taskInput.count())) throw new Error('Invoke task input not found');
+    await taskInput.fill('review my latest changes');
+    await page.waitForTimeout(200);
+
+    const invokePrompt = page.locator('.pc-skill-invoke-prompt code');
+    if (!(await invokePrompt.count())) throw new Error('Invoke prompt code element not found');
+    const text = await invokePrompt.textContent();
+    if (!text?.includes('review my latest changes')) throw new Error('Invoke prompt did not update with task text');
+
+    await page.screenshot({ path: `${OUT}/smoke__skills__invoke.png` });
 });
 
 // ── 7n. Skills surface — Download .zip button (no JS error) ───────────────
