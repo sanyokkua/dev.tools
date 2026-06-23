@@ -166,7 +166,7 @@ describe('PromptDetailPanel — 8 sections render', () => {
 
     it('S1 header: shows chat tag', () => {
         setup();
-        expect(screen.getByText('chat')).toBeInTheDocument();
+        expect(screen.getByText('ChatBot')).toBeInTheDocument();
     });
 
     it('S2 description: renders variant description', () => {
@@ -414,7 +414,7 @@ describe('PromptDetailPanel — variant switcher (T2.4)', () => {
                 onVariantSwitch={noOpSwitch}
             />,
         );
-        expect(screen.getByRole('group', { name: /execution context/i })).toBeInTheDocument();
+        expect(screen.getByRole('group', { name: /execution mode/i })).toBeInTheDocument();
     });
 
     it('does NOT show executionContext control when single variant', () => {
@@ -428,7 +428,7 @@ describe('PromptDetailPanel — variant switcher (T2.4)', () => {
                 onVariantSwitch={noOpSwitch}
             />,
         );
-        expect(screen.queryByRole('group', { name: /execution context/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('group', { name: /execution mode/i })).not.toBeInTheDocument();
     });
 
     it('switching to agent calls onVariantSwitch with agent context', () => {
@@ -442,7 +442,7 @@ describe('PromptDetailPanel — variant switcher (T2.4)', () => {
                 onVariantSwitch={noOpSwitch}
             />,
         );
-        fireEvent.click(screen.getByRole('button', { name: 'agent' }));
+        fireEvent.click(screen.getByRole('button', { name: 'AI Agent' }));
         expect(noOpSwitch).toHaveBeenCalledWith('agent', null, null);
     });
 

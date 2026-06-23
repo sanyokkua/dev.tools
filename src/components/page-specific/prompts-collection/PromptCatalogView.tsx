@@ -104,6 +104,7 @@ const PromptCatalogView: React.FC<PromptCatalogViewProps> = ({ manifest, onRowCl
                             <th>Name</th>
                             <th>Domain → Category</th>
                             <th>Type</th>
+                            <th>Mode</th>
                             <th>Variants</th>
                             <th aria-label="Share" />
                         </tr>
@@ -135,6 +136,19 @@ const PromptCatalogView: React.FC<PromptCatalogViewProps> = ({ manifest, onRowCl
                                         <span className="pc-tag">direct</span>
                                     )}
                                 </td>
+                                <td className="pc-catalog-mode">
+                                    {row.kind === 'skill' ? (
+                                        '—'
+                                    ) : row.hasChat && row.hasAgent ? (
+                                        <span className="pc-tag">Dual</span>
+                                    ) : row.hasChat ? (
+                                        <span className="pc-tag">Chat</span>
+                                    ) : row.hasAgent ? (
+                                        <span className="pc-tag pc-tag-alt">Agent</span>
+                                    ) : (
+                                        '—'
+                                    )}
+                                </td>
                                 <td className="pc-catalog-variants">{row.variantSummary}</td>
                                 <td>
                                     <button
@@ -150,7 +164,7 @@ const PromptCatalogView: React.FC<PromptCatalogViewProps> = ({ manifest, onRowCl
                         ))}
                         {filtered.length === 0 && (
                             <tr>
-                                <td colSpan={5} className="pc-catalog-empty">
+                                <td colSpan={6} className="pc-catalog-empty">
                                     No results for &quot;{text}&quot;
                                 </td>
                             </tr>

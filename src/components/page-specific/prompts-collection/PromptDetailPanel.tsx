@@ -136,7 +136,10 @@ const PromptDetailPanel: React.FC<Props> = ({
                         <div className="pc-variant-controls">
                             {contextOptions.length > 1 && (
                                 <SegmentedControl
-                                    options={contextOptions.map((v) => ({ value: v, label: v }))}
+                                    options={contextOptions.map((v) => ({
+                                        value: v,
+                                        label: v === 'agent' ? 'AI Agent' : 'ChatBot',
+                                    }))}
                                     value={variant.executionContext}
                                     onChange={(v) =>
                                         onVariantSwitch(
@@ -145,7 +148,7 @@ const PromptDetailPanel: React.FC<Props> = ({
                                             hasSubAxis ? (variant.subVariant ?? null) : null,
                                         )
                                     }
-                                    aria-label="Execution context"
+                                    aria-label="Execution mode"
                                 />
                             )}
                             {modelOptions.length > 1 && (
@@ -183,7 +186,7 @@ const PromptDetailPanel: React.FC<Props> = ({
                 <div className="pc-detail-badges">
                     {!hasContextAxis && (
                         <span className={`pc-tag${variant.executionContext === 'agent' ? ' pc-tag-alt' : ''}`}>
-                            {variant.executionContext === 'agent' ? 'agent' : 'chat'}
+                            {variant.executionContext === 'agent' ? 'AI Agent' : 'ChatBot'}
                         </span>
                     )}
                     {isMeta && <span className="pc-tag pc-tag-meta">⚗ Meta-prompt · outputs a prompt</span>}

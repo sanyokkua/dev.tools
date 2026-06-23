@@ -26,8 +26,13 @@ const PromptListItem: React.FC<Props> = ({ logical, selected, onClick }) => {
         >
             <div className="pc-list-item-title">{logical.title}</div>
             <div className="pc-list-item-meta">
-                {hasChat && <span className="pc-tag">chat</span>}
-                {hasAgent && <span className="pc-tag pc-tag-alt">agent</span>}
+                {hasChat && hasAgent ? (
+                    <span className="pc-tag">Dual</span>
+                ) : hasChat ? (
+                    <span className="pc-tag">Chat</span>
+                ) : hasAgent ? (
+                    <span className="pc-tag pc-tag-alt">Agent</span>
+                ) : null}
                 {modelCount > 0 && (
                     <span className="pc-tag">
                         🎨 {modelCount} model{modelCount > 1 ? 's' : ''}
