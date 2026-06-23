@@ -1,8 +1,0 @@
-{
-    "flux2": { "label": "FLUX.2", "slug": "flux2" },
-    "flux2Klein": { "label": "FLUX.2 Klein", "slug": "flux2-klein" },
-    "gptImage": { "label": "GPT Image", "slug": "gpt-image" },
-    "veo": { "label": "Veo", "slug": "veo" },
-    "kling": { "label": "Kling", "slug": "kling" },
-    "runway": { "label": "Runway", "slug": "runway" }
-}

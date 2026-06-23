@@ -321,40 +321,39 @@ Views:
 - Route: `/prompts-collection`
 - Pattern: Custom
 - Key source files:
-    - `content/prompts-collection/` — prompt Markdown source files (source of truth)
-    - `scripts/ingest-prompts.mjs` — ingestion pipeline: reads `content/`, writes `src/common/prompts/generated/`
-    - `src/common/prompts/generated/prompts-data.json` — domains, categories, logical prompts, variants (runtime data)
-    - `src/common/prompts/generated/skills-data.json` — skills (runtime data)
-    - `src/common/prompts/data.ts` — React data accessors over the generated JSON
+    - `src/common/prompts/catalog/` — TypeScript prompt modules (source of truth)
+    - `scripts/build-prompts.mjs` — validates catalog and emits manifest + loaders
+    - `src/common/prompts/loader.ts` — runtime loading API (loadManifest / loadCategory / loadSkill)
+    - `src/common/prompts/data.ts` — data-access selectors over loaded data
     - `src/components/page-specific/prompts-collection/PromptsCollectionView.tsx` — main view component
 
 ---
 
 ## All Routes Summary
 
-| Tool                | Route                  | Pattern  | Key source files                                                                               |
-| ------------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| Dashboard           | `/`                    | Custom   | `src/pages/index.tsx`                                                                          |
-| String Utils        | `/string-utils`        | ToolView | `src/common/utils-factory.ts` → `createStringUtilList()`                                       |
-| JSON Formatter      | `/json-formatter`      | ToolView | `src/common/utils-factory.ts` → `createJsonFormatterList()`, `src/common/json-query.ts`        |
-| XML Formatter       | `/xml-formatter`       | ToolView | `src/common/xml-formatting-tools.ts`                                                           |
-| Hashing Tools       | `/hashing-tools`       | ToolView | `src/common/utils-factory.ts` → `createHashingUtils()`                                         |
-| Encoding Tools      | `/encoding-tools`      | ToolView | `src/common/utils-factory.ts` → `createEncodingDecodingUtilList()`                             |
-| Terminal Utils      | `/terminal-utils`      | Editor   | inline logic in `src/pages/terminal-utils/index.tsx`                                           |
-| Code Editor         | `/code-editor`         | Editor   | `src/common/format-code.ts`                                                                    |
-| Markdown Tools      | `/markdown-tools`      | Editor   | `react-markdown` + remark/rehype plugins                                                       |
-| Mermaid Editor      | `/mermaid-editor`      | Editor   | `mermaid` library                                                                              |
-| Diff                | `/diff`                | Custom   | `src/common/diff-normalizer.ts`                                                                |
-| HTML Editor         | `/html-editor`         | Editor   | inline preview rendering                                                                       |
-| JWT                 | `/jwt`                 | Custom   | `src/common/jwt-utils.ts`                                                                      |
-| Cron                | `/cron`                | Custom   | `src/common/cron-utils.ts`                                                                     |
-| QR                  | `/qr`                  | Custom   | `src/common/qr-utils.ts`                                                                       |
-| Converting Tools    | `/converting-tools`    | Custom   | `src/common/converting/` (disabled in sidebar)                                                 |
-| Date Tools          | `/date-tools`          | Custom   | `src/common/date-utils.ts` (disabled in sidebar)                                               |
-| Software Installer  | `/software-installer`  | Custom   | `src/common/apps-catalog.json`, `src/common/script-builder.ts`, `src/common/catalog-utils.ts`  |
-| macOS Setup         | `/mac-os-setup`        | Custom   | `src/common/macos-utils.ts`, `src/common/vram-script-generator.ts`                             |
-| Windows Setup       | `/windows-setup`       | Custom   | `src/common/windows-utils.ts`                                                                  |
-| Linux Setup         | `/linux-setup`         | Custom   | `src/common/linux-utils.ts`                                                                    |
-| Git Cheat-sheet     | `/git-cheat-sheet`     | Custom   | `src/common/git-utils.ts`                                                                      |
-| LLM VRAM Calculator | `/llm-vram-calculator` | Custom   | `src/common/llm-vram-calc.ts` (1412 lines)                                                     |
-| Prompts Collection  | `/prompts-collection`  | Custom   | `content/prompts-collection/` → `scripts/ingest-prompts.mjs` → `src/common/prompts/generated/` |
+| Tool                | Route                  | Pattern  | Key source files                                                                                               |
+| ------------------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| Dashboard           | `/`                    | Custom   | `src/pages/index.tsx`                                                                                          |
+| String Utils        | `/string-utils`        | ToolView | `src/common/utils-factory.ts` → `createStringUtilList()`                                                       |
+| JSON Formatter      | `/json-formatter`      | ToolView | `src/common/utils-factory.ts` → `createJsonFormatterList()`, `src/common/json-query.ts`                        |
+| XML Formatter       | `/xml-formatter`       | ToolView | `src/common/xml-formatting-tools.ts`                                                                           |
+| Hashing Tools       | `/hashing-tools`       | ToolView | `src/common/utils-factory.ts` → `createHashingUtils()`                                                         |
+| Encoding Tools      | `/encoding-tools`      | ToolView | `src/common/utils-factory.ts` → `createEncodingDecodingUtilList()`                                             |
+| Terminal Utils      | `/terminal-utils`      | Editor   | inline logic in `src/pages/terminal-utils/index.tsx`                                                           |
+| Code Editor         | `/code-editor`         | Editor   | `src/common/format-code.ts`                                                                                    |
+| Markdown Tools      | `/markdown-tools`      | Editor   | `react-markdown` + remark/rehype plugins                                                                       |
+| Mermaid Editor      | `/mermaid-editor`      | Editor   | `mermaid` library                                                                                              |
+| Diff                | `/diff`                | Custom   | `src/common/diff-normalizer.ts`                                                                                |
+| HTML Editor         | `/html-editor`         | Editor   | inline preview rendering                                                                                       |
+| JWT                 | `/jwt`                 | Custom   | `src/common/jwt-utils.ts`                                                                                      |
+| Cron                | `/cron`                | Custom   | `src/common/cron-utils.ts`                                                                                     |
+| QR                  | `/qr`                  | Custom   | `src/common/qr-utils.ts`                                                                                       |
+| Converting Tools    | `/converting-tools`    | Custom   | `src/common/converting/` (disabled in sidebar)                                                                 |
+| Date Tools          | `/date-tools`          | Custom   | `src/common/date-utils.ts` (disabled in sidebar)                                                               |
+| Software Installer  | `/software-installer`  | Custom   | `src/common/apps-catalog.json`, `src/common/script-builder.ts`, `src/common/catalog-utils.ts`                  |
+| macOS Setup         | `/mac-os-setup`        | Custom   | `src/common/macos-utils.ts`, `src/common/vram-script-generator.ts`                                             |
+| Windows Setup       | `/windows-setup`       | Custom   | `src/common/windows-utils.ts`                                                                                  |
+| Linux Setup         | `/linux-setup`         | Custom   | `src/common/linux-utils.ts`                                                                                    |
+| Git Cheat-sheet     | `/git-cheat-sheet`     | Custom   | `src/common/git-utils.ts`                                                                                      |
+| LLM VRAM Calculator | `/llm-vram-calculator` | Custom   | `src/common/llm-vram-calc.ts` (1412 lines)                                                                     |
+| Prompts Collection  | `/prompts-collection`  | Custom   | `src/common/prompts/catalog/` → `scripts/build-prompts.mjs` → `manifest.generated.ts` + `loaders.generated.ts` |

@@ -153,31 +153,19 @@ graph TD
 
 ## Prompts Data Pipeline
 
-The Prompts Collection uses a file-based pipeline separate from the React component tree. Prompt Markdown files are the source of truth; the ingester produces runtime JSON.
+The Prompts Collection uses TypeScript catalog modules as the single source of truth. `npm run build:prompts` validates 14 invariants and regenerates the manifest and loaders (both git-ignored); `loader.ts` consumes them at runtime.
 
 ```mermaid
 graph LR
-    MD[content/prompts-collection/\n*.md files] --> ING[scripts/ingest-prompts.mjs]
-    ING --> PD[src/common/prompts/generated/\nprompts-data.json]
-    ING --> SD[src/common/prompts/generated/\nskills-data.json]
-    PD --> DT[src/common/prompts/data.ts]
-    SD --> DT
-    DT --> PCV[PromptsCollectionView.tsx]
+    TS[src/common/prompts/catalog/\n*.prompt.ts modules] --> BP[scripts/build-prompts.mjs\nnpm run build:prompts]
+    BP --> MG[manifest.generated.ts\ndomains · categories · logical metadata · skills]
+    BP --> LG[loaders.generated.ts\nCATEGORY_LOADERS · SKILL_LOADERS]
+    MG --> LT[src/common/prompts/loader.ts\nloadManifest · loadCategory · loadSkill]
+    LG --> LT
+    LT --> PCV[PromptsCollectionView.tsx]
 ```
 
-Run `npm run ingest:prompts` after adding or editing any file under `content/prompts-collection/`.
-
-**Content directory layout:**
-
-```
-content/prompts-collection/
-  <DOMAIN>/
-    SYSTEM_PROMPTS/   ← SYS-* prompt files
-    USER_PROMPTS/     ← USR-* and AGT-* prompt files
-    SKILLS/<slug>/SKILL.md
-```
-
-Domains: `A_SOFTWARE_ENGINEERING/`, `B_WRITING_COMMUNICATION/`, `C_THINKING_PRODUCTIVITY/`, `D_AI_PROMPT_WORKFLOWS/`.
+Run `npm run build:prompts` after adding or editing any file under `src/common/prompts/catalog/`.
 
 ### Deep-Link Routing
 

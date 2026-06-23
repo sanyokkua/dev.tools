@@ -1,223 +1,198 @@
 ---
 name: add-prompt
-description: Add a prompt or skill to the dev.tools prompts collection
+description: Add a prompt or skill to the dev.tools prompts collection (TypeScript catalog workflow)
 ---
 
 # Add a Prompt (or Skill)
 
-Prompt data lives in `content/prompts-collection/`. Adding a prompt means creating a Markdown file — no TypeScript editing required. After creating the file, run `npm run ingest:prompts` to regenerate the JSON that the UI reads at runtime.
+Prompt data lives in `src/common/prompts/catalog/` as TypeScript modules. Adding a prompt means creating a `.prompt.ts` file and registering it in the category `index.ts`. Then run `npm run build:prompts` to validate and regenerate the manifest.
 
 ## Directory layout
 
 ```
-content/prompts-collection/
-  A_SOFTWARE_ENGINEERING/
-    SYSTEM_PROMPTS/          ← SYS-A* files
-    USER_PROMPTS/            ← USR-A* and AGT-A* files
-    SKILLS/<slug>/SKILL.md
-  B_WRITING_COMMUNICATION/
-    SYSTEM_PROMPTS/
-    USER_PROMPTS/
-  C_THINKING_PRODUCTIVITY/
-    SYSTEM_PROMPTS/
-    USER_PROMPTS/
-  D_AI_PROMPT_WORKFLOWS/
-    SYSTEM_PROMPTS/
-    USER_PROMPTS/
-    SKILLS/<slug>/SKILL.md
+src/common/prompts/catalog/
+  a-software-engineering/
+    a01-code-generation/
+      sys.prompt.ts        ← SYS-A01 system prompt
+      function.prompt.ts   ← LP-A01-function logical prompt
+      from-spec.prompt.ts  ← LP-A01-from-spec (dual variant)
+      index.ts             ← barrel: exports prompts array
+    a02-code-refactoring/
+    ...
+    index.ts               ← domain barrel: re-exports all categories
+  b-writing-communication/
+  c-thinking-productivity/
+  d-ai-prompt-workflows/
+  index.ts                 ← top-level barrel: re-exports all domains
 ```
-
-Domain code is the prefix letter of the directory name: `A`, `B`, `C`, `D`.
 
 ---
 
-## Prompt file format (8 sections, fixed order)
+## Domains
 
-Only `# Prompt ID` is strictly required. All other sections default to empty if omitted.
+| Code | Title                   | Directory                  |
+| ---- | ----------------------- | -------------------------- |
+| A    | Software Engineering    | `a-software-engineering/`  |
+| B    | Writing & Communication | `b-writing-communication/` |
+| C    | Thinking & Productivity | `c-thinking-productivity/` |
+| D    | AI & Prompt Workflows   | `d-ai-prompt-workflows/`   |
 
-```markdown
-# Prompt ID
+---
 
-USR-A01-my-slug
+## The `LogicalPromptDef` shape
 
-# Domain / Category
+Every `.prompt.ts` file exports a `prompt` constant of type `LogicalPromptDef`:
 
-Software Engineering / A01 Code Generation
+```typescript
+import type { LogicalPromptDef } from '../../../model/types';
 
-# Description
-
-One-line summary shown in the UI.
-
-# Prompt
-
-The prompt template text. Use {{param_name}} for placeholders.
-
-# Parameters
-
-- param_name
-    - Description: What this parameter represents.
-- second_param
-    - Description: A second parameter.
-
-# Example Values
-
-param_name:
-
-- "First example value"
-- "Second example value"
-  second_param:
-- "Example"
-
-# Notes
-
-Recommended system prompt: `SYS-A01-code-generation`
-Related: `USR-A03-review-change` `SKILL-aws-expert`
-
-# Keywords
-
-keyword1, keyword2, keyword3
+export const prompt: LogicalPromptDef = {
+    id: 'LP-A01-function', // globally unique; LP-<DOMAIN><NN>-<slug>
+    categoryCode: 'A01',
+    title: 'Generate a Function',
+    subtitle: 'Short subtitle shown in the UI',
+    description: 'One-line description',
+    variantAxes: [], // [] for single-variant; ['mode'] for dual
+    defaultVariantId: 'USR-A01-codegen-function',
+    modeClass: 'chat-only', // 'chat-only' | 'dual' | 'chat-only-meta'
+    variants: [
+        {
+            id: 'USR-A01-codegen-function',
+            kind: 'user', // 'user' | 'system' | 'agent'
+            categoryCode: 'A01',
+            title: 'Generate a Function',
+            description: '...',
+            template: `Your template with {{param_name}} placeholders.`,
+            parameters: [
+                {
+                    name: 'language',
+                    label: 'Programming language',
+                    description: 'Target language and version',
+                    control: 'select', // 'select' | 'textarea' | 'text' | 'combobox'
+                    optional: false,
+                    valueSetId: 'programming-language',
+                },
+                {
+                    name: 'requirements',
+                    label: 'Requirement',
+                    description: 'What the function must do',
+                    control: 'textarea',
+                    optional: false,
+                },
+            ],
+            examples: { requirements: ['Example value 1', 'Example value 2'] },
+            keywords: ['keyword1', 'keyword2', 'A01'],
+            executionContext: 'chat', // 'chat' | 'agent'
+            model: null,
+            isMetaPrompt: false,
+            recommendedSystemPromptId: 'SYS-A01-code-generation',
+            relatedPromptIds: ['LP-A01-class'],
+            relatedSkillIds: [],
+            supports: { style: false, tone: false, context: false },
+        },
+    ],
+};
 ```
+
+For a **dual-mode prompt** (chat + agent): set `modeClass: 'dual'`, `variantAxes: ['mode']`, two variants — `kind: 'user'` + `executionContext: 'chat'` and `kind: 'agent'` + `executionContext: 'agent'`.
+
+For a **system prompt**: set `modeClass: 'chat-only-meta'`, `kind: 'system'`, omit `parameters` / `recommendedSystemPromptId`.
 
 ---
 
 ## Naming conventions
 
-| Type               | ID prefix           | File location     | Filename example       |
-| ------------------ | ------------------- | ----------------- | ---------------------- |
-| User prompt (chat) | `USR-<code>-<slug>` | `USER_PROMPTS/`   | `USR-A01-implement.md` |
-| Agent variant      | `AGT-<code>-<slug>` | `USER_PROMPTS/`   | `AGT-A01-implement.md` |
-| System prompt      | `SYS-<code>-<slug>` | `SYSTEM_PROMPTS/` | `SYS-A01-code-gen.md`  |
+| Type           | ID format          | File name          |
+| -------------- | ------------------ | ------------------ |
+| Logical prompt | `LP-<A01>-<slug>`  | `<slug>.prompt.ts` |
+| System prompt  | `SYS-<A01>-<slug>` | `sys.prompt.ts`    |
 
-- `<code>` = domain letter + two-digit category number (e.g. `A01`, `B03`, `D06`).
-- `<slug>` = kebab-case, starts with a letter (e.g. `implement`, `review-change`).
-- Full ID pattern: `^(?:SYS|USR|AGT)-[A-Z]\d+-[a-zA-Z][\w-]*$`
-- Filename = ID + `.md`.
-
-Category codes are listed in `content/prompts-collection/INDEX.md` (Inventory section) and `BUILD_STATE.md` §2.
+- `<A01>` = domain letter + two-digit category number.
+- `<slug>` = kebab-case, starts with a letter.
 
 ---
 
-## Domain reference
+## Steps: adding a prompt
 
-| Code | Title                   | UI slug                 |
-| ---- | ----------------------- | ----------------------- |
-| A    | Software Engineering    | `software-engineering`  |
-| B    | Writing & Communication | `writing-communication` |
-| C    | Thinking & Productivity | `thinking-productivity` |
-| D    | AI & Prompt Workflows   | `ai-prompt-workflows`   |
+- [ ]   1. **Pick domain and category.** Browse `src/common/prompts/catalog/` for the right `<domain>/<category>/` directory.
 
----
-
-## Steps: adding a user or agent prompt
-
-- [ ]   1. **Pick domain and category.** Consult `content/prompts-collection/INDEX.md` (Inventory table) or `BUILD_STATE.md §2` for existing category codes. System prompts (`SYS-*`) should already exist for the category you choose.
-
-- [ ]   2. **Create the file** in `USER_PROMPTS/`:
+- [ ]   2. **Create the `.prompt.ts` file**:
 
     ```bash
-    touch content/prompts-collection/A_SOFTWARE_ENGINEERING/USER_PROMPTS/USR-A01-my-slug.md
+    touch src/common/prompts/catalog/a-software-engineering/a01-code-generation/my-slug.prompt.ts
     ```
 
-- [ ]   3. **Fill in the 8 sections** following the format above. Key rules:
-    - `# Prompt ID` — must be globally unique across all files. Check first:
-        ```bash
-        grep -r "USR-A01-my-slug" content/
-        ```
-    - `# Domain / Category` — format: `<Domain Title> / <CODE> <Category Title>`. Only the part after `/` is parsed by the ingester for the category title.
-    - `# Parameters` — hard cap: **≤ 3 parameters**. Write `None` if the prompt takes no parameters.
-    - `# Example Values` — list values per param name, or `N/A` if none.
-    - `# Notes` — `Recommended system prompt: \`SYS-A01-slug\``must reference an existing system prompt ID (fails ingestion if it doesn't).`Related:` references are advisory and silently dropped if unresolved.
-    - `# Keywords` — comma-separated list used for search.
+- [ ]   3. **Write the module** following the shape above. Use `a01-code-generation/function.prompt.ts` as the canonical example.
 
-- [ ]   4. **Regenerate JSON**:
+- [ ]   4. **Register in the category barrel** (`index.ts`):
+
+    ```typescript
+    import { prompt as mySlugPrompt } from './my-slug.prompt.ts';
+
+    export const prompts: LogicalPromptDef[] = [
+        // ...existing prompts...
+        mySlugPrompt,
+    ];
+    ```
+
+- [ ]   5. **Validate**:
 
     ```bash
-    npm run ingest:prompts
+    npm run build:prompts
     ```
 
-    Expected: `✓ Ingested: System prompts: N | User/agent prompts: N | Logical groups: N | Skills: N`
+    Expected: validators V01–V14 all pass; `manifest.generated.ts` and `loaders.generated.ts` regenerated (git-ignored).
 
-- [ ]   5. **Verify in the UI**:
+- [ ]   6. **Run test suite**:
 
     ```bash
-    npm run verify:ui    # navigate to /prompts-collection, confirm the prompt appears
+    npm run verify
     ```
 
-- [ ]   6. **Commit**:
+    If adding a new category, add shape tests in `test/common/prompts/catalog-shape.test.ts`.
+
+- [ ]   7. **Commit source files only** (do NOT commit generated files):
 
     ```bash
-    git add -A && git commit -m "feat(prompts): add USR-A01-my-slug"
-    git status   # must be clean
+    git add src/common/prompts/catalog/
+    git commit -m "feat(prompts): add LP-A01-my-slug"
+    git status   # must be clean; generated files must NOT appear
     ```
-
----
-
-## Steps: adding a system prompt
-
-Same as above, but:
-
-- File goes in `SYSTEM_PROMPTS/`, not `USER_PROMPTS/`
-- Use `SYS-` prefix
-- Write `None` for `# Parameters` — system prompts take no parameters
-- This system prompt becomes the `recommendedSystemPromptId` for its category
 
 ---
 
 ## Steps: adding a skill
 
-Skills live under `SKILLS/<slug>/SKILL.md` with a YAML frontmatter header.
+Skills live in `src/common/prompts/skills/<slug>/` as TypeScript modules with bundled file content.
 
-- [ ]   1. **Create the folder and file**:
-
-    ```bash
-    mkdir -p content/prompts-collection/A_SOFTWARE_ENGINEERING/SKILLS/my-skill
-    touch content/prompts-collection/A_SOFTWARE_ENGINEERING/SKILLS/my-skill/SKILL.md
-    ```
-
-- [ ]   2. **Write SKILL.md** with YAML frontmatter then a Markdown body:
-
-    ```markdown
-    ---
-    name: My Skill Title
-    version: 1.0.0
-    description: One-line description shown in the UI.
-    tags: [tag1, tag2]
-    allowed-tools: [Bash, Read, Write]
-    references: []
-    related-skills: []
-    ---
-
-    ## Overview
-
-    Describe what this skill does and when to trigger it.
-
-    ## Steps
-
-    1. ...
-    ```
-
-    Frontmatter fields:
-    - `name`: display title
-    - `allowed-tools`: comma-separated string or JSON array
-    - `related-skills`: array of `slug: Description` entries
-    - `id` is auto-derived as `SKILL-<folder-slug>` — do not add it manually
-
-- [ ]   3. **Regenerate and verify**:
+- [ ]   1. **Create the skill directory and module**:
 
     ```bash
-    npm run ingest:prompts
+    mkdir -p src/common/prompts/skills/my-skill
+    touch src/common/prompts/skills/my-skill/skill.ts
+    ```
+
+- [ ]   2. **Write `skill.ts`** following the existing skill shape (see `src/common/prompts/skills/` for examples). Bundle any file content as inline TypeScript string exports.
+
+- [ ]   3. **Register in the skills barrel** (`src/common/prompts/skills/index.ts`):
+
+    Add an import and include the skill in the exported array.
+
+- [ ]   4. **Validate and verify**:
+
+    ```bash
+    npm run build:prompts
     npm run verify:ui
     ```
 
 ---
 
-## Validation errors and fixes
+## Validation errors
 
-| Error message                                                     | Cause                                                            | Fix                                                        |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- |
-| `No prompt ID in <file>`                                          | `# Prompt ID` section missing or empty                           | Add it as the very first section                           |
-| `Unknown prompt ID prefix: <id>`                                  | Doesn't start with `SYS-`, `USR-`, or `AGT-`                     | Correct the prefix                                         |
-| `Cannot derive category from ID: <id>`                            | ID format wrong (e.g. missing category number)                   | Fix to `USR-A01-slug` format                               |
-| `Dangling recommendedSystemPromptId: <sys-id> in <usr-id>`        | `# Notes` references a SYS prompt that doesn't exist             | Fix the SYS ID or add the missing system prompt file       |
-| `INDEX system count mismatch` / `INDEX user/agent count mismatch` | `INDEX.md` inventory table count doesn't match actual file count | Update the counts in `content/prompts-collection/INDEX.md` |
-| `defaultVariantId not found: <lp-id>`                             | A logical prompt's default variant was removed                   | Re-add the variant or fix the grouping slug                |
+| Error message                                        | Cause                                                           | Fix                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
+| `Duplicate ID: <id>`                                 | Another prompt already uses this ID                             | Change `id` to something globally unique                  |
+| `Missing recommendedSystemPromptId target: <sys-id>` | `recommendedSystemPromptId` references an ID that doesn't exist | Add the system prompt or fix the reference                |
+| `Invalid control type: <type>`                       | `control` value is not one of the allowed set                   | Use `select`, `textarea`, `text`, or `combobox`           |
+| `Dual prompt missing agent/chat variant`             | `modeClass: 'dual'` but only one variant                        | Add the missing `kind: 'agent'` or `kind: 'user'` variant |
+| `Parameter name contains abbreviation`               | Validator V09 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |

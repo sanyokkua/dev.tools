@@ -14,7 +14,7 @@
     - Browse-all catalog with search and facet filters; row click opens detail view
     - Meta-prompt badges (D01–D03, D05–D06 domain prompts are meta-prompts)
     - Shareable deep links via query parameters (`?domain=…&category=…&prompt=…`), basePath-safe and PWA-offline-capable
-    - Prompt data generated from `content/prompts-collection/` Markdown files via `npm run ingest:prompts`; no hand-written TypeScript arrays
+    - Prompt data authored as TypeScript modules under `src/common/prompts/catalog/`; `npm run build:prompts` validates and regenerates the manifest
 
 ### Removed
 
@@ -26,8 +26,8 @@
 
 ### Infrastructure
 
-- `npm run ingest:prompts` — new script: parses `content/prompts-collection/` → generates `src/common/prompts/generated/prompts-data.json` + `skills-data.json`
-- CI pipeline (`nextjs.yml`): ingestion now runs before `next build`; `validate:sw` now runs post-build
+- `npm run build:prompts` — validates TypeScript catalog (14 invariants) and regenerates `manifest.generated.ts` + `loaders.generated.ts` (git-ignored)
+- CI pipeline (`nextjs.yml`): `build:prompts` runs as `prebuild`; `validate:sw` runs post-build
 
 ---
 
