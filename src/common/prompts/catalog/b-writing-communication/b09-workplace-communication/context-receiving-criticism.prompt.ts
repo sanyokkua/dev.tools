@@ -59,7 +59,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
             relatedPromptIds: ['LP-B-context-sensitive', 'LP-B-context-junior-feedback'],
             relatedSkillIds: [],
-            supports: { style: false, tone: false, context: true },
+            supports: { style: true, tone: true, context: true },
         },
     ],
 };

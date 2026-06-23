@@ -59,7 +59,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
             relatedPromptIds: ['LP-B-context-urgent', 'LP-B09-work-customerReply'],
             relatedSkillIds: [],
-            supports: { style: false, tone: false, context: true },
+            supports: { style: true, tone: true, context: true },
         },
     ],
 };
