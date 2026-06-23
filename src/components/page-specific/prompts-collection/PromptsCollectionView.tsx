@@ -1,17 +1,15 @@
-import {
-    categoriesByDomain,
-    defaultVariant,
-    findVariantById,
-    listDomains,
-    loadPromptsData,
-    loadSkillsData,
-    logicalByCategory,
-    selectVariant,
-    skillsByDomain,
-    variantsOf,
-} from '@/common/prompts/data';
+import { selectVariant } from '@/common/prompts/data';
 import type { PaletteResult } from '@/common/prompts/fuzzy';
-import type { CatalogRow, PromptVariant, PromptsData, Skill, SkillsData } from '@/common/prompts/types';
+import { getLogicalPrompt, loadManifest, loadSkill } from '@/common/prompts/loader';
+import type {
+    LogicalPromptDef,
+    Manifest,
+    ManifestLogical,
+    ManifestSkill,
+    PromptVariant,
+    SkillDef,
+} from '@/common/prompts/model/types';
+import type { CatalogRow } from '@/common/prompts/types';
 import Chip from '@/controls/Chip';
 import SegmentedControl from '@/controls/SegmentedControl';
 import { useRouter } from 'next/router';
@@ -25,8 +23,9 @@ import SkillListItem from './SkillListItem';
 import { parseStateFromQuery, stateToQuery, type PromptsPageState } from './usePromptsState';
 
 const PromptsCollectionView: React.FC = () => {
-    const [promptsData, setPromptsData] = useState<PromptsData | null>(null);
-    const [skillsData, setSkillsData] = useState<SkillsData | null>(null);
+    const manifest: Manifest = useMemo(() => loadManifest(), []);
+    const [selectedPromptDef, setSelectedPromptDef] = useState<LogicalPromptDef | null>(null);
+    const [selectedSkillDef, setSelectedSkillDef] = useState<SkillDef | null>(null);
     const [pageState, setPageState] = useState<PromptsPageState>({
         type: 'prompts',
         view: null,
@@ -48,11 +47,27 @@ const PromptsCollectionView: React.FC = () => {
         setPageState(parseStateFromQuery(router.query));
     }, [router.isReady, queryStr]); // queryStr is a stable proxy for router.query values
 
-    // Load data on mount
+    // Lazy-load the full logical prompt def when a prompt is selected
     useEffect(() => {
-        loadPromptsData().then(setPromptsData);
-        loadSkillsData().then(setSkillsData);
-    }, []);
+        if (pageState.type !== 'prompts' || !pageState.selectedId) {
+            setSelectedPromptDef(null);
+            return;
+        }
+        getLogicalPrompt(pageState.selectedId)
+            .then(setSelectedPromptDef)
+            .catch(() => setSelectedPromptDef(null));
+    }, [pageState.selectedId, pageState.type]);
+
+    // Lazy-load the full skill def when a skill is selected
+    useEffect(() => {
+        if (pageState.type !== 'skills' || !pageState.selectedId) {
+            setSelectedSkillDef(null);
+            return;
+        }
+        loadSkill(pageState.selectedId)
+            .then(setSelectedSkillDef)
+            .catch(() => setSelectedSkillDef(null));
+    }, [pageState.selectedId, pageState.type]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -65,18 +80,12 @@ const PromptsCollectionView: React.FC = () => {
         return () => window.removeEventListener('keydown', handler);
     }, []);
 
-    // --- Derived selections ---
+    // --- Derived selections (synchronous from manifest) ---
 
-    // Full domain list (from promptsData — used as the source of truth for all domains)
-    const domains = useMemo(() => (promptsData ? listDomains(promptsData) : []), [promptsData]);
+    const domains = manifest.domains;
 
-    // Skill domain codes (set for O(1) lookup)
-    const skillDomainCodes = useMemo(() => {
-        if (!skillsData) return new Set<string>();
-        return new Set(skillsData.skills.map((s) => s.domainCode));
-    }, [skillsData]);
+    const skillDomainCodes = useMemo(() => new Set(manifest.skills.map((s) => s.domainCode)), [manifest]);
 
-    // In skills mode, only show domains that have skills
     const effectiveDomains = useMemo(() => {
         if (pageState.type === 'skills') {
             return domains.filter((d) => skillDomainCodes.has(d.code));
@@ -84,15 +93,14 @@ const PromptsCollectionView: React.FC = () => {
         return domains;
     }, [pageState.type, domains, skillDomainCodes]);
 
-    // activeDomain is resolved against effectiveDomains so skills mode always lands on a valid domain
     const activeDomain = useMemo(
         () => effectiveDomains.find((d) => d.slug === pageState.domainSlug) ?? effectiveDomains[0] ?? null,
         [effectiveDomains, pageState.domainSlug],
     );
 
     const categories = useMemo(
-        () => (promptsData && activeDomain ? categoriesByDomain(promptsData, activeDomain.code) : []),
-        [promptsData, activeDomain],
+        () => manifest.categories.filter((c) => c.domainCode === activeDomain?.code),
+        [manifest, activeDomain],
     );
 
     const activeCategory = useMemo(
@@ -100,9 +108,9 @@ const PromptsCollectionView: React.FC = () => {
         [categories, pageState.categorySlug],
     );
 
-    const logicals = useMemo(
-        () => (promptsData && activeCategory ? logicalByCategory(promptsData, activeCategory.code) : []),
-        [promptsData, activeCategory],
+    const logicals: ManifestLogical[] = useMemo(
+        () => manifest.logical.filter((l) => l.categoryCode === activeCategory?.code),
+        [manifest, activeCategory],
     );
 
     const filteredLogicals = useMemo(
@@ -110,15 +118,43 @@ const PromptsCollectionView: React.FC = () => {
         [logicals, search],
     );
 
-    const skills = useMemo(
-        () => (skillsData && activeDomain ? skillsByDomain(skillsData, activeDomain.code) : []),
-        [skillsData, activeDomain],
+    const skills: ManifestSkill[] = useMemo(
+        () => manifest.skills.filter((s) => s.domainCode === activeDomain?.code),
+        [manifest, activeDomain],
     );
 
     const filteredSkills = useMemo(
         () => (search ? skills.filter((s) => s.title.toLowerCase().includes(search.toLowerCase())) : skills),
         [skills, search],
     );
+
+    // Variant selection from loaded def
+    const selectedVariant: PromptVariant | null = useMemo(() => {
+        if (!selectedPromptDef) return null;
+        return (
+            (selectVariant(
+                selectedPromptDef.variants as unknown as Parameters<typeof selectVariant>[0],
+                pageState.variantContext,
+                pageState.variantModel,
+                pageState.variantSub,
+            ) as unknown as PromptVariant | null) ??
+            (selectedPromptDef.variants.find(
+                (v) => v.id === selectedPromptDef.defaultVariantId,
+            ) as unknown as PromptVariant) ??
+            null
+        );
+    }, [selectedPromptDef, pageState.variantContext, pageState.variantModel, pageState.variantSub]);
+
+    // Related skills for SkillDetailPanel (resolved from manifest)
+    const relatedSkillMeta = useMemo(() => {
+        if (!selectedSkillDef) return [];
+        return selectedSkillDef.relatedSkillIds
+            .map((id) => {
+                const slug = id.startsWith('SKILL-') ? id.slice(6) : id;
+                return manifest.skills.find((s) => s.slug === slug);
+            })
+            .filter(Boolean) as ManifestSkill[];
+    }, [selectedSkillDef, manifest]);
 
     // --- State transitions ---
 
@@ -196,8 +232,7 @@ const PromptsCollectionView: React.FC = () => {
 
     const navigateToSkill = useCallback(
         (slug: string) => {
-            if (!skillsData) return;
-            const targetSkill = skillsData.skills.find((s) => s.slug === slug);
+            const targetSkill = manifest.skills.find((s) => s.slug === slug);
             if (!targetSkill) return;
             const domain = domains.find((d) => d.code === targetSkill.domainCode);
             const next: PromptsPageState = {
@@ -210,7 +245,7 @@ const PromptsCollectionView: React.FC = () => {
             setPageState(next);
             void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
         },
-        [skillsData, domains, pageState, router],
+        [manifest, domains, pageState, router],
     );
 
     const handleCatalogRowClick = useCallback(
@@ -233,86 +268,37 @@ const PromptsCollectionView: React.FC = () => {
 
     const handlePaletteSelect = useCallback(
         (result: PaletteResult) => {
-            if (!promptsData) return;
             setPaletteOpen(false);
             if (result.type === 'prompt') {
-                const v = result.item as PromptVariant;
-                const cat = promptsData.categories.find((c) => c.code === v.categoryCode);
-                const domain = promptsData.domains.find((d) => d.code === (cat?.domainCode ?? ''));
-                const logical = promptsData.logical.find((lp) => lp.variantIds.includes(v.id));
-                if (!logical || !cat || !domain) return;
+                const entry = result.item as ManifestLogical;
+                const cat = manifest.categories.find((c) => c.code === entry.categoryCode);
+                const domain = manifest.domains.find((d) => d.code === entry.domainCode);
+                if (!cat || !domain) return;
                 const next: PromptsPageState = {
                     type: 'prompts',
                     view: null,
                     domainSlug: domain.slug,
                     categorySlug: cat.slug,
-                    selectedId: logical.id,
-                    variantContext: v.executionContext ?? null,
-                    variantModel: v.model ?? null,
-                    variantSub: v.subVariant ?? null,
+                    selectedId: entry.id,
+                    variantContext: null,
+                    variantModel: null,
+                    variantSub: null,
                 };
                 setPageState(next);
                 void router.replace({ query: stateToQuery(next) }, undefined, { shallow: true, scroll: false });
             } else {
-                const s = result.item as Skill;
+                const s = result.item as ManifestSkill;
                 navigateToSkill(s.slug);
             }
         },
-        [promptsData, navigateToSkill, router],
-    );
-
-    // --- Resolved selections for detail panel ---
-
-    const selectedLogical = useMemo(
-        () => (pageState.selectedId ? (logicals.find((lp) => lp.id === pageState.selectedId) ?? null) : null),
-        [logicals, pageState.selectedId],
-    );
-
-    const allVariants = useMemo(
-        () => (promptsData && selectedLogical ? variantsOf(promptsData, selectedLogical.id) : []),
-        [promptsData, selectedLogical],
-    );
-
-    const selectedVariant = useMemo(() => {
-        if (!promptsData) return null;
-        if (selectedLogical) {
-            return (
-                selectVariant(
-                    variantsOf(promptsData, selectedLogical.id),
-                    pageState.variantContext,
-                    pageState.variantModel,
-                    pageState.variantSub,
-                ) ??
-                defaultVariant(promptsData, selectedLogical.id) ??
-                null
-            );
-        }
-        if (pageState.selectedId) return findVariantById(promptsData, pageState.selectedId) ?? null;
-        return null;
-    }, [
-        promptsData,
-        selectedLogical,
-        pageState.selectedId,
-        pageState.variantContext,
-        pageState.variantModel,
-        pageState.variantSub,
-    ]);
-
-    const selectedSkill = useMemo(
-        () => (pageState.selectedId ? (skills.find((s) => s.slug === pageState.selectedId) ?? null) : null),
-        [skills, pageState.selectedId],
+        [manifest, navigateToSkill, router],
     );
 
     // --- Catalog branch ---
-    if (pageState.view === 'catalog' && promptsData && skillsData) {
+    if (pageState.view === 'catalog') {
         return (
             <div className="pc-view">
-                <PromptCatalogView
-                    promptsData={promptsData}
-                    skillsData={skillsData}
-                    onRowClick={handleCatalogRowClick}
-                    onBack={closeCatalog}
-                />
+                <PromptCatalogView manifest={manifest} onRowClick={handleCatalogRowClick} onBack={closeCatalog} />
             </div>
         );
     }
@@ -403,7 +389,6 @@ const PromptsCollectionView: React.FC = () => {
                               <PromptListItem
                                   key={lp.id}
                                   logical={lp}
-                                  variants={promptsData ? variantsOf(promptsData, lp.id) : []}
                                   selected={lp.id === pageState.selectedId}
                                   onClick={() => setSelected(lp.id)}
                               />
@@ -421,35 +406,27 @@ const PromptsCollectionView: React.FC = () => {
                 <div className="pc-detail-col">
                     {pageState.type === 'prompts' ? (
                         <PromptDetailPanel
-                            logical={selectedLogical}
+                            logical={selectedPromptDef}
                             variant={selectedVariant}
-                            variants={allVariants}
+                            variants={(selectedPromptDef?.variants as unknown as PromptVariant[]) ?? []}
                             domain={activeDomain}
                             category={activeCategory}
                             onVariantSwitch={onVariantSwitch}
                         />
                     ) : (
                         <SkillDetailPanel
-                            skill={selectedSkill}
-                            skillsData={skillsData}
+                            skill={selectedSkillDef}
+                            relatedSkills={relatedSkillMeta}
                             onSelectSkill={navigateToSkill}
                         />
                     )}
                 </div>
             </div>
 
-            {/* Loading overlay */}
-            {(!promptsData || !skillsData) && (
-                <div className="pc-loading" aria-busy="true">
-                    Loading…
-                </div>
-            )}
-
             <CommandPalette
                 isOpen={paletteOpen}
                 onClose={() => setPaletteOpen(false)}
-                promptsData={promptsData}
-                skillsData={skillsData}
+                manifest={manifest}
                 onSelect={handlePaletteSelect}
             />
         </div>

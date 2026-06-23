@@ -1,12 +1,12 @@
 import { buildCatalogRowHref, buildCatalogRows, filterCatalogRows } from '@/common/prompts/data';
-import type { CatalogRow, PromptsData, SkillsData } from '@/common/prompts/types';
+import type { Manifest } from '@/common/prompts/model/types';
+import type { CatalogRow } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import Chip from '@/controls/Chip';
 import React, { useCallback, useMemo, useState } from 'react';
 
 interface PromptCatalogViewProps {
-    promptsData: PromptsData;
-    skillsData: SkillsData;
+    manifest: Manifest;
     onRowClick: (row: CatalogRow) => void;
     onBack: () => void;
 }
@@ -19,19 +19,19 @@ const TYPE_FACETS: { key: string; label: string }[] = [
     { key: 'skill', label: '🧩 skill' },
 ];
 
-const PromptCatalogView: React.FC<PromptCatalogViewProps> = ({ promptsData, skillsData, onRowClick, onBack }) => {
+const PromptCatalogView: React.FC<PromptCatalogViewProps> = ({ manifest, onRowClick, onBack }) => {
     const { showToast } = useToast();
     const [text, setText] = useState('');
     const [domainFacet, setDomainFacet] = useState<string | null>(null);
     const [typeFacets, setTypeFacets] = useState<Set<string>>(new Set());
 
-    const allRows = useMemo(() => buildCatalogRows(promptsData, skillsData), [promptsData, skillsData]);
+    const allRows = useMemo(() => buildCatalogRows(manifest), [manifest]);
     const filtered = useMemo(
         () => filterCatalogRows(allRows, text, domainFacet, typeFacets),
         [allRows, text, domainFacet, typeFacets],
     );
 
-    const domains = useMemo(() => promptsData.domains, [promptsData]);
+    const domains = useMemo(() => manifest.domains, [manifest]);
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
     const toggleTypeFacet = useCallback((key: string) => {

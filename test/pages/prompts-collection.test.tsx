@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import type { PromptVariant } from '../../src/common/prompts/types';
+import type { ManifestLogical } from '../../src/common/prompts/model/types';
 import PromptListItem from '../../src/components/page-specific/prompts-collection/PromptListItem';
 import PromptsCollectionView from '../../src/components/page-specific/prompts-collection/PromptsCollectionView';
 import {
@@ -9,7 +9,7 @@ import {
 
 // --- Mock data (mock-prefixed so jest.mock factory can reference them) ---
 
-const mockPromptsData = {
+const mockManifest = {
     domains: [
         { code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' },
         { code: 'B', slug: 'writing', title: 'Writing & Communication', description: '' },
@@ -22,46 +22,19 @@ const mockPromptsData = {
         {
             id: 'LP-A03-review',
             categoryCode: 'A03',
+            domainCode: 'A',
             title: 'Review a Change',
             description: 'Reviews code',
-            variantAxes: ['executionContext'] as ('model' | 'executionContext' | 'subVariant')[],
-            variantIds: ['USR-A03-review', 'AGT-A03-review'],
-            defaultVariantId: 'USR-A03-review',
+            keywords: [],
+            tags: [],
+            variantAxes: ['mode'],
+            hasChat: true,
+            hasAgent: true,
+            hasModel: false,
+            modelCount: 0,
+            isMetaPrompt: false,
         },
     ],
-    variants: [
-        {
-            id: 'USR-A03-review',
-            kind: 'user' as const,
-            categoryCode: 'A03',
-            title: 'Review a Change',
-            description: 'desc',
-            template: 'tmpl',
-            parameters: [],
-            keywords: [],
-            executionContext: 'chat' as const,
-            isMetaPrompt: false,
-            model: null,
-            subVariant: null,
-        },
-        {
-            id: 'AGT-A03-review',
-            kind: 'agent' as const,
-            categoryCode: 'A03',
-            title: 'Review a Change',
-            description: 'desc',
-            template: 'tmpl',
-            parameters: [],
-            keywords: [],
-            executionContext: 'agent' as const,
-            isMetaPrompt: false,
-            model: null,
-            subVariant: null,
-        },
-    ],
-};
-
-const mockSkillsData = {
     skills: [
         {
             id: 'SKILL-code-review',
@@ -71,11 +44,34 @@ const mockSkillsData = {
             version: '1.0.0',
             description: 'Reviews code',
             tags: [],
-            allowedTools: [],
-            relatedSkillIds: [],
-            files: [],
+            fileCount: 0,
         },
     ],
+};
+
+const mockLogicalPromptDef = {
+    id: 'LP-A03-review',
+    categoryCode: 'A03',
+    title: 'Review a Change',
+    description: 'Reviews code',
+    variantAxes: ['mode'],
+    variants: [
+        {
+            id: 'USR-A03-review',
+            kind: 'user',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: 'desc',
+            template: 'tmpl',
+            parameters: [],
+            keywords: [],
+            executionContext: 'chat',
+            isMetaPrompt: false,
+            model: null,
+            subVariant: null,
+        },
+    ],
+    defaultVariantId: 'USR-A03-review',
 };
 
 // --- next/router mock ---
@@ -88,32 +84,28 @@ jest.mock('next/router', () => ({ useRouter: () => ({ query: mockQuery, isReady:
 
 jest.mock('@/contexts/ToasterContext', () => ({ useToast: () => ({ showToast: jest.fn() }) }));
 
+// --- @/common/prompts/loader mock ---
+
+jest.mock('@/common/prompts/loader', () => ({
+    loadManifest: () => mockManifest,
+    getLogicalPrompt: jest.fn().mockImplementation((id: string) => {
+        if (id === 'LP-A03-review') return Promise.resolve(mockLogicalPromptDef);
+        return Promise.resolve(null);
+    }),
+    loadSkill: jest.fn().mockResolvedValue(null),
+}));
+
 // --- @/common/prompts/data mock ---
 
 jest.mock('@/common/prompts/data', () => ({
-    loadPromptsData: () => Promise.resolve(mockPromptsData),
-    loadSkillsData: () => Promise.resolve(mockSkillsData),
-    listDomains: (data: typeof mockPromptsData) => data.domains,
-    categoriesByDomain: (data: typeof mockPromptsData, code: string) =>
-        data.categories.filter((c) => c.domainCode === code),
-    logicalByCategory: (data: typeof mockPromptsData, code: string) =>
-        data.logical.filter((l) => l.categoryCode === code),
-    variantsOf: (data: typeof mockPromptsData, logicalId: string) => {
-        const lp = data.logical.find((l) => l.id === logicalId);
-        if (!lp) return [];
-        return lp.variantIds.map((id: string) => data.variants.find((v) => v.id === id)).filter(Boolean);
-    },
-    defaultVariant: (data: typeof mockPromptsData, logicalId: string) => {
-        const lp = data.logical.find((l) => l.id === logicalId);
-        if (!lp) return undefined;
-        return data.variants.find((v) => v.id === lp.defaultVariantId);
-    },
-    skillsByDomain: (data: typeof mockSkillsData, code: string) => data.skills.filter((s) => s.domainCode === code),
-    findVariantById: (data: typeof mockPromptsData, id: string) => data.variants.find((v) => v.id === id),
-    selectVariant: (variants: typeof mockPromptsData.variants) => variants[0],
+    selectVariant: (variants: { id: string }[]) => variants?.[0] ?? null,
     buildSysPromptHref: () => '/prompts-collection?domain=x&category=y&prompt=z',
-    recommendedSystemPromptFor: () => undefined,
     replaceParams: (t: string) => t,
+    buildInstallInstructions: () => ({
+        placement: '.claude/skills/test/',
+        steps: ['cp SKILL.md .claude/skills/'],
+        notes: 'Copy files manually.',
+    }),
 }));
 
 // -------------------------------------------------------------------
@@ -261,9 +253,8 @@ describe('PromptsCollectionView component', () => {
         return render(<PromptsCollectionView />);
     }
 
-    it('domain tabs are rendered after data loads', async () => {
+    it('domain tabs are rendered (manifest is synchronous)', async () => {
         renderView();
-        // Wait for data to load (tabs appear)
         await screen.findByRole('tab', { name: 'Software Engineering' });
         expect(screen.getByRole('tab', { name: 'Software Engineering' })).toBeInTheDocument();
         expect(screen.getByRole('tab', { name: 'Writing & Communication' })).toBeInTheDocument();
@@ -296,7 +287,7 @@ describe('PromptsCollectionView component', () => {
         const listItem = screen.getByRole('option', { name: /Review a Change/i });
         fireEvent.click(listItem);
 
-        // After clicking: empty state should no longer be present
+        // After clicking: getLogicalPrompt resolves → detail panel renders content
         await waitFor(() => {
             expect(screen.queryByRole('status')).not.toBeInTheDocument();
         });
@@ -338,40 +329,31 @@ describe('PromptsCollectionView component', () => {
 // Component tests: PromptListItem META badge
 // -------------------------------------------------------------------
 
+const makeLogical = (overrides: Partial<ManifestLogical>): ManifestLogical => ({
+    id: 'LP-A03-review',
+    categoryCode: 'A03',
+    domainCode: 'A',
+    title: 'Review a Change',
+    description: '',
+    keywords: [],
+    tags: [],
+    variantAxes: [],
+    hasChat: true,
+    hasAgent: false,
+    hasModel: false,
+    modelCount: 0,
+    isMetaPrompt: false,
+    ...overrides,
+});
+
 describe('PromptListItem META badge', () => {
-    const baseLogical = mockPromptsData.logical[0];
-
-    const makeVariant = (overrides: Partial<PromptVariant>): PromptVariant => ({
-        id: 'USR-A03-review',
-        kind: 'user',
-        categoryCode: 'A03',
-        title: 'Review a Change',
-        description: '',
-        template: '',
-        parameters: [],
-        keywords: [],
-        executionContext: 'chat',
-        isMetaPrompt: false,
-        model: null,
-        subVariant: null,
-        ...overrides,
-    });
-
     it('shows META badge when isMetaPrompt=true', () => {
-        const variants = [makeVariant({ isMetaPrompt: true })];
-        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
+        render(<PromptListItem logical={makeLogical({ isMetaPrompt: true })} selected={false} onClick={jest.fn()} />);
         expect(screen.getByText('⚗ meta')).toBeInTheDocument();
     });
 
-    it('shows META badge when categoryCode is a META code (isMetaPrompt not set)', () => {
-        const variants = [makeVariant({ categoryCode: 'D02', isMetaPrompt: undefined })];
-        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
-        expect(screen.getByText('⚗ meta')).toBeInTheDocument();
-    });
-
-    it('does NOT show META badge for non-META variants', () => {
-        const variants = [makeVariant({ isMetaPrompt: false })];
-        render(<PromptListItem logical={baseLogical} variants={variants} selected={false} onClick={jest.fn()} />);
+    it('does NOT show META badge when isMetaPrompt=false', () => {
+        render(<PromptListItem logical={makeLogical({ isMetaPrompt: false })} selected={false} onClick={jest.fn()} />);
         expect(screen.queryByText('⚗ meta')).not.toBeInTheDocument();
     });
 });

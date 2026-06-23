@@ -1,23 +1,22 @@
 import { paletteSearch, type PaletteResult } from '@/common/prompts/fuzzy';
-import type { PromptVariant, PromptsData, Skill, SkillsData } from '@/common/prompts/types';
+import type { Manifest, ManifestLogical, ManifestSkill } from '@/common/prompts/model/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface CommandPaletteProps {
     isOpen: boolean;
     onClose: () => void;
-    promptsData: PromptsData | null;
-    skillsData: SkillsData | null;
+    manifest: Manifest;
     onSelect: (result: PaletteResult) => void;
 }
 
-const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, promptsData, skillsData, onSelect }) => {
+const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, manifest, onSelect }) => {
     const [query, setQuery] = useState('');
     const [activeIndex, setActiveIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
 
-    const results: PaletteResult[] = promptsData && skillsData ? paletteSearch(promptsData, skillsData, query) : [];
+    const results: PaletteResult[] = paletteSearch(manifest, query);
 
     useEffect(() => {
         if (!isOpen) {
@@ -63,7 +62,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, prompt
     };
 
     const resultKey = (r: PaletteResult, i: number) => {
-        const id = (r.item as PromptVariant).id ?? (r.item as Skill).slug;
+        const id = (r.item as ManifestLogical).id ?? (r.item as ManifestSkill).slug;
         return `${r.type}-${id}-${i}`;
     };
 

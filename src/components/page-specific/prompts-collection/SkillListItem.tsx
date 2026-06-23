@@ -1,8 +1,8 @@
-import type { Skill } from '@/common/prompts/types';
+import type { ManifestSkill } from '@/common/prompts/model/types';
 import React from 'react';
 
 interface Props {
-    skill: Skill;
+    skill: ManifestSkill;
     selected: boolean;
     onClick: () => void;
 }

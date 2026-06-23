@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import type { Category, Domain, LogicalPrompt, PromptVariant } from '../../src/common/prompts/types';
+import type { Category, Domain, LogicalPromptDef, PromptVariant } from '../../src/common/prompts/model/types';
 import PromptDetailPanel from '../../src/components/page-specific/prompts-collection/PromptDetailPanel';
 
 // --- Mocks ---
@@ -70,15 +70,6 @@ jest.mock('@/controls/SegmentedControl', () => ({
 
 const dom: Domain = { code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' };
 const cat: Category = { code: 'A03', domainCode: 'A', slug: 'code-review', title: 'Code Review' };
-const logical: LogicalPrompt = {
-    id: 'LP-A03-gen',
-    categoryCode: 'A03',
-    title: 'Generate Code',
-    description: '',
-    variantAxes: [],
-    variantIds: ['USR-A03-gen'],
-    defaultVariantId: 'USR-A03-gen',
-};
 
 const variant: PromptVariant = {
     id: 'USR-A03-gen',
@@ -91,11 +82,12 @@ const variant: PromptVariant = {
         {
             name: 'language',
             description: 'Programming language to use.',
+            control: 'combobox',
             suggestedValues: ['TypeScript', 'Python', 'Go'],
             allowCustom: true,
             optional: false,
         },
-        { name: 'task', optional: true },
+        { name: 'task', optional: true, control: 'text' },
     ],
     examples: { language: ['TypeScript', 'Python'] },
     notes: 'Be specific about the task.',
@@ -105,6 +97,16 @@ const variant: PromptVariant = {
     model: null,
     subVariant: null,
     recommendedSystemPromptId: 'SYS-A03-code-review',
+};
+
+const logical: LogicalPromptDef = {
+    id: 'LP-A03-gen',
+    categoryCode: 'A03',
+    title: 'Generate Code',
+    description: '',
+    variantAxes: [],
+    variants: [variant],
+    defaultVariantId: 'USR-A03-gen',
 };
 
 const metaVariant: PromptVariant = {
@@ -170,14 +172,14 @@ describe('PromptDetailPanel — 8 sections render', () => {
         expect(screen.getByText('Programming language to use.')).toBeInTheDocument();
     });
 
-    it('S4 parameters: combobox rendered for param with suggestedValues', () => {
+    it('S4 parameters: combobox rendered for param with control=combobox', () => {
         setup();
-        expect(screen.getAllByTestId('ecb')).toHaveLength(1); // only 'language' has suggestedValues
+        expect(screen.getAllByTestId('ecb')).toHaveLength(1); // only 'language' has control='combobox'
     });
 
-    it('S4 parameters: plain input for param without suggestedValues', () => {
+    it('S4 parameters: plain input for param with control=text', () => {
         setup();
-        // 'task' has no suggestedValues — uses plain <input>
+        // 'task' has control='text' — uses plain <input>
         expect(screen.getByLabelText('task')).toBeInTheDocument();
     });
 
@@ -227,10 +229,10 @@ describe('PromptDetailPanel — meta-prompt guard note', () => {
         expect(screen.queryByRole('note')).not.toBeInTheDocument();
     });
 
-    it('guard note shows via category code fallback (D01, isMetaPrompt unset)', () => {
-        const d01Variant = { ...variant, categoryCode: 'D01', isMetaPrompt: undefined as unknown as boolean };
-        render(<PromptDetailPanel logical={logical} variant={d01Variant} domain={dom} category={cat} />);
-        expect(screen.getByRole('note')).toBeInTheDocument();
+    it('guard note is NOT shown when isMetaPrompt is false (no category-code fallback)', () => {
+        const nonMetaVariant = { ...variant, isMetaPrompt: false };
+        render(<PromptDetailPanel logical={logical} variant={nonMetaVariant} domain={dom} category={cat} />);
+        expect(screen.queryByRole('note')).not.toBeInTheDocument();
     });
 
     it('guard note contains Step 1 and Step 2 instructions', () => {
@@ -360,7 +362,7 @@ const chatVariant: PromptVariant = {
     ...variant,
     id: 'USR-A03-gen-chat',
     executionContext: 'chat',
-    parameters: [{ name: 'language', optional: false }],
+    parameters: [{ name: 'language', optional: false, control: 'text' }],
 };
 
 const agentVariant: PromptVariant = {
@@ -368,18 +370,18 @@ const agentVariant: PromptVariant = {
     id: 'AGT-A03-gen',
     executionContext: 'agent',
     parameters: [
-        { name: 'language', optional: false },
-        { name: 'repo_path', optional: false },
+        { name: 'language', optional: false, control: 'text' },
+        { name: 'repo_path', optional: false, control: 'text' },
     ],
 };
 
-const logicalMultiAxis: LogicalPrompt = {
+const logicalMultiAxis: LogicalPromptDef = {
     id: 'LP-A03-gen-multi',
     categoryCode: 'A03',
     title: 'Generate Code',
     description: '',
-    variantAxes: ['executionContext'],
-    variantIds: ['USR-A03-gen-chat', 'AGT-A03-gen'],
+    variantAxes: ['mode'],
+    variants: [chatVariant, agentVariant],
     defaultVariantId: 'USR-A03-gen-chat',
 };
 
@@ -500,7 +502,7 @@ describe('PromptDetailPanel — param preservation on variant switch (T2.4)', ()
     });
 
     it('resets params when a different logical prompt is selected', async () => {
-        const differentLogical: LogicalPrompt = { ...logicalMultiAxis, id: 'LP-B01-different' };
+        const differentLogical: LogicalPromptDef = { ...logicalMultiAxis, id: 'LP-B01-different' };
         const { rerender } = render(
             <PromptDetailPanel
                 logical={logicalMultiAxis}
@@ -516,7 +518,7 @@ describe('PromptDetailPanel — param preservation on variant switch (T2.4)', ()
         rerender(
             <PromptDetailPanel
                 logical={differentLogical}
-                variant={{ ...chatVariant, parameters: [{ name: 'language', optional: false }] }}
+                variant={{ ...chatVariant, parameters: [{ name: 'language', optional: false, control: 'text' }] }}
                 variants={[chatVariant]}
                 domain={dom}
                 category={cat}

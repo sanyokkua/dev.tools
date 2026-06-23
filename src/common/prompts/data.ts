@@ -1,4 +1,5 @@
 import { loadCategory, loadManifest, loadSkill } from './loader';
+import type { Manifest, SkillDef } from './model/types';
 import type {
     CatalogRow,
     Category,
@@ -156,30 +157,25 @@ export function buildSysPromptHref(
     return `${basePath}/prompts-collection?${params.toString()}`;
 }
 
-export function buildCatalogRows(data: PromptsData, skills: SkillsData): CatalogRow[] {
+export function buildCatalogRows(manifest: Manifest): CatalogRow[] {
     const rows: CatalogRow[] = [];
+    const categoryMap = new Map(manifest.categories.map((c) => [c.code, c]));
+    const domainMap = new Map(manifest.domains.map((d) => [d.code, d]));
 
-    for (const lp of data.logical) {
-        const category = data.categories.find((c) => c.code === lp.categoryCode);
+    for (const lp of manifest.logical) {
+        const category = categoryMap.get(lp.categoryCode);
         if (!category) continue;
-        const domain = data.domains.find((d) => d.code === category.domainCode);
+        const domain = domainMap.get(lp.domainCode ?? category.domainCode);
         if (!domain) continue;
 
-        const lpVariants = variantsOf(data, lp.id).filter((v) => v.kind !== 'system');
-        const isMetaPrompt = lpVariants.some((v) => v.isMetaPrompt);
-        const hasChat = lpVariants.some((v) => v.executionContext === 'chat');
-        const hasAgent = lpVariants.some((v) => v.executionContext === 'agent');
-        const hasModel = lp.variantAxes.includes('model');
-        const modelCount = hasModel ? new Set(lpVariants.map((v) => v.model).filter(Boolean)).size : 0;
-
         let variantSummary = '—';
-        if (hasModel) {
-            variantSummary = `${modelCount} model${modelCount !== 1 ? 's' : ''}`;
-        } else if (hasChat && hasAgent) {
+        if (lp.hasModel) {
+            variantSummary = `${lp.modelCount} model${lp.modelCount !== 1 ? 's' : ''}`;
+        } else if (lp.hasChat && lp.hasAgent) {
             variantSummary = 'chat · agent';
-        } else if (hasChat) {
+        } else if (lp.hasChat) {
             variantSummary = 'chat';
-        } else if (hasAgent) {
+        } else if (lp.hasAgent) {
             variantSummary = 'agent';
         }
 
@@ -192,22 +188,22 @@ export function buildCatalogRows(data: PromptsData, skills: SkillsData): Catalog
             domainTitle: domain.title,
             categorySlug: category.slug,
             categoryTitle: category.title,
-            isMetaPrompt,
-            hasChat,
-            hasAgent,
-            hasModel,
-            modelCount,
+            isMetaPrompt: lp.isMetaPrompt,
+            hasChat: lp.hasChat,
+            hasAgent: lp.hasAgent,
+            hasModel: lp.hasModel,
+            modelCount: lp.modelCount,
             variantSummary,
         });
     }
 
-    for (const skill of skills.skills) {
-        const domain = data.domains.find((d) => d.code === skill.domainCode);
+    for (const skill of manifest.skills) {
+        const domain = domainMap.get(skill.domainCode);
         const domainTitle = domain?.title ?? skill.domainCode;
         const domainSlug = domain?.slug ?? skill.domainCode;
-        const toolList = skill.allowedTools.slice(0, 3).join(' · ');
-        const toolSuffix = skill.allowedTools.length > 3 ? ' +…' : '';
-        const variantSummary = skill.allowedTools.length ? toolList + toolSuffix : '—';
+        const tagList = skill.tags.slice(0, 3).join(' · ');
+        const tagSuffix = skill.tags.length > 3 ? ' +…' : '';
+        const variantSummary = skill.tags.length ? tagList + tagSuffix : '—';
 
         rows.push({
             id: skill.slug,
@@ -288,7 +284,7 @@ export interface InstallInstructions {
     notes: string;
 }
 
-export function buildInstallInstructions(skill: Skill, target: InstallTarget): InstallInstructions {
+export function buildInstallInstructions(skill: SkillDef, target: InstallTarget): InstallInstructions {
     const slug = skill.slug;
     switch (target) {
         case 'claude-code':

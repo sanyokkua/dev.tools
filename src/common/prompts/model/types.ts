@@ -162,18 +162,20 @@ export interface ManifestLogical {
     keywords: string[];
 }
 
+export interface ManifestSkill {
+    id: string;
+    slug: string;
+    domainCode: string;
+    title: string;
+    version: string;
+    description: string;
+    tags: string[];
+    fileCount: number;
+}
+
 export interface Manifest {
     domains: Domain[];
     categories: Category[];
     logical: ManifestLogical[];
-    skills: {
-        id: string;
-        slug: string;
-        domainCode: string;
-        title: string;
-        version: string;
-        description: string;
-        tags: string[];
-        fileCount: number;
-    }[];
+    skills: ManifestSkill[];
 }

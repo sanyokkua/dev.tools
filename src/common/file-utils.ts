@@ -1,6 +1,6 @@
 import { DEFAULT_EXTENSION, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo, FileSaveProperties, OnErrorHandler, OnSuccessHandler } from '@/common/file-types';
-import type { Skill } from '@/common/prompts/types';
+import type { SkillDef } from '@/common/prompts/model/types';
 import { fileSave } from 'browser-fs-access';
 
 /**
@@ -213,7 +213,7 @@ export const handleFileOpenFailure: (error: unknown) => FileInfo = (error) => {
     return createEmptyFile();
 };
 
-export async function downloadSkillZip(skill: Skill): Promise<void> {
+export async function downloadSkillZip(skill: SkillDef): Promise<void> {
     const { strToU8, zipSync } = await import('fflate');
     const entries: Record<string, Uint8Array> = {};
     for (const file of skill.files) {

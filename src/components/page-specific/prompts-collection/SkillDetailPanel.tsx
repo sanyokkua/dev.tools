@@ -1,18 +1,18 @@
 import { downloadSkillZip, saveTextFile } from '@/common/file-utils';
 import { buildInstallInstructions, type InstallTarget } from '@/common/prompts/data';
-import type { Skill, SkillFile, SkillsData } from '@/common/prompts/types';
+import type { SkillDef, SkillFile } from '@/common/prompts/model/types';
 import { useToast } from '@/contexts/ToasterContext';
 import SegmentedControl from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useState } from 'react';
 
 interface Props {
-    skill: Skill | null;
-    skillsData: SkillsData | null;
+    skill: SkillDef | null;
+    relatedSkills?: { slug: string; title: string }[];
     onSelectSkill?: (slug: string) => void;
 }
 
-const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill }) => {
+const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelectSkill }) => {
     const { showToast } = useToast();
     const [installTarget, setInstallTarget] = useState<InstallTarget>('claude-code');
     const [zipState, setZipState] = useState<'idle' | 'loading' | 'done'>('idle');
@@ -65,13 +65,6 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, skillsData, onSelectSkill })
             </div>
         );
     }
-
-    const relatedSkills = skill.relatedSkillIds
-        .map((id) => {
-            const slug = id.startsWith('SKILL-') ? id.slice(6) : id;
-            return skillsData?.skills.find((s) => s.slug === slug);
-        })
-        .filter(Boolean) as Skill[];
 
     const installInstructions = buildInstallInstructions(skill, installTarget);
 

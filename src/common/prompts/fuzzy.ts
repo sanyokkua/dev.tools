@@ -1,8 +1,8 @@
-import type { PromptsData, PromptVariant, Skill, SkillsData } from './types';
+import type { Manifest, ManifestLogical, ManifestSkill } from './model/types';
 
 export interface PaletteResult {
     type: 'prompt' | 'skill';
-    item: PromptVariant | Skill;
+    item: ManifestLogical | ManifestSkill;
     score: number;
     label: string;
     sublabel: string;
@@ -39,45 +39,44 @@ export function fuzzyScore(query: string, target: string): number {
     return qi < q.length ? -1 : score;
 }
 
-export function paletteSearch(data: PromptsData, skills: SkillsData, query: string): PaletteResult[] {
+export function paletteSearch(manifest: Manifest, query: string): PaletteResult[] {
     const trimmed = query.trim();
     const results: PaletteResult[] = [];
 
-    const categoryMap = new Map(data.categories.map((c) => [c.code, c]));
-    const domainMap = new Map(data.domains.map((d) => [d.code, d]));
+    const categoryMap = new Map(manifest.categories.map((c) => [c.code, c]));
+    const domainMap = new Map(manifest.domains.map((d) => [d.code, d]));
 
-    for (const v of data.variants) {
-        if (v.kind === 'system') continue;
-        const cat = categoryMap.get(v.categoryCode);
-        const domain = domainMap.get(cat?.domainCode ?? '');
+    for (const logical of manifest.logical) {
+        const cat = categoryMap.get(logical.categoryCode);
+        const domain = domainMap.get(logical.domainCode ?? cat?.domainCode ?? '');
         const sublabel = [domain?.title, cat?.title].filter(Boolean).join(' › ');
 
         if (!trimmed) {
-            results.push({ type: 'prompt', item: v, score: 0, label: v.title, sublabel });
+            results.push({ type: 'prompt', item: logical, score: 0, label: logical.title, sublabel });
             continue;
         }
 
-        const titleScore = fuzzyScore(trimmed, v.title);
-        const descScore = fuzzyScore(trimmed, v.description);
-        const kwScore = v.keywords.length ? Math.max(...v.keywords.map((k) => fuzzyScore(trimmed, k))) : -1;
+        const titleScore = fuzzyScore(trimmed, logical.title);
+        const descScore = fuzzyScore(trimmed, logical.description);
+        const kwScore = logical.keywords.length ? Math.max(...logical.keywords.map((k) => fuzzyScore(trimmed, k))) : -1;
         const score = Math.max(titleScore, descScore * 0.6, kwScore * 0.4);
-        if (score >= 0) results.push({ type: 'prompt', item: v, score, label: v.title, sublabel });
+        if (score >= 0) results.push({ type: 'prompt', item: logical, score, label: logical.title, sublabel });
     }
 
-    for (const s of skills.skills) {
-        const domain = domainMap.get(s.domainCode);
+    for (const skill of manifest.skills) {
+        const domain = domainMap.get(skill.domainCode);
         const sublabel = domain?.title ?? '';
 
         if (!trimmed) {
-            results.push({ type: 'skill', item: s, score: 0, label: s.title, sublabel });
+            results.push({ type: 'skill', item: skill, score: 0, label: skill.title, sublabel });
             continue;
         }
 
-        const titleScore = fuzzyScore(trimmed, s.title);
-        const descScore = fuzzyScore(trimmed, s.description);
-        const tagScore = s.tags.length ? Math.max(...s.tags.map((tag) => fuzzyScore(trimmed, tag))) : -1;
+        const titleScore = fuzzyScore(trimmed, skill.title);
+        const descScore = fuzzyScore(trimmed, skill.description);
+        const tagScore = skill.tags.length ? Math.max(...skill.tags.map((tag) => fuzzyScore(trimmed, tag))) : -1;
         const score = Math.max(titleScore, descScore * 0.6, tagScore * 0.4);
-        if (score >= 0) results.push({ type: 'skill', item: s, score, label: s.title, sublabel });
+        if (score >= 0) results.push({ type: 'skill', item: skill, score, label: skill.title, sublabel });
     }
 
     if (!trimmed) return results.slice(0, MAX_PALETTE_RESULTS);

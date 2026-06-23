@@ -1,7 +1,7 @@
 import { buildSysPromptHref, replaceParams } from '@/common/prompts/data';
 import { isMetaPrompt } from '@/common/prompts/meta';
+import type { Category, Domain, LogicalPromptDef, PromptVariant } from '@/common/prompts/model/types';
 import { VALUE_SETS } from '@/common/prompts/registries/value-sets';
-import type { Category, Domain, LogicalPrompt, PromptVariant } from '@/common/prompts/types';
 import { useToast } from '@/contexts/ToasterContext';
 import EditableCombobox from '@/controls/EditableCombobox';
 import SegmentedControl from '@/controls/SegmentedControl';
@@ -9,7 +9,7 @@ import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useState } from 'react';
 
 interface Props {
-    logical: LogicalPrompt | null;
+    logical: LogicalPromptDef | null;
     variant: PromptVariant | null;
     variants?: PromptVariant[];
     domain: Domain | null;
@@ -93,7 +93,7 @@ const PromptDetailPanel: React.FC<Props> = ({
 
     // Axis control derived values
     const activeAxes = logical?.variantAxes ?? [];
-    const hasContextAxis = activeAxes.includes('executionContext');
+    const hasContextAxis = activeAxes.includes('mode');
     const hasModelAxis = activeAxes.includes('model');
     const hasSubAxis = activeAxes.includes('subVariant');
 
@@ -124,7 +124,7 @@ const PromptDetailPanel: React.FC<Props> = ({
                             {contextOptions.length > 1 && (
                                 <SegmentedControl
                                     options={contextOptions.map((v) => ({ value: v, label: v }))}
-                                    value={variant.executionContext ?? contextOptions[0]}
+                                    value={variant.executionContext}
                                     onChange={(v) =>
                                         onVariantSwitch(
                                             v as 'chat' | 'agent',
