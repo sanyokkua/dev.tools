@@ -1,5 +1,5 @@
 import { downloadSkillZip, saveTextFile } from '@/common/file-utils';
-import { buildInstallInstructions, type InstallTarget } from '@/common/prompts/data';
+import { buildInstallInstructions, type InstallScope, type InstallTarget } from '@/common/prompts/data';
 import type { SkillDef, SkillFile } from '@/common/prompts/model/types';
 import { useToast } from '@/contexts/ToasterContext';
 import SegmentedControl from '@/controls/SegmentedControl';
