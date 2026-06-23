@@ -73,5 +73,9 @@ export const skill: SkillDef = {
             bytes: 3326,
         },
     ],
+    scripts: [
+        { name: 'validate-mermaid.mjs', purpose: 'Validate Mermaid diagram syntax using static parse' },
+        { name: 'validate-mermaid-real.mjs', purpose: 'Validate Mermaid diagrams with the real render engine' },
+    ],
     install: { defaultLocation: '.claude/skills/mermaid/', supportsProject: true, supportsGlobal: true },
 };

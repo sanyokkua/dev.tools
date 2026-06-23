@@ -100,5 +100,10 @@ export const skill: SkillDef = {
             bytes: 1860,
         },
     ],
+    scripts: [
+        { name: 'inventory.sh', purpose: 'Build a file and dependency inventory of the repository' },
+        { name: 'detect-stack.sh', purpose: 'Detect technology stack from project files' },
+        { name: 'git-metadata.sh', purpose: 'Collect git history and contributor metadata' },
+    ],
     install: { defaultLocation: '.claude/skills/project-documentation/', supportsProject: true, supportsGlobal: true },
 };

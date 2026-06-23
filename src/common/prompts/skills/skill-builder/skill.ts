@@ -79,5 +79,9 @@ export const skill: SkillDef = {
             bytes: 942,
         },
     ],
+    scripts: [
+        { name: 'validate-skill.py', purpose: 'Validate a SKILL.md file structure and frontmatter' },
+        { name: 'scaffold-skill.sh', purpose: 'Scaffold a new skill directory with the standard layout' },
+    ],
     install: { defaultLocation: '.claude/skills/skill-builder/', supportsProject: true, supportsGlobal: true },
 };

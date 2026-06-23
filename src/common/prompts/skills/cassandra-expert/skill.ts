@@ -98,5 +98,9 @@ export const skill: SkillDef = {
             bytes: 1465,
         },
     ],
+    scripts: [
+        { name: 'describe-schema.cql', purpose: 'Describe Cassandra keyspace and table schema' },
+        { name: 'run-cql.sh', purpose: 'Execute CQL statements against a Cassandra cluster' },
+    ],
     install: { defaultLocation: '.claude/skills/cassandra-expert/', supportsProject: true, supportsGlobal: true },
 };

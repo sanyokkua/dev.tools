@@ -108,5 +108,11 @@ export const skill: SkillDef = {
             bytes: 2626,
         },
     ],
+    scripts: [
+        { name: 'investigate-schema.sql', purpose: 'Inspect Oracle schema objects and metadata' },
+        { name: 'performance-analysis.sql', purpose: 'Collect Oracle performance metrics and execution plans' },
+        { name: 'generate-schema-doc.sql', purpose: 'Generate documentation for Oracle schema objects' },
+        { name: 'run-sql.sh', purpose: 'Execute SQL scripts against an Oracle database' },
+    ],
     install: { defaultLocation: '.claude/skills/oracle-expert/', supportsProject: true, supportsGlobal: true },
 };

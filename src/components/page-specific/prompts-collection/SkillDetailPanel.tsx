@@ -1,8 +1,15 @@
 import { downloadSkillZip, saveTextFile } from '@/common/file-utils';
-import { buildInstallInstructions, type InstallScope, type InstallTarget } from '@/common/prompts/data';
+import {
+    buildInstallInstructions,
+    buildInvokePrompt,
+    type InstallScope,
+    type InstallTarget,
+} from '@/common/prompts/data';
 import type { SkillDef, SkillFile } from '@/common/prompts/model/types';
 import { useToast } from '@/contexts/ToasterContext';
 import SegmentedControl from '@/controls/SegmentedControl';
+import type { SelectItem } from '@/controls/Select';
+import Select from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -18,10 +25,17 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
     const [installScope, setInstallScope] = useState<InstallScope>('project');
     const [zipState, setZipState] = useState<'idle' | 'loading' | 'done'>('idle');
     const [copyStates, setCopyStates] = useState<Record<string, boolean>>({});
+    const [invokeTask, setInvokeTask] = useState('');
+    const [installCopied, setInstallCopied] = useState(false);
+    const [invokeCopied, setInvokeCopied] = useState(false);
 
     useEffect(() => {
         setCopyStates({});
         setZipState('idle');
+        setInstallScope('project');
+        setInvokeTask('');
+        setInstallCopied(false);
+        setInvokeCopied(false);
     }, [skill?.slug]);
 
     const handleFileCopy = useCallback(
@@ -162,19 +176,38 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
                 </div>
             </div>
 
+            {skill.scripts && skill.scripts.length > 0 && (
+                <div className="pc-detail-section">
+                    <h3 className="pc-section-heading">Scripts</h3>
+                    <div className="pc-skill-scripts">
+                        {skill.scripts.map((s) => (
+                            <div key={s.name} className="pc-skill-script-row">
+                                <code className="pc-mono">{s.name}</code>
+                                <span className="pc-skill-script-purpose">{s.purpose}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="pc-skill-scripts-note">
+                        Run via interpreter: <code>bash scripts/name.sh</code>, <code>python3 scripts/name.py</code>,{' '}
+                        <code>node scripts/name.mjs</code>
+                        {' — '}no executable bit required. After zip extraction: <code>chmod +x scripts/*.sh</code>
+                    </p>
+                </div>
+            )}
+
             <div className="pc-detail-section">
                 <h3 className="pc-section-heading">Install for</h3>
-                <SegmentedControl
-                    options={[
-                        { value: 'claude-code', label: 'Claude Code' },
-                        { value: 'github-copilot', label: 'GitHub Copilot' },
-                        { value: 'opencode', label: 'OpenCode' },
-                        { value: 'amazon-kiro', label: 'Amazon Kiro' },
-                        { value: 'openai-codex', label: 'OpenAI Codex' },
-                        { value: 'jetbrains-junie', label: 'JetBrains Junie' },
+                <Select
+                    items={[
+                        { itemId: 'claude-code', displayText: 'Claude Code' },
+                        { itemId: 'github-copilot', displayText: 'GitHub Copilot' },
+                        { itemId: 'opencode', displayText: 'OpenCode' },
+                        { itemId: 'amazon-kiro', displayText: 'Amazon Kiro' },
+                        { itemId: 'openai-codex', displayText: 'OpenAI Codex' },
+                        { itemId: 'jetbrains-junie', displayText: 'JetBrains Junie' },
                     ]}
-                    value={installTarget}
-                    onChange={(v) => setInstallTarget(v as InstallTarget)}
+                    selectedItem={installTarget}
+                    onSelect={(item: SelectItem) => setInstallTarget(item.itemId as InstallTarget)}
                     aria-label="Install target"
                 />
                 <SegmentedControl
@@ -199,6 +232,47 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
                         ))}
                     </div>
                     <p className="pc-skill-install-notes">{installInstructions.notes}</p>
+                </div>
+                <button
+                    type="button"
+                    className="btn sm"
+                    onClick={() =>
+                        void navigator.clipboard.writeText(installInstructions.copyablePrompt).then(() => {
+                            setInstallCopied(true);
+                            setTimeout(() => setInstallCopied(false), 1500);
+                        })
+                    }
+                    aria-label="Copy install prompt"
+                >
+                    {installCopied ? '✓ Copied' : 'Copy install prompt'}
+                </button>
+            </div>
+
+            <div className="pc-detail-section">
+                <h3 className="pc-section-heading">Invoke</h3>
+                <input
+                    type="text"
+                    className="pc-skill-invoke-input"
+                    placeholder="Describe the task (optional)"
+                    value={invokeTask}
+                    onChange={(e) => setInvokeTask(e.target.value)}
+                    aria-label="Task description"
+                />
+                <div className="pc-skill-invoke-prompt">
+                    <code>{buildInvokePrompt(skill, invokeTask)}</code>
+                    <button
+                        type="button"
+                        className="btn sm"
+                        onClick={() =>
+                            void navigator.clipboard.writeText(buildInvokePrompt(skill, invokeTask)).then(() => {
+                                setInvokeCopied(true);
+                                setTimeout(() => setInvokeCopied(false), 1500);
+                            })
+                        }
+                        aria-label="Copy invoke prompt"
+                    >
+                        {invokeCopied ? '✓ Copied' : 'Copy'}
+                    </button>
                 </div>
             </div>
 

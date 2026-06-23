@@ -108,5 +108,10 @@ export const skill: SkillDef = {
             bytes: 1474,
         },
     ],
+    scripts: [
+        { name: 'validate-drawio.py', purpose: 'Validate Draw.io XML files for structural correctness' },
+        { name: 'encode_drawio_url.py', purpose: 'Encode diagram XML for use in a Draw.io URL' },
+        { name: 'repair_png.py', purpose: 'Repair PNG files with embedded Draw.io XML' },
+    ],
     install: { defaultLocation: '.claude/skills/drawio/', supportsProject: true, supportsGlobal: true },
 };

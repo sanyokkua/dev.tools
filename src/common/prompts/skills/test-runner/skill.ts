@@ -64,5 +64,6 @@ export const skill: SkillDef = {
             bytes: 1794,
         },
     ],
+    scripts: [{ name: 'detect-and-run-tests.sh', purpose: 'Detect test framework and run the test suite' }],
     install: { defaultLocation: '.claude/skills/test-runner/', supportsProject: true, supportsGlobal: true },
 };

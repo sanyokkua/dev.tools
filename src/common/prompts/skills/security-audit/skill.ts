@@ -81,5 +81,10 @@ export const skill: SkillDef = {
             bytes: 4375,
         },
     ],
+    scripts: [
+        { name: 'dep-audit.sh', purpose: 'Audit dependencies for known vulnerabilities' },
+        { name: 'secret-scan.sh', purpose: 'Scan codebase for hardcoded secrets and credentials' },
+        { name: 'grep-dangerous-sinks.sh', purpose: 'Grep for dangerous code patterns and injection sinks' },
+    ],
     install: { defaultLocation: '.claude/skills/security-audit/', supportsProject: true, supportsGlobal: true },
 };

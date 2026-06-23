@@ -88,8 +88,8 @@ describe('SkillDetailPanel', () => {
         render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
         expect(screen.getByText('SKILL.md')).toBeInTheDocument();
         expect(screen.getByText('helper.js')).toBeInTheDocument();
-        const copyBtns = screen.getAllByRole('button', { name: /Copy/ });
-        expect(copyBtns).toHaveLength(2);
+        const fileCopyBtns = screen.getAllByRole('button', { name: /^Copy (SKILL\.md|helper\.js)$/ });
+        expect(fileCopyBtns).toHaveLength(2);
     });
 
     test('clicking Copy calls navigator.clipboard.writeText with file content', async () => {
@@ -111,8 +111,8 @@ describe('SkillDetailPanel', () => {
 
     test('switching to Amazon Kiro changes placement to .kiro/', () => {
         render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
-        const kiroBtn = screen.getByRole('button', { name: 'Amazon Kiro' });
-        fireEvent.click(kiroBtn);
+        const select = screen.getByRole('combobox', { name: /Install target/i });
+        fireEvent.change(select, { target: { value: 'amazon-kiro' } });
         expect(screen.getByText(`.kiro/skills/${FIXTURE_SKILL.slug}/`)).toBeInTheDocument();
     });
 

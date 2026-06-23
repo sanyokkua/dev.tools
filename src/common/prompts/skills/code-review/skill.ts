@@ -55,5 +55,6 @@ export const skill: SkillDef = {
             bytes: 2495,
         },
     ],
+    scripts: [{ name: 'get-review-target.sh', purpose: 'Resolve the scope of a code review deterministically' }],
     install: { defaultLocation: '.claude/skills/code-review/', supportsProject: true, supportsGlobal: true },
 };

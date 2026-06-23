@@ -83,5 +83,10 @@ export const skill: SkillDef = {
             bytes: 3147,
         },
     ],
+    scripts: [
+        { name: 'find-config.sh', purpose: 'Locate CI/CD and infra config files in a repository' },
+        { name: 'scan-secrets.sh', purpose: 'Scan for hardcoded secrets and credentials' },
+        { name: 'run-linters.sh', purpose: 'Run available linters and static analysis tools' },
+    ],
     install: { defaultLocation: '.claude/skills/config-scan/', supportsProject: true, supportsGlobal: true },
 };

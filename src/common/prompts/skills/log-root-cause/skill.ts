@@ -79,5 +79,9 @@ export const skill: SkillDef = {
             bytes: 2172,
         },
     ],
+    scripts: [
+        { name: 'extract-timeline.sh', purpose: 'Extract and sort log entries into a chronological timeline' },
+        { name: 'map-log-to-source.sh', purpose: 'Map log file paths to source repository locations' },
+    ],
     install: { defaultLocation: '.claude/skills/log-root-cause/', supportsProject: true, supportsGlobal: true },
 };

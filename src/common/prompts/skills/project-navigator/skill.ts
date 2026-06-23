@@ -78,5 +78,10 @@ export const skill: SkillDef = {
             bytes: 2940,
         },
     ],
+    scripts: [
+        { name: 'inventory.sh', purpose: 'List repository structure and file counts by type' },
+        { name: 'find-entrypoints.sh', purpose: 'Locate application entry points and main files' },
+        { name: 'find-config.sh', purpose: 'Find configuration files across the repository' },
+    ],
     install: { defaultLocation: '.claude/skills/project-navigator/', supportsProject: true, supportsGlobal: true },
 };

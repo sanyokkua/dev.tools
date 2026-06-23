@@ -125,5 +125,8 @@ export const skill: SkillDef = {
             bytes: 3127,
         },
     ],
+    scripts: [
+        { name: 'scan-scaling-config.sh', purpose: 'Scan infrastructure config for scaling and resource settings' },
+    ],
     install: { defaultLocation: '.claude/skills/aws-expert/', supportsProject: true, supportsGlobal: true },
 };
