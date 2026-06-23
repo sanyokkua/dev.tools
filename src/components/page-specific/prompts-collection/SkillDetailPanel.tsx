@@ -15,6 +15,7 @@ interface Props {
 const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelectSkill }) => {
     const { showToast } = useToast();
     const [installTarget, setInstallTarget] = useState<InstallTarget>('claude-code');
+    const [installScope, setInstallScope] = useState<InstallScope>('project');
     const [zipState, setZipState] = useState<'idle' | 'loading' | 'done'>('idle');
     const [copyStates, setCopyStates] = useState<Record<string, boolean>>({});
 
@@ -66,7 +67,7 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
         );
     }
 
-    const installInstructions = buildInstallInstructions(skill, installTarget);
+    const installInstructions = buildInstallInstructions(skill, installTarget, installScope);
 
     return (
         <div className="pc-detail" role="region" aria-label={skill.title}>
@@ -166,12 +167,24 @@ const SkillDetailPanel: React.FC<Props> = ({ skill, relatedSkills = [], onSelect
                 <SegmentedControl
                     options={[
                         { value: 'claude-code', label: 'Claude Code' },
-                        { value: 'kiro', label: 'Kiro CLI' },
-                        { value: 'other', label: 'Other' },
+                        { value: 'github-copilot', label: 'GitHub Copilot' },
+                        { value: 'opencode', label: 'OpenCode' },
+                        { value: 'amazon-kiro', label: 'Amazon Kiro' },
+                        { value: 'openai-codex', label: 'OpenAI Codex' },
+                        { value: 'jetbrains-junie', label: 'JetBrains Junie' },
                     ]}
                     value={installTarget}
                     onChange={(v) => setInstallTarget(v as InstallTarget)}
                     aria-label="Install target"
+                />
+                <SegmentedControl
+                    options={[
+                        { value: 'project', label: 'Project' },
+                        { value: 'user-global', label: 'User-global' },
+                    ]}
+                    value={installScope}
+                    onChange={(v) => setInstallScope(v as InstallScope)}
+                    aria-label="Install scope"
                 />
                 <div className="pc-skill-install">
                     <div className="pc-skill-install-placement">

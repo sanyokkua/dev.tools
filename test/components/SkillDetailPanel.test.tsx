@@ -109,11 +109,11 @@ describe('SkillDetailPanel', () => {
         expect(saveTextFile).toHaveBeenCalled();
     });
 
-    test('switching to Kiro CLI changes placement to .kiro/', () => {
+    test('switching to Amazon Kiro changes placement to .kiro/', () => {
         render(<SkillDetailPanel skill={FIXTURE_SKILL} />);
-        const kiroBtn = screen.getByRole('button', { name: 'Kiro CLI' });
+        const kiroBtn = screen.getByRole('button', { name: 'Amazon Kiro' });
         fireEvent.click(kiroBtn);
-        expect(screen.getByText('.kiro/steering/')).toBeInTheDocument();
+        expect(screen.getByText(`.kiro/skills/${FIXTURE_SKILL.slug}/`)).toBeInTheDocument();
     });
 
     test('Download .zip button exists and calls downloadSkillZip on click', async () => {

@@ -277,40 +277,118 @@ export function findSkillBySlug(skills: SkillsData, slug: string): Skill | undef
     return skills.skills.find((s) => s.slug === slug);
 }
 
-export type InstallTarget = 'claude-code' | 'kiro' | 'other';
+export type InstallScope = 'project' | 'user-global';
+export type InstallTarget =
+    | 'claude-code'
+    | 'github-copilot'
+    | 'opencode'
+    | 'amazon-kiro'
+    | 'openai-codex'
+    | 'jetbrains-junie';
 export interface InstallInstructions {
     placement: string;
     steps: string[];
     notes: string;
+    copyablePrompt: string;
 }
 
-export function buildInstallInstructions(skill: SkillDef, target: InstallTarget): InstallInstructions {
+export function buildInstallInstructions(
+    skill: SkillDef,
+    target: InstallTarget,
+    scope: InstallScope,
+): InstallInstructions {
     const slug = skill.slug;
+
+    let placement: string;
+    let steps: string[];
+    let notes: string;
+
     switch (target) {
         case 'claude-code':
-            return {
-                placement: `.claude/skills/${slug}/`,
-                steps: [
-                    `mkdir -p .claude/skills/${slug}`,
-                    `# Paste SKILL.md content into .claude/skills/${slug}/SKILL.md`,
-                    `# Or use the Download .zip button and extract there`,
-                ],
-                notes: 'Claude Code auto-discovers skills in .claude/skills/. No additional config needed.',
-            };
-        case 'kiro':
-            return {
-                placement: `.kiro/steering/`,
-                steps: [`mkdir -p .kiro/steering`, `# Copy SKILL.md content to .kiro/steering/${slug}.md`],
-                notes: 'Kiro loads steering files from .kiro/steering/ as persistent agent context.',
-            };
-        case 'other':
-            return {
-                placement: `<agent-config-dir>/${slug}/`,
-                steps: [
-                    `# Place SKILL.md in your agent's skill or rules directory`,
-                    `# Refer to your agent's documentation for the exact path`,
-                ],
-                notes: "Each agent has its own convention for skill placement. Check your agent's docs.",
-            };
+            if (scope === 'project') {
+                placement = `.claude/skills/${slug}/`;
+                steps = [`mkdir -p .claude/skills/${slug}`, `# Extract ${slug}.zip into .claude/skills/${slug}/`];
+            } else {
+                placement = `~/.claude/skills/`;
+                steps = [`mkdir -p ~/.claude/skills`, `# Extract ${slug}.zip into ~/.claude/skills/${slug}/`];
+            }
+            notes = 'Claude Code auto-discovers skills in .claude/skills/. No additional config needed.';
+            break;
+        case 'github-copilot':
+            if (scope === 'project') {
+                placement = `.github/skills/${slug}/`;
+                steps = [`mkdir -p .github/skills/${slug}`, `# Extract ${slug}.zip into .github/skills/${slug}/`];
+            } else {
+                placement = `~/.copilot/skills/`;
+                steps = [`mkdir -p ~/.copilot/skills`, `# Extract ${slug}.zip into ~/.copilot/skills/${slug}/`];
+            }
+            notes = 'GitHub Copilot loads skills from .github/skills/ or ~/.copilot/skills/.';
+            break;
+        case 'opencode':
+            if (scope === 'project') {
+                placement = `.opencode/skills/${slug}/`;
+                steps = [`mkdir -p .opencode/skills/${slug}`, `# Extract ${slug}.zip into .opencode/skills/${slug}/`];
+            } else {
+                placement = `~/.config/opencode/skills/`;
+                steps = [
+                    `mkdir -p ~/.config/opencode/skills`,
+                    `# Extract ${slug}.zip into ~/.config/opencode/skills/${slug}/`,
+                ];
+            }
+            notes = 'OpenCode loads skills from .opencode/skills/ or ~/.config/opencode/skills/.';
+            break;
+        case 'amazon-kiro':
+            if (scope === 'project') {
+                placement = `.kiro/skills/${slug}/`;
+                steps = [`mkdir -p .kiro/skills/${slug}`, `# Extract ${slug}.zip into .kiro/skills/${slug}/`];
+            } else {
+                placement = `~/.kiro/skills/`;
+                steps = [`mkdir -p ~/.kiro/skills`, `# Extract ${slug}.zip into ~/.kiro/skills/${slug}/`];
+            }
+            notes = 'Amazon Kiro loads skills from .kiro/skills/.';
+            break;
+        case 'openai-codex':
+            if (scope === 'project') {
+                placement = `.codex/config.toml`;
+                steps = [
+                    `# Add skills path to .codex/config.toml`,
+                    `# skills_dir = ".codex/skills"`,
+                    `mkdir -p .codex/skills/${slug}`,
+                    `# Extract ${slug}.zip into .codex/skills/${slug}/`,
+                ];
+            } else {
+                placement = `~/.codex/`;
+                steps = [`mkdir -p ~/.codex/${slug}`, `# Extract ${slug}.zip into ~/.codex/${slug}/`];
+            }
+            notes = 'OpenAI Codex uses a config.toml to discover skill directories.';
+            break;
+        case 'jetbrains-junie':
+            if (scope === 'project') {
+                placement = `project Agent Skills`;
+                steps = [
+                    `# In JetBrains IDE: Settings → Tools → Junie → Agent Skills → Add`,
+                    `# Point to the extracted skill directory`,
+                ];
+            } else {
+                placement = `user-level Agent Skills`;
+                steps = [
+                    `# In JetBrains IDE: Settings → Tools → Junie → Agent Skills → Add (user level)`,
+                    `# Point to the extracted skill directory`,
+                ];
+            }
+            notes = 'In JetBrains IDE, add the skill via Settings → Tools → Junie → Agent Skills.';
+            break;
     }
+
+    const scriptNote =
+        skill.scripts && skill.scripts.length > 0
+            ? '\n# Script permissions: run via interpreter\n#   bash scripts/name.sh  /  python3 scripts/name.py  /  node scripts/name.mjs\n# Or after zip extraction:  chmod +x scripts/*.sh'
+            : '';
+    const copyablePrompt = steps.join('\n') + scriptNote;
+
+    return { placement, steps, notes, copyablePrompt };
+}
+
+export function buildInvokePrompt(skill: SkillDef, task: string): string {
+    return task.trim() ? `Use the ${skill.title} skill to ${task.trim()}.` : `Use the ${skill.title} skill.`;
 }

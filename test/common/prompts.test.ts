@@ -601,27 +601,58 @@ describe('findSkillBySlug', () => {
 describe('buildInstallInstructions', () => {
     const skillStub = FIXTURE_SKILLS.skills[0]; // use first fixture skill
 
-    test('claude-code: placement contains slug', () => {
-        const inst = buildInstallInstructions(skillStub, 'claude-code');
+    test('claude-code project: placement contains slug', () => {
+        const inst = buildInstallInstructions(skillStub, 'claude-code', 'project');
         expect(inst.placement).toContain(skillStub.slug);
         expect(inst.steps.length).toBeGreaterThan(0);
         expect(inst.notes.length).toBeGreaterThan(0);
+        expect(typeof inst.copyablePrompt).toBe('string');
     });
 
-    test('kiro: placement starts with .kiro/', () => {
-        const inst = buildInstallInstructions(skillStub, 'kiro');
+    test('claude-code user-global: placement is ~/.claude/skills/', () => {
+        const inst = buildInstallInstructions(skillStub, 'claude-code', 'user-global');
+        expect(inst.placement).toBe('~/.claude/skills/');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('amazon-kiro project: placement starts with .kiro/', () => {
+        const inst = buildInstallInstructions(skillStub, 'amazon-kiro', 'project');
         expect(inst.placement).toMatch(/^\.kiro\//);
         expect(inst.steps.length).toBeGreaterThan(0);
     });
 
-    test('other: placement contains agent-config-dir', () => {
-        const inst = buildInstallInstructions(skillStub, 'other');
-        expect(inst.placement).toContain('agent-config-dir');
+    test('github-copilot project: placement starts with .github/', () => {
+        const inst = buildInstallInstructions(skillStub, 'github-copilot', 'project');
+        expect(inst.placement).toMatch(/^\.github\//);
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('opencode user-global: placement contains opencode', () => {
+        const inst = buildInstallInstructions(skillStub, 'opencode', 'user-global');
+        expect(inst.placement).toContain('opencode');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('openai-codex project: placement is .codex/config.toml', () => {
+        const inst = buildInstallInstructions(skillStub, 'openai-codex', 'project');
+        expect(inst.placement).toBe('.codex/config.toml');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('jetbrains-junie project: placement is project Agent Skills', () => {
+        const inst = buildInstallInstructions(skillStub, 'jetbrains-junie', 'project');
+        expect(inst.placement).toBe('project Agent Skills');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('jetbrains-junie user-global: placement is user-level Agent Skills', () => {
+        const inst = buildInstallInstructions(skillStub, 'jetbrains-junie', 'user-global');
+        expect(inst.placement).toBe('user-level Agent Skills');
     });
 
     test('slug with hyphens: no double slashes in placement', () => {
         const hyphenSkill = { ...skillStub, slug: 'my-hyphen-skill' };
-        const inst = buildInstallInstructions(hyphenSkill, 'claude-code');
+        const inst = buildInstallInstructions(hyphenSkill, 'claude-code', 'project');
         expect(inst.placement).not.toContain('//');
         expect(inst.placement).toContain('my-hyphen-skill');
     });
