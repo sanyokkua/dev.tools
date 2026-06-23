@@ -40,6 +40,7 @@ import '@/styles/surfaces.scss';
 import '@/styles/switch.scss';
 import '@/styles/table.scss';
 import '@/styles/terminal-utils.scss';
+import '@/styles/textarea.scss';
 import '@/styles/toaster.scss';
 import '@/styles/tool-about.scss';
 import '@/styles/vram-calculator.scss';
