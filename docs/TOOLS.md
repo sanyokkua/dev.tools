@@ -190,8 +190,6 @@ Write Markdown on the left and see a live, GitHub-flavored preview on the right 
 
 Convert between representations in four modes: **number base** (DEC/HEX/BIN/OCT and any base 2–36), **data format** (JSON ↔ YAML ↔ TOML ↔ CSV ↔ **Markdown table**), **color** (HEX ↔ RGB ↔ HSL ↔ HSV with a swatch), and **units** (data sizes, time, temperature, length). Live, bidirectional, with per-row copy.
 
-> Note: This route exists but is currently disabled in the sidebar.
-
 **Technical**
 
 - Route: `/converting-tools`
@@ -205,8 +203,6 @@ Convert between representations in four modes: **number base** (DEC/HEX/BIN/OCT 
 
 Work with dates two ways: **Timestamp ↔ date** (Unix seconds/ms ↔ formatted date, timezone and format selectors, "Now", and a breakdown with day-of-week, day-of-year and ISO week) and **Duration between dates** (total / working / weekend days, weeks, months, years between two dates). All computed locally.
 
-> Note: This route exists but is currently disabled in the sidebar.
-
 **Technical**
 
 - Route: `/date-tools`
@@ -218,7 +214,7 @@ Work with dates two ways: **Timestamp ↔ date** (Unix seconds/ms ↔ formatted 
 
 ## Software Installer
 
-Generate **install / update / upgrade / remove** scripts for a catalog of 160+ apps across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select apps (with per-app method override and multi-version JDKs), then build a single resilient script per action or bare one-line commands per app — copy or download. The catalog and scripts are generated client-side; nothing is installed by this tool.
+Generate **install / update / upgrade / remove** scripts for a catalog of 148 apps across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select apps (with per-app method override and multi-version JDKs), then build a single resilient script per action or bare one-line commands per app — copy or download. The catalog and scripts are generated client-side; nothing is installed by this tool.
 
 **Technical**
 
