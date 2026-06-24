@@ -88,7 +88,7 @@ Reference: `src/pages/code-editor/index.tsx`.
 Key points:
 
 - Use the `.editorpane`, `.eh`, and `.eb` CSS primitives from `primitives.scss` to get a full-height layout.
-- Place two `<MonacoEditor>` instances (or one editor + one preview pane) side by side.
+- Use `<SplitPreviewEditor>` from `src/components/elements/editor/SplitPreviewEditor.tsx` — it handles the left Monaco editor + right preview pane layout; see `src/pages/mermaid-editor/index.tsx` for a reference implementation.
 - Follow the same sidebar registration and stylesheet steps from Pattern 1.
 
 ---

@@ -177,7 +177,7 @@ These additions require no runtime code changes — edit one registry file and r
 2. Add a `ModelDef` entry to the exported array:
 
     ```typescript
-    { id: 'my-model-id', label: 'My Model Label', provider: 'provider-name' }
+    { id: 'my-model-id', label: 'My Model Label', slug: 'my-model-id', modality: ['chat'] }
     ```
 
 3. Validate:
@@ -192,7 +192,7 @@ These additions require no runtime code changes — edit one registry file and r
 2. Add a `RuleOption` entry:
 
     ```typescript
-    { id: 'my-style', label: 'My Style', rule: 'Write in a ...' }
+    { id: 'my-style', label: 'My Style', definition: 'Write with clarity and brevity.', rules: ['Use short sentences.', 'Avoid jargon.'] }
     ```
 
 3. Validate:
@@ -207,7 +207,7 @@ These additions require no runtime code changes — edit one registry file and r
 2. Add a `ContextOption` entry that references existing style and tone IDs:
 
     ```typescript
-    { id: 'my-context', label: 'My Context', styleId: 'formal', toneId: 'professional' }
+    { id: 'my-context', label: 'My Context', group: 'everyday', styleId: 'formal', toneId: 'professional', structure: ['Lead with the main point.'] }
     ```
 
 3. Validate:
@@ -226,4 +226,4 @@ These additions require no runtime code changes — edit one registry file and r
 | `Missing recommendedSystemPromptId target: <sys-id>` | `recommendedSystemPromptId` references an ID that doesn't exist | Add the system prompt or fix the reference                |
 | `Invalid control type: <type>`                       | `control` value is not one of the allowed set                   | Use `select`, `textarea`, `text`, or `combobox`           |
 | `Dual prompt missing agent/chat variant`             | `modeClass: 'dual'` but only one variant                        | Add the missing `kind: 'agent'` or `kind: 'user'` variant |
-| `Parameter name contains abbreviation`               | Validator V09 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |
+| `Parameter name contains abbreviation`               | Validator V13 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |

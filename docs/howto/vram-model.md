@@ -83,7 +83,7 @@ Follow the 7-step plan in the research doc when modifying the core calculation:
 
 ### 3. Run existing tests
 
-All 198 existing cases must remain green after any change:
+All 216 existing cases must remain green after any change:
 
 ```bash
 npx jest test/common/llm-vram-calc.test.ts
