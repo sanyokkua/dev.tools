@@ -59,16 +59,9 @@ no network required.
 
 ## Screenshots
 
-![Main Page](docs/screenshots/main-page.png)
-![String Utils](docs/screenshots/string-utils.png)
-![JSON Formatter](docs/screenshots/json-formatter.png)
-![Hashing Tools](docs/screenshots/hashing.png)
-![Encoding Tools](docs/screenshots/encoding.png)
-![Code Editor](docs/screenshots/code-editor.png)
-![Markdown Tools](docs/screenshots/markdown-tools.png)
-![Software Installer](docs/screenshots/software-installer.png)
-![LLM VRAM Calculator](docs/screenshots/vram-calculator.png)
-![Prompts Collection](docs/screenshots/prompts-collection.png)
+![Main Page](docs/Main_Welcome.png)
+![Markdown Tools](docs/Markdown.png)
+![Software Installer](docs/Installer.png)
 
 > See [`docs/screenshots/`](docs/screenshots/) for all screenshots.
 

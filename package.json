@@ -21,6 +21,7 @@
         "verify:ui": "node scripts/verify-ui.mjs && node scripts/smoke-tests.mjs",
         "validate:sw": "node scripts/validate-sw-precache.mjs",
         "build:prompts": "TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=tsconfig.build.json node --loader ts-node/esm --no-warnings scripts/build-prompts.mjs",
+        "generate:screenshots": "node scripts/generate-docs-screenshots.mjs",
         "prebuild": "npm run build:prompts",
         "predev": "npm run build:prompts"
     },
