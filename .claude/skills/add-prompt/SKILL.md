@@ -187,6 +187,20 @@ Skills live in `src/common/prompts/skills/<slug>/` as TypeScript modules with bu
 
 ---
 
+## Adding a model, style, tone, or context (data-only)
+
+These additions require no runtime code changes — edit one registry file and run `npm run build:prompts`.
+
+- [ ] **Adding a model:** Edit `src/common/prompts/registries/models.ts` — add a `ModelDef` entry. Run `npm run build:prompts`.
+
+- [ ] **Adding a style or tone:** Edit `registries/styles.ts` or `registries/tones.ts` — add a `RuleOption` entry. Run `npm run build:prompts`.
+
+- [ ] **Adding a context preset:** Edit `registries/contexts.ts` — add a `ContextOption` with `styleId`/`toneId` refs to existing entries. Run `npm run build:prompts`.
+
+> `manifest.generated.ts` and `loaders.generated.ts` are git-ignored — never commit them.
+
+---
+
 ## Validation errors
 
 | Error message                                        | Cause                                                           | Fix                                                       |

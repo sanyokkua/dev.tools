@@ -167,6 +167,57 @@ Skills live in `src/common/prompts/skills/` as TypeScript modules alongside thei
 
 ---
 
+## Adding a model, style, tone, or context (data-only)
+
+These additions require no runtime code changes — edit one registry file and run `npm run build:prompts`.
+
+### Adding a model
+
+1. Open `src/common/prompts/registries/models.ts`
+2. Add a `ModelDef` entry to the exported array:
+
+    ```typescript
+    { id: 'my-model-id', label: 'My Model Label', provider: 'provider-name' }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+### Adding a style or tone
+
+1. Open `src/common/prompts/registries/styles.ts` (or `tones.ts`)
+2. Add a `RuleOption` entry:
+
+    ```typescript
+    { id: 'my-style', label: 'My Style', rule: 'Write in a ...' }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+### Adding a context preset
+
+1. Open `src/common/prompts/registries/contexts.ts`
+2. Add a `ContextOption` entry that references existing style and tone IDs:
+
+    ```typescript
+    { id: 'my-context', label: 'My Context', styleId: 'formal', toneId: 'professional' }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+---
+
 ## Validation errors
 
 | Error message                                        | Cause                                                           | Fix                                                       |

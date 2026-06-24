@@ -158,6 +158,38 @@ Triggers on push to `master`.
 
 ---
 
+## Extending the prompts catalog (data-only)
+
+All prompt content lives in `src/common/prompts/`. Adding content never requires touching runtime code — edit the relevant TypeScript module, then run `npm run build:prompts` to validate and regenerate the manifest.
+
+### Adding a prompt
+
+See [howto/add-prompts.md](howto/add-prompts.md) for the full walkthrough. Summary:
+
+1. Create `*.prompt.ts` in `src/common/prompts/catalog/<domain>/<category>/`
+2. Register it in the category `index.ts` barrel
+3. Run `npm run build:prompts`
+
+### Adding a skill
+
+Skills live in `src/common/prompts/skills/<slug>/skill.ts` with bundled file content under `files/`. See `add-prompt` skill in Claude Code for the guided walkthrough.
+
+### Adding a model
+
+Edit `src/common/prompts/registries/models.ts` — add a `ModelDef` entry. Run `npm run build:prompts`. No other code changes needed.
+
+### Adding a style or tone
+
+Edit `src/common/prompts/registries/styles.ts` or `tones.ts` — add a `RuleOption` entry. Run `npm run build:prompts`.
+
+### Adding a context preset
+
+Edit `src/common/prompts/registries/contexts.ts` — add a `ContextOption` entry with `styleId`/`toneId` refs. Run `npm run build:prompts`.
+
+> **Important:** `manifest.generated.ts` and `loaders.generated.ts` are git-ignored — never commit them. The `build:prompts` step runs automatically as `predev` and `prebuild`.
+
+---
+
 ## Screenshots
 
 See `docs/screenshots/` for current screenshots of all tool pages at 1280px light theme.
