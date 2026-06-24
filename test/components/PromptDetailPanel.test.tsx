@@ -1056,3 +1056,25 @@ describe('T15 — Style/Tone/Context pickers', () => {
         });
     });
 });
+
+describe('PromptDetailPanel — basePath URLs (T18)', () => {
+    const originalBasePath = process.env.NEXT_PUBLIC_BASE_PATH;
+
+    beforeEach(() => {
+        process.env.NEXT_PUBLIC_BASE_PATH = '/dev-tools';
+    });
+
+    afterEach(() => {
+        if (originalBasePath === undefined) {
+            delete process.env.NEXT_PUBLIC_BASE_PATH;
+        } else {
+            process.env.NEXT_PUBLIC_BASE_PATH = originalBasePath;
+        }
+    });
+
+    it('sys-prompt link href starts with /dev-tools/prompts-collection', () => {
+        render(<PromptDetailPanel logical={logical} variant={variant} domain={dom} category={cat} />);
+        const link = screen.getByRole('link', { name: /Open/ });
+        expect(link).toHaveAttribute('href', expect.stringContaining('/dev-tools/prompts-collection'));
+    });
+});
