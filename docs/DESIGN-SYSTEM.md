@@ -228,6 +228,7 @@ Source: `src/styles/` — all files imported globally in `src/pages/_app.tsx`.
 | `switch.scss`               | Toggle switch control                                                          |
 | `table.scss`                | Legacy table styles (pre-primitives `table.t`)                                 |
 | `terminal-utils.scss`       | Terminal Utils page                                                            |
+| `textarea.scss`             | Textarea and AutoTextarea tokens and layout                                    |
 | `toaster.scss`              | Toast notification                                                             |
 | `tool-about.scss`           | ToolAbout collapsible panel                                                    |
 | `vram-calculator.scss`      | LLM VRAM Calculator page                                                       |
@@ -241,19 +242,21 @@ Source: `src/components/controls/`
 
 These components are used across multiple pages. Prefer them over one-off implementations.
 
-| Component          | File                   | Description                                                                                       |
-| ------------------ | ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `Button`           | `Button.tsx`           | Primary, tonal, outline, ghost, and danger variants; size modifier                                |
-| `Input`            | `Input.tsx`            | Text input with label and focus ring                                                              |
-| `Select`           | `Select.tsx`           | Styled `<select>` dropdown                                                                        |
-| `Modal`            | `Modal.tsx`            | Overlay modal dialog                                                                              |
-| `Checkbox`         | `Checkbox.tsx`         | Styled checkbox                                                                                   |
-| `Switch`           | `Switch.tsx`           | Toggle switch                                                                                     |
-| `Chip`             | `Chip.tsx`             | Removable or selectable tag chip                                                                  |
-| `EditableCombobox` | `EditableCombobox.tsx` | Combobox that accepts both predefined picks and free-text input; used for prompt parameter fields |
-| `SegmentedControl` | `SegmentedControl.tsx` | Mutually exclusive option selector rendered as a button row                                       |
-| `ToolAbout`        | `ToolAbout.tsx`        | Collapsible info panel shown at the top of each tool page                                         |
-| `TextEditor`       | (directory)            | Monaco Editor wrapper with language, word-wrap, and minimap controls                              |
+| Component          | File                   | Description                                                                                                     |
+| ------------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Button`           | `Button.tsx`           | Primary, tonal, outline, ghost, and danger variants; size modifier                                              |
+| `Input`            | `Input.tsx`            | Text input with label and focus ring                                                                            |
+| `Select`           | `Select.tsx`           | Styled `<select>` dropdown                                                                                      |
+| `Modal`            | `Modal.tsx`            | Overlay modal dialog                                                                                            |
+| `Checkbox`         | `Checkbox.tsx`         | Styled checkbox                                                                                                 |
+| `Switch`           | `Switch.tsx`           | Toggle switch                                                                                                   |
+| `Chip`             | `Chip.tsx`             | Removable or selectable tag chip                                                                                |
+| `EditableCombobox` | `EditableCombobox.tsx` | Combobox that accepts both predefined picks and free-text input; used for prompt parameter fields               |
+| `SegmentedControl` | `SegmentedControl.tsx` | Mutually exclusive option selector rendered as a button row                                                     |
+| `ToolAbout`        | `ToolAbout.tsx`        | Collapsible info panel shown at the top of each tool page                                                       |
+| `Textarea`         | `Textarea.tsx`         | Multiline text input; `value`, `onChange`, `disabled`, `readOnly`, `placeholder`, `rows`, `block`, `aria-label` |
+| `AutoTextarea`     | `AutoTextarea.tsx`     | Auto-growing textarea that expands as content grows; used for prompt parameter fields                           |
+| `SaveFileDialog`   | `SaveFileDialog.tsx`   | File save dialog UI component; wraps the FileSaveDialogContext flow                                             |
 
 ---
 
