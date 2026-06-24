@@ -92,8 +92,6 @@ Keep the same character, the same pose and gesture, the same outfit design and c
 Positive instruction: Re-render the image as a photorealistic photograph with realistic human skin texture, natural fabric and clothing detail, true-to-life lighting and color, accurate believable anatomy, sharp focus, and a natural shallow depth of field. Keep the same character, the same pose and gesture, the same outfit design and colors, the same hairstyle, and the same composition and framing. Render as a real photo, not an illustration — keep natural skin, no plastic look.
 
 Negative: cartoon, anime, illustration, 3d render, cel shading, drawing, flat colors, line art, blurry, low quality, jpeg artifacts, noise, deformed, extra fingers, bad anatomy, plastic skin, waxy skin, watermark, text, changed pose, different character, altered outfit.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Keep native resolution, up to 2560×2560. Medium-change restyle — allow the medium to change fully while the pose/outfit/character wording holds the scene.
 `,
             parameters: [],
             examples: {},
@@ -104,7 +102,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'photorealistic',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -122,8 +119,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Convert a Cartoon or Anime to a Real Photo',
             description: 'Convert a Cartoon or Anime to a Real Photo',
             template: `Convert this cartoon / anime image into a believable photorealistic photograph in FLUX.2 edit (Kontext) mode with the image as the input. Render realistic human skin texture, natural fabric and clothing detail, true-to-life lighting and color, accurate believable anatomy, sharp focus, and a natural shallow depth of field. Keep the same character, the same pose and gesture, the same outfit design and colors, the same hairstyle, and the same composition and framing so it reads as the same character photographed for real. Render as a true photograph, not an illustration; keep natural skin texture, no plastic look.
-
-Settings: run in Kontext / edit mode so the pose, outfit, and composition stay anchored to the source while the medium changes; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "photorealistic photograph, natural skin texture, not an illustration".)
 `,
             parameters: [],
             examples: {},
@@ -152,8 +147,6 @@ Settings: run in Kontext / edit mode so the pose, outfit, and composition stay a
             title: 'Convert a Cartoon or Anime to a Real Photo',
             description: 'Convert a Cartoon or Anime to a Real Photo',
             template: `Convert this cartoon / anime image into a believable photorealistic photograph: realistic skin texture, natural fabric, true-to-life lighting, accurate anatomy, shallow depth of field. Keep the same character, pose, outfit, hairstyle, and composition recognizable. Render as a real photo, not an illustration; natural skin, no plastic look.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if the result still looks drawn); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine skin and detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -189,12 +182,6 @@ A photorealistic photograph of the same character in the same pose and outfit, w
 
 ## Negative
 cartoon, anime, illustration, 3d render, cel shading, drawing, flat colors, line art, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, plastic skin, waxy skin, watermark, text, changed pose, different character, altered outfit
-
-## Settings
-- Denoising strength 0.5–0.8 (higher for a stronger conversion to photoreal; lower to stay closer to the original layout).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- Use a PHOTOREAL checkpoint (a base photoreal/realistic model, not an anime model).
-- ControlNet Lineart (and optionally Depth/Canny, weight 0.6–0.9) to hold the original pose, outfit, and composition while the medium changes. Optionally finish with Face Detailer to keep the face natural (avoid the plastic look at higher denoise).
 `,
             parameters: [],
             examples: {},
@@ -227,7 +214,6 @@ cartoon, anime, illustration, 3d render, cel shading, drawing, flat colors, line
             template: `Convert this cartoon / anime image into a believable photorealistic photograph of the same character. Render realistic human skin texture, natural fabric and clothing detail, true-to-life lighting and color, accurate believable anatomy, sharp focus, and a natural shallow depth of field. Keep the same character, the same pose and gesture, the same outfit design and colors, the same hairstyle, and the same composition and framing. Render as a real photo, not an illustration — keep natural skin texture, no plastic or waxy look.
 
 Negative: \`--neg-prompt cartoon, anime, illustration, 3d render, cel shading, drawing, flat colors, line art, blurry, low quality, noise, deformed, extra fingers, bad anatomy, plastic skin, waxy skin, changed pose, different character, altered outfit, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
@@ -238,7 +224,6 @@ Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed 
                 'photorealistic',
                 'JoyAI',
                 'negative field',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',

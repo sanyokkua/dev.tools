@@ -104,20 +104,10 @@ Relight & detail: improve dynamic range, local contrast, white balance, and colo
 Preserve everything real and unchanged: same people, identities, faces, facial structure, expressions, ages, poses, hairstyles, clothing design, accessories, objects, background, scene layout, composition, camera angle, and framing. Do not add, remove, restyle, or rearrange anything — only repair, recolor, and upgrade quality.
 
 Negative: different person, altered face, changed identity, distorted features, plastic skin, oversharpening, monochrome, grayscale, sepia, oversaturated, unnatural colors, color bleeding, extra fingers, deformed hands, added objects, removed objects, changed pose, cartoon, painting, watermark, text.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Do NOT downscale the input — keep native resolution, output up to 2560×2560. For portraits, if identity drifts at high steps, lower steps slightly and strengthen the "preserve facial structure" wording.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'restore modernize',
-                'full revival',
-                'Qwen Image Edit 2511',
-                'recolor',
-                'negative',
-                'settings',
-                'D03',
-            ],
+            keywords: ['restore modernize', 'full revival', 'Qwen Image Edit 2511', 'recolor', 'negative', 'D03'],
             executionContext: 'chat',
             model: 'qwen-image-edit-2511',
             isMetaPrompt: true,
@@ -133,8 +123,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Restore & Modernize a Photo',
             description: 'Restore & Modernize a Photo',
             template: `Restore and modernize this old, damaged, faded, or low-quality photograph in one pass, run in FLUX.2 edit (Kontext) mode with the photo as the input image, keeping the exact same people, faces, identities, expressions, poses, clothing, objects, background, composition, camera angle, and framing. Denoise and deblur for crisp resolution and sharp focus; repair all scratches, tears, creases, dust, stains, grain, and fading, and reconstruct lost detail. Where the photo is black-and-white, sepia, faded, or color-shifted, add natural, realistic, era-appropriate color — believable skin tones, hair, clothing, environment; where color is already good, correct white balance and faded tones instead. Recover crisp fine texture, accurate white balance, wide dynamic range, real skin pores and fabric weave, no plastic smoothing. Make it look shot today on a Canon 5D Mark IV, 85mm f/1.8, photorealistic. Keep everything else unchanged.
-
-Settings: run in Kontext / edit mode so identity, pose, and composition stay locked; guidance_scale ≈4; num_inference_steps 28–50. (No negative prompt — express exclusions positively. Added color is plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},
@@ -154,8 +142,6 @@ Settings: run in Kontext / edit mode so identity, pose, and composition stay loc
             title: 'Restore & Modernize a Photo',
             description: 'Restore & Modernize a Photo',
             template: `Restore and modernize this old, damaged, faded, or low-quality photo: denoise and deblur for sharp resolution; remove scratches, tears, dust, stains, grain, and fading, and rebuild lost detail. If it's black-and-white, sepia, or faded, add natural, realistic, era-appropriate color (believable skin tones, hair, clothing, background); if it already has color, correct white balance and faded tones. Modernize it to look shot today on a Sony A7IV — sharp fine detail, accurate white balance, wide dynamic range, real skin texture, no plastic smoothing. Keep the exact same people, faces, expressions, poses, clothing, objects, background, composition, and framing unchanged.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if the result looks incomplete); 1024×1024 matched to the source aspect ratio. Klein is best for fast drafts — for fine-detail restoration, refine the result on a larger model.
 `,
             parameters: [],
             examples: {},
@@ -182,14 +168,6 @@ Fully restore and modernize this old, damaged, faded, or low-quality photograph 
 
 ## Negative
 monochrome, grayscale, sepia, scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, extra fingers, bad anatomy, plastic skin, oversaturated, unnatural colors, watermark, text, cartoon, 3d render, different person, altered face, changed pose
-
-## Settings
-- Denoise 0.35–0.5 (portraits 0.4–0.5 to avoid melting faces; lean higher when color must be invented, lower if the photo only needs sharpening).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile (preprocessor: none, "My prompt is more important") — holds structure while adding detail and color.
-- IP-Adapter-Face: lock identity on portraits.
-- Face fix: Face Detailer / CodeFormer (w≈0.7) or GFPGAN as a finishing pass.
-- Optional upscaling pass (e.g. tiled/Ultimate SD Upscale) for true resolution gain.
 `,
             parameters: [],
             examples: {},
@@ -224,11 +202,10 @@ First, denoise and deblur: clean away film grain, noise, blur, haze, and compres
 Throughout, keep everything real exactly the same. Do not change the people or their identities, faces, expressions, ages, poses, or hairstyles. Keep the same clothing design, objects, background, scene layout, composition, camera angle, and framing. Do not add, remove, or rearrange anything — only repair it, recolor it where needed, and upgrade its quality. The final result should be photorealistic, with natural colors and realistic skin tones.
 
 Negative: \`--neg-prompt different person, altered face, distorted features, plastic skin, oversharpening, monochrome, grayscale, sepia, oversaturated, unnatural colors, extra fingers, deformed hands, added objects, artifacts, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50 (default 30; use 40+ for badly damaged scans); basesize 1024; fixed \`--seed\` for repeatable comparison; add \`--rewrite-prompt\` to let the built-in enhancer expand the instruction.
 `,
             parameters: [],
             examples: {},
-            keywords: ['restore modernize', 'full revival', 'JoyAI', 'recolor', 'negative field', 'settings', 'D03'],
+            keywords: ['restore modernize', 'full revival', 'JoyAI', 'recolor', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

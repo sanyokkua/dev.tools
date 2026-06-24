@@ -80,7 +80,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Kling 5-part prompt + motion intensity, a **Negative:** line, then a one-line note. (Defaults: 5s renders cleaner (~85%) than 10s (~55%); native 4K @60fps on 3.0; 16:9/9:16/1:1; 3.0 Omni adds native dialogue/SFX. Avoid over-stuffing — that causes morphing.)
+Output: the Kling 5-part prompt + motion intensity, a **Negative:** line, then a one-line note.
 `,
             parameters: [
                 {
@@ -253,7 +253,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Hailuo prompt with bracketed commands, then a one-line note. (Defaults: 6s default, up to 10s; 720p default/1080p; 01-Director is 16:9 only; ≤3 camera commands; soundtrack/2.3 audio toggle.)
+Output: the Hailuo prompt with bracketed commands, then a one-line note.
 `,
             parameters: [
                 {
@@ -306,7 +306,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Luma prompt, then a one-line note. (Defaults: 5–10s, up to 1080p native (16-bit HDR/EXR), 16:9/9:16/3:4/1:1/4:3/21:9; up to 16 keyframes per clip. Tabs: Describe, Keyframe, Reference (image-only), Modify.)
+Output: the Luma prompt, then a one-line note.
 `,
             parameters: [
                 {
@@ -359,7 +359,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Pika prompt with end-constraints, then a one-line note. (Defaults: 3–5s default, ~10s extended, up to ~25s via Pikaframes; up to 1080p (paid); 9:16/16:9/1:1.)
+Output: the Pika prompt with end-constraints, then a one-line note.
 `,
             parameters: [
                 {
@@ -418,7 +418,6 @@ Audio cue (if any): {{audioCue}}
 Output:
 - **Positive:** <structured Wan positive>
 - **Negative:** <artifact list, e.g. "blurred, low quality, deformed, extra fingers, watermark, subtitles, static, overexposed, jpeg artifacts">
-- **Settings (suggested):** ~5s (81 frames @16fps default), 480p/720p, prompt-extend on, random seed.
 - **Note:** <one line>
 `,
             parameters: [
@@ -452,7 +451,7 @@ Output:
                 camera: ['slow dolly-in following her', ''],
                 audioCue: ['', ''],
             },
-            keywords: ['video prompt', 'Wan local', 'open-weight', 'positive negative', 'ComfyUI', 'settings', 'D06'],
+            keywords: ['video prompt', 'Wan local', 'open-weight', 'positive negative', 'ComfyUI', 'D06'],
             executionContext: 'chat',
             model: 'wan-local',
             isMetaPrompt: true,
@@ -531,7 +530,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Hunyuan positive prompt, an optional negative, then a one-line note. (Defaults: CFG 6 (distilled CFG 1), 50 steps, flow shift 5/7/9; ~5s (121 frames @24fps, 4n+1 rule); 480p/720p (super-res to 1080p), 16:9 default. License excludes EU/UK/South Korea and needs a "Powered by Tencent Hunyuan" notice.)
+Output: the Hunyuan positive prompt, an optional negative, then a one-line note.
 `,
             parameters: [
                 {
@@ -587,7 +586,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the LTX paragraph + a separate negative prompt, then a one-line note. (Defaults: guidance ~4, 20–30 steps (or 8-step distilled), 6/8/10s, up to 4K, 24/25/48/50fps (default 25); width/height divisible by 32, frames = 8n+1; audio on.)
+Output: the LTX paragraph + a separate negative prompt, then a one-line note.
 `,
             parameters: [
                 {
@@ -643,7 +642,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the CogVideoX positive caption + a separate negative prompt, then a one-line note. (Defaults: 6–10s @8fps, 720×480 fixed (1.5 higher); runs on ~16GB VRAM. No audio.)
+Output: the CogVideoX positive caption + a separate negative prompt, then a one-line note.
 `,
             parameters: [
                 {
@@ -696,7 +695,7 @@ Idea: \`\`\`{{idea}}\`\`\`
 Camera (if specified): {{camera}}
 Audio cue (if any): {{audioCue}}
 
-Output: the Mochi positive prompt + a separate negative prompt, then a one-line note. (Defaults: ~5s, 480p; needs 80GB+ VRAM at full precision; text-to-video only, no audio.)
+Output: the Mochi positive prompt + a separate negative prompt, then a one-line note.
 `,
             parameters: [
                 {

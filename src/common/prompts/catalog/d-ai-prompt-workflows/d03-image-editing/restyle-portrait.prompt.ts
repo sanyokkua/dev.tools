@@ -93,8 +93,6 @@ Keep the face exactly as the same person — same eyes, nose, mouth, face shape,
 Positive instruction: Restyle the portrait with a soft flattering key light and gentle rim light, a clean studio backdrop, an 85mm portrait-lens look, shallow depth of field, and polished editorial color and contrast. Keep the exact same person with identical facial structure and features, the same expression, age, hairstyle, and clothing. Keep natural skin texture with real pores even with editorial polish. Change only the lighting, lens rendering, depth of field, and backdrop — do not alter the face, identity, or features.
 
 Negative: blurry, low quality, deformed, extra fingers, plastic skin, waxy skin, oversharpened, watermark, text, cartoon, 3d render, different face, altered identity, distorted features, beautified face shape, busy background.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Keep native resolution, up to 2560×2560. This is a restyle, so allow more change in lighting and background — but if the face drifts, lower steps slightly and strengthen the "identical facial structure" wording.
 `,
             parameters: [],
             examples: {},
@@ -105,7 +103,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 '85mm',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -123,8 +120,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Re-style a Portrait as a Professional Camera Shot',
             description: 'Re-style a Portrait as a Professional Camera Shot',
             template: `Re-render this portrait as a modern high-end studio / editorial photograph in FLUX.2 edit (Kontext) mode with the photo as the input image, keeping the SAME person with identical facial features. Apply a soft flattering key light with a gentle rim light, a clean studio backdrop, an 85mm portrait-lens look, shallow depth of field, and polished editorial color and contrast. Keep the exact same face, identity, expression, age, hairstyle, and clothing. Keep natural skin texture with real pores even with editorial polish. Change only the lighting, lens rendering, depth of field, and backdrop — do not change the face or features.
-
-Settings: run in Kontext / edit mode so identity stays locked to the source while the look changes; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "same face, natural skin texture, clean simple backdrop".)
 `,
             parameters: [],
             examples: {},
@@ -144,8 +139,6 @@ Settings: run in Kontext / edit mode so identity stays locked to the source whil
             title: 'Re-style a Portrait as a Professional Camera Shot',
             description: 'Re-style a Portrait as a Professional Camera Shot',
             template: `Re-render this portrait as a high-end studio / editorial photo of the SAME person with identical facial features: soft flattering key light, gentle rim light, clean studio backdrop, 85mm lens look, shallow depth of field, polished editorial color. Keep the exact same face, identity, expression, age, hairstyle, and clothing. Natural skin texture, no plastic, no over-retouching. Change only lighting, lens look, and backdrop.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if the look is incomplete); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine facial detail and identity on a larger model if the face drifts.
 `,
             parameters: [],
             examples: {},
@@ -172,11 +165,6 @@ A modern high-end studio editorial portrait of the same person with identical fa
 
 ## Negative
 blurry, low quality, deformed, extra fingers, plastic skin, waxy skin, oversharpened, watermark, text, cartoon, 3d render, different face, altered identity, distorted features, beautified face shape, busy background
-
-## Settings
-- Denoising strength 0.45–0.6 (restyle — allow the lighting/backdrop to change without losing the face).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- IP-Adapter-Face to LOCK identity (non-negotiable for this restyle); optional ControlNet Tile / Depth to hold pose; finish with Face Detailer / CodeFormer (w≈0.7) so the face stays sharp and unmistakably the same person.
 `,
             parameters: [],
             examples: {},
@@ -209,11 +197,10 @@ blurry, low quality, deformed, extra fingers, plastic skin, waxy skin, oversharp
             template: `Re-render this portrait as a modern high-end studio / editorial photograph of the same person, keeping identical facial features. Apply a soft flattering key light with a gentle rim light, a clean studio backdrop, an 85mm portrait-lens look, shallow depth of field, and polished editorial color and contrast. Keep the exact same face, identity, expression, age, hairstyle, and clothing. Keep natural skin texture with real pores even with editorial polish — no plastic, no over-retouching, no change to the face shape. Change only the lighting, lens look, depth of field, and backdrop.
 
 Negative: \`--neg-prompt different person, altered face, distorted features, beautified face shape, plastic skin, waxy skin, oversharpening, busy background, cartoon, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: ['restyle portrait', 'studio', 'editorial', '85mm', 'JoyAI', 'negative field', 'settings', 'D03'],
+            keywords: ['restyle portrait', 'studio', 'editorial', '85mm', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

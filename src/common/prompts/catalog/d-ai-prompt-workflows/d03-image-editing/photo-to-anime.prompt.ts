@@ -91,8 +91,6 @@ Keep the same subject(s), the same pose and gesture, the same clothing design, a
 Positive instruction: Re-render the image as an anime/cartoon illustration with clean line art, cel shading, vibrant flat colors, and expressive stylized anime eyes and hair. Keep the same subject(s), the same pose and gesture, the same clothing design, and the same overall composition and framing. Render as an illustration, not a photo — but keep it clearly the same scene re-drawn.
 
 Negative: photorealistic, realistic, photo, 3d render, blurry, low quality, jpeg artifacts, noise, deformed, extra fingers, bad anatomy, watermark, text, oversaturated, changed pose, changed composition, different subject.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Keep native resolution, up to 2560×2560. This is a medium-change restyle — allow the medium to change fully while the pose and composition wording hold the scene.
 `,
             parameters: [],
             examples: {},
@@ -103,7 +101,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'cel shading',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -121,8 +118,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Convert a Photo to Anime or Cartoon',
             description: 'Convert a Photo to Anime or Cartoon',
             template: `Convert this photograph into an anime / cartoon illustration in FLUX.2 edit (Kontext) mode with the photo as the input image. Render it with clean line art, cel shading, vibrant flat colors, and expressive stylized anime eyes and hair. Keep the same subject(s), the same pose and gesture, the same clothing design, and the same overall composition and framing so it reads as the same scene re-drawn as anime. Render clearly as an illustration, not a photorealistic image.
-
-Settings: run in Kontext / edit mode so the pose and composition stay anchored to the source while the medium changes; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "flat anime illustration, clean line art, not photorealistic".)
 `,
             parameters: [],
             examples: {},
@@ -142,8 +137,6 @@ Settings: run in Kontext / edit mode so the pose and composition stay anchored t
             title: 'Convert a Photo to Anime or Cartoon',
             description: 'Convert a Photo to Anime or Cartoon',
             template: `Convert this photo into an anime / cartoon illustration: clean line art, cel shading, vibrant flat colors, expressive stylized eyes and hair. Keep the same subject, pose, clothing, and composition recognizable. Render as an illustration, not a photo.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if the style looks incomplete); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine line art and detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -170,12 +163,6 @@ An anime-style illustration of the same subject in the same pose and composition
 
 ## Negative
 photorealistic, realistic, photo, 3d render, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, watermark, text, oversaturated, changed pose, changed composition, different subject
-
-## Settings
-- Denoising strength 0.5–0.8 (higher for a stronger style change; lower to stay closer to the photo's layout).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- Use an ANIME checkpoint (an SDXL anime model) — a base photoreal model won't give a clean anime look.
-- ControlNet Canny / Lineart / Depth (weight 0.6–0.9) to hold structure, pose, and composition while the medium changes.
 `,
             parameters: [],
             examples: {},
@@ -208,20 +195,10 @@ photorealistic, realistic, photo, 3d render, blurry, low quality, jpeg artifacts
             template: `Convert this photograph into an anime / cartoon illustration. Re-render it with clean line art, cel shading, vibrant flat colors, and expressive stylized anime eyes and hair. Keep the same subject(s), the same pose and gesture, the same clothing design, and the same overall composition and framing so it reads as the same scene re-drawn. Render clearly as an illustration, not a photorealistic image.
 
 Negative: \`--neg-prompt photorealistic, realistic, photo, 3d render, blurry, low quality, noise, deformed, extra fingers, bad anatomy, oversaturated, changed pose, changed composition, different subject, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'photo to anime',
-                'cartoon',
-                'restyle',
-                'cel shading',
-                'JoyAI',
-                'negative field',
-                'settings',
-                'D03',
-            ],
+            keywords: ['photo to anime', 'cartoon', 'restyle', 'cel shading', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

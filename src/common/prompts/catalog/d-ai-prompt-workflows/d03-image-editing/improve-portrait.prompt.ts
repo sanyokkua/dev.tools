@@ -93,20 +93,10 @@ Keep the faces exactly as they appear — same eyes, nose, mouth, face shape, ex
 Positive instruction: Remove blur, softness, compression artifacts, noise, and haze. Sharpen the eyes, skin, and hair to natural crisp focus. Recover fine detail and widen dynamic range; balance lighting, white balance, and contrast. Keep the same person, identical facial features and structure, the same expression, age, hairstyle, clothing, pose, composition, and background. Keep natural skin texture without plastic smoothing. Quality only — do not beautify, restyle, or change features.
 
 Negative: blurry, low quality, jpeg artifacts, noise, haze, deformed, extra fingers, plastic skin, waxy skin, oversharpened, watermark, text, different face, altered identity, changed pose, over-smoothed, beautified.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Do NOT downscale the input — keep native resolution, up to 2560×2560. If identity drifts at high steps, lower steps slightly and strengthen the "preserve facial structure" wording.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'improve portrait',
-                'enhance',
-                'sharpen',
-                'Qwen Image Edit 2511',
-                'negative prompt',
-                'settings',
-                'D03',
-            ],
+            keywords: ['improve portrait', 'enhance', 'sharpen', 'Qwen Image Edit 2511', 'negative prompt', 'D03'],
             executionContext: 'chat',
             model: 'qwen-image-edit-2511',
             isMetaPrompt: true,
@@ -122,8 +112,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Improve Portrait Quality',
             description: 'Improve Portrait Quality',
             template: `Improve the quality of this undamaged portrait in FLUX.2 edit (Kontext) mode with the photo as the input image. Remove blur, softness, compression artifacts, noise, and haze; sharpen the eyes, skin, and hair to natural crisp focus; recover fine detail and widen dynamic range; balance lighting, white balance, and contrast. Keep the exact same person — same face, identity, expression, age, hairstyle, clothing, pose, composition, camera angle, framing, and background. Keep natural skin texture with real pores, no plastic smoothing. Quality only — do not beautify or restyle.
-
-Settings: run in Kontext / edit mode so identity and layout stay locked to the source; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "clean sharp image with natural skin texture".)
 `,
             parameters: [],
             examples: {},
@@ -143,8 +131,6 @@ Settings: run in Kontext / edit mode so identity and layout stay locked to the s
             title: 'Improve Portrait Quality',
             description: 'Improve Portrait Quality',
             template: `Improve this undamaged portrait's quality: remove blur, noise, compression, and haze; sharpen the eyes, skin, and hair; recover fine detail and balance the lighting. Keep the exact same person — same face, expression, age, hairstyle, clothing, pose, composition, and framing. Natural skin texture, no plastic smoothing. Quality only, no beautify, no restyle.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if it still looks soft); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine facial detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -171,11 +157,6 @@ A clean, high-quality version of the same portrait with crisp focus, sharp eyes,
 
 ## Negative
 blurry, low quality, jpeg artifacts, noise, haze, deformed, extra fingers, plastic skin, waxy skin, oversharpened, watermark, text, cartoon, 3d render, different face, altered identity, changed pose, over-smoothed, beautified
-
-## Settings
-- Denoising strength 0.4–0.55 (portraits — high enough to clean and sharpen, low enough to avoid melting the face).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile (preprocessor: none, "My prompt is more important") to hold structure; IP-Adapter-Face to lock identity; finish with Face Detailer / CodeFormer (w≈0.7) or GFPGAN so the face stays sharp without going waxy.
 `,
             parameters: [],
             examples: {},
@@ -208,11 +189,10 @@ blurry, low quality, jpeg artifacts, noise, haze, deformed, extra fingers, plast
             template: `Improve the technical quality of this undamaged portrait without changing the person. Remove blur, softness, noise, compression artifacts, and haze; sharpen the eyes, skin, and hair to natural crisp focus; recover fine detail; widen dynamic range; and balance the lighting, white balance, and contrast. Keep the same person, the same face, identity, expression, age, hairstyle, clothing, pose, composition, and background exactly. Keep natural skin texture with real pores — no plastic, no beautifying, no over-smoothing. Quality only.
 
 Negative: \`--neg-prompt blurry, low quality, noise, haze, plastic skin, waxy skin, oversharpening, over-smoothed, different person, altered face, beautified, changed pose, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: ['improve portrait', 'enhance', 'sharpen', 'JoyAI', 'negative field', 'settings', 'D03'],
+            keywords: ['improve portrait', 'enhance', 'sharpen', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

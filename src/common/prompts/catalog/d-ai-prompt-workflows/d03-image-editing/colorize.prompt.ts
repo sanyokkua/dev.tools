@@ -89,8 +89,6 @@ Keep the faces, identity, expressions, composition, pose, framing, and all fine 
 Positive instruction: Colorize the photograph with believable, healthy skin tones, period-correct clothing colors, and coherent, physically plausible colors for the environment, objects, and sky, distributed sensibly across the whole scene with correct light and shadow. Keep the faces, identity, expressions, composition, pose, framing, and all fine detail exactly the same — change only color. Keep the palette grounded and era-appropriate, not oversaturated or modern.
 
 Negative: monochrome, sepia, grayscale, oversaturated, unnatural colors, neon colors, modern colors, blurry, low quality, jpeg artifacts, noise, deformed, watermark, text, cartoon, 3d render, changed faces, altered composition.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Keep native resolution, up to 2560×2560. Keep true_cfg moderate and the instruction faithful so structure and faces are untouched. Honesty: added color is plausible reconstruction, not documentary truth.
 `,
             parameters: [],
             examples: {},
@@ -100,7 +98,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'era-appropriate color',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -118,8 +115,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Colorize a Black-and-White Photo',
             description: 'Colorize a Black-and-White Photo',
             template: `Colorize this black-and-white (or sepia) photograph in FLUX.2 edit (Kontext) mode with the photo as the input image. Add natural, realistic, era-appropriate color — believable skin tones, period-correct clothing colors, and coherent, plausible colors for the environment, objects, and sky, with sensible light and shadow across the whole scene. Keep the faces, identity, expressions, composition, pose, framing, and all fine detail exactly the same — change only color. Keep the palette grounded and era-appropriate, not oversaturated or modern.
-
-Settings: run in Kontext / edit mode so structure and faces stay locked to the source while only color is added; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "natural era-appropriate colors, grounded palette".) Honesty: added color is plausible reconstruction, not documentary truth.
 `,
             parameters: [],
             examples: {},
@@ -147,8 +142,6 @@ Settings: run in Kontext / edit mode so structure and faces stay locked to the s
             title: 'Colorize a Black-and-White Photo',
             description: 'Colorize a Black-and-White Photo',
             template: `Colorize this black-and-white (or sepia) photo: add natural, realistic, era-appropriate color — believable skin tones, period-correct clothing, coherent environment and sky colors. Keep the faces, composition, pose, and all detail exactly the same; change only color. Keep the palette grounded — no oversaturated, modern, or neon hues.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if color is patchy or incomplete); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine color coherence on a larger model if needed. Honesty: added color is plausible reconstruction, not documentary truth.
 `,
             parameters: [],
             examples: {},
@@ -175,11 +168,6 @@ A naturally colorized version of the black-and-white photograph with realistic, 
 
 ## Negative
 monochrome, sepia, grayscale, oversaturated, unnatural colors, neon colors, modern colors, blurry, low quality, jpeg artifacts, noise, deformed, watermark, text, cartoon, 3d render, illustration, changed faces, altered composition
-
-## Settings
-- Denoising strength 0.2–0.3 (LOW — keep structure, faces, and fine detail identical) or use a colorization ControlNet.
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile or a dedicated colorization/recolor ControlNet (preprocessor: none, "My prompt is more important") to keep structure perfectly while only color is added. The SD 3.5 sentence prompt works well here.
 `,
             parameters: [],
             examples: {},
@@ -211,19 +199,10 @@ monochrome, sepia, grayscale, oversaturated, unnatural colors, neon colors, mode
             template: `Add natural, realistic, era-appropriate color to this black-and-white (or sepia) photograph without changing anything else. Use believable, healthy skin tones, period-correct clothing colors, and coherent, plausible colors for the environment, objects, walls, plants, water, and sky, distributed sensibly across the whole scene with correct light and shadow. Keep the faces, identity, expressions, composition, pose, framing, and all fine detail exactly the same — change only color. Keep the palette grounded and era-appropriate, not oversaturated, modern, or neon.
 
 Negative: \`--neg-prompt monochrome, sepia, grayscale, oversaturated, unnatural colors, neon colors, modern colors, blurry, noise, changed faces, altered composition, cartoon, 3d render, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer. Honesty: added color is plausible reconstruction, not documentary truth — name any colors you actually know.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'colorize',
-                'black and white',
-                'era-appropriate color',
-                'JoyAI',
-                'negative field',
-                'settings',
-                'D03',
-            ],
+            keywords: ['colorize', 'black and white', 'era-appropriate color', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

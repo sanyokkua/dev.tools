@@ -84,8 +84,6 @@ Keep the exact same composition, perspective, architecture, terrain, and content
 Positive instruction: Improve clarity and recover fine detail in foliage, architecture, terrain, water, and sky. Remove haze, reduce noise, restore natural balanced colors, correct white balance, sharpen textures, and widen dynamic range. Keep the exact same composition, perspective, architecture, terrain, and content. Quality only — add or remove nothing, apply no color grade, keep colors natural and not oversaturated.
 
 Negative: blurry, low quality, jpeg artifacts, noise, haze, oversharpened, watermark, text, cartoon, 3d render, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Do NOT downscale the input — keep native resolution, up to 2560×2560. Keep true_cfg moderate so scene geometry is respected.
 `,
             parameters: [],
             examples: {},
@@ -97,7 +95,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'clarity',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -115,8 +112,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Improve Landscape or Cityscape Quality',
             description: 'Improve Landscape or Cityscape Quality',
             template: `Improve the quality of this undamaged landscape or cityscape in FLUX.2 edit (Kontext) mode with the photo as the input image. Improve clarity and recover fine detail in foliage, architecture, terrain, water, and sky; remove haze; reduce noise; restore natural balanced colors and correct white balance; sharpen textures; widen dynamic range. Keep the exact same composition, perspective, architecture, terrain, content, camera angle, and framing. Quality only — add or remove nothing, apply no color grade, keep colors natural.
-
-Settings: run in Kontext / edit mode so the scene geometry and layout stay locked to the source; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "clear well-exposed scene with natural colors".)
 `,
             parameters: [],
             examples: {},
@@ -136,8 +131,6 @@ Settings: run in Kontext / edit mode so the scene geometry and layout stay locke
             title: 'Improve Landscape or Cityscape Quality',
             description: 'Improve Landscape or Cityscape Quality',
             template: `Improve this undamaged landscape/cityscape's quality: improve clarity and fine detail, remove haze, reduce noise, restore natural balanced colors, sharpen textures, and widen dynamic range. Keep the exact same composition, perspective, architecture, terrain, and content. Quality only — add or remove nothing, no color grade, keep colors natural.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if it still looks soft or hazy); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -174,11 +167,6 @@ A clean, high-quality version of the same landscape or cityscape with crisp clar
 
 ## Negative
 blurry, low quality, jpeg artifacts, noise, haze, oversharpened, watermark, text, cartoon, 3d render, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements
-
-## Settings
-- Denoising strength 0.2–0.45 (LOW — quality only, not restyle; raise gradually only where needed).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile (preprocessor: none, "My prompt is more important") to hold composition while adding clarity and detail.
 `,
             parameters: [],
             examples: {},
@@ -212,7 +200,6 @@ blurry, low quality, jpeg artifacts, noise, haze, oversharpened, watermark, text
             template: `Improve the technical quality of this undamaged landscape or cityscape without changing the scene. Improve clarity and recover fine detail in foliage, architecture, terrain, water, and sky; remove haze; reduce noise; restore natural balanced colors and correct white balance; sharpen textures; and widen dynamic range. Keep the exact same composition, perspective, architecture, terrain, and content. Add or remove nothing, apply no color grade, keep colors natural and not oversaturated. Quality only.
 
 Negative: \`--neg-prompt blurry, low quality, noise, haze, oversharpening, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
@@ -224,7 +211,6 @@ Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed 
                 'clarity',
                 'JoyAI',
                 'negative field',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',

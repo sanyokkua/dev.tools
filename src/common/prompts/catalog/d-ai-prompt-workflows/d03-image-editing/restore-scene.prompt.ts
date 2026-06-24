@@ -95,8 +95,6 @@ Keep the composition, horizon, perspective, architecture, terrain, era detail, s
 Positive instruction: Remove scratches, dust, stains, tears, creases, and fading from the photograph. Reduce grain and noise. Reconstruct small missing or torn areas in foliage, architecture, terrain, water, and sky using surrounding detail and perspective. Recover balanced tones, contrast, and fine detail. Keep the exact same composition, horizon, perspective, architecture, terrain, period/era detail, scene layout, framing, and lighting mood. Repair only — add nothing modern, remove nothing, do not restyle or rearrange the scene.
 
 Negative: scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, modern additions, added buildings, added vehicles, added signage, changed composition, altered architecture, unnatural colors.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Do NOT downscale the input — keep native resolution, up to 2560×2560. Keep true_cfg moderate so the model respects the original scene geometry.
 `,
             parameters: [],
             examples: {},
@@ -107,7 +105,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'repair damage',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -125,8 +122,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Repair a Damaged Landscape or Cityscape',
             description: 'Repair a Damaged Landscape or Cityscape',
             template: `Repair this old/damaged landscape or cityscape in FLUX.2 edit (Kontext) mode with the photo as the input image. Remove all scratches, tears, creases, dust, spots, stains, and fading; reduce grain and noise; reconstruct any small missing or worn detail in foliage, architecture, terrain, water, and sky using the surrounding texture, light, and perspective; recover balanced contrast and detail in shadows and highlights. Keep the exact same composition, horizon, perspective, architecture, terrain, period/era detail, scene layout, framing, and lighting mood. Repair only — add no modern buildings, signage, or vehicles, remove nothing, do not restyle.
-
-Settings: run in Kontext / edit mode so the scene geometry and layout stay locked to the source; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "clean undamaged sky with even tone".)
 `,
             parameters: [],
             examples: {},
@@ -155,8 +150,6 @@ Settings: run in Kontext / edit mode so the scene geometry and layout stay locke
             title: 'Repair a Damaged Landscape or Cityscape',
             description: 'Repair a Damaged Landscape or Cityscape',
             template: `Repair this damaged landscape/cityscape: remove scratches, tears, dust, stains, creases, grain, and fading, and rebuild any small lost detail in foliage, architecture, terrain, and sky. Keep the exact same composition, horizon, perspective, architecture, era detail, scene layout, and framing. Repair only — add nothing modern, remove nothing, no restyle.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if damage remains); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -192,11 +185,6 @@ A faithfully restored landscape or cityscape photograph with all physical damage
 
 ## Negative
 scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, cartoon, 3d render, illustration, modern additions, added buildings, added vehicles, changed composition, altered architecture, unnatural colors
-
-## Settings
-- Denoising strength 0.2–0.45 (LOW — repair, not restyle; raise gradually only where damage persists).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile (preprocessor: none, "My prompt is more important") to hold composition and recover faithful detail while keeping scene geometry locked.
 `,
             parameters: [],
             examples: {},
@@ -229,20 +217,10 @@ scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, no
             template: `Carefully repair this old or damaged landscape or cityscape photograph without changing the scene. Remove every scratch, tear, crease, dust speck, spot, stain, and surface mark; reduce grain and noise to a natural level; correct fading and uneven exposure; and gently rebuild any small detail of foliage, architecture, terrain, water, or sky that damage has erased, matching the surrounding texture, light, and perspective. Keep the exact same composition, horizon, perspective, architecture, terrain, period detail, scene layout, and framing. Add nothing modern, remove nothing, do not restyle — repair only.
 
 Negative: \`--neg-prompt scratches, dust, stains, tears, creases, blurry, noise, oversharpening, modern additions, added buildings, added vehicles, changed composition, altered architecture, unnatural colors, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50 (use 40+ for badly damaged scans); basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'restore scene',
-                'landscape',
-                'cityscape',
-                'repair damage',
-                'JoyAI',
-                'negative field',
-                'settings',
-                'D03',
-            ],
+            keywords: ['restore scene', 'landscape', 'cityscape', 'repair damage', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

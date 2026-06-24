@@ -125,7 +125,6 @@ Aspect ratio: {{aspect}}
 Output:
 - **Positive:** <literal positive prompt>
 - **Negative:** <subject-tailored artifact list>
-- **Settings (starting point):** true_cfg_scale ~4.0, guidance_scale 1.0, 40–50 steps (or 4–8 steps with a Lightning LoRA), resolution up to 2560×2560 at the chosen ratio.
 - **Assumptions:** <one line>
 `,
             parameters: [
@@ -174,7 +173,7 @@ This model's paradigm is a natural-language brief with explicit camera/lens lang
 Idea: \`\`\`{{idea}}\`\`\`
 Aspect ratio: {{aspect}}
 
-Output: the FLUX.2 prompt (one paragraph), then a one-line "Assumptions:" note. (Defaults: guidance_scale ~4, 28–50 steps, 1024×1024 and up at the chosen ratio; no negative prompt — express exclusions positively, e.g. "clean uncluttered background".)
+Output: the FLUX.2 prompt (one paragraph), then a one-line "Assumptions:" note.
 `,
             parameters: [
                 {
@@ -222,7 +221,7 @@ This model's paradigm is a SHORT, literal FLUX-style prompt with NO negative pro
 Idea: \`\`\`{{idea}}\`\`\`
 Aspect ratio: {{aspect}}
 
-Output: ONLY the short FLUX.2 Klein prompt, then a one-line "Assumptions:" note. (Defaults: guidance_scale 1.0, num_inference_steps 4 — raise to 6–12 if detail is weak; 1024×1024 at the chosen ratio; refine fine detail on a larger model if needed.)
+Output: ONLY the short FLUX.2 Klein prompt, then a one-line "Assumptions:" note.
 `,
             parameters: [
                 {
@@ -275,7 +274,6 @@ Output:
 - **Positive (SDXL):** <comma-tag prompt>
 - **Positive (SD 3.5):** <natural sentence>
 - **Negative:** <subject-tailored artifact list>
-- **Settings (starting point):** CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps; resolution 1024×1024 at the chosen ratio.
 - **Assumptions:** <one line>
 `,
             parameters: [
@@ -337,7 +335,6 @@ Aspect ratio: {{aspect}}
 Output:
 - **Prompt:** <imperative description>
 - **Negative:** \`--neg-prompt <subject-tailored artifact list>\`
-- **Settings (starting point):** guidance_scale 4.0, num_inference_steps 30–50, basesize 1024 at the chosen ratio, fixed \`--seed\` for repeatability; add \`--rewrite-prompt\` to let the built-in enhancer elaborate.
 - **Assumptions:** <one line>
 `,
             parameters: [
@@ -361,7 +358,7 @@ Output:
                 idea: ['a portrait of a chef plating a dish in a busy kitchen', 'an isometric tiny coffee shop'],
                 aspect: ['3:4 (portrait)', '1:1 (square)'],
             },
-            keywords: ['image prompt', 'JoyAI', 'imperative', 'negative field', 'settings', 'text-to-image', 'D02'],
+            keywords: ['image prompt', 'JoyAI', 'imperative', 'negative field', 'text-to-image', 'D02'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

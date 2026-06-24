@@ -91,8 +91,6 @@ Keep the exact same composition, perspective, architecture, terrain, content, an
 Positive instruction: Apply a single professional cinematic color grade — choose ONE: teal-and-orange OR warm golden-hour — with soft atmospheric light, subtle film grain, wide filmic dynamic range, and dramatic believable natural lighting. Keep the exact same composition, perspective, architecture, terrain, content, scene layout, and framing. Change only the grade and lighting mood — add or remove nothing, keep it photographic.
 
 Negative: blurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, cartoon, 3d render, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements, flat lighting.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Keep native resolution, up to 2560×2560. This is a restyle so allow the grade and mood to change, but keep true_cfg moderate so composition holds. Pick one grade per render.
 `,
             parameters: [],
             examples: {},
@@ -103,7 +101,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
                 'film still',
                 'Qwen Image Edit 2511',
                 'negative prompt',
-                'settings',
                 'D03',
             ],
             executionContext: 'chat',
@@ -121,8 +118,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Re-style a Scene with a Cinematic Grade',
             description: 'Re-style a Scene with a Cinematic Grade',
             template: `Re-render this landscape or cityscape as a cinematic film still in FLUX.2 edit (Kontext) mode with the photo as the input image. Apply a single professional color grade (choose ONE: teal-and-orange OR warm golden-hour), soft atmospheric light, subtle film grain, wide filmic dynamic range, and dramatic believable natural lighting. Keep the exact same composition, perspective, architecture, terrain, content, scene layout, camera angle, and framing. Change only the grade and lighting mood — add or remove nothing.
-
-Settings: run in Kontext / edit mode so the scene geometry stays locked while the grade changes; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "photographic film still, same composition".) Pick one grade per render.
 `,
             parameters: [],
             examples: {},
@@ -151,8 +146,6 @@ Settings: run in Kontext / edit mode so the scene geometry stays locked while th
             title: 'Re-style a Scene with a Cinematic Grade',
             description: 'Re-style a Scene with a Cinematic Grade',
             template: `Re-render this landscape/cityscape as a cinematic film still: single color grade (choose ONE: teal-and-orange OR warm golden-hour), soft atmospheric light, subtle film grain, wide dynamic range. Keep the exact same composition, perspective, architecture, terrain, content, and framing. Change only the grade and mood — add or remove nothing.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if the grade looks incomplete); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine detail on a larger model if needed. Pick one grade per render.
 `,
             parameters: [],
             examples: {},
@@ -188,12 +181,6 @@ A cinematic film-still version of the same landscape or cityscape with a single 
 
 ## Negative
 blurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, cartoon, 3d render, illustration, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements, flat lighting
-
-## Settings
-- Denoising strength 0.6–0.8 (scene restyle — allow a strong grade/mood change).
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile or Depth/Canny (weight 0.6–0.9) to hold composition and architecture while the grade and mood change — essential at this denoise so structures aren't reinvented.
-- Pick ONE grade per render (drop "golden hour lighting" if you want pure teal-and-orange, and vice versa).
 `,
             parameters: [],
             examples: {},
@@ -226,20 +213,10 @@ blurry, low quality, jpeg artifacts, noise, oversharpened, watermark, text, cart
             template: `Re-render this landscape or cityscape as a cinematic film still. Apply a single professional color grade — choose ONE: teal-and-orange OR warm golden-hour — with soft atmospheric light, subtle film grain, a wide filmic dynamic range, and dramatic believable natural lighting. Keep the exact same composition, perspective, architecture, terrain, content, scene layout, and framing. Change only the grade and lighting mood — add or remove nothing, keep it photographic. Pick one grade per render.
 
 Negative: \`--neg-prompt blurry, low quality, noise, oversharpening, cartoon, 3d render, oversaturated, unnatural colors, changed composition, altered architecture, added elements, removed elements, flat lighting, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50; basesize 1024; fixed \`--seed\` (so you can compare grades on the same scene); add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'restyle scene',
-                'cinematic',
-                'color grade',
-                'film still',
-                'JoyAI',
-                'negative field',
-                'settings',
-                'D03',
-            ],
+            keywords: ['restyle scene', 'cinematic', 'color grade', 'film still', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,

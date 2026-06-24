@@ -77,19 +77,10 @@ Keep the faces exactly as they appear — same eyes, nose, mouth, face shape, ex
 Positive instruction: Remove scratches, dust, stains, tears, creases, and fading from the portrait. Reduce grain and noise. Reconstruct small missing or torn areas of face, hair, skin, eyes, and clothing using surrounding detail. Recover balanced tones and fine detail. Keep the same person, identical facial features and structure, the same expression, age, hairstyle, clothing, pose, lighting, background, composition, and framing. Keep natural skin texture without plastic smoothing. Repair only — do not beautify, restyle, or rearrange anything.
 
 Negative: scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, extra fingers, bad anatomy, plastic skin, oversharpened, watermark, text, beautified, different person, altered identity, changed composition.
-
-Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (Lightning LoRA: 4–8 steps, true_cfg ≈1, Euler/Simple). Do NOT downscale the input — keep native resolution, up to 2560×2560. If identity drifts at high steps, lower steps slightly and strengthen the "preserve facial structure" wording.
 `,
             parameters: [],
             examples: {},
-            keywords: [
-                'restore portrait',
-                'repair damage',
-                'Qwen Image Edit 2511',
-                'negative prompt',
-                'settings',
-                'D03',
-            ],
+            keywords: ['restore portrait', 'repair damage', 'Qwen Image Edit 2511', 'negative prompt', 'D03'],
             executionContext: 'chat',
             model: 'qwen-image-edit-2511',
             isMetaPrompt: true,
@@ -105,8 +96,6 @@ Settings: num_inference_steps 40–50; true_cfg_scale 4.0; guidance_scale 1.0 (L
             title: 'Repair a Damaged Portrait',
             description: 'Repair a Damaged Portrait',
             template: `Repair this old/damaged portrait in FLUX.2 edit (Kontext) mode with the photo as the input image. Remove all scratches, tears, creases, dust, spots, stains, and fading; reduce grain and noise; reconstruct any small missing or worn detail in the face, hair, skin, eyes, and clothing using the surrounding texture and light; recover balanced contrast and detail in shadows and highlights. Keep the exact same person — same face, identity, expression, age, hairstyle, clothing, pose, composition, camera angle, framing, lighting mood, background, and era. Keep natural skin texture, no plastic smoothing. Repair only — do not beautify or restyle.
-
-Settings: run in Kontext / edit mode so identity and layout stay locked to the source; guidance_scale ≈4; num_inference_steps 28–50. (FLUX uses no negative prompt — express exclusions positively, e.g. "clean undamaged skin with natural pores".)
 `,
             parameters: [],
             examples: {},
@@ -126,8 +115,6 @@ Settings: run in Kontext / edit mode so identity and layout stay locked to the s
             title: 'Repair a Damaged Portrait',
             description: 'Repair a Damaged Portrait',
             template: `Repair this damaged portrait: remove scratches, tears, dust, stains, creases, grain, and fading, and rebuild any small lost detail in the face, hair, and clothing. Keep the exact same person — same face, expression, age, hairstyle, clothing, pose, composition, and framing. Natural skin texture, no plastic smoothing. Repair only, no beautify, no restyle.
-
-Settings: guidance_scale 1.0; num_inference_steps 4 (raise to 6–12 if damage remains); 1024×1024 matched to the source aspect ratio. Klein is best for a fast draft — refine fine facial detail on a larger model if needed.
 `,
             parameters: [],
             examples: {},
@@ -154,11 +141,6 @@ A faithfully restored portrait photograph with all physical damage removed, show
 
 ## Negative
 scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, noise, deformed, mutated, extra fingers, bad anatomy, plastic skin, oversharpened, watermark, text, cartoon, 3d render, illustration, beautified, different face, altered identity, changed composition
-
-## Settings
-- Denoising strength 0.4–0.55 (portraits — high enough to repair, low enough to avoid melting the face); raise gradually only where damage persists.
-- CFG 6–8 (SDXL) / 4–7 (SD 3.5); sampler DPM++ 2M Karras, 25–40 steps.
-- ControlNet Tile (preprocessor: none, "My prompt is more important") to recover faithful detail; IP-Adapter-Face to lock identity; finish with Face Detailer / CodeFormer (w≈0.7) or GFPGAN last so the face stays sharp without going waxy.
 `,
             parameters: [],
             examples: {},
@@ -189,11 +171,10 @@ scratches, dust, stains, tears, creases, blurry, low quality, jpeg artifacts, no
             template: `Carefully repair this old or damaged portrait without changing the person. Remove every scratch, tear, crease, dust speck, spot, stain, and surface mark; reduce grain and noise to a natural level; correct fading and uneven exposure; and gently rebuild any small detail of the face, hair, skin, eyes, or clothing that damage has erased, matching the surrounding texture and light. Keep the same person, the same face, identity, expression, age, hairstyle, clothing, pose, composition, lighting, and background exactly. Keep natural skin texture — no plastic, no beautifying. Repair only.
 
 Negative: \`--neg-prompt scratches, dust, stains, tears, creases, blurry, noise, plastic skin, oversharpening, different person, altered face, beautified, watermark, text\`
-Settings: guidance_scale 4.0; num_inference_steps 30–50 (use 40+ for badly damaged scans); basesize 1024; fixed \`--seed\`; add \`--rewrite-prompt\` for the built-in enhancer.
 `,
             parameters: [],
             examples: {},
-            keywords: ['restore portrait', 'repair damage', 'JoyAI', 'negative field', 'settings', 'D03'],
+            keywords: ['restore portrait', 'repair damage', 'JoyAI', 'negative field', 'D03'],
             executionContext: 'chat',
             model: 'joyai',
             isMetaPrompt: true,
