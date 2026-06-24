@@ -114,6 +114,7 @@ describe('PromptCatalogView — basePath URLs (T18)', () => {
     });
 
     afterEach(() => {
+        Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
         if (originalBasePath === undefined) {
             delete process.env.NEXT_PUBLIC_BASE_PATH;
         } else {

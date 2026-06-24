@@ -1061,6 +1061,7 @@ describe('PromptDetailPanel — basePath URLs (T18)', () => {
     const originalBasePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
     beforeEach(() => {
+        jest.clearAllMocks();
         process.env.NEXT_PUBLIC_BASE_PATH = '/dev-tools';
     });
 
