@@ -1,6 +1,6 @@
 import type { Manifest } from '@/common/prompts/model/types';
 import PromptCatalogView from '@/page-specific/prompts-collection/PromptCatalogView';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const FIXTURE_MANIFEST: Manifest = {
     domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
@@ -98,5 +98,37 @@ describe('PromptCatalogView', () => {
         render(<PromptCatalogView manifest={FIXTURE_MANIFEST} onRowClick={onRowClick} onBack={onBack} />);
         expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
         expect(screen.getByText(/All prompts/i)).toBeInTheDocument();
+    });
+});
+
+describe('PromptCatalogView — basePath URLs (T18)', () => {
+    const originalBasePath = process.env.NEXT_PUBLIC_BASE_PATH;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        Object.defineProperty(navigator, 'clipboard', {
+            value: { writeText: jest.fn().mockResolvedValue(undefined) },
+            configurable: true,
+        });
+        process.env.NEXT_PUBLIC_BASE_PATH = '/dev-tools';
+    });
+
+    afterEach(() => {
+        if (originalBasePath === undefined) {
+            delete process.env.NEXT_PUBLIC_BASE_PATH;
+        } else {
+            process.env.NEXT_PUBLIC_BASE_PATH = originalBasePath;
+        }
+    });
+
+    it('copy share for prompt row writes /dev-tools/prompts-collection?... to clipboard', async () => {
+        render(<PromptCatalogView manifest={FIXTURE_MANIFEST} onRowClick={jest.fn()} onBack={jest.fn()} />);
+        const shareButton = screen.getByRole('button', { name: /Copy link for Review a Change/i });
+        fireEvent.click(shareButton);
+        await waitFor(() => {
+            expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+                expect.stringContaining('/dev-tools/prompts-collection'),
+            );
+        });
     });
 });
