@@ -1,20 +1,32 @@
 'use client';
 import { usePage } from '@/contexts/PageContext';
-import { useRouter } from 'next/router';
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 import Appbar from '../elements/navigation/appbar/Appbar';
 
-const ApplicationTopBar: React.FC = () => {
-    const { pageTitle } = usePage();
-    const router = useRouter();
+interface TopBarProps {
+    onMenuOpen: () => void;
+    onLogoClick?: () => void;
+    sidebarCollapsed?: boolean;
+}
 
-    const onAppTitleClick = (): void => {
-        router.push('/').catch((err: unknown) => {
-            console.error(err);
-        });
-    };
+const ApplicationTopBar: React.FC<TopBarProps> = ({ onMenuOpen, onLogoClick, sidebarCollapsed }) => {
+    const { pageTitle, helpVisible, setHelpVisible, hasToolAbout } = usePage();
+    const { theme, toggleTheme } = useTheme();
 
-    return <Appbar appTitle={'Developer Utils'} pageTitle={pageTitle} onAppTitleClick={onAppTitleClick} />;
+    return (
+        <Appbar
+            appTitle={'dev.tools'}
+            pageTitle={pageTitle}
+            theme={theme}
+            onThemeToggle={toggleTheme}
+            onMenuOpen={onMenuOpen}
+            onLogoClick={onLogoClick}
+            sidebarCollapsed={sidebarCollapsed}
+            helpVisible={helpVisible}
+            onToggleHelp={pageTitle && hasToolAbout ? (): void => setHelpVisible(!helpVisible) : undefined}
+        />
+    );
 };
 
 export default ApplicationTopBar;

@@ -1,76 +1,206 @@
-/* Global color palette definitions for consistent theming across the application */
+/* ============================================================
+   Design tokens — light theme defaults
+   ============================================================ */
 :root {
-    /* Basic black and white colors with contrasting text options */
-    --black-color: #000000; /* Pure black background */
-    --black-color-on: #ffffff; /* White text for black backgrounds */
+    /* --- Brand / role tokens -------------------------------- */
+    --primary: #006b5f;
+    --primary-hover: #005a4f;
+    --on-primary: #ffffff;
+    --primary-container: #9ef2e3;
+    --on-primary-container: #005048;
 
-    --white-color: #ffffff; /* Pure white background */
-    --white-color-on: #000000; /* Black text for white backgrounds */
+    --secondary: #4a635e;
+    --secondary-container: #cce8e2;
+    --on-secondary-container: #334b47;
 
-    /* Primary theme colors for main actions and highlights */
-    --primary-color: #006b5f; /* Teal primary background color */
-    --primary-color-on: #ffffff; /* White text for primary color backgrounds */
-    --primary-container-color: #9ef2e3; /* Light teal background for containers */
-    --primary-container-color-on: #005048; /* Darker teal text for container backgrounds */
+    --tertiary: #456179;
+    --tertiary-container: #cbe6ff;
+    --on-tertiary-container: #2d4a60;
 
-    /* Secondary theme colors for secondary actions and elements */
-    --secondary-color: #4a635e; /* Muted green-blue background */
-    --secondary-color-on: #ffffff; /* White text for secondary backgrounds */
-    --secondary-container-color: #cce8e2; /* Light green-blue container background */
-    --secondary-container-color-on: #334b47; /* Dark green-blue text for containers */
+    --success: #3b6939;
+    --success-container: #bcf0b4;
+    --warning: #685f12;
+    --warning-container: #f1e48a;
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --info: #27638a;
+    --info-container: #cae6ff;
 
-    /* Tertiary theme colors for less prominent elements */
-    --tertiary-color: #456179; /* Deep blue background */
-    --tertiary-color-on: #ffffff; /* White text for tertiary backgrounds */
-    --tertiary-container-color: #cbe6ff; /* Light blue container background */
-    --tertiary-container-color-on: #2d4a60; /* Dark blue text for containers */
+    /* --- Surface / background tokens ----------------------- */
+    --bg: #eef4f1;
+    --surface: #f7fbf9;
+    --card: #ffffff;
+    --card-2: #f1f6f3;
 
-    /* Error theme colors for destructive actions or alerts */
-    --error-color: #ba1a1a; /* Bright red background */
-    --error-color-on: #ffffff; /* White text for error backgrounds */
-    --error-container-color: #ffdad6; /* Light red container background */
-    --error-container-color-on: #93000a; /* Dark red text for containers */
+    --on-surface: #161d1b;
+    --on-surface-variant: #3f4946;
+    --muted: #6f7976;
 
-    /* Surface colors for background surfaces and cards */
-    --surface-color: #f4fbf8; /* Light greenish background */
-    --surface-color-on: #3f4946; /* Gray text for surface backgrounds */
-    --surface-dim-color: #d5dbd9; /* Subtle gray background */
-    --surface-dim-color-on: #161d1b; /* Dark gray text for dim surfaces */
+    /* --- Outline & overlay tokens -------------------------- */
+    --outline: #c2cbc7;
+    --outline-soft: #e4eae7;
+    --hover-overlay: rgba(0, 107, 95, 0.08);
 
-    /* Utility colors for specific status types */
-    --info-color: #27638a; /* Blue for informational messages */
-    --info-color-on: #ffffff; /* White text for info backgrounds */
-    --info-container-color: #cae6ff; /* Light blue container background */
-    --info-container-color-on: #004b70; /* Dark blue text for info containers */
+    /* --- Code tokens --------------------------------------- */
+    --code-bg: #10211d;
+    --code-fg: #d7e7e2;
+    --code-line: #22332e;
 
-    --success-color: #3b6939; /* Green for success states */
-    --success-color-on: #ffffff; /* White text for success backgrounds */
-    --success-container-color: #bcf0b4; /* Light green container background */
-    --success-container-color-on: #235024; /* Dark green text for success containers */
+    /* --- Shadow tokens ------------------------------------- */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 14px 30px rgba(0, 0, 0, 0.18);
 
-    --warning-color: #685f12; /* Yellow-green for warning states */
-    --warning-color-on: #ffffff; /* White text for warning backgrounds */
-    --warning-container-color: #f1e48a; /* Light yellow container background */
-    --warning-container-color-on: #4f4800; /* Olive text for warning containers */
+    /* --- Radius tokens ------------------------------------- */
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 18px;
+    --r-pill: 9999px;
 
-    /* Specialized colors for shadows, outlines, and hover states */
-    --md-shadow-color: #000000; /* Black shadow color */
-    --md-outline-color: #6f7976; /* Gray outline color */
-    --hover-color: white; /* White hover overlay */
+    /* --- Spacing scale ------------------------------------- */
+    --s1: 4px;
+    --s2: 8px;
+    --s3: 12px;
+    --s4: 16px;
+    --s5: 24px;
+    --s6: 32px;
+
+    /* --- Layout tokens ------------------------------------- */
+    --rail: 252px;
+    --topbar: 56px;
+
+    /* --- Typography tokens --------------------------------- */
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+
+    /* ============================================================
+       Backward-compat aliases — existing components keep working
+       ============================================================ */
+    --black-color: #000000;
+    --black-color-on: #ffffff;
+    --white-color: #ffffff;
+    --white-color-on: #000000;
+
+    --primary-color: var(--primary);
+    --primary-color-on: var(--on-primary);
+    --primary-container-color: var(--primary-container);
+    --primary-container-color-on: var(--on-primary-container);
+
+    --secondary-color: var(--secondary);
+    --secondary-color-on: var(--on-primary);
+    --secondary-container-color: var(--secondary-container);
+    --secondary-container-color-on: var(--on-secondary-container);
+
+    --tertiary-color: var(--tertiary);
+    --tertiary-color-on: var(--on-primary);
+    --tertiary-container-color: var(--tertiary-container);
+    --tertiary-container-color-on: var(--on-tertiary-container);
+
+    --error-color: var(--error);
+    --error-color-on: var(--on-primary);
+    --error-container-color: var(--error-container);
+    --error-container-color-on: #93000a;
+
+    --surface-color: var(--surface);
+    --surface-color-on: var(--on-surface-variant);
+    --surface-dim-color: var(--card-2);
+    --surface-dim-color-on: var(--on-surface);
+
+    --info-color: var(--info);
+    --info-color-on: var(--on-primary);
+    --info-container-color: var(--info-container);
+    --info-container-color-on: #004b70;
+
+    --success-color: var(--success);
+    --success-color-on: var(--on-primary);
+    --success-container-color: var(--success-container);
+    --success-container-color-on: #235024;
+
+    --warning-color: var(--warning);
+    --warning-color-on: var(--on-primary);
+    --warning-container-color: var(--warning-container);
+    --warning-container-color-on: #4f4800;
+
+    --md-outline-color: var(--outline);
+    --md-shadow-color: #000000;
+    --hover-color: var(--card);
+
+    --divider-color: #e0e0e0;
 }
 
-/* List of all color names used for generating utility classes */
+/* ============================================================
+   Dark theme overrides
+   ============================================================ */
+[data-theme='dark'] {
+    --primary: #82d5c7;
+    --primary-hover: #9ef2e3;
+    --on-primary: #003730;
+    --primary-container: rgba(0, 80, 71, 0.34);
+    --on-primary-container: #9ef2e3;
+
+    --secondary: #b1ccc6;
+    --secondary-container: #33403c;
+    --on-secondary-container: #cce8e2;
+
+    --tertiary: #a7cae6;
+    --tertiary-container: #27465c;
+    --on-tertiary-container: #cbe6ff;
+
+    --bg: #0d1513;
+    --surface: #111a18;
+    --card: #172321;
+    --card-2: #1c2825;
+
+    --on-surface: #dde4e1;
+    --on-surface-variant: #bec9c5;
+    --muted: #8a948f;
+
+    --outline: #3a4541;
+    --outline-soft: #26302d;
+    --hover-overlay: rgba(130, 213, 199, 0.1);
+
+    --code-bg: #10211d;
+    --code-fg: #d7e7e2;
+    --code-line: #22332e;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 14px 30px rgba(0, 0, 0, 0.55);
+
+    /* State colours — dark tier */
+    --success: #89d382;
+    --success-container: #1e4a1e;
+    --warning: #d4c84f;
+    --warning-container: #3c3500;
+    --error: #ffb4ab;
+    --error-container: #690005;
+    --info: #6ab0c5;
+    --info-container: #004f67;
+
+    /* Compat aliases — override the light-only hardcoded values */
+    --success-container-color-on: #89d382;
+    --warning-container-color-on: #d4c84f;
+    --error-container-color-on: #ffb4ab;
+    --info-container-color-on: var(--info); /* #6ab0c5 in dark — contrasts against #004f67 */
+    --error-container-color: var(--error-container);
+    --info-container-color: var(--info-container);
+    --success-container-color: var(--success-container);
+    --warning-container-color: var(--warning-container);
+
+    --divider-color: var(--outline-soft);
+}
+
+/* ============================================================
+   Utility color classes — auto-generated from $md-colors list
+   ============================================================ */
 $md-colors:
     black-color, white-color, primary-color, primary-container-color, secondary-color, secondary-container-color,
     tertiary-color, tertiary-container-color, error-color, error-container-color, surface-color, surface-dim-color,
     info-color, info-container-color, success-color, success-container-color, warning-color, warning-container-color;
 
-/* Generates utility classes for all defined colors using SCSS map iteration
-   Creates classes like .color-primary-color that set --bg-color and --text-color variables
-   This avoids repetitive manual class creation for each color combination */
 @each $md-color in $md-colors {
     .color-#{$md-color} {
-        --bg-color: var(--#{$md-color}); /* Sets background color variable from theme */
-        --text-color: var(--#{$md-color}-on); /* Sets matching text color from theme */
+        --bg-color: var(--#{$md-color});
+        --text-color: var(--#{$md-color}-on);
     }
 }

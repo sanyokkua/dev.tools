@@ -1,6 +1,5 @@
 import { formatJson } from '@/common/formatting-tools';
-import { mapApplicationToCommand } from '@/common/macos-utils';
-import { CommandBuilder, IHashUtil, IStringUtil, OSType, UtilList } from '@/common/types';
+import { IHashUtil, IStringUtil, UtilList } from '@/common/types';
 import { CaseUtils, EncodingUtils, HashingUtils, LineUtils, SortingTypes, StringUtils } from 'coreutilsts';
 
 /**
@@ -229,6 +228,21 @@ export function createStringUtilList(): UtilList[] {
     ];
 }
 
+function encodeHtmlEntities(input: string): string {
+    return input
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function decodeHtmlEntities(input: string): string {
+    // DOMParser runs in the browser (fine for static export — never called server-side)
+    const doc = new DOMParser().parseFromString(`<!doctype html><body>${input}`, 'text/html');
+    return doc.body.textContent ?? '';
+}
+
 /**
  * Creates an array of utility objects for encoding different data formats.
  * @returns Array of string utility tools with their respective encoding functions.
@@ -246,6 +260,7 @@ export function createEncodingUtils(): IStringUtil[] {
             textToDisplay: 'Encode Base64Url',
             toolFunction: (input) => EncodingUtils.encodeBase64Url(input),
         },
+        { toolId: 'encode-html-entities', textToDisplay: 'HTML Entities encode', toolFunction: encodeHtmlEntities },
     ];
 }
 
@@ -261,6 +276,16 @@ export function createDecodingUtils(): IStringUtil[] {
             textToDisplay: 'Decode Base64',
             toolFunction: (input) => EncodingUtils.decodeBase64(input),
         },
+        {
+            toolId: 'decode-base-64-url',
+            textToDisplay: 'Decode Base64Url',
+            toolFunction: (input: string): string => {
+                const base64 = input.replaceAll('-', '+').replaceAll('_', '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                return atob(padded);
+            },
+        },
+        { toolId: 'decode-html-entities', textToDisplay: 'HTML Entities decode', toolFunction: decodeHtmlEntities },
     ];
 }
 
@@ -327,18 +352,3 @@ export function createJsonFormatter(): IStringUtil[] {
         },
     ];
 }
-
-/**
- * Factory function that returns a specialized CommandBuilder implementation based on the target operating system.
- * @param osType - The identifier of the target operating system ('macos').
- * @returns A CommandBuilder instance configured for the specified OS type. For non-macOS systems, returns a default no-op builder.
- */
-export const getCommandBuilder = (osType: OSType): CommandBuilder => {
-    if (osType === 'macos') {
-        return mapApplicationToCommand;
-    }
-
-    return () => {
-        return { description: 'not-implemented', command: 'not-implemented' };
-    };
-};

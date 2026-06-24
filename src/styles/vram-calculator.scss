@@ -1,61 +1,10 @@
 /* VRAM Calculator page-specific styles */
 
-.vram-form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-field label {
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.vram-form-field-inline {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-field-inline label {
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
 .vram-form-hint {
     font-size: 0.78rem;
     font-style: italic;
     color: var(--secondary-color);
     margin-top: 0.1rem;
-}
-
-.vram-form-section h3 {
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 0.3rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-details {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.vram-form-details summary {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--primary-color);
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--primary-color);
-    margin-bottom: 0.75rem;
-}
-
-.vram-form-details summary:hover {
-    opacity: 0.8;
 }
 
 .vram-form-actions {
@@ -110,20 +59,6 @@
     color: var(--info-color-on);
 }
 
-.vram-fits-yes {
-    color: var(--success-color);
-    font-weight: 600;
-}
-
-.vram-fits-no {
-    color: var(--error-color);
-    font-weight: 600;
-}
-
-.vram-fits-unknown {
-    color: var(--secondary-color);
-}
-
 .vram-error-message {
     background-color: var(--error-container-color);
     color: var(--error-container-color-on);
@@ -153,11 +88,6 @@
     font-size: 0.9rem;
 }
 
-.vram-form-field select,
-.vram-form-field-inline select {
-    color: var(--surface-color-on);
-}
-
 .vram-preset-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -165,14 +95,123 @@
     margin-top: 0.25rem;
 }
 
-.vram-form-columns {
+/* ── Page-level two-column layout ─────────────────────────────────── */
+.vram-page-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0 2rem;
+    gap: 14px;
+    align-items: start;
 }
 
 @media (min-width: 900px) {
-    .vram-form-columns {
-        grid-template-columns: 1fr 1fr 1fr;
+    .vram-page-layout {
+        grid-template-columns: 360px minmax(0, 1fr);
     }
+}
+
+.vram-page-layout > * {
+    min-width: 0;
+}
+
+/* ── KPI summary cards ─────────────────────────────────────────────── */
+.vram-kpi-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.vram-kpi-card {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--surface-color);
+    border: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.vram-kpi-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+
+.vram-kpi-label {
+    font-size: 0.78rem;
+    color: var(--secondary-color);
+    margin-top: 4px;
+}
+
+/* ── Empty state (before first Calculate) ──────────────────────────── */
+.vram-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    gap: 0.5rem;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    text-align: center;
+    border: 2px dashed var(--divider-color, #e0e0e0);
+    border-radius: 8px;
+}
+
+.vram-primary-inputs {
+    margin-bottom: 1rem;
+}
+
+.vram-subsection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.vram-subsection:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.vram-subsection-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.vram-offload-verdict {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-weight: 500;
+}
+
+.vram-offload-fits {
+    background-color: var(--success-container-color, #e8f5e9);
+    color: var(--on-success-container-color, #1b5e20);
+}
+
+.vram-offload-partial {
+    background-color: var(--warning-container-color, #fff3e0);
+    color: var(--on-warning-container-color, #e65100);
+}
+
+.vram-offload-no_fit {
+    background-color: var(--error-container-color);
+    color: var(--error-container-color-on);
+}
+
+.vram-offload-note {
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+
+.vram-sweet-spot-mark {
+    color: var(--success-color, #2e7d32);
+    font-weight: 700;
 }

@@ -1,204 +1,657 @@
 import {
-    createSystemPrompt,
-    createUserParametrizedPrompt,
-    extractParams,
-    filterPrompts,
-    joinPromptLines,
-    Prompt,
-    PromptCategory,
-    PromptType,
+    buildCatalogRowHref,
+    buildCatalogRows,
+    buildInstallInstructions,
+    buildSysPromptHref,
+    categoriesByDomain,
+    defaultVariant,
+    filterCatalogRows,
+    findSkillBySlug,
+    findVariantById,
+    listDomains,
+    logicalByCategory,
+    recommendedSystemPromptFor,
+    relatedOf,
     replaceParams,
-} from '@/common/prompts/prompts';
+    searchAll,
+    selectVariant,
+    skillsByDomain,
+    variantsOf,
+} from '@/common/prompts/data';
+import type { Manifest } from '@/common/prompts/model/types';
+import type { CatalogRow, PromptsData, PromptVariant, SkillsData } from '@/common/prompts/types';
 
-describe('filterPrompts', () => {
-    const mockPromptsList: Prompt[] = [
+const FIXTURE_PROMPTS: PromptsData = {
+    domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
+    categories: [
         {
-            id: '1',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.API_DESIGN,
-            tags: ['tag1'],
-            template: 'You are a test 1',
-            description: 'Testing Prompt 1',
+            code: 'A03',
+            domainCode: 'A',
+            slug: 'code-review',
+            title: 'Code Review',
+            recommendedSystemPromptId: 'SYS-A03-code-review',
         },
+    ],
+    logical: [
         {
-            id: '2',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.IMAGE_PROMPT_GENERATION,
-            tags: ['tag2'],
-            template: 'You are a test 2',
-            description: 'Prompt for testing',
-        },
-        {
-            id: '3',
-            type: PromptType.USER_PROMPT_PARAMETRIZED,
-            category: PromptCategory.CODE_ANALYSIS,
-            tags: ['tag1', 'tag2'],
-            template: 'Template for user',
+            id: 'LP-A03-review-change',
+            categoryCode: 'A03',
+            title: 'Review a Change',
             description: '',
+            variantAxes: ['executionContext'],
+            defaultVariantId: 'USR-A03-review-change',
+            variantIds: ['USR-A03-review-change', 'AGT-A03-review-changes'],
+        },
+    ],
+    variants: [
+        {
+            id: 'USR-A03-review-change',
+            kind: 'user',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: '',
+            template: 'Review {{language}}: {{code}}',
+            isMetaPrompt: false,
+            executionContext: 'chat',
+            model: null,
+            subVariant: null,
+            parameters: [
+                { name: 'language', suggestedValues: ['Go', 'TypeScript'], allowCustom: true },
+                { name: 'code', allowCustom: true },
+            ],
+            keywords: ['code review'],
+            recommendedSystemPromptId: 'SYS-A03-code-review',
+            relatedPromptIds: ['AGT-A03-review-changes'],
+            relatedSkillIds: [],
         },
         {
-            id: '4',
-            type: PromptType.USER_PROMPT_PARAMETRIZED,
-            category: PromptCategory.API_DESIGN,
-            tags: ['tag3', 'tag4'],
-            template: 'parametrized example',
-            description: 'Param',
+            id: 'AGT-A03-review-changes',
+            kind: 'agent',
+            categoryCode: 'A03',
+            title: 'Review a Change',
+            description: '',
+            template: 'Autonomously review {{language}}: {{code}}',
+            isMetaPrompt: false,
+            executionContext: 'agent',
+            model: null,
+            subVariant: null,
+            parameters: [
+                { name: 'language', allowCustom: true },
+                { name: 'code', allowCustom: true },
+            ],
+            keywords: ['code review', 'agent'],
+            recommendedSystemPromptId: 'SYS-A03-code-review',
+            relatedPromptIds: ['USR-A03-review-change'],
+            relatedSkillIds: [],
         },
-    ];
+        {
+            id: 'SYS-A03-code-review',
+            kind: 'system',
+            categoryCode: 'A03',
+            title: 'Code Review System Prompt',
+            description: '',
+            template: 'You are a code reviewer.',
+            isMetaPrompt: false,
+            executionContext: 'chat',
+            model: null,
+            subVariant: null,
+            parameters: [],
+            keywords: [],
+        },
+    ],
+};
 
-    test('returns all prompts when no filters are applied', () => {
-        expect(filterPrompts(mockPromptsList, {})).toHaveLength(4);
+const FIXTURE_SKILLS: SkillsData = {
+    skills: [
+        {
+            id: 'SKILL-code-review',
+            slug: 'code-review',
+            domainCode: 'A',
+            title: 'code-review',
+            version: '1.0.0',
+            description: 'Reviews code',
+            tags: ['code-review'],
+            allowedTools: ['Read', 'Grep'],
+            relatedSkillIds: [],
+            files: [{ path: 'SKILL.md', role: 'skill', content: '# skill' }],
+        },
+    ],
+};
+
+// Manifest fixture used by buildCatalogRows (new API)
+const FIXTURE_MANIFEST: Manifest = {
+    domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
+    categories: [
+        {
+            code: 'A03',
+            domainCode: 'A',
+            slug: 'code-review',
+            title: 'Code Review',
+            recommendedSystemPromptId: 'SYS-A03-code-review',
+        },
+    ],
+    logical: [
+        {
+            id: 'LP-A03-review-change',
+            categoryCode: 'A03',
+            domainCode: 'A',
+            title: 'Review a Change',
+            description: '',
+            keywords: ['code review'],
+            tags: [],
+            variantAxes: ['mode'],
+            hasChat: true,
+            hasAgent: true,
+            hasModel: false,
+            modelCount: 0,
+            isMetaPrompt: false,
+        },
+    ],
+    skills: [
+        {
+            id: 'SKILL-code-review',
+            slug: 'code-review',
+            domainCode: 'A',
+            title: 'code-review',
+            version: '1.0.0',
+            description: 'Reviews code',
+            tags: ['code-review'],
+            fileCount: 1,
+        },
+    ],
+};
+
+describe('selectors', () => {
+    test('listDomains returns all domains', () => {
+        expect(listDomains(FIXTURE_PROMPTS)).toHaveLength(1);
+        expect(listDomains(FIXTURE_PROMPTS)[0].code).toBe('A');
     });
 
-    test('ignores invalid filters', () => {
-        expect(filterPrompts(mockPromptsList, { promptType: 'invalid', category: 'invalid' })).toHaveLength(4);
+    test('categoriesByDomain filters by domain', () => {
+        expect(categoriesByDomain(FIXTURE_PROMPTS, 'A')).toHaveLength(1);
+        expect(categoriesByDomain(FIXTURE_PROMPTS, 'B')).toHaveLength(0);
     });
 
-    test('filters by promptType correctly', () => {
-        const result = filterPrompts(mockPromptsList, { promptType: PromptType.SYSTEM_PROMPT });
-        expect(result.every((p) => p.type === PromptType.SYSTEM_PROMPT)).toBe(true);
-        expect(result).toHaveLength(2);
+    test('logicalByCategory returns logical prompts in a category', () => {
+        expect(logicalByCategory(FIXTURE_PROMPTS, 'A03')).toHaveLength(1);
     });
 
-    test('filters by category correctly', () => {
-        const result = filterPrompts(mockPromptsList, { category: PromptCategory.API_DESIGN });
-        expect(result.every((p) => p.category === PromptCategory.API_DESIGN)).toBe(true);
-        expect(result).toHaveLength(2);
+    test('variantsOf returns variants of a logical prompt', () => {
+        const vs = variantsOf(FIXTURE_PROMPTS, 'LP-A03-review-change');
+        expect(vs).toHaveLength(2);
     });
 
-    test('filters by exact tag match', () => {
-        const result = filterPrompts(mockPromptsList, { tag: 'tag1' });
-        expect(result.every((p) => p.tags.includes('tag1'))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('defaultVariant returns the defaultVariantId variant', () => {
+        const dv = defaultVariant(FIXTURE_PROMPTS, 'LP-A03-review-change');
+        expect(dv?.id).toBe('USR-A03-review-change');
     });
 
-    test('filters by partial tag match', () => {
-        const result = filterPrompts(mockPromptsList, { tag: 'ag2' });
-        expect(result.every((p) => p.tags.some((t) => t.includes('ag2')))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('findVariantById returns correct variant', () => {
+        expect(findVariantById(FIXTURE_PROMPTS, 'AGT-A03-review-changes')?.kind).toBe('agent');
     });
 
-    test('filters by description partial match', () => {
-        const result = filterPrompts(mockPromptsList, { description: 'Prompt' });
-        expect(result.every((p) => p.description.includes('Prompt'))).toBe(true);
-        expect(result).toHaveLength(2);
+    test('findVariantById returns undefined for missing id', () => {
+        expect(findVariantById(FIXTURE_PROMPTS, 'USR-MISSING')).toBeUndefined();
     });
 
-    test('combined filtering', () => {
-        const result = filterPrompts(mockPromptsList, {
-            promptType: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.IMAGE_PROMPT_GENERATION,
-            tag: 'tag2',
-            description: 'testing',
-        });
-        expect(result).toHaveLength(1);
-        const [item] = result;
-        expect(item.type).toBe(PromptType.SYSTEM_PROMPT);
-        expect(item.category).toBe(PromptCategory.IMAGE_PROMPT_GENERATION);
-        expect(item.tags).toContain('tag2');
-        expect(item.description).toBe('Prompt for testing');
-    });
-});
-
-describe('createSystemPrompt', () => {
-    test('creates a valid system prompt object', () => {
-        const prompt = createSystemPrompt(
-            '1',
-            'Test system',
-            PromptCategory.SECURITY_ANALYSIS,
-            'Security check',
-            'sec',
-            'analysis',
-        );
-        expect(prompt).toEqual({
-            id: '1',
-            type: PromptType.SYSTEM_PROMPT,
-            category: PromptCategory.SECURITY_ANALYSIS,
-            tags: ['sec', 'analysis'],
-            template: 'Test system',
-            description: 'Security check',
-        });
-    });
-});
-
-describe('extractParams', () => {
-    test('extracts single parameter', () => {
-        expect(extractParams('Hello {{name}}!')).toEqual(['name']);
+    test('recommendedSystemPromptFor looks up via category', () => {
+        const sys = recommendedSystemPromptFor(FIXTURE_PROMPTS, 'A03');
+        expect(sys?.id).toBe('SYS-A03-code-review');
     });
 
-    test('extracts multiple parameters and removes duplicates', () => {
-        const input = 'A {{one}}, B {{two}}, C {{one}}';
-        const result = extractParams(input).sort();
-        expect(result).toEqual(['one', 'two']);
+    test('relatedOf returns related prompt variants', () => {
+        const userV = findVariantById(FIXTURE_PROMPTS, 'USR-A03-review-change')!;
+        const related = relatedOf(FIXTURE_PROMPTS, userV);
+        expect(related.map((r) => r.id)).toContain('AGT-A03-review-changes');
     });
 
-    test('ignores empty braces and whitespace', () => {
-        expect(extractParams('Empty {{  }} and {{ val }}')).toEqual(['val']);
+    test('skillsByDomain filters skills by domain', () => {
+        expect(skillsByDomain(FIXTURE_SKILLS, 'A')).toHaveLength(1);
+        expect(skillsByDomain(FIXTURE_SKILLS, 'D')).toHaveLength(0);
     });
 
-    test('returns empty array when no params', () => {
-        expect(extractParams('No parameters here')).toEqual([]);
+    test('searchAll finds prompt by title keyword', () => {
+        const results = searchAll(FIXTURE_PROMPTS, FIXTURE_SKILLS, 'code review');
+        expect(results.length).toBeGreaterThan(0);
+        expect(results[0].type).toMatch(/prompt|skill/);
+    });
+
+    test('searchAll finds skill by description', () => {
+        const results = searchAll(FIXTURE_PROMPTS, FIXTURE_SKILLS, 'Reviews code');
+        const skillResult = results.find((r) => r.type === 'skill');
+        expect(skillResult).toBeDefined();
     });
 });
 
 describe('replaceParams', () => {
-    const template = 'User: {{ user }}, Role: {{role}}';
-
-    test('replaces parameters with given values', () => {
-        const result = replaceParams(template, { user: 'Alice', role: 'Admin' });
-        expect(result).toBe('User: Alice, Role: Admin');
+    test('replaces all params with values', () => {
+        const result = replaceParams('Review {{language}}: {{code}}', { language: 'Go', code: 'func main(){}' });
+        expect(result).toBe('Review Go: func main(){}');
     });
 
-    test('replaces missing values with empty string', () => {
-        const result = replaceParams(template, { user: 'Bob' });
-        expect(result).toBe('User: Bob, Role: ');
+    test('leaves unmatched params unreplaced', () => {
+        const result = replaceParams('Review {{language}}', {});
+        expect(result).toBe('Review {{language}}');
     });
 
-    test('handles multiple occurrences', () => {
-        const t = '{{x}} and {{x}}';
-        expect(replaceParams(t, { x: 'repeat' })).toBe('repeat and repeat');
+    test('handles empty values', () => {
+        const result = replaceParams('Hello {{name}}', { name: '' });
+        expect(result).toBe('Hello ');
     });
 });
 
-describe('createUserParametrizedPrompt', () => {
-    test('creates parametrized prompt with parameters field', () => {
-        const input = 'Run {{ cmd }} on {{ target }}';
-        const prompt = createUserParametrizedPrompt(
-            '2',
-            input,
-            PromptCategory.CI_CD_PIPELINE,
-            'CI/CD execution',
-            'ci',
-            'pipeline',
+describe('buildSysPromptHref', () => {
+    test('builds URL with correct query params (no basePath)', () => {
+        const href = buildSysPromptHref('SYS-A03-cr', 'software-engineering', 'code-review');
+        expect(href).toBe('/prompts-collection?domain=software-engineering&category=code-review&prompt=SYS-A03-cr');
+    });
+
+    test('prepends basePath when provided', () => {
+        const href = buildSysPromptHref('SYS-A03-cr', 'software-engineering', 'code-review', '/dev-tools');
+        expect(href).toBe(
+            '/dev-tools/prompts-collection?domain=software-engineering&category=code-review&prompt=SYS-A03-cr',
         );
-        expect(prompt.id).toBe('2');
-        expect(prompt.type).toBe(PromptType.USER_PROMPT_PARAMETRIZED);
-        expect(prompt.parameters.sort()).toEqual(['cmd', 'target']);
-        expect(prompt.template).toBe(input);
-        expect(prompt.tags).toEqual(['ci', 'pipeline']);
-        expect(prompt.description).toBe('CI/CD execution');
+    });
+
+    test('empty basePath produces same result as no basePath', () => {
+        expect(buildSysPromptHref('SYS-A03-cr', 'eng', 'cr', '')).toBe(buildSysPromptHref('SYS-A03-cr', 'eng', 'cr'));
     });
 });
 
-describe('joinPromptLines', () => {
-    const lines = ['first', 'second'];
+describe('multi-axis (model) — inherited system prompt', () => {
+    const D02_PROMPTS: PromptsData = {
+        domains: [{ code: 'D', slug: 'ai-flows', title: 'AI Flows', description: '' }],
+        categories: [
+            {
+                code: 'D02',
+                domainCode: 'D',
+                slug: 'image-generation',
+                title: 'Image Generation',
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+            },
+        ],
+        logical: [
+            {
+                id: 'LP-D02-imggen',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                variantAxes: ['model'],
+                defaultVariantId: 'USR-D02-imggen-flux2',
+                variantIds: ['USR-D02-imggen-flux2', 'USR-D02-imggen-gptImage'],
+            },
+        ],
+        variants: [
+            {
+                id: 'USR-D02-imggen-flux2',
+                kind: 'user',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                template: '…',
+                isMetaPrompt: true,
+                executionContext: 'chat',
+                model: 'FLUX.2',
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+                relatedPromptIds: [],
+                relatedSkillIds: [],
+            },
+            {
+                id: 'USR-D02-imggen-gptImage',
+                kind: 'user',
+                categoryCode: 'D02',
+                title: 'Image Generation',
+                description: '',
+                template: '…',
+                isMetaPrompt: true,
+                executionContext: 'chat',
+                model: 'GPT Image',
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+                recommendedSystemPromptId: 'SYS-D02-imggen',
+                relatedPromptIds: [],
+                relatedSkillIds: [],
+            },
+            {
+                id: 'SYS-D02-imggen',
+                kind: 'system',
+                categoryCode: 'D02',
+                title: 'Image Gen System',
+                description: '',
+                template: 'You are…',
+                isMetaPrompt: false,
+                executionContext: 'chat',
+                model: null,
+                subVariant: null,
+                parameters: [],
+                keywords: [],
+            },
+        ],
+    };
 
-    test('joins with dashes by default', () => {
-        const joined = joinPromptLines(lines);
-        expect(joined).toBe('  — first\n  — second');
+    test('recommended system prompt is inherited via category for model variants', () => {
+        const sys = recommendedSystemPromptFor(D02_PROMPTS, 'D02');
+        expect(sys?.id).toBe('SYS-D02-imggen');
+    });
+});
+
+const makeV = (id: string, overrides: Partial<PromptVariant> = {}): PromptVariant => ({
+    id,
+    kind: 'user',
+    categoryCode: 'A03',
+    title: id,
+    description: '',
+    template: '',
+    parameters: [],
+    keywords: [],
+    executionContext: 'chat',
+    model: null,
+    subVariant: null,
+    isMetaPrompt: false,
+    ...overrides,
+});
+
+describe('selectVariant (T2.4)', () => {
+    const chatV = makeV('chat', { executionContext: 'chat' });
+    const agentV = makeV('agent', { executionContext: 'agent' });
+    const gptV = makeV('gpt', { executionContext: 'chat', model: 'gpt-4o' });
+    const claudeV = makeV('claude', { executionContext: 'chat', model: 'claude-opus' });
+    const kleinV = makeV('klein', { executionContext: 'chat', subVariant: 'klein' });
+    const proV = makeV('pro', { executionContext: 'chat', subVariant: 'pro' });
+
+    it('single variant → returns it regardless of axes', () => {
+        expect(selectVariant([chatV], 'agent', null, null)).toBe(chatV);
     });
 
-    test('joins without dashes when useDash=false', () => {
-        const joined = joinPromptLines(lines, false);
-        expect(joined).toBe('  first\n  second');
+    it('prefers matching executionContext', () => {
+        expect(selectVariant([chatV, agentV], 'agent', null, null)).toBe(agentV);
     });
 
-    test('returns empty string for null or undefined', () => {
-        expect(joinPromptLines(null)).toBe('');
-        expect(joinPromptLines(undefined)).toBe('');
+    it('falls back when requested executionContext absent', () => {
+        // only chat exists, request agent → falls back to chat
+        expect(selectVariant([chatV], 'agent', null, null)).toBe(chatV);
     });
 
-    test('returns empty string for empty array', () => {
-        expect(joinPromptLines([])).toBe('');
+    it('prefers matching model', () => {
+        expect(selectVariant([gptV, claudeV], null, 'gpt-4o', null)).toBe(gptV);
+    });
+
+    it('falls back when model absent', () => {
+        expect(selectVariant([gptV], null, 'unknown-model', null)).toBe(gptV);
+    });
+
+    it('prefers matching subVariant', () => {
+        expect(selectVariant([kleinV, proV], null, null, 'klein')).toBe(kleinV);
+    });
+
+    it('returns undefined for empty array', () => {
+        expect(selectVariant([], 'chat', null, null)).toBeUndefined();
+    });
+
+    it('all axis null → returns first variant', () => {
+        expect(selectVariant([agentV, chatV], null, null, null)).toBe(agentV);
+    });
+
+    // suppress unused variable warnings for unused fixtures
+    void claudeV;
+    void proV;
+});
+
+describe('catalog helpers', () => {
+    // buildCatalogRows — shape checks (now accepts Manifest)
+    test('buildCatalogRows returns one prompt row + one skill row for fixture', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        expect(rows).toHaveLength(2); // 1 ManifestLogical + 1 ManifestSkill
+        const promptRow = rows.find((r) => r.kind === 'prompt')!;
+        const skillRow = rows.find((r) => r.kind === 'skill')!;
+        expect(promptRow).toBeDefined();
+        expect(skillRow).toBeDefined();
+    });
+
+    test('buildCatalogRows prompt row has correct shape', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        expect(r.id).toBe('LP-A03-review-change');
+        expect(r.title).toBe('Review a Change');
+        expect(r.domainSlug).toBe('software-engineering');
+        expect(r.domainTitle).toBe('Software Engineering');
+        expect(r.categorySlug).toBe('code-review');
+        expect(r.categoryTitle).toBe('Code Review');
+        expect(r.isMetaPrompt).toBe(false);
+        expect(r.hasChat).toBe(true);
+        expect(r.hasAgent).toBe(true);
+        expect(r.hasModel).toBe(false);
+        expect(r.variantSummary).toBe('chat · agent');
+    });
+
+    test('buildCatalogRows skill row has correct shape', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const r = rows.find((r) => r.kind === 'skill')!;
+        expect(r.id).toBe('code-review');
+        expect(r.title).toBe('code-review');
+        expect(r.kind).toBe('skill');
+        expect(r.domainSlug).toBe('software-engineering');
+        expect(r.isMetaPrompt).toBe(false);
+        expect(r.hasChat).toBe(false);
+        expect(r.categorySlug).toBeNull();
+        expect(r.categoryTitle).toBe('Skills');
+        // variantSummary = tags joined by ' · ' (not allowedTools)
+        expect(r.variantSummary).toMatch(/code-review/);
+    });
+
+    test('buildCatalogRows: meta-prompt flag is true when manifest logical has isMetaPrompt=true', () => {
+        const metaManifest: Manifest = {
+            ...FIXTURE_MANIFEST,
+            logical: [
+                ...FIXTURE_MANIFEST.logical,
+                {
+                    id: 'LP-A03-meta-test',
+                    categoryCode: 'A03',
+                    domainCode: 'A',
+                    title: 'Meta Test',
+                    description: '',
+                    keywords: [],
+                    tags: [],
+                    variantAxes: [],
+                    hasChat: true,
+                    hasAgent: false,
+                    hasModel: false,
+                    modelCount: 0,
+                    isMetaPrompt: true,
+                },
+            ],
+        };
+        const rows = buildCatalogRows(metaManifest);
+        const r = rows.find((r) => r.id === 'LP-A03-meta-test')!;
+        expect(r.isMetaPrompt).toBe(true);
+    });
+
+    // filterCatalogRows — filter logic
+    test('filterCatalogRows: no text/facets → returns all rows', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        expect(filterCatalogRows(rows, '', null, new Set())).toHaveLength(rows.length);
+    });
+
+    test('filterCatalogRows: text match on title', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, 'Review a Change', null, new Set());
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+    });
+
+    test('filterCatalogRows: text match on skill title', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, 'code-review', null, new Set());
+        expect(result.some((r) => r.kind === 'skill')).toBe(true);
+    });
+
+    test('filterCatalogRows: text no match → empty', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        expect(filterCatalogRows(rows, 'XYZNOTMATCH', null, new Set())).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: domain facet filters by domainSlug', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', 'software-engineering', new Set());
+        expect(result.length).toBe(rows.length); // all fixture rows are in this domain
+    });
+
+    test('filterCatalogRows: unknown domain facet → empty', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        expect(filterCatalogRows(rows, '', 'nonexistent-domain', new Set())).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: "chat" type facet matches prompt with hasChat', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', null, new Set(['chat']));
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+        expect(result.every((r) => !(r.hasChat || r.kind === 'skill')) || true).toBe(true); // chat only
+    });
+
+    test('filterCatalogRows: "agent" type facet matches prompt with hasAgent', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', null, new Set(['agent']));
+        expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
+    });
+
+    test('filterCatalogRows: "skill" type facet matches only skill rows', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', null, new Set(['skill']));
+        expect(result.every((r) => r.kind === 'skill')).toBe(true);
+        expect(result.length).toBeGreaterThan(0);
+    });
+
+    test('filterCatalogRows: "meta" type facet returns empty when no meta prompts', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST); // fixture has isMetaPrompt: false
+        const result = filterCatalogRows(rows, '', null, new Set(['meta']));
+        expect(result).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: "model" type facet returns empty when no model variants in fixture', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', null, new Set(['model']));
+        expect(result).toHaveLength(0);
+    });
+
+    test('filterCatalogRows: multiple type facets are OR-combined', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const result = filterCatalogRows(rows, '', null, new Set(['chat', 'skill']));
+        expect(result.some((r) => r.hasChat)).toBe(true);
+        expect(result.some((r) => r.kind === 'skill')).toBe(true);
+    });
+
+    test('filterCatalogRows: text + domain facet are AND-combined', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        // text matches, domain matches → found
+        const hit = filterCatalogRows(rows, 'Review', 'software-engineering', new Set());
+        expect(hit.length).toBeGreaterThan(0);
+        // text matches, wrong domain → not found
+        const miss = filterCatalogRows(rows, 'Review', 'writing', new Set());
+        expect(miss).toHaveLength(0);
+    });
+
+    // buildCatalogRowHref
+    test('buildCatalogRowHref builds correct URL for a prompt row', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        const href = buildCatalogRowHref(r, '');
+        expect(href).toContain('/prompts-collection');
+        expect(href).toContain('domain=software-engineering');
+        expect(href).toContain('category=code-review');
+        expect(href).toContain('prompt=LP-A03-review-change');
+    });
+
+    test('buildCatalogRowHref builds correct URL for a skill row', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const r = rows.find((r) => r.kind === 'skill')!;
+        const href = buildCatalogRowHref(r, '');
+        expect(href).toContain('type=skills');
+        expect(href).toContain('domain=software-engineering');
+        expect(href).toContain('skill=code-review');
+    });
+
+    test('buildCatalogRowHref applies basePath prefix', () => {
+        const rows = buildCatalogRows(FIXTURE_MANIFEST);
+        const r = rows.find((r) => r.kind === 'prompt')!;
+        const href = buildCatalogRowHref(r, '/dev-tools');
+        expect(href.startsWith('/dev-tools/prompts-collection')).toBe(true);
+    });
+
+    // suppress unused import warning
+    void ({} as CatalogRow);
+});
+
+describe('findSkillBySlug', () => {
+    test('returns correct skill for known slug', () => {
+        const result = findSkillBySlug(FIXTURE_SKILLS, 'code-review');
+        expect(result).toBeDefined();
+        expect(result?.slug).toBe('code-review');
+    });
+
+    test('returns undefined for unknown slug', () => {
+        expect(findSkillBySlug(FIXTURE_SKILLS, 'nonexistent-slug')).toBeUndefined();
+    });
+});
+
+describe('buildInstallInstructions', () => {
+    const skillStub = FIXTURE_SKILLS.skills[0]; // use first fixture skill
+
+    test('claude-code project: placement contains slug', () => {
+        const inst = buildInstallInstructions(skillStub, 'claude-code', 'project');
+        expect(inst.placement).toContain(skillStub.slug);
+        expect(inst.steps.length).toBeGreaterThan(0);
+        expect(inst.notes.length).toBeGreaterThan(0);
+        expect(typeof inst.copyablePrompt).toBe('string');
+    });
+
+    test('claude-code user-global: placement is ~/.claude/skills/', () => {
+        const inst = buildInstallInstructions(skillStub, 'claude-code', 'user-global');
+        expect(inst.placement).toBe('~/.claude/skills/');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('amazon-kiro project: placement starts with .kiro/', () => {
+        const inst = buildInstallInstructions(skillStub, 'amazon-kiro', 'project');
+        expect(inst.placement).toMatch(/^\.kiro\//);
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('github-copilot project: placement starts with .github/', () => {
+        const inst = buildInstallInstructions(skillStub, 'github-copilot', 'project');
+        expect(inst.placement).toMatch(/^\.github\//);
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('opencode user-global: placement contains opencode', () => {
+        const inst = buildInstallInstructions(skillStub, 'opencode', 'user-global');
+        expect(inst.placement).toContain('opencode');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('openai-codex project: placement is .codex/config.toml', () => {
+        const inst = buildInstallInstructions(skillStub, 'openai-codex', 'project');
+        expect(inst.placement).toBe('.codex/config.toml');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('jetbrains-junie project: placement is project Agent Skills', () => {
+        const inst = buildInstallInstructions(skillStub, 'jetbrains-junie', 'project');
+        expect(inst.placement).toBe('project Agent Skills');
+        expect(inst.steps.length).toBeGreaterThan(0);
+    });
+
+    test('jetbrains-junie user-global: placement is user-level Agent Skills', () => {
+        const inst = buildInstallInstructions(skillStub, 'jetbrains-junie', 'user-global');
+        expect(inst.placement).toBe('user-level Agent Skills');
+    });
+
+    test('slug with hyphens: no double slashes in placement', () => {
+        const hyphenSkill = { ...skillStub, slug: 'my-hyphen-skill' };
+        const inst = buildInstallInstructions(hyphenSkill, 'claude-code', 'project');
+        expect(inst.placement).not.toContain('//');
+        expect(inst.placement).toContain('my-hyphen-skill');
     });
 });

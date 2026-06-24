@@ -1,16 +1,16 @@
-'use client';
 import React, { useEffect, useMemo } from 'react';
 
 import { usePage } from '@/contexts/PageContext';
 
 import { createEncodingDecodingUtilList } from '@/common/utils-factory';
+import ToolAbout from '@/controls/ToolAbout';
 import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
 
 const Home: React.FC = () => {
     const { setPageTitle } = usePage();
 
     useEffect(() => {
-        setPageTitle('Encoding Utilities');
+        setPageTitle('Encoding Tools');
     }, [setPageTitle]);
 
     // Memoize the tool groups to prevent recreation on every render
@@ -41,7 +41,17 @@ const Home: React.FC = () => {
         return groupsMap;
     }, []);
 
-    return <ToolView toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="encoding-tools">
+                Encode and decode text between common formats: <strong>Base64</strong> (standard and URL-safe),{' '}
+                <strong>URL/percent</strong> encoding, and <strong>HTML entities</strong>. Encode/decode are paired so
+                you can round-trip, and <strong>⇄ Use as input</strong> lets you chain conversions (e.g. URL-decode then
+                Base64-decode). Client-side only.
+            </ToolAbout>
+            <ToolView searchable toolChoseHeader="Select Mode" toolViewFunctionGroups={toolsGroups} />
+        </div>
+    );
 };
 
 export default Home;

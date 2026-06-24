@@ -1,0 +1,11 @@
+.diff-tool {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+@media (max-width: 900px) {
+    .diff-tool .eb {
+        min-height: 400px;
+    }
+}

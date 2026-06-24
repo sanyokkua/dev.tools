@@ -1,10 +1,13 @@
-'use client';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
+import Button from '@/controls/Button';
+import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import { ToastType } from '@/controls/toaster/types';
+import ToolAbout from '@/controls/ToolAbout';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
@@ -12,16 +15,25 @@ import {
     setEditorContent,
 } from '@/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/elements/editor/types';
-import { MenuBuilder } from '@/elements/navigation/menubar/utils';
+import ContentContainerFlex from '@/layouts/ContentContainerFlex';
 import { StringUtils } from 'coreutilsts';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
-import Menubar from '../../components/elements/navigation/menubar/Menubar';
+import EditorToolbar from '../../components/elements/editor/EditorToolbar';
 
 type EditorLanguage = 'shell' | 'bat' | 'powershell';
+
+const SYNTAX_OPTIONS: SegmentedOption[] = [
+    { value: 'shell', label: 'Unix bash' },
+    { value: 'bat', label: 'Windows bat' },
+    { value: 'powershell', label: 'PowerShell' },
+];
+
+const LANG_EXT: Record<EditorLanguage, string> = { shell: '.sh', bat: '.bat', powershell: '.ps1' };
 
 const IndexPage: React.FC = (): React.JSX.Element => {
     const { setPageTitle } = usePage();
     const { showToast } = useToast();
+    const { saveAs } = useFileSaveDialog();
 
     useEffect(() => {
         setPageTitle('Terminal Utils');
@@ -29,28 +41,30 @@ const IndexPage: React.FC = (): React.JSX.Element => {
 
     const [languageId, setLanguageId] = useState<EditorLanguage>('shell');
 
-    // Editor ref
     const editorOriginalRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const editorResultRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     const handleOriginalEditorMount = useCallback((props: EditorProperties) => {
         editorOriginalRef.current = props.editor;
     }, []);
+
     const handleResultEditorMount = useCallback((props: EditorProperties) => {
         editorResultRef.current = props.editor;
     }, []);
 
-    // Handlers
     const handlePaste = useCallback((): void => {
         pasteFromClipboardToEditor(editorOriginalRef, () => {}, showToast);
-    }, []);
+    }, [showToast]);
 
     const handleCopy = useCallback((): void => {
         copyToClipboardFromEditor(editorResultRef, showToast);
+    }, [showToast]);
+
+    const handleClearInput = useCallback((): void => {
+        setEditorContent(editorOriginalRef, '');
     }, []);
 
-    const handleClear = useCallback((): void => {
-        setEditorContent(editorOriginalRef, '');
+    const handleClearResult = useCallback((): void => {
         setEditorContent(editorResultRef, '');
     }, []);
 
@@ -68,52 +82,89 @@ const IndexPage: React.FC = (): React.JSX.Element => {
         setEditorContent(editorResultRef, joined);
     }, []);
 
-    const handleShell = (): void => {
-        setLanguageId('shell');
-        showToast({ message: 'Changed Syntax to shell', type: ToastType.INFO });
-    };
-    const handleBat = (): void => {
-        setLanguageId('bat');
-        showToast({ message: 'Changed Syntax to bat', type: ToastType.INFO });
-    };
-    const handlePowershell = (): void => {
-        setLanguageId('powershell');
-        showToast({ message: 'Changed Syntax to powershell', type: ToastType.INFO });
+    const handleSyntaxChange = (lang: string): void => {
+        setLanguageId(lang as EditorLanguage);
+        showToast({ message: `Changed Syntax to ${lang}`, type: ToastType.INFO });
     };
 
-    const topMenuItems = MenuBuilder.newBuilder()
-        .addButton('paste-from-clipboard', 'Paste', handlePaste)
-        .addButton('clear', 'Clear', handleClear)
-        .addButton('joinWithOne', 'Join with &', handleJoinWithSingleAmp)
-        .addButton('joinWithTwo', 'Join with &&', handleJoinWithDoubleAmp)
-        .addButton('langBat', 'Syntax Windows Bash', handleBat)
-        .addButton('langPowershell', 'Syntax Windows Powershell', handlePowershell)
-        .addButton('langShell', 'Syntax (Unix) Bash', handleShell)
-        .build();
-
-    const bottomMenuItems = MenuBuilder.newBuilder()
-        .addButton('copy-to-clipboard', 'Copy', handleCopy)
-        .addButton('clear', 'Clear', handleClear)
-        .build();
+    const handleSaveAs = useCallback((): void => {
+        const content = getEditorContent(editorResultRef);
+        if (!content.trim()) {
+            showToast({ message: 'Nothing to save', type: ToastType.WARNING });
+            return;
+        }
+        saveAs({
+            fileContent: content,
+            fileName: 'commands',
+            fileExtension: LANG_EXT[languageId],
+            availableExtensions: Object.values(LANG_EXT),
+        });
+    }, [languageId, saveAs, showToast]);
 
     return (
-        <>
-            <Menubar menuItems={topMenuItems} />
-            <CodeEditor
-                minimap={false}
-                onEditorMounted={handleOriginalEditorMount}
-                languageId={languageId}
-                height="40vh"
-            />
-            <br />
-            <Menubar menuItems={bottomMenuItems} />
-            <CodeEditor
-                minimap={false}
-                onEditorMounted={handleResultEditorMount}
-                languageId={languageId}
-                height="40vh"
-            />
-        </>
+        <ContentContainerFlex>
+            <ToolAbout routeKey="terminal-utils">
+                Build a single shell command from many lines. Paste commands (one per line), pick the target syntax (
+                <strong>Unix bash / Windows bat / PowerShell</strong>), and join them with{' '}
+                <strong>
+                    <code>&amp;</code>
+                </strong>{' '}
+                (run sequentially) or{' '}
+                <strong>
+                    <code>&amp;&amp;</code>
+                </strong>{' '}
+                (stop on first failure) into one copy-paste-ready line. Useful for turning a setup checklist into a
+                single command.
+            </ToolAbout>
+            <div className="terminal-utils">
+                <div className="terminal-utils__toolbar">
+                    <span className="terminal-utils__syntax-label">Syntax:</span>
+                    <SegmentedControl
+                        options={SYNTAX_OPTIONS}
+                        value={languageId}
+                        onChange={handleSyntaxChange}
+                        aria-label="Syntax"
+                    />
+                </div>
+
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <span className="terminal-utils__pane-label">Input (one command per line)</span>
+                        <Button text="Paste" variant="text" size="small" onClick={handlePaste} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleClearInput} />
+                        <span style={{ flex: 1 }} />
+                        <Button text="Join with &" variant="filled" size="small" onClick={handleJoinWithSingleAmp} />
+                        <Button text="Join with &&" variant="solid" size="small" onClick={handleJoinWithDoubleAmp} />
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleOriginalEditorMount}
+                            languageId={languageId}
+                            height="100%"
+                        />
+                    </div>
+                </div>
+
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <span className="terminal-utils__pane-label">Result (single line)</span>
+                        <span style={{ flex: 1 }} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleClearResult} />
+                        <Button text="Save As" variant="text" size="small" onClick={handleSaveAs} />
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleResultEditorMount}
+                            languageId={languageId}
+                            height="100%"
+                        />
+                    </div>
+                </div>
+            </div>
+        </ContentContainerFlex>
     );
 };
 

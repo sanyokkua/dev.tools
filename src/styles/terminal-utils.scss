@@ -1,0 +1,29 @@
+.terminal-utils {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    &__syntax-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--on-surface-variant);
+        white-space: nowrap;
+    }
+
+    &__pane-label {
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 4px;
+        white-space: nowrap;
+    }
+}

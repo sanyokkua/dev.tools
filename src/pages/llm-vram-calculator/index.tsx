@@ -1,10 +1,16 @@
-'use client';
-
-import type { CalculatorInput, CalculatorOutput, Result, ValidationError } from '@/common/llm-vram-calc';
-import { calculateVram, KVCacheQuant, OperatingSystem, Quantization } from '@/common/llm-vram-calc';
+import type { CalculatorInput, CalculatorOutput, Quantization, Result, ValidationError } from '@/common/llm-vram-calc';
+import {
+    calculateVram,
+    GpuType,
+    InferenceEngine,
+    KVCacheQuant,
+    OperatingSystem,
+    QUANT_CATALOG,
+} from '@/common/llm-vram-calc';
 import { usePage } from '@/contexts/PageContext';
+import ToolAbout from '@/controls/ToolAbout';
 import { FC, useEffect, useState } from 'react';
-import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
+import PageShell from '../../components/layouts/PageShell';
 import VramCalculatorForm, {
     INITIAL_FORM_STATE,
     VramFormState,
@@ -14,32 +20,39 @@ import VramResultsDisplay from '../../components/page-specific/llm-vram-calculat
 /** @description Parses a string to a float, returning null for empty or invalid values. */
 function parseOptionalFloat(value: string): number | null {
     if (value.trim() === '') return null;
-    const num = parseFloat(value);
-    return isNaN(num) ? null : num;
+    const num = Number.parseFloat(value);
+    return Number.isNaN(num) ? null : num;
 }
 
 /** @description Parses a string to an integer, returning null for empty or invalid values. */
 function parseOptionalInt(value: string): number | null {
     if (value.trim() === '') return null;
-    const num = parseInt(value, 10);
-    return isNaN(num) ? null : num;
+    const num = Number.parseInt(value, 10);
+    return Number.isNaN(num) ? null : num;
 }
 
 /** @description Converts form state strings into a typed CalculatorInput for the VRAM calculation engine. */
 function buildCalculatorInput(form: VramFormState): CalculatorInput {
-    const quantizationValues = Object.values(Quantization) as string[];
+    const quantizationValues = Object.keys(QUANT_CATALOG);
     const kvCacheValues = Object.values(KVCacheQuant) as string[];
     const osValues = Object.values(OperatingSystem) as string[];
+    const gpuTypeValues = Object.values(GpuType) as string[];
+    const engineValues = Object.values(InferenceEngine) as string[];
 
     return {
-        params_b: parseFloat(form.params_b) || 0,
+        params_b: Number.parseFloat(form.params_b) || 0,
         model_size_gb: parseOptionalFloat(form.model_size_gb),
         quantization: quantizationValues.includes(form.quantization) ? (form.quantization as Quantization) : null,
         context_size: parseOptionalInt(form.context_size),
         kv_cache_enabled: form.kv_cache_enabled,
         kv_cache_quant: kvCacheValues.includes(form.kv_cache_quant)
             ? (form.kv_cache_quant as KVCacheQuant)
-            : KVCacheQuant.Q8,
+            : KVCacheQuant.Q8_0,
+        kv_cache_quant_v: kvCacheValues.includes(form.kv_cache_quant_v)
+            ? (form.kv_cache_quant_v as KVCacheQuant)
+            : undefined,
+        gpu_type: gpuTypeValues.includes(form.gpu_type) ? (form.gpu_type as GpuType) : null,
+        engine: engineValues.includes(form.engine) ? (form.engine as InferenceEngine) : null,
         os: osValues.includes(form.os) ? (form.os as OperatingSystem) : null,
         vram_gb: parseOptionalFloat(form.vram_gb),
         layers: parseOptionalInt(form.layers),
@@ -81,33 +94,28 @@ const LlmVramCalculatorPage: FC = () => {
     };
 
     return (
-        <ContentContainerFlex>
-            <section>
-                <h1>LLM VRAM Calculator</h1>
-                <p>
-                    This tool estimates the VRAM/RAM needed to run Large Language Models in GGUF format. It provides
-                    approximate consumption figures and recommendations tailored to your hardware limitations. While
-                    aiming for accuracy, this calculation doesn't pinpoint exact memory usage; instead, it offers a
-                    close estimate. For instance, Gemma-3-27b quantized to 4bit (with a 16.5GB GGUF file size) was
-                    calculated to require 17.27GB of VRAM, closely matching LM Studio's reported 17.37GB. Important
-                    <br />
-                    <br />
-                    <b>Note</b>: Memory usage can increase during inference. This calculator helps determine the minimum
-                    required memory, but actual consumption will vary based on numerous factors including LLM parameters
-                    and the specific settings of your inference engine. Use this as a starting point, but be prepared
-                    for potential fluctuations.
-                </p>
-
-                <VramCalculatorForm
-                    formState={formState}
-                    onFormChange={setFormState}
-                    onCalculate={handleCalculate}
-                    onReset={handleReset}
-                />
-
-                {result !== null && <VramResultsDisplay result={result} />}
-            </section>
-        </ContentContainerFlex>
+        <PageShell>
+            <ToolAbout routeKey="llm-vram-calculator">
+                Estimate the memory needed to run a local GGUF model. Enter <strong>parameters and quantization</strong>{' '}
+                (the two main inputs) for an instant estimate and a "fits on" device table; open{' '}
+                <strong>Advanced</strong> for GPU type, VRAM/OS, context and KV-cache settings, architecture, MoE and
+                inference engine. Covers effective-bpw quant sizing, KV-cache, engine overhead and partial offload.
+                Estimates only.
+            </ToolAbout>
+            <div className="vram-page-layout">
+                <div>
+                    <VramCalculatorForm
+                        formState={formState}
+                        onFormChange={setFormState}
+                        onCalculate={handleCalculate}
+                        onReset={handleReset}
+                    />
+                </div>
+                <div>
+                    <VramResultsDisplay result={result} />
+                </div>
+            </div>
+        </PageShell>
     );
 };
 

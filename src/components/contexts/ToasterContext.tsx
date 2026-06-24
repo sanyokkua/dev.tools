@@ -1,8 +1,10 @@
 'use client';
 import { Toaster } from '@/controls/toaster/Toaster';
 import { ShowToastOptions, Toast, ToastType } from '@/controls/toaster/types';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
 import { v4 } from 'uuid';
+
+const EXIT_DURATION = 300;
 
 /**
  * Provides the context for displaying toast notifications.
@@ -34,18 +36,40 @@ export const useToast = (): ToastContextValue => {
  */
 export const ToasterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
+    const timers = useRef<Map<string, ReturnType<typeof setTimeout>[]>>(new Map());
+
+    const markExiting = (id: string): void => {
+        setToasts((curr) => curr.map((t) => (t.id === id ? { ...t, exiting: true } : t)));
+    };
+
+    const clearTimers = (id: string): void => {
+        timers.current.get(id)?.forEach(clearTimeout);
+        timers.current.delete(id);
+    };
+
+    const removeToast = (id: string): void => {
+        clearTimers(id);
+        setToasts((curr) => curr.filter((t) => t.id !== id));
+    };
 
     const showToast = (options: ShowToastOptions): void => {
         const { message, type = ToastType.INFO, title = '', durationMs = 4000 } = options;
         const id = v4();
         setToasts((curr) => [...curr, { id, title, message, type }]);
 
-        setTimeout(() => {
-            setToasts((curr) => curr.filter((t) => t.id !== id));
-        }, durationMs);
+        const exitAt = Math.max(0, durationMs - EXIT_DURATION);
+        const t1 = setTimeout(() => markExiting(id), exitAt);
+        const t2 = setTimeout(() => removeToast(id), durationMs);
+        timers.current.set(id, [t1, t2]);
     };
 
-    const elementToRender = toasts.length > 0 && <Toaster toasts={toasts} />;
+    const dismissToast = (id: string): void => {
+        clearTimers(id);
+        markExiting(id);
+        setTimeout(() => removeToast(id), EXIT_DURATION);
+    };
+
+    const elementToRender = toasts.length > 0 && <Toaster toasts={toasts} onDismiss={dismissToast} />;
 
     return (
         <ToasterContext.Provider value={{ showToast }}>

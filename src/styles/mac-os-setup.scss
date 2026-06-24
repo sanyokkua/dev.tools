@@ -1,0 +1,68 @@
+.vram-manager {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+
+    > * {
+        min-width: 0;
+    }
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+
+    &__controls {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid var(--outline);
+        background: var(--card);
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__label {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    &__presets,
+    &__modes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    &__safety {
+        font-size: 0.8125rem;
+        color: var(--on-surface-variant);
+        margin: 0;
+    }
+
+    &__preview {
+        min-width: 0;
+    }
+}
+
+.mac-os-script-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+
+    .pill {
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        background: var(--card-2);
+        color: var(--on-surface-variant);
+    }
+}

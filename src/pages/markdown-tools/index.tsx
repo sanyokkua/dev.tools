@@ -1,49 +1,64 @@
-'use client';
+import ToolAbout from '@/controls/ToolAbout';
 import { editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useFileOpen } from '@/contexts/FileOpenContext';
+import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
 import { ToastType } from '@/controls/toaster/types';
-import { getEditorContent, pasteFromClipboardToEditor, setEditorContent } from '@/elements/editor/code-editor-utils';
+import {
+    copyToClipboardFromEditor,
+    getEditorContent,
+    pasteFromClipboardToEditor,
+    setEditorContent,
+} from '@/elements/editor/code-editor-utils';
 import { EditorProperties } from '@/elements/editor/types';
-import { MenuBuilder } from '@/elements/navigation/menubar/utils';
+import MermaidBlock from '@/elements/mermaid/MermaidBlock';
 import CodeEditor from '../../components/elements/editor/CodeEditor';
-import Menubar from '../../components/elements/navigation/menubar/Menubar';
+import MarkdownToolbar from '../../components/elements/editor/MarkdownToolbar';
 
 import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
-import { saveTextFile } from '@/common/file-utils';
 import { mapBoolean } from '@/common/formatting-tools';
-import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
-import 'highlight.js/styles/github.css';
 import 'katex/dist/katex.min.css';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import { useReactToPrint } from 'react-to-print';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import HorizontalContainer from '../../components/layouts/HorizontalContainer';
-import ScrollableContentContainer from '../../components/layouts/ScrollableContentContainer';
-import TextContainer from '../../components/layouts/TextContainer';
+import ContentContainerFlex from '../../components/layouts/ContentContainerFlex';
 
 const markdownExtension = '.md';
+
+const markdownComponents: Components = {
+    code({ className, children, ...rest }) {
+        const lang = /language-(\w+)/.exec(className ?? '')?.[1];
+        if (lang === 'mermaid') {
+            return <MermaidBlock src={String(children).trim()} />;
+        }
+        return (
+            <code className={className} {...rest}>
+                {children}
+            </code>
+        );
+    },
+};
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
     const { showFileOpenDialog } = useFileOpen();
+    const { save, saveAs } = useFileSaveDialog();
     const { showToast } = useToast();
 
     useEffect(() => {
-        setPageTitle('Markdown Utilities');
+        setPageTitle('Markdown Tools');
     }, [setPageTitle]);
 
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
-    // State management
     const [isEditorVisible, setIsEditorVisible] = useState<boolean>(true);
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
     const [isWordWrapEnabled, setIsWordWrapEnabled] = useState<boolean>(false);
@@ -57,18 +72,16 @@ const IndexPage: React.FC = () => {
     });
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const savedEditorContent = useRef<string>('');
 
-    // Event handlers with useCallback for optimization
-    const handleEditorMount = useCallback(
-        (props: EditorProperties) => {
-            leftEditorRef.current = props.editor;
-            setEditorContent(leftEditorRef, currentFileInfo.content);
-        },
-        [currentFileInfo.content],
-    );
+    const handleEditorMount = useCallback((props: EditorProperties) => {
+        leftEditorRef.current = props.editor;
+        setEditorContent(leftEditorRef, savedEditorContent.current);
+    }, []);
 
     const handleNewFile = useCallback(() => {
         const emptyContent = '';
+        savedEditorContent.current = emptyContent;
         setEditorContent(leftEditorRef, emptyContent);
         setCurrentFileInfo((prevState) => ({
             ...prevState,
@@ -88,6 +101,7 @@ const IndexPage: React.FC = () => {
                     showToast({ message: 'No files are chosen', type: ToastType.WARNING });
                     return;
                 }
+                savedEditorContent.current = fileInfo.content;
                 setEditorContent(leftEditorRef, fileInfo.content);
                 setCurrentFileInfo(fileInfo);
                 showToast({ message: 'File opened', type: ToastType.INFO });
@@ -101,18 +115,31 @@ const IndexPage: React.FC = () => {
 
     const handleSaveFile = useCallback(() => {
         const content = getEditorContent(leftEditorRef);
-        saveTextFile({
+        save({
             fileName: currentFileInfo.name,
             fileExtension: currentFileInfo.extension,
             fileContent: content,
+            availableExtensions: ['.md', '.txt'],
         });
-    }, [currentFileInfo]);
+    }, [currentFileInfo.name, currentFileInfo.extension, save]);
+
+    const handleSaveFileAs = useCallback(() => {
+        const content = getEditorContent(leftEditorRef);
+        saveAs({
+            fileName: currentFileInfo.name,
+            fileExtension: currentFileInfo.extension,
+            fileContent: content,
+            availableExtensions: ['.md', '.txt'],
+        });
+    }, [currentFileInfo.name, currentFileInfo.extension, saveAs]);
+
+    const handleCopy = useCallback(() => {
+        copyToClipboardFromEditor(leftEditorRef, showToast);
+    }, [showToast]);
 
     const handlePaste = useCallback(() => {
         pasteFromClipboardToEditor(leftEditorRef, () => {}, showToast);
-        const updatedContent = getEditorContent(leftEditorRef);
-        setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
-    }, []);
+    }, [showToast]);
 
     const handleToggleEditor = useCallback(() => {
         setIsEditorVisible((prev) => !prev);
@@ -134,66 +161,84 @@ const IndexPage: React.FC = () => {
         reactToPrintFn();
     }, [reactToPrintFn]);
 
-    // Application menu items
-    const leftMenuItems = MenuBuilder.newBuilder()
-        .addButton('new-file', 'New File', handleNewFile)
-        .addButton('open-file', 'Open File', handleOpenFileDialog)
-        .addButton('save', 'Save File', handleSaveFile)
-        .addButton('paste-from-clipboard', 'Paste', handlePaste)
-        .addButton('show-editor', 'Show Editor', handleToggleEditor)
-        .addButton('show-preview', 'Show Preview', handleTogglePreview)
-        .addButton('word-wrap', 'Word Wrap', handleToggleWordWrap)
-        .addButton('mini-map', 'Mini Map', handleToggleMinimap)
-        .addButton('save-pdf', 'Print Markdown', handlePrint)
-        .build();
-
-    // Editor change handler
     const handleTextChange = useCallback(() => {
         const updatedContent = getEditorContent(leftEditorRef);
+        savedEditorContent.current = updatedContent;
         setCurrentFileInfo((prevState) => ({ ...prevState, content: updatedContent, size: updatedContent.length }));
     }, []);
 
-    // Information panel data
-    const infoPanelItems: InformationPanelItem[] = [
-        `WordWrap: ${mapBoolean(isWordWrapEnabled)}`,
-        `Minimap: ${mapBoolean(isMinimapEnabled)}`,
-        `MD Editor: ${mapBoolean(isEditorVisible)}`,
-        `MD Preview: ${mapBoolean(isPreviewVisible)}`,
-        `FileName: ${currentFileInfo.name}`,
-        `TextLength: ${currentFileInfo.content.length}`,
-    ];
-
     return (
-        <>
-            <Menubar menuItems={leftMenuItems} />
-            <InformationPanel items={infoPanelItems} />
+        <ContentContainerFlex>
+            <ToolAbout routeKey="markdown-tools">
+                Write Markdown on the left and see a live, GitHub-flavored preview on the right — with tables, math
+                (KaTeX), syntax-highlighted code, and <strong>embedded Mermaid diagrams</strong>. Toggle the
+                editor/preview panes, word-wrap and minimap; <strong>Print / Export to PDF</strong>; open and save{' '}
+                <code>.md</code> files. Renders entirely in the browser.
+            </ToolAbout>
+            <div className="markdown-tools">
+                <MarkdownToolbar
+                    onFileNewClick={handleNewFile}
+                    onFileOpenClick={handleOpenFileDialog}
+                    onFileSaveClick={handleSaveFile}
+                    onFileSaveAsClick={handleSaveFileAs}
+                    onCopyClick={handleCopy}
+                    onPasteClick={handlePaste}
+                    showEditor={isEditorVisible}
+                    onToggleEditor={handleToggleEditor}
+                    showPreview={isPreviewVisible}
+                    onTogglePreview={handleTogglePreview}
+                    wordWrap={isWordWrapEnabled}
+                    onWordWrapToggle={handleToggleWordWrap}
+                    minimap={isMinimapEnabled}
+                    onMinimapToggle={handleToggleMinimap}
+                    onPrintClick={handlePrint}
+                />
 
-            <HorizontalContainer>
-                {isEditorVisible && (
-                    <CodeEditor
-                        minimap={isMinimapEnabled}
-                        wordWrap={isWordWrapEnabled}
-                        onEditorMounted={handleEditorMount}
-                        languageId="markdown"
-                        onChange={handleTextChange}
-                        height="100vh"
-                    />
-                )}
+                <div className="markdown-tools__info card pad">
+                    <span>WordWrap: {mapBoolean(isWordWrapEnabled)}</span>
+                    <span>Minimap: {mapBoolean(isMinimapEnabled)}</span>
+                    <span>MD Editor: {mapBoolean(isEditorVisible)}</span>
+                    <span>MD Preview: {mapBoolean(isPreviewVisible)}</span>
+                    <span>FileName: {currentFileInfo.name}</span>
+                    <span>TextLength: {currentFileInfo.content.length}</span>
+                </div>
 
-                {isPreviewVisible && (
-                    <ScrollableContentContainer>
-                        <TextContainer ref={contentRef}>
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeKatex, rehypeHighlight]}
-                            >
-                                {currentFileInfo.content}
-                            </ReactMarkdown>
-                        </TextContainer>
-                    </ScrollableContentContainer>
-                )}
-            </HorizontalContainer>
-        </>
+                <div className="markdown-tools__body">
+                    {isEditorVisible && (
+                        <div className="markdown-tools__pane editorpane">
+                            <div className="eh">
+                                <span className="markdown-tools__filename">
+                                    {currentFileInfo.fullName || `${currentFileInfo.name}${currentFileInfo.extension}`}
+                                </span>
+                            </div>
+                            <div className="eb">
+                                <CodeEditor
+                                    minimap={isMinimapEnabled}
+                                    wordWrap={isWordWrapEnabled}
+                                    onEditorMounted={handleEditorMount}
+                                    languageId="markdown"
+                                    onChange={handleTextChange}
+                                    height="100%"
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {isPreviewVisible && (
+                        <div ref={contentRef} className="markdown-tools__pane card pad">
+                            <div className="markdown-tools__preview">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm, remarkMath]}
+                                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                                    components={markdownComponents}
+                                >
+                                    {currentFileInfo.content}
+                                </ReactMarkdown>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </ContentContainerFlex>
     );
 };
 

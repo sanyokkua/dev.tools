@@ -1,0 +1,93 @@
+.ecb {
+    position: relative;
+    width: 100%;
+}
+
+.ecb-input-row {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.ecb-input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 8px;
+    border: none;
+    background: transparent;
+    color: var(--on-surface);
+    outline: none;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.ecb-caret {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--outline-soft);
+    padding: 0 9px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        color: var(--on-surface);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+    }
+}
+
+.ecb-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 2px);
+    background: var(--card);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow);
+    z-index: 200;
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.ecb-option {
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--on-surface);
+
+    &.ecb-option-selected {
+        font-weight: 600;
+    }
+
+    &.ecb-option-active,
+    &:hover {
+        background: var(--hover-overlay);
+    }
+}
+
+.ecb-option-custom {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    border-top: 1px solid var(--outline-soft);
+    margin-top: 2px;
+    padding-top: 7px;
+}

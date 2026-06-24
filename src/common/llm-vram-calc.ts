@@ -10,29 +10,80 @@
 // ============================================================================
 
 /**
- * Model weight quantization levels.
- * Values represent common GGUF quantization formats.
+ * Metadata for a GGUF quantization format.
  */
-const Quantization = {
-    Q1: 'Q1',
-    Q2: 'Q2',
-    Q3: 'Q3',
-    Q4: 'Q4',
-    Q5: 'Q5',
-    Q6: 'Q6',
-    Q8: 'Q8',
-    FP4: 'FP4',
-    FP8: 'FP8',
-    FP16: 'FP16',
-    FP32: 'FP32',
-} as const;
-
-type Quantization = (typeof Quantization)[keyof typeof Quantization];
+interface QuantEntry {
+    readonly bpw: number;
+    readonly family: 'legacy' | 'k-quant' | 'i-quant' | 'unsloth' | 'fp4' | 'full';
+    readonly sweetSpot: boolean;
+    readonly hint: string;
+}
 
 /**
- * KV cache quantization options.
+ * Catalog of known GGUF quantization formats with effective bits-per-weight.
+ * bpw values are empirical whole-file averages (weights + overhead).
  */
-const KVCacheQuant = { Q4: 'q4', Q8: 'q8', FP16: 'fp16', FP32: 'fp32' } as const;
+const QUANT_CATALOG = {
+    'Q4_0': { bpw: 4.58, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit block-scale' },
+    'Q4_1': { bpw: 5.05, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit + min-offset' },
+    'Q5_0': { bpw: 5.5, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit block-scale' },
+    'Q5_1': { bpw: 6, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit + min-offset' },
+    'Q8_0': { bpw: 8.5, family: 'legacy', sweetSpot: true, hint: '★ Near-lossless, larger files' },
+    'Q2_K': { bpw: 3, family: 'k-quant', sweetSpot: false, hint: 'Very small, noticeable quality loss' },
+    'Q2_K_L': { bpw: 3.1, family: 'k-quant', sweetSpot: false, hint: 'Q2_K + higher-precision layers' },
+    'Q3_K_S': { bpw: 3.5, family: 'k-quant', sweetSpot: false, hint: 'Small 3-bit mixed-precision' },
+    'Q3_K_M': { bpw: 3.91, family: 'k-quant', sweetSpot: false, hint: 'Medium 3-bit mixed-precision' },
+    'Q3_K_L': { bpw: 4.27, family: 'k-quant', sweetSpot: false, hint: 'Large 3-bit mixed-precision' },
+    'Q4_K_S': { bpw: 4.58, family: 'k-quant', sweetSpot: false, hint: 'Small 4-bit mixed-precision' },
+    'Q4_K_M': { bpw: 4.85, family: 'k-quant', sweetSpot: true, hint: '★ Best balance size/quality (default)' },
+    'Q5_K_S': { bpw: 5.5, family: 'k-quant', sweetSpot: false, hint: 'Small 5-bit mixed-precision' },
+    'Q5_K_M': { bpw: 5.7, family: 'k-quant', sweetSpot: false, hint: 'Medium 5-bit mixed-precision' },
+    'Q6_K': { bpw: 6.55, family: 'k-quant', sweetSpot: true, hint: '★ Near-lossless quality pick' },
+    'IQ1_S': { bpw: 1.56, family: 'i-quant', sweetSpot: false, hint: 'Extremely small, low quality' },
+    'IQ1_M': { bpw: 1.75, family: 'i-quant', sweetSpot: false, hint: 'Small 1-bit imatrix' },
+    'IQ2_XXS': { bpw: 2.06, family: 'i-quant', sweetSpot: false, hint: 'Very small 2-bit imatrix' },
+    'IQ2_XS': { bpw: 2.31, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix XS' },
+    'IQ2_S': { bpw: 2.5, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix S' },
+    'IQ2_M': { bpw: 2.72, family: 'i-quant', sweetSpot: false, hint: '2-bit imatrix M; punches above weight' },
+    'IQ3_XXS': { bpw: 3.06, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix XXS' },
+    'IQ3_XS': { bpw: 3.3, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix XS' },
+    'IQ3_S': { bpw: 3.5, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix S' },
+    'IQ3_M': { bpw: 3.7, family: 'i-quant', sweetSpot: false, hint: '3-bit imatrix M' },
+    'IQ4_XS': { bpw: 4.35, family: 'i-quant', sweetSpot: true, hint: '★ Excellent size/quality; smaller than Q4_K_M' },
+    'IQ4_NL': { bpw: 4.58, family: 'i-quant', sweetSpot: false, hint: 'Non-linear 4-bit imatrix' },
+    'UD-IQ1_S': { bpw: 1.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit; best quality at 1-bit' },
+    'UD-IQ1_M': { bpw: 2, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit M' },
+    'UD-IQ2_XXS': { bpw: 2.3, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit XXS' },
+    'UD-IQ2_M': { bpw: 2.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit M' },
+    'UD-Q2_K_XL': { bpw: 3.15, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q2_K XL layers' },
+    'UD-IQ3_XXS': { bpw: 3.2, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 3-bit XXS' },
+    'UD-Q3_K_XL': { bpw: 4, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q3_K XL layers' },
+    'UD-Q4_K_XL': { bpw: 4.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q4_K XL; best quality/GB at 4-bit' },
+    'UD-Q5_K_XL': { bpw: 5.7, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q5_K XL layers' },
+    'UD-Q6_K_XL': { bpw: 7.05, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q6_K XL layers' },
+    'UD-Q8_K_XL': { bpw: 9.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q8_K XL; maximum quality' },
+    'MXFP4': { bpw: 4.25, family: 'fp4', sweetSpot: false, hint: 'MX FP4 (OCP standard, in GGUF; Blackwell)' },
+    'NVFP4': { bpw: 4.5, family: 'fp4', sweetSpot: false, hint: 'NVIDIA FP4 (vLLM/TensorRT; Blackwell)' },
+    'FP8': { bpw: 8, family: 'full', sweetSpot: false, hint: '8-bit float; hardware-dependent support' },
+    'FP16': { bpw: 16, family: 'full', sweetSpot: false, hint: 'Half precision; reference quality' },
+    'BF16': { bpw: 16, family: 'full', sweetSpot: false, hint: 'BFloat16; training standard' },
+    'FP32': { bpw: 32, family: 'full', sweetSpot: false, hint: 'Full precision; rarely practical locally' },
+} as const satisfies Record<string, QuantEntry>;
+
+type Quantization = keyof typeof QUANT_CATALOG;
+
+/**
+ * KV cache quantization options (llama.cpp names).
+ */
+const KVCacheQuant = {
+    F16: 'f16',
+    Q8_0: 'q8_0',
+    Q5_1: 'q5_1',
+    Q5_0: 'q5_0',
+    Q4_1: 'q4_1',
+    Q4_0: 'q4_0',
+    IQ4_NL: 'iq4_nl',
+} as const;
 
 type KVCacheQuant = (typeof KVCacheQuant)[keyof typeof KVCacheQuant];
 
@@ -47,6 +98,27 @@ const OperatingSystem = {
 } as const;
 
 type OperatingSystem = (typeof OperatingSystem)[keyof typeof OperatingSystem];
+
+const GpuType = { NVIDIA_AMD: 'nvidia-amd', APPLE: 'apple', INTEL_INTEGRATED: 'intel-integrated' } as const;
+type GpuType = (typeof GpuType)[keyof typeof GpuType];
+
+const InferenceEngine = { LLAMA_CPP: 'llama.cpp', OLLAMA: 'ollama', LM_STUDIO: 'lm-studio' } as const;
+type InferenceEngine = (typeof InferenceEngine)[keyof typeof InferenceEngine];
+
+interface OffloadResult {
+    readonly verdict: 'fits' | 'partial' | 'no_fit';
+    readonly model_gb: number;
+    readonly kv_cache_gb: number;
+    readonly backend_gb: number;
+    readonly compute_gb: number;
+    readonly total_needed_gb: number;
+    readonly available_gb: number | null;
+    readonly layers_on_gpu: number;
+    readonly total_layers: number;
+    readonly gpu_resident_gb: number;
+    readonly ram_spill_gb: number;
+    readonly note: string | null;
+}
 
 /**
  * Input parameters for the VRAM calculator.
@@ -67,8 +139,11 @@ interface CalculatorInput {
     /** Enable KV cache calculation. Default: true. */
     readonly kv_cache_enabled?: boolean;
 
-    /** KV cache quantization level. Default: Q8. */
+    /** KV cache quantization level. Default: q8_0. */
     readonly kv_cache_quant?: KVCacheQuant;
+
+    /** Optional asymmetric V cache quantization. Defaults to kv_cache_quant if not provided. */
+    readonly kv_cache_quant_v?: KVCacheQuant;
 
     /** Operating system for overhead calculation. If null, no overhead applied. */
     readonly os?: OperatingSystem | null;
@@ -102,6 +177,12 @@ interface CalculatorInput {
 
     /** Batch size for inference. Default: 1 */
     readonly batch_size?: number | null;
+
+    /** GPU architecture for offload analysis. */
+    readonly gpu_type?: GpuType | null;
+
+    /** Inference engine for backend overhead. Default: llama.cpp. */
+    readonly engine?: InferenceEngine | null;
 }
 
 /**
@@ -120,6 +201,9 @@ interface InputSummary {
     readonly sliding_window: number | null;
     readonly is_moe: boolean;
     readonly expert_info: string | null;
+    readonly gpu_type: GpuType | null;
+    readonly engine: InferenceEngine | null;
+    readonly active_ratio: number;
 }
 
 /**
@@ -150,7 +234,9 @@ interface ContextEntry {
  */
 interface QuantizationAnalysis {
     readonly quantization: Quantization;
-    readonly bits_per_param: number;
+    readonly eff_bpw: number;
+    readonly family: string;
+    readonly sweet_spot: boolean;
     readonly estimated_gguf_gb: number | null;
     readonly min_vram_no_cache_gb: number;
     readonly min_vram_with_cache_gb: number;
@@ -196,6 +282,7 @@ interface CalculatorOutput {
     readonly quantization_analysis: readonly QuantizationAnalysis[];
     readonly recommendations: readonly Recommendation[] | null;
     readonly summary: SummaryStatistics;
+    readonly offload_result: OffloadResult | null;
 }
 
 /**
@@ -230,33 +317,32 @@ type ValidationError =
 // ============================================================================
 
 /**
- * Bits per parameter for each quantization level.
- */
-const QUANTIZATION_BITS = {
-    Q1: 1,
-    Q2: 2,
-    Q3: 3,
-    Q4: 4,
-    Q5: 5,
-    Q6: 6,
-    Q8: 8,
-    FP4: 4,
-    FP8: 8,
-    FP16: 16,
-    FP32: 32,
-} as const satisfies Record<Quantization, number>;
-
-/**
  * Bytes per value for each KV cache quantization level.
  * Used in exact KV cache calculation when layer count is known.
  */
-const KV_CACHE_BYTES = { q4: 0.5, q8: 1, fp16: 2, fp32: 4 } as const satisfies Record<KVCacheQuant, number>;
+const KV_CACHE_BYTES = {
+    f16: 2,
+    q8_0: 1,
+    q5_1: 0.69,
+    q5_0: 0.66,
+    q4_1: 0.56,
+    q4_0: 0.5,
+    iq4_nl: 0.56,
+} as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * Scaling factor for KV cache estimation when architecture is unknown.
- * Relative to FP16 baseline (factor 1.0).
+ * Relative to F16 baseline (factor 1.0).
  */
-const KV_CACHE_FACTOR = { q4: 0.25, q8: 0.5, fp16: 1, fp32: 2 } as const satisfies Record<KVCacheQuant, number>;
+const KV_CACHE_FACTOR = {
+    f16: 1,
+    q8_0: 0.5,
+    q5_1: 0.345,
+    q5_0: 0.33,
+    q4_1: 0.28,
+    q4_0: 0.25,
+    iq4_nl: 0.28,
+} as const satisfies Record<KVCacheQuant, number>;
 
 /**
  * OS-specific memory overhead configuration.
@@ -268,30 +354,46 @@ const OS_OVERHEAD_CONFIG = {
     'linux-headless': { type: 'fixed', value: 0.05 },
 } as const satisfies Record<OperatingSystem, { readonly type: 'percent' | 'fixed'; readonly value: number }>;
 
-/** GGUF metadata overhead factor (5%). */
-const METADATA_OVERHEAD = 0.05;
+const BACKEND_BASELINE_GB: Record<InferenceEngine, number> = {
+    'llama.cpp': 0.75,
+    'ollama': 0.75,
+    'lm-studio': 0.75,
+} as const;
 
-/** Fixed working buffer for inference computations in GB. */
-const WORKING_BUFFER_GB = 0.4;
+const COMPUTE_BUFFER_TIERS: readonly [number, number][] = [
+    [8192, 0.3],
+    [16384, 0.4],
+    [32768, 0.5],
+    [65536, 0.75],
+    [131072, 1],
+    [262144, 1.5],
+    [Infinity, 2.5],
+];
 
 /** Standard context sizes for multi-context analysis. */
 const STANDARD_CONTEXTS = [4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576] as const;
 
 /** Standard quantizations for multi-quantization analysis. */
 const STANDARD_QUANTIZATIONS: readonly Quantization[] = [
-    'Q1',
-    'Q2',
-    'Q3',
-    'Q4',
-    'Q5',
-    'Q6',
-    'Q8',
+    'Q2_K',
+    'IQ2_M',
+    'Q3_K_S',
+    'Q3_K_M',
+    'IQ3_M',
+    'IQ4_XS',
+    'Q4_0',
+    'Q4_K_S',
+    'Q4_K_M',
+    'UD-Q4_K_XL',
+    'Q5_K_M',
+    'Q6_K',
+    'Q8_0',
     'FP16',
     'FP32',
 ] as const;
 
 /** Preferred quantizations for optimal recommendations (balance of quality and size). */
-const OPTIMAL_QUANTIZATIONS: readonly Quantization[] = ['Q4', 'Q5', 'Q6'] as const;
+const OPTIMAL_QUANTIZATIONS: readonly Quantization[] = ['Q4_K_M', 'IQ4_XS', 'Q5_K_M', 'Q4_K_S'] as const;
 
 /** Bytes in a gigabyte (1024^3). */
 const BYTES_PER_GB = 1073741824;
@@ -391,15 +493,11 @@ function estimateLayers(params_b: number): number {
 }
 
 /**
- * Estimates hidden dimension from parameters and layers.
- * Formula: hidden_dim ≈ params_b / (layers × 24) × 1e9
- * Factor of 24 accounts for typical transformer weight distribution
+ * Estimates head dimension from parameter count.
+ * Most modern models use 128 for head dim; small sub-2B models often use 64.
  */
-function estimateHeadDim(params_b: number, layers: number): number {
-    const hiddenDim = (params_b * 1e9) / (layers * 24);
-    // Round to common head dimensions (64, 96, 128, 256)
-    const commonDims = [64, 96, 128, 256];
-    return commonDims.reduce((prev, curr) => (Math.abs(curr - hiddenDim) < Math.abs(prev - hiddenDim) ? curr : prev));
+function estimateHeadDim(params_b: number): number {
+    return params_b <= 2 ? 64 : 128;
 }
 
 /**
@@ -414,15 +512,128 @@ function estimateKvHeads(params_b: number): number {
 
 /**
  * Estimates model file size from parameters and quantization.
+ * Uses effective bits-per-weight from QUANT_CATALOG (empirical whole-file values).
  *
  * @param params_b - Model parameters in billions.
  * @param quantization - Quantization level.
  * @returns Estimated GGUF file size in GB.
  */
 function estimateModelSize(params_b: number, quantization: Quantization): number {
-    const bits = QUANTIZATION_BITS[quantization];
-    const bytesPerParam = bits / 8;
-    return params_b * bytesPerParam * (1 + METADATA_OVERHEAD);
+    return (params_b * QUANT_CATALOG[quantization].bpw) / 8;
+}
+
+/**
+ * Estimates compute buffer in GB based on context size, batch size, and MoE active ratio.
+ */
+function estimateComputeBuffer(context_size: number, batch_size: number, active_ratio: number = 1): number {
+    const base = COMPUTE_BUFFER_TIERS.find(([maxCtx]) => context_size <= maxCtx)?.[1] ?? 2.5;
+    return base * batch_size * active_ratio;
+}
+
+/**
+ * Returns backend baseline GB for the given inference engine.
+ */
+function getBackendBaseline(engine: InferenceEngine | null): number {
+    return engine === null ? 0.75 : BACKEND_BASELINE_GB[engine];
+}
+
+/**
+ * Calculates the GPU offload result (fits/partial/no_fit verdict).
+ */
+function calculateOffload(
+    modelSize_gb: number,
+    kv_gb: number,
+    backend_gb: number,
+    compute_gb: number,
+    available_gb: number | null,
+    total_layers: number,
+    os: OperatingSystem | null,
+    gpu_type: GpuType | null,
+): OffloadResult {
+    const total_needed_gb = modelSize_gb + kv_gb + backend_gb + compute_gb;
+
+    if (available_gb === null) {
+        return {
+            verdict: 'fits',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb: null,
+            layers_on_gpu: total_layers,
+            total_layers,
+            gpu_resident_gb: modelSize_gb,
+            ram_spill_gb: 0,
+            note: null,
+        };
+    }
+
+    if (total_needed_gb <= available_gb) {
+        return {
+            verdict: 'fits',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb,
+            layers_on_gpu: total_layers,
+            total_layers,
+            gpu_resident_gb: modelSize_gb,
+            ram_spill_gb: 0,
+            note: null,
+        };
+    }
+
+    // How many weight layers fit after reserving overhead + KV?
+    const gpu_budget_for_weights = Math.max(0, available_gb - backend_gb - compute_gb - kv_gb);
+    const size_per_layer = total_layers > 0 ? modelSize_gb / total_layers : modelSize_gb;
+    const layers_on_gpu =
+        total_layers > 0 ? Math.max(0, Math.min(total_layers, Math.floor(gpu_budget_for_weights / size_per_layer))) : 0;
+
+    if (layers_on_gpu === 0) {
+        return {
+            verdict: 'no_fit',
+            model_gb: modelSize_gb,
+            kv_cache_gb: kv_gb,
+            backend_gb,
+            compute_gb,
+            total_needed_gb,
+            available_gb,
+            layers_on_gpu: 0,
+            total_layers,
+            gpu_resident_gb: backend_gb + compute_gb,
+            ram_spill_gb: modelSize_gb,
+            note: null,
+        };
+    }
+
+    const gpu_resident_model = layers_on_gpu * size_per_layer;
+    const ram_spill_gb = roundTo(modelSize_gb - gpu_resident_model, 2);
+    const gpu_resident_gb = roundTo(gpu_resident_model + backend_gb + compute_gb, 2);
+
+    let note: string | null = null;
+    if (gpu_type === 'nvidia-amd' && os === 'windows') {
+        note = 'Windows may spill overflow weights to slow shared GPU memory (system RAM)';
+    } else if (gpu_type === 'nvidia-amd' && (os === 'linux-gui' || os === 'linux-headless')) {
+        note = 'NVIDIA on Linux has no shared-memory fallback — hard OOM if weights exceed VRAM';
+    }
+
+    return {
+        verdict: 'partial',
+        model_gb: modelSize_gb,
+        kv_cache_gb: kv_gb,
+        backend_gb,
+        compute_gb,
+        total_needed_gb,
+        available_gb,
+        layers_on_gpu,
+        total_layers,
+        gpu_resident_gb,
+        ram_spill_gb,
+        note,
+    };
 }
 
 /**
@@ -467,19 +678,22 @@ function calculateOsOverhead(os: OperatingSystem | null, vram_gb: number | null)
  * @param params_b - Model parameters in billions.
  * @param contextSize - Context window size in tokens.
  * @param kvCacheEnabled - Whether KV cache is enabled.
- * @param kvCacheQuant - KV cache quantization level.
+ * @param kvCacheQuantK - KV cache quantization level for K tensor.
+ * @param kvCacheQuantV - KV cache quantization level for V tensor.
  * @param layers - Number of transformer layers, or null for estimation.
  * @param keyDim - Key head dimension.
  * @param valueDim - Value head dimension.
  * @param kvHeads - Number of KV heads.
  * @param slidingWindow - Sliding window cap, or null for no cap.
+ * @param batch_size - Batch size for inference.
  * @returns KV cache size in GB.
  */
 function calculateKvCache(
     params_b: number,
     contextSize: number,
     kvCacheEnabled: boolean,
-    kvCacheQuant: KVCacheQuant,
+    kvCacheQuantK: KVCacheQuant,
+    kvCacheQuantV: KVCacheQuant,
     layers: number | null,
     keyDim: number,
     valueDim: number,
@@ -487,32 +701,34 @@ function calculateKvCache(
     slidingWindow: number | null,
     batch_size: number = 1,
 ): number {
-    if (!kvCacheEnabled) {
-        return 0;
-    }
+    if (!kvCacheEnabled) return 0;
 
-    // Apply sliding window cap if present
     let effectiveContext = contextSize;
     if (slidingWindow !== null && slidingWindow > 0) {
         effectiveContext = Math.min(contextSize, slidingWindow);
     }
 
-    // EXACT calculation when architecture is known
-    const bytesPerValue = KV_CACHE_BYTES[kvCacheQuant];
+    const bytesK = KV_CACHE_BYTES[kvCacheQuantK];
+    const bytesV = KV_CACHE_BYTES[kvCacheQuantV];
+
     if (layers !== null) {
-        // Formula: 2 × layers × kv_heads × (key_dim + value_dim) × context × batch × bytes
-        const bytesPerToken = 2 * kvHeads * (keyDim + valueDim) * bytesPerValue;
-        const kvBytes = layers * effectiveContext * batch_size * bytesPerToken;
+        // EXACT: K tensor + V tensor separately (no leading 2×)
+        const kvBytes = layers * effectiveContext * batch_size * kvHeads * (keyDim * bytesK + valueDim * bytesV);
         return kvBytes / BYTES_PER_GB;
     }
 
-    // ESTIMATED calculation when architecture unknown
+    // ESTIMATED: both K and V; estimatedHeadDim is shared
     const estimatedLayers = estimateLayers(params_b);
-    const estimatedHeadDim = estimateHeadDim(params_b, estimatedLayers);
+    const estimatedHeadDim = estimateHeadDim(params_b);
     const estimatedKvHeads = estimateKvHeads(params_b);
-
-    const bytesPerToken = 2 * estimatedKvHeads * (estimatedHeadDim + estimatedHeadDim) * bytesPerValue;
-    const kvBytes = estimatedLayers * effectiveContext * batch_size * bytesPerToken;
+    const avgBytes = (bytesK + bytesV) / 2;
+    const kvBytes =
+        estimatedLayers *
+        effectiveContext *
+        batch_size *
+        estimatedKvHeads *
+        (estimatedHeadDim + estimatedHeadDim) *
+        avgBytes;
     return kvBytes / BYTES_PER_GB;
 }
 
@@ -527,7 +743,7 @@ interface ConfigEntry {
     readonly kvCache: number;
     readonly totalVram: number;
     readonly fits: boolean | null;
-    readonly quantBits: number;
+    readonly quantBpw: number;
 }
 
 /**
@@ -653,12 +869,12 @@ function findMinVram(configs: readonly ConfigEntry[]): ConfigEntry {
 }
 
 /**
- * Finds the configuration with maximum quality (bits then context) from a list.
+ * Finds the configuration with maximum quality (bpw then context) from a list.
  */
 function findMaxQuality(configs: readonly ConfigEntry[]): ConfigEntry {
     return configs.reduce((best, c) => {
-        if (c.quantBits > best.quantBits) return c;
-        if (c.quantBits === best.quantBits && c.context > best.context) return c;
+        if (c.quantBpw > best.quantBpw) return c;
+        if (c.quantBpw === best.quantBpw && c.context > best.context) return c;
         return best;
     });
 }
@@ -681,7 +897,7 @@ function generateRecommendations(
     const recommendations: Recommendation[] = [];
 
     // OPTIMAL: Best balance of quality and context
-    // Prefer Q4-Q6, largest context that fits
+    // Prefer Q4_K_M, IQ4_XS, Q5_K_M, Q4_K_S, largest context that fits
     const optimalCandidates = fittingConfigs.filter((c) => isOptimalQuantization(c.quant));
     const optimal = optimalCandidates.length > 0 ? findMaxContext(optimalCandidates) : findMaxContext(fittingConfigs);
 
@@ -750,6 +966,9 @@ function buildInputSummary(
     sliding_window: number | null,
     expert_count: number | null,
     active_experts: number | null,
+    gpu_type: GpuType | null,
+    engine: InferenceEngine | null,
+    active_ratio: number,
 ): InputSummary {
     let expertInfo: string | null = null;
     if (expert_count !== null) {
@@ -761,17 +980,20 @@ function buildInputSummary(
 
     return {
         params_b,
-        model_size_gb: model_size_gb !== null ? model_size_gb : 'estimated',
-        quantization: quantization !== null ? quantization : 'all',
-        context_size: context_size !== null ? context_size : 'all',
+        model_size_gb: model_size_gb ?? 'estimated',
+        quantization: quantization ?? 'all',
+        context_size: context_size ?? 'all',
         kv_cache_enabled,
         kv_cache_quant,
         os,
         vram_gb,
-        layers: layers !== null ? layers : 'estimated',
+        layers: layers ?? 'estimated',
         sliding_window,
         is_moe: expert_count !== null,
         expert_info: expertInfo,
+        gpu_type,
+        engine,
+        active_ratio,
     };
 }
 
@@ -783,7 +1005,8 @@ function buildContextAnalysis(
     modelSize: number,
     contextList: readonly number[],
     kv_cache_enabled: boolean,
-    kv_cache_quant: KVCacheQuant,
+    kv_cache_quant_k: KVCacheQuant,
+    kv_cache_quant_v: KVCacheQuant,
     layers: number | null,
     key_dim: number,
     value_dim: number,
@@ -791,18 +1014,21 @@ function buildContextAnalysis(
     sliding_window: number | null,
     availableVram: number | null,
     quant: Quantization,
-    batch_size: number = 1,
+    batch_size: number,
+    backendGb: number,
+    active_ratio: number,
 ): { contextTable: readonly ContextEntry[]; configs: readonly ConfigEntry[] } {
     const contextTable: ContextEntry[] = [];
     const configs: ConfigEntry[] = [];
-    const quantBits = QUANTIZATION_BITS[quant];
+    const quantBpw = QUANT_CATALOG[quant].bpw;
 
     for (const ctx of contextList) {
         const kvCache = calculateKvCache(
             params_b,
             ctx,
             kv_cache_enabled,
-            kv_cache_quant,
+            kv_cache_quant_k,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,
@@ -811,8 +1037,9 @@ function buildContextAnalysis(
             batch_size,
         );
 
-        const vramWithCache = modelSize + kvCache + WORKING_BUFFER_GB;
-        const vramWithoutCache = modelSize + WORKING_BUFFER_GB;
+        const computeGb = estimateComputeBuffer(ctx, batch_size, active_ratio);
+        const vramWithCache = modelSize + kvCache + backendGb + computeGb;
+        const vramWithoutCache = modelSize + backendGb + computeGb;
 
         let fits: boolean | null = null;
         if (availableVram !== null) {
@@ -836,7 +1063,7 @@ function buildContextAnalysis(
             kvCache,
             totalVram: vramWithCache,
             fits,
-            quantBits,
+            quantBpw,
         });
     }
 
@@ -853,7 +1080,8 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const quantization = input.quantization ?? null;
     const context_size = input.context_size ?? null;
     const kv_cache_enabled = input.kv_cache_enabled ?? true;
-    const kv_cache_quant = input.kv_cache_quant ?? 'q8';
+    const kv_cache_quant = input.kv_cache_quant ?? 'q8_0';
+    const kv_cache_quant_v = input.kv_cache_quant_v ?? kv_cache_quant;
     const os = input.os ?? null;
     const vram_gb = input.vram_gb ?? null;
     const layers = input.layers ?? null;
@@ -864,20 +1092,27 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const expert_count = input.expert_count ?? null;
     const active_experts = input.active_experts ?? null;
     const batch_size = input.batch_size ?? 1;
+    const gpu_type = input.gpu_type ?? null;
+    const engine = input.engine ?? null;
+    const active_ratio =
+        expert_count !== null && expert_count !== undefined && active_experts !== null && active_experts !== undefined
+            ? Math.min(1, active_experts / expert_count)
+            : 1;
+    const backendGb = getBackendBaseline(engine);
 
     // Step 1: Determine quantization list
-    const quantList: readonly Quantization[] = quantization !== null ? [quantization] : STANDARD_QUANTIZATIONS;
+    const quantList: readonly Quantization[] = quantization === null ? STANDARD_QUANTIZATIONS : [quantization];
 
     // Step 2: Determine context list
     let contextList: readonly number[];
-    if (context_size !== null) {
+    if (context_size === null) {
+        contextList = STANDARD_CONTEXTS;
+    } else {
         const contextSet = new Set<number>([context_size]);
         for (const stdCtx of STANDARD_CONTEXTS) {
             contextSet.add(stdCtx);
         }
         contextList = Array.from(contextSet).sort((a, b) => a - b);
-    } else {
-        contextList = STANDARD_CONTEXTS;
     }
 
     // Step 3: Calculate OS overhead
@@ -898,6 +1133,9 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         sliding_window,
         expert_count,
         active_experts,
+        gpu_type,
+        engine,
+        active_ratio,
     );
 
     // Step 5: Calculate for each quantization
@@ -918,12 +1156,14 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         }
 
         // Calculate minimum VRAM values
-        const minVramNoCache = modelSize + WORKING_BUFFER_GB;
+        const computeAtMinCtx = estimateComputeBuffer(MIN_CONTEXT_SIZE, batch_size, active_ratio);
+        const minVramNoCache = modelSize + backendGb + computeAtMinCtx;
         const minKv = calculateKvCache(
             params_b,
             MIN_CONTEXT_SIZE,
             kv_cache_enabled,
             kv_cache_quant,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,
@@ -931,7 +1171,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             sliding_window,
             batch_size,
         );
-        const minVramWithCache = modelSize + minKv + WORKING_BUFFER_GB;
+        const minVramWithCache = modelSize + minKv + backendGb + computeAtMinCtx;
 
         // Build context table
         const { contextTable, configs } = buildContextAnalysis(
@@ -940,6 +1180,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             contextList,
             kv_cache_enabled,
             kv_cache_quant,
+            kv_cache_quant_v,
             layers,
             key_dim,
             value_dim,
@@ -948,14 +1189,18 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             availableVram,
             quant,
             batch_size,
+            backendGb,
+            active_ratio,
         );
 
         allConfigs.push(...configs);
 
         quantizationAnalysis.push({
             quantization: quant,
-            bits_per_param: QUANTIZATION_BITS[quant],
-            estimated_gguf_gb: estimatedSize !== null ? roundTo(estimatedSize, 2) : null,
+            eff_bpw: QUANT_CATALOG[quant].bpw,
+            family: QUANT_CATALOG[quant].family,
+            sweet_spot: QUANT_CATALOG[quant].sweetSpot,
+            estimated_gguf_gb: estimatedSize === null ? null : roundTo(estimatedSize, 2),
             min_vram_no_cache_gb: roundTo(minVramNoCache, 2),
             min_vram_with_cache_gb: roundTo(minVramWithCache, 2),
             context_table: contextTable,
@@ -984,12 +1229,42 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
         fitting_configurations: fittingCount,
     };
 
+    // Step 8: Compute offload result
+    let offload_result: OffloadResult | null = null;
+    if (availableVram !== null && quantizationAnalysis.length > 0) {
+        const primaryAnalysis = quantizationAnalysis[0];
+        const primaryModelSizeGb =
+            primaryAnalysis.estimated_gguf_gb ??
+            (model_size_gb !== null && quantList.length === 1
+                ? model_size_gb
+                : estimateModelSize(params_b, quantList[0]));
+        const offloadCtx = context_size ?? MIN_CONTEXT_SIZE;
+        const offloadEntry =
+            primaryAnalysis.context_table.find((e) => e.context_size === offloadCtx) ??
+            primaryAnalysis.context_table[0];
+        const offloadKv = offloadEntry?.kv_cache_gb ?? 0;
+        const offloadCompute = estimateComputeBuffer(offloadCtx, batch_size, active_ratio);
+        const totalLayersForOffload = layers ?? estimateLayers(params_b);
+
+        offload_result = calculateOffload(
+            primaryModelSizeGb,
+            offloadKv,
+            backendGb,
+            offloadCompute,
+            availableVram,
+            totalLayersForOffload,
+            os,
+            gpu_type,
+        );
+    }
+
     return {
         input_summary: inputSummary,
         os_overhead: osOverhead,
         quantization_analysis: quantizationAnalysis,
         recommendations,
         summary,
+        offload_result,
     };
 }
 
@@ -1022,7 +1297,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
  * // With specific configuration and VRAM constraint
  * const result = calculateVram({
  *   params_b: 8,
- *   quantization: 'Q4',
+ *   quantization: 'Q4_K_M',
  *   vram_gb: 24,
  *   os: 'macos',
  * });
@@ -1050,11 +1325,13 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
  *
  * @remarks
  * - When `context_size` is null, calculates for standard sizes: 4K, 8K, 16K, 32K, 64K, 128K, 256K, 512K, 1M.
- * - When `quantization` is null, calculates for: Q1, Q2, Q3, Q4, Q5, Q6, Q8, FP16, FP32.
+ * - When `quantization` is null, calculates for 15 curated formats: Q2_K, IQ2_M, Q3_K_S, Q3_K_M, IQ3_M,
+ *   IQ4_XS, Q4_0, Q4_K_S, Q4_K_M, UD-Q4_K_XL, Q5_K_M, Q6_K, Q8_0, FP16, FP32.
  * - When `vram_gb` is provided, generates recommendations for configurations that fit.
  * - Recommendations include three tiers: optimal (balanced), minimum (smallest), maximum_quality (best quality).
  * - OS overhead varies: macOS reserves 25%, Windows 0.8GB, Linux GUI 0.5GB, Linux headless 0.05GB.
  * - KV cache calculation is exact when `layers` is provided, otherwise uses empirical estimation.
+ * - Model size is estimated as params_b × bpw / 8, where bpw is from QUANT_CATALOG (empirical whole-file values).
  */
 function calculateVram(input: CalculatorInput): Result<CalculatorOutput, ValidationError> {
     const validation = validateInput(input);
@@ -1083,33 +1360,34 @@ function calculateVram(input: CalculatorInput): Result<CalculatorOutput, Validat
  * - SummaryStatistics: Aggregate statistics
  * - ValidationError: Input validation error types
  * - Result: Result type for error handling
+ * - Quantization: Union type of all quant keys (type-only)
+ * - QuantEntry: Metadata structure for a quant catalog entry (type-only)
  *
  * Exported Constants:
- * - Quantization: Model weight quantization levels
+ * - QUANT_CATALOG: 44-entry catalog of GGUF quantization formats with effective bpw
  * - KVCacheQuant: KV cache quantization options
  * - OperatingSystem: Supported operating systems
+ * - GpuType: GPU architecture types
+ * - InferenceEngine: Inference engine options
  * - STANDARD_CONTEXTS: Standard context sizes for analysis
- * - STANDARD_QUANTIZATIONS: Standard quantization levels
- * - QUANTIZATION_BITS: Bits per parameter mapping
+ * - STANDARD_QUANTIZATIONS: 15 curated standard quantization levels
  * - KV_CACHE_BYTES: Bytes per KV value mapping
  * - KV_CACHE_FACTOR: KV cache scaling factors
- * - WORKING_BUFFER_GB: Fixed working buffer size
- * - METADATA_OVERHEAD: GGUF metadata overhead factor
+ * - BACKEND_BASELINE_GB: Backend baseline memory per engine
  */
 
 export {
+    BACKEND_BASELINE_GB,
+    GpuType,
+    InferenceEngine,
     KVCacheQuant,
     KV_CACHE_BYTES,
     KV_CACHE_FACTOR,
-    METADATA_OVERHEAD,
     OperatingSystem,
-    QUANTIZATION_BITS,
-    // Type constants (as const objects)
-    Quantization,
+    QUANT_CATALOG,
     // Configuration constants
     STANDARD_CONTEXTS,
     STANDARD_QUANTIZATIONS,
-    WORKING_BUFFER_GB,
     // Main function
     calculateVram,
 };
@@ -1121,12 +1399,14 @@ export type {
     ContextEntry,
     InputSummary,
     OSOverhead,
+    OffloadResult,
+    QuantEntry,
+    // Error, Result, and Quantization types
+    Quantization,
     QuantizationAnalysis,
     Recommendation,
     RecommendationTier,
     Result,
     SummaryStatistics,
-
-    // Error and Result types
     ValidationError,
 };

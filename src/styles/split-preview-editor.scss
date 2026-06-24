@@ -1,0 +1,22 @@
+.split-preview-editor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s3);
+    height: 100%;
+}
+
+.split-preview-editor__preview {
+    overflow-y: auto;
+    padding: var(--s3);
+}
+
+@media (max-width: 900px) {
+    .split-preview-editor {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .split-preview-editor__preview {
+        min-height: 300px;
+    }
+}

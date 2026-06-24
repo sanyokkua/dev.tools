@@ -1,5 +1,7 @@
 import { DEFAULT_EXTENSION, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { FileInfo, FileSaveProperties, OnErrorHandler, OnSuccessHandler } from '@/common/file-types';
+import type { SkillDef } from '@/common/prompts/model/types';
+import { fileSave } from 'browser-fs-access';
 
 /**
  * Validates the properties required for saving a file.
@@ -56,8 +58,39 @@ export function saveTextFile({
     document.body.appendChild(htmlATag);
     htmlATag.click();
 
-    document.body.removeChild(htmlATag);
+    htmlATag.remove();
     URL.revokeObjectURL(url);
+}
+
+/**
+ * Saves text content using the native Save As picker (Chromium/Safari) with a
+ * download fallback on unsupported browsers. Returns the FileSystemFileHandle
+ * when the native picker was used, undefined on download fallback.
+ */
+export async function saveAsFile(
+    {
+        fileName,
+        fileContent = '',
+        fileExtension = DEFAULT_EXTENSION,
+        fileMimeType = DEFAULT_MIME_TYPE,
+    }: FileSaveProperties,
+    existingHandle?: FileSystemFileHandle | null,
+): Promise<FileSystemFileHandle | undefined> {
+    validateTheFileSaveProperties({ fileName, fileExtension });
+
+    const blob = new Blob([fileContent], { type: fileMimeType });
+    const handle = await (
+        fileSave as (
+            blob: Blob,
+            options: object,
+            existingHandle?: FileSystemFileHandle | null,
+        ) => Promise<FileSystemFileHandle | undefined>
+    )(
+        blob,
+        { fileName: `${fileName}${fileExtension}`, extensions: [fileExtension], mimeTypes: [fileMimeType] },
+        existingHandle ?? null,
+    );
+    return handle;
 }
 
 /**
@@ -179,3 +212,24 @@ export const handleFileOpenFailure: (error: unknown) => FileInfo = (error) => {
     console.error('Error reading file:', error);
     return createEmptyFile();
 };
+
+export async function downloadSkillZip(skill: SkillDef): Promise<void> {
+    const { strToU8, zipSync } = await import('fflate');
+    const entries: Record<string, Uint8Array | [Uint8Array, { attrs: number }]> = {};
+    for (const file of skill.files) {
+        const isScript = file.path.startsWith('scripts/');
+        entries[`${skill.slug}/${file.path}`] = isScript
+            ? [strToU8(file.content), { attrs: 0o755 << 16 }]
+            : strToU8(file.content);
+    }
+    const zipped = zipSync(entries);
+    const blob = new Blob([zipped], { type: 'application/zip' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${skill.slug}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}

@@ -1,0 +1,13 @@
+.tool-about {
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    margin-bottom: var(--s4);
+    background: var(--card-2);
+}
+
+.tool-about__body {
+    padding: var(--s3) var(--s4);
+    font-size: 13px;
+    color: var(--on-surface-variant);
+    line-height: 1.6;
+}

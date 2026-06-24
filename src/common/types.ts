@@ -83,52 +83,6 @@ export enum Category {
     GAMING = 'Gaming',
 }
 
-export const ALL_CATEGORIES: { id: string; text: Category }[] = [
-    { id: 'code_editors', text: Category.CODE_EDITORS },
-    { id: 'ide_extensions', text: Category.IDE_EXTENSIONS },
-    { id: 'diagram_tools', text: Category.DIAGRAM_TOOLS },
-    { id: 'database_clients', text: Category.DATABASE_CLIENTS },
-    { id: 'system_utils', text: Category.SYSTEM_UTILS },
-    { id: 'runtime_environments', text: Category.RUNTIME_ENVIRONMENTS },
-    { id: 'build_tooling', text: Category.BUILD_TOOLING },
-    { id: 'virtualization', text: Category.VIRTUALIZATION },
-    { id: 'llm_platforms', text: Category.LLM_PLATFORMS },
-    { id: 'communication', text: Category.COMMUNICATION },
-    { id: 'browsers', text: Category.BROWSERS },
-    { id: 'download_managers', text: Category.DOWNLOAD_MANAGERS },
-    { id: 'media_players', text: Category.MEDIA_PLAYERS },
-    { id: 'dev_utilities', text: Category.DEV_UTILITIES },
-    { id: 'api_tools', text: Category.API_TOOLS },
-    { id: 'cloud_storage', text: Category.CLOUD_STORAGE },
-    { id: 'document_editors', text: Category.DOCUMENT_EDITORS },
-    { id: 'graphics_and_3d', text: Category.GRAPHICS_AND_3D },
-    { id: 'network_tools', text: Category.NETWORKING },
-    { id: 'ai_coding_tools', text: Category.AI_CODING_TOOLS },
-    { id: 'notes_taking', text: Category.NOTE_TAKING },
-    { id: 'gaming_apps', text: Category.GAMING },
-];
-
-export enum BrewType {
-    COMMAND = 'command',
-    CASK = 'CASK',
-}
-
-/**
- * Represents a software application with core metadata.
- *
- * @property id - Unique identifier of the application.
- * @property name - Name of the application.
- * @property description - Detailed explanation or purpose of the application.
- * @property category - Classification or type of the application.
- */
-export interface Application {
-    id: string;
-    name: string;
-    description: string;
-    category: Category;
-    brewType?: BrewType; // Only for MacOS
-}
-
 /**
  * Interface representing a CLI command structure.
  * Defines the basic properties required to describe and execute a command in a
@@ -138,11 +92,3 @@ export interface Command {
     description: string;
     command: string;
 }
-
-/**
- * Creates a function that builds and returns a {@link Command} instance configured for the specified application context.
- * This interface represents a factory method pattern used to construct commands dynamically based on an `Application` environment.
- *
- * The returned command is fully initialized with all necessary configurations, dependencies, and settings required to operate within the given application context.
- */
-export type CommandBuilder = (app: Application) => Command;

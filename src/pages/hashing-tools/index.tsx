@@ -1,48 +1,24 @@
-'use client';
-import React, { useEffect, useMemo } from 'react';
-
 import { usePage } from '@/contexts/PageContext';
-
-import { createHashingUtils } from '@/common/utils-factory';
-import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
+import ToolAbout from '@/controls/ToolAbout';
+import React, { useEffect } from 'react';
+import HashingPage from './HashingPage';
 
 const Home: React.FC = () => {
     const { setPageTitle } = usePage();
-
     useEffect(() => {
-        setPageTitle('Hashing Utilities');
+        setPageTitle('Hashing Tools');
     }, [setPageTitle]);
-
-    // Memoize the tool groups to prevent recreation on every render
-    const toolsGroups = useMemo(() => {
-        const groupsMap: ToolViewFunctionGroups = new Map();
-
-        const iHashUtils = createHashingUtils();
-        const toolGroup: ToolViewGroup = {
-            funcGroupId: 'hashing-utils',
-            funcGroupName: 'Hashing Utils',
-            functions: iHashUtils.map((func) => ({
-                funcId: func.toolId,
-                funcName: func.textToDisplay,
-                funcDescription: func.description,
-                func: (text, onSuccess, onFailure): void => {
-                    const result = func.toolFunction(text);
-                    result
-                        .then((result) => {
-                            onSuccess(result);
-                        })
-                        .catch((e: unknown) => {
-                            onFailure(e);
-                        });
-                },
-            })),
-        };
-        groupsMap.set('hashing-utils', toolGroup);
-
-        return groupsMap;
-    }, []);
-
-    return <ToolView toolChoseHeader="Select Hashing Alg" toolViewFunctionGroups={toolsGroups} />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="hashing-tools">
+                Compute cryptographic digests of text or a file — <strong>MD5, SHA-1, SHA-256, SHA-384, SHA-512</strong>{' '}
+                — all at once in a results table with one-click copy and an uppercase-hex toggle. SHA family uses the
+                browser's WebCrypto; MD5 uses a bundled library. Drag a file in or paste text; large files are hashed
+                from their bytes. Fully offline.
+            </ToolAbout>
+            <HashingPage />
+        </div>
+    );
 };
 
 export default Home;

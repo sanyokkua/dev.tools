@@ -1,0 +1,35 @@
+{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "npx prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null || true"
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "echo \"$CLAUDE_TOOL_INPUT_FILE_PATH\" | grep -q 'package-lock.json' && echo 'BLOCK: Do not edit package-lock.json directly. Run npm install instead.' && exit 1 || exit 0"
+                    }
+                ]
+            },
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "echo \"$CLAUDE_TOOL_INPUT_COMMAND\" | grep -q 'git commit' && ! echo \"$CLAUDE_TOOL_INPUT_COMMAND\" | grep -q 'git add' && ! git diff --quiet 2>/dev/null && echo 'BLOCK: Unstaged changes detected. Use git add -A && git commit or stage changes first.' && exit 1; exit 0"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,7 +1,6 @@
 'use client';
-import type { InputSummary, OSOverhead } from '@/common/llm-vram-calc';
+import type { GpuType, InputSummary, OSOverhead } from '@/common/llm-vram-calc';
 import React from 'react';
-import PaperContainer from '../../layouts/PaperContainer';
 
 /** @description Props for the InputSummarySection component. */
 interface InputSummarySectionProps {
@@ -25,10 +24,24 @@ function formatOsLabel(os: string | null): string {
     }
 }
 
+/** @description Formats a GPU type identifier into a human-readable label. */
+function formatGpuTypeLabel(gpu_type: GpuType | null): string {
+    switch (gpu_type) {
+        case 'nvidia-amd':
+            return 'NVIDIA / AMD';
+        case 'apple':
+            return 'Apple Silicon';
+        case 'intel-integrated':
+            return 'Intel / Integrated';
+        default:
+            return 'Not specified';
+    }
+}
+
 /** @description Displays the resolved input parameters and OS memory overhead from the calculation result. */
 const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary, osOverhead }) => {
     return (
-        <PaperContainer elevation={1}>
+        <div className="card pad">
             <h2>Input Summary</h2>
             <dl className="vram-kv-grid">
                 <dt>Parameters</dt>
@@ -65,8 +78,12 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                         <dd>{inputSummary.expert_info}</dd>
                     </>
                 )}
+                <dt>GPU Type</dt>
+                <dd>{formatGpuTypeLabel(inputSummary.gpu_type)}</dd>
+                <dt>Engine</dt>
+                <dd>{inputSummary.engine ?? 'llama.cpp'}</dd>
                 <dt>VRAM</dt>
-                <dd>{inputSummary.vram_gb !== null ? `${inputSummary.vram_gb} GB` : 'Not specified'}</dd>
+                <dd>{inputSummary.vram_gb === null ? 'Not specified' : `${inputSummary.vram_gb} GB`}</dd>
                 <dt>OS</dt>
                 <dd>{formatOsLabel(inputSummary.os)}</dd>
             </dl>
@@ -81,11 +98,11 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                                 ` (${osOverhead.reservation_percent.toFixed(0)}%)`}
                         </dd>
                         <dt>Available VRAM</dt>
-                        <dd>{osOverhead.available_gb !== null ? `${osOverhead.available_gb.toFixed(2)} GB` : 'N/A'}</dd>
+                        <dd>{osOverhead.available_gb === null ? 'N/A' : `${osOverhead.available_gb.toFixed(2)} GB`}</dd>
                     </dl>
                 </>
             )}
-        </PaperContainer>
+        </div>
     );
 };
 

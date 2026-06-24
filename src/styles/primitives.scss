@@ -1,0 +1,337 @@
+/* ============================================================
+   Primitives — the one true primitive set.
+   Import once in _app.tsx (right after colors.scss).
+   DO NOT redefine here: .card/.card.pad (surfaces.scss),
+   .chip/.chip.on (chip.scss), .code-block (surfaces.scss).
+   ============================================================ */
+
+/* ---- Buttons — .btn / .button-* ---- */
+.btn,
+.button-base {
+    font: inherit;
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    padding: 9px 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn:focus-visible,
+.button-base:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.btn.primary,
+.button-solid {
+    background: var(--primary);
+    color: var(--on-primary);
+    box-shadow: var(--shadow-sm);
+}
+.btn.primary:hover,
+.button-solid:hover {
+    background: var(--primary-hover);
+}
+.btn.primary:active,
+.button-solid:active {
+    opacity: 0.85;
+}
+
+.btn.tonal,
+.button-filled {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+.btn.tonal:hover,
+.button-filled:hover {
+    background: var(--secondary-container);
+}
+.btn.tonal:active,
+.button-filled:active {
+    opacity: 0.85;
+}
+
+.btn.outline,
+.button-outlined {
+    background: transparent;
+    border-color: var(--outline);
+    color: var(--on-surface);
+}
+.btn.outline:hover,
+.button-outlined:hover {
+    background: var(--card-2);
+}
+.btn.outline:active,
+.button-outlined:active {
+    opacity: 0.8;
+}
+
+.btn.ghost,
+.button-ghost {
+    background: transparent;
+    color: var(--on-surface-variant);
+}
+.btn.ghost:hover,
+.button-ghost:hover {
+    background: var(--card-2);
+}
+
+.btn.danger,
+.button-danger {
+    background: transparent;
+    border-color: var(--error);
+    color: var(--error);
+}
+.btn.danger:hover,
+.button-danger:hover {
+    background: var(--error-container);
+}
+
+.btn.sm,
+.button-small {
+    padding: 6px 11px;
+    font-size: 12.5px;
+}
+
+.btn:disabled,
+.button-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Editor chrome — .editorpane / .eh / .eb ---- */
+.editorpane {
+    background: var(--card);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+.editorpane .eh {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--outline-soft);
+    background: var(--card-2);
+    flex-wrap: wrap;
+}
+/* NOTE: .eb is a Monaco/preview flex fill — no padding/font-size here (Monaco owns that). */
+.editorpane .eb {
+    flex: 1;
+    min-height: 0;
+}
+/* At mobile the parent grid row becomes height:auto — floor Monaco so verify:ui gate passes. */
+@media (max-width: 900px) {
+    .editorpane .eb {
+        min-height: 300px;
+    }
+}
+
+/* ---- Step label — .steplabel ---- */
+.steplabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+.steplabel .n {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+}
+
+/* ---- Collapsible — .detailsbox ---- */
+.detailsbox {
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    margin-top: 10px;
+}
+.detailsbox summary {
+    cursor: pointer;
+    padding: 11px 14px;
+    font-weight: 650;
+    font-size: 13px;
+    background: var(--card-2);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.detailsbox summary::-webkit-details-marker {
+    display: none;
+}
+.detailsbox summary::before {
+    content: '▸';
+    color: var(--muted);
+}
+.detailsbox[open] summary::before {
+    content: '▾';
+}
+.detailsbox .dc {
+    padding: 14px;
+}
+
+/* ---- Form grid — .formgrid ---- */
+.formgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+/* ---- Auto-resizing textarea — .textarea-auto ---- */
+/* JS must set height = scrollHeight on input + mount */
+.textarea-auto {
+    font: inherit;
+    font-size: 13px;
+    font-family: var(--mono);
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--on-surface);
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.textarea-auto:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-container);
+    outline: none;
+}
+
+/* ---- Field label — .field ---- */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.field label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* ---- Input primitive — .input ---- */
+/* Standalone form input (distinct from existing .input-base in input.scss) */
+.input,
+select.input {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--outline);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--on-surface);
+    outline: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.input:focus,
+select.input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-container);
+}
+
+/* ---- Pills & badges — .pill ---- */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: var(--r-pill);
+}
+.pill.ok {
+    background: var(--success-container);
+    color: #14401a;
+}
+.pill.no {
+    background: var(--error-container);
+    color: #7a0d12;
+}
+.pill.muted {
+    background: var(--card-2);
+    color: var(--muted);
+    border: 1px solid var(--outline-soft);
+}
+.pill.warn {
+    background: var(--warning-container);
+    color: #4f4800;
+}
+
+/* ---- Function buttons — .func-btn ---- */
+.func-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--outline-soft);
+    background: var(--card);
+    color: var(--on-surface);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: 0.12s;
+}
+.func-btn:hover {
+    background: var(--primary-container);
+    border-color: transparent;
+    color: var(--on-primary-container);
+}
+
+/* ---- Data table — table.t ---- */
+table.t {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+}
+table.t th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--outline-soft);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+}
+table.t td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--outline-soft);
+}
+table.t tr:last-child td {
+    border-bottom: 0;
+}
+table.t tbody tr:hover {
+    background: var(--card-2);
+}
+
+/* ---- Monospace helper — .mono ---- */
+.mono {
+    font-family: var(--mono);
+}

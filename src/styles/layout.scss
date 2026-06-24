@@ -2,22 +2,27 @@
 .app-main-container {
     display: flex; /* Enables flexible box layout for child elements */
     flex-direction: column; /* Stacks children vertically (top-to-bottom) */
-    min-height: 100vh; /* Minimum height equals 100% of viewport height */
-    max-width: 100vw; /* Prevents horizontal overflow beyond screen width */
+    height: 100vh; /* Fixed viewport height so flex descendants can resolve % heights */
+    max-width: 100%; /* prevents scrollbar-width overflow on some browsers */
 }
 
 /* Container for sidebar and main content area with horizontal flex layout */
 .app-sidebar-and-content-container {
     display: flex; /* Creates horizontal layout for sidebar + content */
     flex: 1; /* Takes remaining space in parent container */
+    min-height: 0; /* Allows flex child to shrink below content size */
 }
 
 /* Main content area with responsive padding and theme-based styling */
 .app-main-content-container {
     flex: 1; /* Fills available space in parent container */
-    padding: 1vh; /* Adds 1% of viewport height as padding (responsive spacing) */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Allows flex child to shrink below content size */
+    padding: var(--s2);
     height: 100%; /* Stretches to fill parent container */
-    overflow: hidden; /* Prevents content from spilling outside boundaries */
+    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    overflow-y: auto; /* Allows document pages to scroll vertically */
     box-sizing: border-box; /* Includes padding in width/height calculations */
     background-color: var(--bg-color); /* Uses theme-defined background color */
     color: var(--text-color); /* Applies theme-defined text color */
@@ -28,18 +33,19 @@
     display: flex; /* Creates flexible layout for children */
     flex: 1; /* Expands to fill available space */
     flex-direction: column; /* Arranges children vertically */
+    min-height: 0; /* Allows flex child to shrink below content size */
 }
 
 /* Three-column grid layout with responsive column widths */
 .content-container-grid {
     display: grid; /* Enables CSS Grid layout */
     /* Creates three columns:
-- Left: flexible (1fr) with minimum 0 width
-- Middle: fixed at 30% of available space (0.3fr)
-- Right: flexible (1fr) with minimum 0 width */
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 1fr);
-    height: 100vh; /* Fixed height equal to viewport height */
-    gap: 1vw; /* Sets 1% of viewport width spacing between columns */
+- Left: flexible (0.97fr) with minimum 0 width
+- Middle: narrower (0.36fr) with minimum 0 width
+- Right: flexible (0.97fr) with minimum 0 width */
+    grid-template-columns: minmax(0, 0.97fr) minmax(0, 0.36fr) minmax(0, 0.97fr);
+    height: 100%; /* inherits from .app-main-content-container; removes 56px overflow */
+    gap: var(--s3);
 }
 
 /* Base styling for grid column containers */
@@ -48,6 +54,15 @@
     flex-direction: column; /* Stacks content vertically */
     align-items: stretch; /* Makes children fill column width */
     justify-content: flex-start; /* Aligns content to top of column */
+    min-height: 0; /* Prevents grid item from expanding beyond cell */
+}
+
+/* Flex-fill wrapper for Monaco editors inside grid/flex columns.
+   min-height: 300px guarantees the >200px verify:ui gate on mobile
+   where the grid row becomes height:auto. */
+.editor-fill {
+    flex: 1;
+    min-height: 300px;
 }
 
 /* Scrollable area for content that exceeds container height */
@@ -87,7 +102,7 @@
     background: var(--white-color); /* Uses theme-defined white background */
     color: var(--surface-color-on); /* Applies matching text color */
     border-radius: 4px; /* Adds subtle corner rounding */
-    padding: 1vh; /* Responsive vertical padding (1% of viewport height) */
+    padding: var(--s3);
 
     /* Material Design-inspired elevation (shadow) */
     box-shadow: /* Large, soft outer shadow */
@@ -105,8 +120,8 @@
     ); /* Mixes 95% surface color with 5% primary color for depth */
     color: var(--surface-color-on); /* Text color that contrasts with surface */
     border-radius: 8px; /* Rounded corners with 8px radius */
-    padding: 1vh; /* Vertical padding equal to 1% of viewport height (responsive spacing) */
-    margin: 1vh; /* Adds 1% viewport height spacing around the paper */
+    padding: var(--s3);
+    margin: var(--s2);
     transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth shadow animation with Material Design timing */
 
     /* Default elevation level 1 - subtle shadow system */
@@ -114,6 +129,23 @@
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
         /* Medium inner shadow */ 0 1px 1px 0 rgba(0, 0, 0, 0.14),
         /* Subtle bottom shadow */ 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 900px) {
+    .content-container-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .horizontal-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .horizontal-container > * {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
 }
 
 .filters-with-headers {
@@ -129,4 +161,86 @@
     padding: 0;
     gap: 0;
     align-items: stretch;
+}
+
+/* Form field layout: stacks label above input with consistent spacing */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field > label,
+.field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.field-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+.func-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--outline-soft);
+    background: var(--card);
+    color: var(--on-surface);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: 0.12s;
+    box-sizing: border-box;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.func-btn:hover {
+    background: var(--primary-container);
+    border-color: transparent;
+    color: var(--on-primary-container);
+}
+
+.func-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.json-error-msg {
+    font-size: 12px;
+    color: var(--error-color);
+    margin: 0 0 var(--s1);
+    padding: 0;
+    word-break: break-word;
+}
+
+.json-formatter-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: var(--s2);
+}
+
+.page-shell {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: var(--s5);
+    box-sizing: border-box;
+}
+
+@media (max-width: 920px) {
+    .page-shell {
+        padding: 16px;
+    }
 }

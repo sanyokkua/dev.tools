@@ -1,8 +1,7 @@
 'use client';
 import type { Recommendation } from '@/common/llm-vram-calc';
+import { QUANT_CATALOG } from '@/common/llm-vram-calc';
 import React from 'react';
-import HorizontalContainer from '../../layouts/HorizontalContainer';
-import PaperContainer from '../../layouts/PaperContainer';
 
 /** @description Props for the RecommendationsSection component. */
 interface RecommendationsSectionProps {
@@ -31,10 +30,11 @@ const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({ recomme
     return (
         <div>
             <h2>Recommendations</h2>
-            <HorizontalContainer>
-                {recommendations.map((rec) => (
-                    <div key={rec.tier} className="vram-recommendation-card">
-                        <PaperContainer elevation={2}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {recommendations.map((rec) => {
+                    const catalogEntry = QUANT_CATALOG[rec.quantization];
+                    return (
+                        <div key={rec.tier} className="card pad vram-recommendation-card">
                             <span className={`vram-tier-badge vram-tier-${rec.tier}`}>{formatTierLabel(rec.tier)}</span>
                             <dl className="vram-kv-grid">
                                 <dt>Quantization</dt>
@@ -49,12 +49,18 @@ const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({ recomme
                                 <dd>{rec.total_vram_gb.toFixed(2)} GB</dd>
                                 <dt>Headroom</dt>
                                 <dd>{rec.headroom_gb.toFixed(2)} GB</dd>
+                                {catalogEntry?.hint && (
+                                    <>
+                                        <dt>Hint</dt>
+                                        <dd>{catalogEntry.hint}</dd>
+                                    </>
+                                )}
                             </dl>
                             <p>{rec.description}</p>
-                        </PaperContainer>
-                    </div>
-                ))}
-            </HorizontalContainer>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };

@@ -1,0 +1,107 @@
+/* Hero */
+.dashboard-hero {
+    margin-bottom: var(--s6);
+}
+.dashboard-hero h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--on-surface);
+}
+.dashboard-hero p {
+    color: var(--on-surface-variant);
+    margin-top: var(--s2);
+}
+
+/* Privacy pills */
+.dashboard-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin-top: var(--s4);
+}
+.dashboard-pill {
+    padding: var(--s1) var(--s3);
+    border-radius: var(--r-pill);
+    font-size: 0.8rem;
+    background: var(--card-2);
+    color: var(--on-surface-variant);
+}
+.dashboard-pill--ok {
+    background: var(--success-container);
+    color: var(--success);
+}
+
+/* Section groups */
+.dashboard-group {
+    margin-bottom: var(--s6);
+}
+.dashboard-group-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: var(--s3);
+}
+
+/* Card grid — responsive via auto-fill */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--s3);
+}
+
+/* Individual card */
+.dashboard-card {
+    display: flex;
+    gap: var(--s3);
+    align-items: flex-start;
+    padding: var(--s4);
+    background: var(--card);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-lg);
+    text-decoration: none;
+    color: var(--on-surface);
+    box-shadow: var(--shadow-sm);
+    transition:
+        background 0.15s,
+        box-shadow 0.15s;
+    &:hover {
+        background: var(--hover-overlay);
+        box-shadow: var(--shadow-md);
+    }
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+}
+.dashboard-card-icon {
+    font-size: 1.4rem;
+    min-width: 2rem;
+    line-height: 1;
+    margin-top: 2px;
+}
+.dashboard-card-body {
+    flex: 1;
+}
+.dashboard-card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: var(--s1);
+}
+.dashboard-card-desc {
+    font-size: 0.8rem;
+    color: var(--on-surface-variant);
+    line-height: 1.4;
+}
+.dashboard-card-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px var(--s2);
+    border-radius: var(--r-sm);
+    background: var(--primary);
+    color: var(--on-primary);
+    margin-left: var(--s2);
+    vertical-align: middle;
+}

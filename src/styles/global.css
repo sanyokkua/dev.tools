@@ -1,7 +1,42 @@
-/* Resets default spacing and ensures full height for root elements */
-html,
+html {
+    margin: 0;
+}
+
 body {
-    margin: 0; /* Removes browser-default spacing around the page edges */
-    height: 100vh; /* Makes the document fill 100% of the browser window height (vh = viewport height) */
-    background: var(--surface-color);
+    margin: 0;
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-surface);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+
+::selection {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--outline);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }

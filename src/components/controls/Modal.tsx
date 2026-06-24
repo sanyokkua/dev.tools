@@ -44,12 +44,12 @@ const Modal: FC<ModalProps> = ({
         };
 
         if (isOpen) {
-            window.addEventListener('keydown', handleKeyDown);
+            globalThis.addEventListener('keydown', handleKeyDown);
         }
 
         // Cleanup function to remove an event listener
         return (): void => {
-            window.removeEventListener('keydown', handleKeyDown);
+            globalThis.removeEventListener('keydown', handleKeyDown);
         };
     }, [isOpen, onClose]);
 
@@ -71,7 +71,7 @@ const Modal: FC<ModalProps> = ({
             >
                 <div className="modal-header">
                     <h2 className="modal-title">{title}</h2>
-                    <button className="modal-close-button" onClick={onClose}>
+                    <button className="modal-close-button" aria-label="Close" onClick={onClose}>
                         &times;
                     </button>
                 </div>

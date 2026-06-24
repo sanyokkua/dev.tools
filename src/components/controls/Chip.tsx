@@ -1,17 +1,43 @@
 'use client';
 import React from 'react';
 
-/**
- * Represents properties of a chip component.
- */
-type ChipProps = { text: string };
+type ChipProps = { text: string; selected?: boolean; onClick?: () => void; onRemove?: () => void };
 
-/**
- * Renders a compact, interactive UI component that displays text as a chip.
- * @param props - Component properties including the displayed text
- */
-const Chip: React.FC<ChipProps> = (props) => {
-    return <div className="chip">{props.text}</div>;
+const Chip: React.FC<ChipProps> = ({ text, selected = false, onClick, onRemove }) => {
+    const classes = ['chip', selected && 'chip-selected', !onClick && !onRemove && 'chip-static']
+        .filter(Boolean)
+        .join(' ');
+
+    return (
+        <div
+            className={classes}
+            onClick={onClick}
+            role={onClick ? 'button' : undefined}
+            aria-pressed={onClick ? selected : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={
+                onClick
+                    ? (e): void => {
+                          if (e.key === 'Enter') onClick();
+                      }
+                    : undefined
+            }
+        >
+            {text}
+            {onRemove && (
+                <span
+                    className="chip-x"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove();
+                    }}
+                    aria-label="Remove"
+                >
+                    ×
+                </span>
+            )}
+        </div>
+    );
 };
 
 export default Chip;

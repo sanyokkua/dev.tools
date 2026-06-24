@@ -1,0 +1,229 @@
+# How to Add Prompts to the Collection
+
+Prompt data lives in `src/common/prompts/catalog/` as TypeScript modules. Adding a prompt means creating a `.prompt.ts` file and registering it in the category barrel (`index.ts`). After that, run `npm run build:prompts` to validate and regenerate the manifest.
+
+> **Shortcut:** invoke the `add-prompt` skill in Claude Code for a guided walkthrough.
+
+---
+
+## Directory layout
+
+```
+src/common/prompts/catalog/
+  a-software-engineering/
+    a01-code-generation/
+      sys.prompt.ts        ← SYS-A01 system prompt
+      function.prompt.ts   ← LP-A01-function logical prompt
+      from-spec.prompt.ts  ← LP-A01-from-spec (dual variant)
+      ...
+      index.ts             ← barrel: exports prompts array
+    a02-code-refactoring/
+    ...
+    index.ts               ← domain barrel: re-exports all categories
+  b-writing-communication/
+  c-thinking-productivity/
+  d-ai-prompt-workflows/
+  index.ts                 ← top-level barrel: re-exports all domains
+```
+
+---
+
+## Domains
+
+| Code | Title                   | Directory                  |
+| ---- | ----------------------- | -------------------------- |
+| A    | Software Engineering    | `a-software-engineering/`  |
+| B    | Writing & Communication | `b-writing-communication/` |
+| C    | Thinking & Productivity | `c-thinking-productivity/` |
+| D    | AI & Prompt Workflows   | `d-ai-prompt-workflows/`   |
+
+---
+
+## The `LogicalPromptDef` shape
+
+Every `.prompt.ts` file exports a `prompt` constant of type `LogicalPromptDef`:
+
+```typescript
+import type { LogicalPromptDef } from '../../../model/types';
+
+export const prompt: LogicalPromptDef = {
+    id: 'LP-A01-function', // globally unique; LP-<DOMAIN><NN>-<slug>
+    categoryCode: 'A01',
+    title: 'Generate a Function',
+    subtitle: 'Short subtitle shown in the UI',
+    description: 'One-line description',
+    variantAxes: [], // [] for single-variant; ['mode'] for dual
+    defaultVariantId: 'USR-A01-codegen-function',
+    modeClass: 'chat-only', // 'chat-only' | 'dual' | 'chat-only-meta'
+    variants: [
+        {
+            id: 'USR-A01-codegen-function',
+            kind: 'user', // 'user' | 'system' | 'agent'
+            categoryCode: 'A01',
+            title: 'Generate a Function',
+            description: '...',
+            template: `Your template with {{param_name}} placeholders.`,
+            parameters: [
+                {
+                    name: 'language',
+                    label: 'Programming language',
+                    description: 'Target language and version',
+                    control: 'select', // 'select' | 'textarea' | 'text' | 'combobox'
+                    optional: false,
+                    valueSetId: 'programming-language', // omit for textarea/text
+                },
+                {
+                    name: 'requirements',
+                    label: 'Requirement',
+                    description: 'What the function must do',
+                    control: 'textarea',
+                    optional: false,
+                },
+            ],
+            examples: { requirements: ['Example value 1', 'Example value 2'] },
+            keywords: ['keyword1', 'keyword2', 'A01'],
+            executionContext: 'chat', // 'chat' | 'agent'
+            model: null,
+            isMetaPrompt: false,
+            recommendedSystemPromptId: 'SYS-A01-code-generation',
+            relatedPromptIds: ['LP-A01-class'],
+            relatedSkillIds: [],
+            supports: { style: false, tone: false, context: false },
+        },
+    ],
+};
+```
+
+For a **dual-mode prompt** (chat + agent variants), set `modeClass: 'dual'`, add `variantAxes: ['mode']`, and include two variants — one `kind: 'user'` with `executionContext: 'chat'` and one `kind: 'agent'` with `executionContext: 'agent'`.
+
+For a **system prompt**, set `modeClass: 'chat-only-meta'`, `kind: 'system'`, and omit `parameters` / `recommendedSystemPromptId`.
+
+---
+
+## Naming conventions
+
+| Type           | ID format          | File name          |
+| -------------- | ------------------ | ------------------ |
+| Logical prompt | `LP-<A01>-<slug>`  | `<slug>.prompt.ts` |
+| System prompt  | `SYS-<A01>-<slug>` | `sys.prompt.ts`    |
+
+- `<A01>` = domain letter + two-digit category number.
+- `<slug>` = kebab-case, starts with a letter.
+
+---
+
+## Steps: adding a prompt
+
+1. **Pick domain and category.** Browse `src/common/prompts/catalog/` for the right `<domain>/<category>/` directory.
+
+2. **Create the `.prompt.ts` file**:
+
+    ```bash
+    touch src/common/prompts/catalog/a-software-engineering/a01-code-generation/my-slug.prompt.ts
+    ```
+
+3. **Write the module** following the shape above. Use an existing file as a reference — `a01-code-generation/function.prompt.ts` is the canonical example for a simple chat-only prompt.
+
+4. **Register in the category barrel** (`index.ts`):
+
+    ```typescript
+    import { prompt as mySlugPrompt } from './my-slug.prompt.ts';
+
+    export const prompts: LogicalPromptDef[] = [
+        // ...existing prompts...
+        mySlugPrompt,
+    ];
+    ```
+
+5. **Validate**:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+    Expected: validators V01–V14 all pass, `manifest.generated.ts` and `loaders.generated.ts` are regenerated (these files are git-ignored).
+
+6. **Run the test suite**:
+
+    ```bash
+    npm run verify
+    ```
+
+    Add or update shape tests in `test/common/prompts/catalog-shape.test.ts` if you are adding a new category.
+
+7. **Commit** (do NOT commit generated files):
+
+    ```bash
+    git add src/common/prompts/catalog/
+    git commit -m "feat(prompts): add LP-A01-my-slug"
+    git status   # must be clean; generated files must NOT appear
+    ```
+
+---
+
+## Steps: adding a skill
+
+Skills live in `src/common/prompts/skills/` as TypeScript modules alongside their raw content files. See the `add-prompt` skill in Claude Code for the guided walkthrough, which covers bundling skill file content and wiring the skill into the skills barrel.
+
+---
+
+## Adding a model, style, tone, or context (data-only)
+
+These additions require no runtime code changes — edit one registry file and run `npm run build:prompts`.
+
+### Adding a model
+
+1. Open `src/common/prompts/registries/models.ts`
+2. Add a `ModelDef` entry to the exported array:
+
+    ```typescript
+    { id: 'my-model-id', label: 'My Model Label', slug: 'my-model-id', modality: ['chat'] }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+### Adding a style or tone
+
+1. Open `src/common/prompts/registries/styles.ts` (or `tones.ts`)
+2. Add a `RuleOption` entry:
+
+    ```typescript
+    { id: 'my-style', label: 'My Style', definition: 'Write with clarity and brevity.', rules: ['Use short sentences.', 'Avoid jargon.'] }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+### Adding a context preset
+
+1. Open `src/common/prompts/registries/contexts.ts`
+2. Add a `ContextOption` entry that references existing style and tone IDs:
+
+    ```typescript
+    { id: 'my-context', label: 'My Context', group: 'everyday', styleId: 'formal', toneId: 'professional', structure: ['Lead with the main point.'] }
+    ```
+
+3. Validate:
+
+    ```bash
+    npm run build:prompts
+    ```
+
+---
+
+## Validation errors
+
+| Error message                                        | Cause                                                           | Fix                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
+| `Duplicate ID: <id>`                                 | Another prompt already uses this ID                             | Change `id` to something globally unique                  |
+| `Missing recommendedSystemPromptId target: <sys-id>` | `recommendedSystemPromptId` references an ID that doesn't exist | Add the system prompt or fix the reference                |
+| `Invalid control type: <type>`                       | `control` value is not one of the allowed set                   | Use `select`, `textarea`, `text`, or `combobox`           |
+| `Dual prompt missing agent/chat variant`             | `modeClass: 'dual'` but only one variant                        | Add the missing `kind: 'agent'` or `kind: 'user'` variant |
+| `Parameter name contains abbreviation`               | Validator V13 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |

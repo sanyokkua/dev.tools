@@ -1,44 +1,24 @@
-'use client';
-import { createJsonFormatter } from '@/common/utils-factory';
 import { usePage } from '@/contexts/PageContext';
-import React, { useEffect, useMemo } from 'react';
-import ToolView, { ToolViewFunctionGroups, ToolViewGroup } from '../../components/elements/column/ToolView';
+import ToolAbout from '@/controls/ToolAbout';
+import React, { useEffect } from 'react';
+import JsonFormatterPage from './JsonFormatterPage';
 
 const IndexPage: React.FC = () => {
     const { setPageTitle } = usePage();
-
     useEffect(() => {
-        setPageTitle('Code Formatter');
+        setPageTitle('JSON Formatter');
     }, [setPageTitle]);
-
-    // Memoize the tool groups to prevent recreation on every render
-    const toolsGroups = useMemo(() => {
-        const groupsMap: ToolViewFunctionGroups = new Map();
-
-        const formatterTools = createJsonFormatter();
-        const toolGroup: ToolViewGroup = {
-            funcGroupId: 'formatter-utils',
-            funcGroupName: 'Code Formatters',
-            functions: formatterTools.map((func) => ({
-                funcId: func.toolId,
-                funcName: func.textToDisplay,
-                funcDescription: func.description,
-                func: (text, onSuccess, onFailure): void => {
-                    try {
-                        const result = func.toolFunction(text);
-                        onSuccess(result);
-                    } catch (e: unknown) {
-                        onFailure(e);
-                    }
-                },
-            })),
-        };
-        groupsMap.set('hashing-utils', toolGroup);
-
-        return groupsMap;
-    }, []);
-
-    return <ToolView toolChoseHeader="Json Formatter" toolViewFunctionGroups={toolsGroups} toolEditorsLangId="json" />;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <ToolAbout routeKey="json-formatter">
+                Format, inspect and query JSON. Beautify with 2/4/Tab indentation, minify, sort keys recursively,
+                validate with a live valid/invalid badge and error position, and escape/unescape JSON strings. The{' '}
+                <strong>Query (JSONPath)</strong> mode evaluates expressions like <code>$.items[*].id</code> and shows
+                the matched values. Parsing is done with the browser's native JSON engine — nothing leaves your machine.
+            </ToolAbout>
+            <JsonFormatterPage />
+        </div>
+    );
 };
 
 export default IndexPage;

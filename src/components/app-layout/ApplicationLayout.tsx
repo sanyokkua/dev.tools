@@ -1,5 +1,5 @@
 'use client';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import AppMainContainer from '../layouts/AppMainContainer';
 import AppMainContentContainer from '../layouts/AppMainContentContainer';
 import AppSideBarAndContentContainer from '../layouts/AppSideBarAndContentContainer';
@@ -11,14 +11,56 @@ interface LayoutProps {
 }
 
 const ApplicationLayout: React.FC<LayoutProps> = ({ children }) => {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem('sidebarCollapsed');
+            if (stored !== null) {
+                setSidebarCollapsed(stored === 'true');
+            }
+        } catch {
+            // localStorage unavailable (private browsing, SSR)
+        }
+    }, []);
+
+    const persistCollapsed = (value: boolean): void => {
+        setSidebarCollapsed(value);
+        try {
+            localStorage.setItem('sidebarCollapsed', String(value));
+        } catch {
+            // ignore
+        }
+    };
+
+    const toggleSidebarCollapsed = (): void => {
+        persistCollapsed(!sidebarCollapsed);
+    };
+
+    const handleMenuOpen = (): void => {
+        if (sidebarCollapsed) {
+            // On desktop: un-collapse the sidebar instead of opening a mobile drawer
+            persistCollapsed(false);
+            return;
+        }
+        setSidebarOpen(true);
+    };
+
     return (
         <AppMainContainer>
-            {/* Top Menu Bar */}
-            <ApplicationTopBar />
-
-            {/* Main Area: Sidebar + Content */}
+            <ApplicationTopBar
+                onMenuOpen={handleMenuOpen}
+                onLogoClick={toggleSidebarCollapsed}
+                sidebarCollapsed={sidebarCollapsed}
+            />
             <AppSideBarAndContentContainer>
-                <ApplicationSidebar />
+                <ApplicationSidebar
+                    isOpen={sidebarOpen}
+                    onClose={() => setSidebarOpen(false)}
+                    isCollapsed={sidebarCollapsed}
+                    onToggleCollapse={toggleSidebarCollapsed}
+                />
                 <AppMainContentContainer colorStyle="surface-color">{children}</AppMainContentContainer>
             </AppSideBarAndContentContainer>
         </AppMainContainer>

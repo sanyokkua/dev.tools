@@ -1,26 +1,26 @@
 'use client';
-import { editor } from 'monaco-editor';
+import { type IDisposable, editor } from 'monaco-editor';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_EXTENSION, DEFAULT_LANGUAGE_ID, DEFAULT_MIME_TYPE } from '@/common/constants';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { useToast } from '@/contexts/ToasterContext';
-import Select, { SelectItem } from '@/controls/Select';
+import Button from '@/controls/Button';
+import { SelectItem } from '@/controls/Select';
 import { ToastType } from '@/controls/toaster/types';
 import ContentContainerGrid from '../../layouts/ContentContainerGrid';
 import ContentContainerGridChild from '../../layouts/ContentContainerGridChild';
 import ScrollableContentContainer from '../../layouts/ScrollableContentContainer';
-import CodeEditor from '../editor/CodeEditor';
 import {
     copyToClipboardFromEditor,
     getEditorContent,
     pasteFromClipboardToEditor,
     setEditorContent,
 } from '../editor/code-editor-utils';
+import CodeEditor from '../editor/CodeEditor';
+import EditorToolbar from '../editor/EditorToolbar';
 import { EditorProperties } from '../editor/types';
-import Menubar from '../navigation/menubar/Menubar';
-import { MenuBuilder } from '../navigation/menubar/utils';
 import ColumnMenu, { AvailableFunction } from './ColumnMenu';
 
 /**
@@ -79,11 +79,17 @@ export type ToolViewFunctionGroups = Map<string, ToolViewGroup>;
  * @property {(ToolViewFunctionGroups)} toolViewFunctionGroups - Required object that contains all function groups
  *     associated with the tools view. This property is essential for rendering and managing tool functions within the
  *     component.
+ *
+ * @property {boolean} [searchable] - When true, adds a search filter input above the function buttons.
+ *
+ * @property {boolean} [showCharCount] - When true, displays character and word count in the input toolbar.
  */
 type ToolViewProps = {
     toolChoseHeader?: string;
     toolViewFunctionGroups: ToolViewFunctionGroups;
     toolEditorsLangId?: string;
+    searchable?: boolean;
+    showCharCount?: boolean;
 };
 
 type ToolViewState = { selectItems: SelectItem[]; selectedItem: SelectItem; availableFunctions: AvailableFunction[] };
@@ -160,6 +166,8 @@ const ToolView: React.FC<ToolViewProps> = ({
     toolChoseHeader,
     toolViewFunctionGroups,
     toolEditorsLangId = DEFAULT_LANGUAGE_ID,
+    searchable,
+    showCharCount,
 }) => {
     const { showFileOpenDialog } = useFileOpen();
     const { showFileSaveDialog } = useFileSaveDialog();
@@ -167,7 +175,10 @@ const ToolView: React.FC<ToolViewProps> = ({
 
     const leftEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const rightEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const contentListenerRef = useRef<IDisposable | null>(null);
     const [supportedExtensions, setSupportedExtensions] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [charCount, setCharCount] = useState<{ chars: number; words: number } | null>(null);
 
     /** Reset state if groups ever change */
     const [toolState, setToolState] = useState<ToolViewState>(() =>
@@ -177,10 +188,27 @@ const ToolView: React.FC<ToolViewProps> = ({
         setToolState(createInitialState(toolViewFunctionGroups, leftEditorRef, rightEditorRef, showToast));
     }, [toolViewFunctionGroups]);
 
+    /** Dispose content listener on unmount */
+    useEffect(() => {
+        return (): void => {
+            contentListenerRef.current?.dispose();
+        };
+    }, []);
+
     /** Menubar callbacks for left editor */
-    const handleLeftMount = useCallback((props: EditorProperties) => {
+    const handleLeftMount = useCallback((props: EditorProperties): void => {
         leftEditorRef.current = props.editor;
         setSupportedExtensions(props.supportedExtensions);
+        if (showCharCount) {
+            const updateCount = (text: string): void => {
+                setCharCount({ chars: text.length, words: text.trim() === '' ? 0 : text.trim().split(/\s+/).length });
+            };
+            contentListenerRef.current?.dispose();
+            contentListenerRef.current = props.editor.onDidChangeModelContent(() => {
+                updateCount(props.editor.getValue());
+            });
+            updateCount(props.editor.getValue());
+        }
     }, []);
     const handleLeftOpen = (): void => {
         showFileOpenDialog({
@@ -209,7 +237,7 @@ const ToolView: React.FC<ToolViewProps> = ({
         setEditorContent(leftEditorRef, '');
     };
 
-    /** Menubar callbacks for right editor */
+    /** Right editor callbacks */
     const handleRightMount = useCallback((props: EditorProperties) => {
         rightEditorRef.current = props.editor;
     }, []);
@@ -235,22 +263,9 @@ const ToolView: React.FC<ToolViewProps> = ({
         setEditorContent(rightEditorRef, '');
     };
 
-    /** Build Menubars */
-    const leftMenu = MenuBuilder.newBuilder()
-        .addButton('open-file', 'Open', handleLeftOpen)
-        .addButton('paste', 'Paste', handleLeftPaste)
-        .addButton('copy', 'Copy', handleLeftCopy)
-        .addButton('clear', 'Clear', handleLeftClear)
-        .build();
-    const rightMenu = MenuBuilder.newBuilder()
-        .addButton('save', 'Save', handleRightSave)
-        .addButton('copy', 'Copy', handleRightCopy)
-        .addButton('clear', 'Clear', handleRightClear)
-        .addButton('use-input', 'Use as Input', handleUseAsInput)
-        .build();
-
-    /** When the user picks a new function‐group */
+    /** When the user picks a new function-group */
     const onSelect = (item: SelectItem): void => {
+        setSearchQuery('');
         setToolState((prev) => {
             const grp = toolViewFunctionGroups.get(item.itemId);
             return {
@@ -263,40 +278,97 @@ const ToolView: React.FC<ToolViewProps> = ({
 
     const isMoreThanOneGroup = toolViewFunctionGroups.size > 1;
 
+    const lowerQuery = searchQuery.toLowerCase();
+    const filteredFunctions =
+        searchable && searchQuery.trim()
+            ? toolState.availableFunctions.filter((fn) => fn.name.toLowerCase().includes(lowerQuery))
+            : toolState.availableFunctions;
+
     return (
         <ContentContainerGrid>
             <ContentContainerGridChild>
-                <Menubar menuItems={leftMenu} />
-                <CodeEditor minimap={false} onEditorMounted={handleLeftMount} languageId={toolEditorsLangId} />
-            </ContentContainerGridChild>
-
-            <ContentContainerGridChild>
-                {toolChoseHeader && <h3>{toolChoseHeader}</h3>}
-                {isMoreThanOneGroup && (
-                    <>
-                        <Select
-                            items={toolState.selectItems}
-                            selectedItem={toolState.selectedItem}
-                            onSelect={onSelect}
-                            colorStyle="tertiary-color"
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Open" variant="text" size="small" onClick={handleLeftOpen} />
+                        <Button text="Paste" variant="text" size="small" onClick={handleLeftPaste} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleLeftCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleLeftClear} />
+                        {showCharCount && charCount !== null && (
+                            <span style={{ marginLeft: 'auto' }} className="char-count-badge">
+                                {charCount.chars} chars · {charCount.words} words
+                            </span>
+                        )}
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            onEditorMounted={handleLeftMount}
+                            languageId={toolEditorsLangId}
+                            height="100%"
                         />
-                        <br />
-                    </>
-                )}
-                <ScrollableContentContainer>
-                    <ColumnMenu availableFunctions={toolState.availableFunctions} />
-                </ScrollableContentContainer>
+                    </div>
+                </div>
             </ContentContainerGridChild>
 
             <ContentContainerGridChild>
-                <Menubar menuItems={rightMenu} />
-                <CodeEditor
-                    minimap={false}
-                    wordWrap={true}
-                    isReadOnly
-                    onEditorMounted={handleRightMount}
-                    languageId={toolEditorsLangId}
-                />
+                <div
+                    className="card pad"
+                    style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+                >
+                    {toolChoseHeader && <h3>{toolChoseHeader}</h3>}
+                    {isMoreThanOneGroup && (
+                        <select
+                            className="input"
+                            value={toolState.selectedItem.itemId}
+                            style={{ marginBottom: 'var(--s2)' }}
+                            onChange={(e) => {
+                                const item = toolState.selectItems.find((i) => i.itemId === e.target.value);
+                                if (item) onSelect(item);
+                            }}
+                        >
+                            {toolState.selectItems.map((item) => (
+                                <option key={item.itemId} value={item.itemId}>
+                                    {item.displayText}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                    {searchable && (
+                        <input
+                            type="text"
+                            placeholder="Filter actions…"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="input"
+                            style={{ marginBottom: 'var(--s2)' }}
+                            aria-label="Filter functions"
+                        />
+                    )}
+                    <ScrollableContentContainer>
+                        <ColumnMenu availableFunctions={filteredFunctions} />
+                    </ScrollableContentContainer>
+                </div>
+            </ContentContainerGridChild>
+
+            <ContentContainerGridChild>
+                <div className="editorpane">
+                    <EditorToolbar>
+                        <Button text="Save" variant="text" size="small" onClick={handleRightSave} />
+                        <Button text="Copy" variant="text" size="small" onClick={handleRightCopy} />
+                        <Button text="Clear" variant="text" size="small" onClick={handleRightClear} />
+                        <Button text="Use as Input" variant="text" size="small" icon="⇄" onClick={handleUseAsInput} />
+                    </EditorToolbar>
+                    <div className="eb">
+                        <CodeEditor
+                            minimap={false}
+                            wordWrap={true}
+                            isReadOnly
+                            onEditorMounted={handleRightMount}
+                            languageId={toolEditorsLangId}
+                            height="100%"
+                        />
+                    </div>
+                </div>
             </ContentContainerGridChild>
         </ContentContainerGrid>
     );

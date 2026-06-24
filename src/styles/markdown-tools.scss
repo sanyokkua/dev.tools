@@ -1,0 +1,172 @@
+.markdown-tools {
+    /* Grid rows: toolbar | __info | body(fills rest) */
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    flex: 1; /* still a flex-item in ContentContainerFlex */
+    min-height: 0;
+    /* no height:100% needed — grid 1fr handles it */
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        flex-wrap: wrap;
+    }
+
+    &__toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    &__toolbar-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--outline-soft);
+        flex: 0 0 auto;
+    }
+
+    &__toolbar-spacer {
+        flex: 1;
+    }
+
+    &__info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 6px 10px;
+
+        &.card.pad {
+            padding: 8px 14px;
+        }
+    }
+
+    &__filename {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: var(--mono);
+    }
+
+    &__body {
+        /*
+         * auto-fit: when one pane is hidden (React conditional), the remaining
+         * pane expands to full width automatically — no JS needed.
+         */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        min-height: 0;
+    }
+
+    &__pane {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden; /* prevent content from pushing pane dimensions */
+    }
+
+    &__preview {
+        flex: 1;
+        overflow-y: auto;
+        color: var(--on-surface);
+        line-height: 1.6;
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: var(--on-surface);
+            margin: 0.8em 0 0.4em;
+        }
+
+        p {
+            margin: 0.6em 0;
+        }
+
+        a {
+            color: var(--primary);
+        }
+
+        blockquote {
+            border-left: 3px solid var(--primary);
+            background: var(--card-2);
+            color: var(--muted);
+            margin: 12px 0;
+            padding: 8px 12px;
+            border-radius: 0 var(--r-sm) var(--r-sm) 0;
+        }
+
+        code {
+            background: var(--card-2);
+            border-radius: var(--r-sm);
+            padding: 2px 5px;
+            font-size: 0.88em;
+        }
+
+        pre {
+            background: var(--card-2);
+            border-radius: var(--r-sm);
+            padding: 12px 16px;
+            overflow-x: auto;
+
+            code {
+                background: none;
+                padding: 0;
+            }
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.8em 0;
+
+            th,
+            td {
+                border: 1px solid var(--outline-soft);
+                padding: 6px 10px;
+                text-align: left;
+            }
+
+            th {
+                background: var(--card-2);
+            }
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--outline-soft);
+            margin: 1em 0;
+        }
+    }
+}
+
+@media (max-width: 900px) {
+    .markdown-tools {
+        &__body {
+            grid-template-columns: 1fr; /* stack panes vertically */
+        }
+
+        &__pane {
+            min-height: 250px; /* Monaco verify:ui gate (>200px) */
+        }
+
+        &__toolbar {
+            gap: 4px;
+            padding: 6px 8px;
+        }
+
+        &__toolbar-sep,
+        &__toolbar-spacer {
+            display: none;
+        }
+    }
+}

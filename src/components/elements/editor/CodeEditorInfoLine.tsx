@@ -1,20 +1,28 @@
 'use client';
-import { FileInfo } from '@/common/file-types';
-import InformationPanel, { InformationPanelItem } from '@/controls/InformationPanel';
 import React from 'react';
 
-export type CodeEditorInfoLineProps = { languageName: string; wordWrap: string; minimap: string; fileInfo: FileInfo };
+export type CodeEditorInfoLineProps = {
+    cursorLine: number;
+    cursorColumn: number;
+    languageDisplayName: string;
+    eol: string;
+    tabSize: number;
+    insertSpaces: boolean;
+    charCount: number;
+};
 
 const CodeEditorInfoLine: React.FC<CodeEditorInfoLineProps> = (props) => {
-    const infoPanelItems: InformationPanelItem[] = [
-        'Language: ' + props.languageName,
-        'WordWrap: ' + props.wordWrap,
-        'MiniMap: ' + props.minimap,
-        'TextLength: ' + String(props.fileInfo.content.length),
-        `FileName: ${props.fileInfo.fullName}`,
-    ];
+    const { cursorLine, cursorColumn, languageDisplayName, eol, tabSize, insertSpaces, charCount } = props;
+    const indentLabel = insertSpaces ? `Spaces: ${tabSize}` : `Tab Size: ${tabSize}`;
 
-    return <InformationPanel items={infoPanelItems} />;
+    return (
+        <div className="code-editor__status-bar">
+            <span>{`Ln ${cursorLine}, Col ${cursorColumn}`}</span>
+            <span>{languageDisplayName}</span>
+            <span>{eol}</span>
+            <span className="code-editor__status-bar-end">{`${indentLabel} · ${charCount} chars`}</span>
+        </div>
+    );
 };
 
 export default CodeEditorInfoLine;

@@ -1,5 +1,6 @@
 'use client';
 import { DEFAULT_LANGUAGE_ID } from '@/common/constants';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Editor, Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import React, { useCallback } from 'react';
@@ -15,7 +16,6 @@ export interface AppCodeEditorPropsBase {
     wordWrap?: boolean;
     minimap?: boolean;
     height?: string;
-    theme?: 'vs-dark' | 'light';
 }
 
 export interface CodeEditorProps extends AppCodeEditorPropsBase {
@@ -32,9 +32,11 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
         minimap = true,
         onChange,
         onEditorMounted,
-        height = '100vh',
-        theme = 'vs-dark',
+        height = '100%',
     } = props;
+
+    const { theme: appTheme } = useTheme();
+    const monacoTheme = appTheme === 'dark' ? 'vs-dark' : 'vs';
 
     const wordWrapValue = wordWrap ? 'on' : 'off';
     const options: editor.IStandaloneEditorConstructionOptions = {
@@ -51,7 +53,7 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
         readOnly: isReadOnly,
         automaticLayout: true,
         wordWrap: wordWrapValue,
-        scrollBeyondLastLine: true,
+        scrollBeyondLastLine: false,
         lineNumbers: 'on',
     };
 
@@ -75,7 +77,7 @@ const CodeEditor: React.FC<CodeEditorProps> = (props) => {
             value={editorContent}
             onMount={editorOnMount}
             onChange={onChange}
-            theme={theme}
+            theme={monacoTheme}
         />
     );
 };

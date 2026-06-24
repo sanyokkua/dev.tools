@@ -1,0 +1,6 @@
+content/prompts-collection/
+src/common/prompts/generated/
+test/fixtures/prompts-collection/
+test/fixtures/prompts-collection-dangling/
+test/fixtures/prompts-collection-out/
+scripts/ingest-prompts.mjs

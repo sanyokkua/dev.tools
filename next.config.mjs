@@ -1,3 +1,19 @@
+import withPWAInit from '@ducanh2912/next-pwa';
+
+const withPWA = withPWAInit({
+    dest: 'public',
+    disable: process.env.NODE_ENV === 'development',
+    register: true,
+    skipWaiting: true,
+    cacheOnFrontEndNav: true,
+    reloadOnOnline: true,
+    workboxOptions: {
+        disableDevLogs: true,
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        exclude: [/dynamic-css-manifest\.json/],
+    },
+});
+
 const isGithubActions = process.env.GITHUB_ACTIONS || false;
 let assetPrefix = '';
 let basePath = '';
@@ -19,6 +35,14 @@ const nextConfig = {
     output: 'export',
     assetPrefix: assetPrefix,
     basePath: basePath,
+    env: { NEXT_PUBLIC_BASE_PATH: basePath },
+    turbopack: {},
+    webpack(config) {
+        // Catalog TS files use .js extensions for ts-node ESM compat; webpack needs this alias to resolve them.
+        config.resolve.extensionAlias = { '.js': ['.ts', '.tsx', '.js'] };
+        return config;
+    },
 };
 
-export default nextConfig;
+const isProd = process.env.NODE_ENV === 'production';
+export default isProd ? withPWA(nextConfig) : nextConfig;

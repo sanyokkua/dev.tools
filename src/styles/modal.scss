@@ -16,19 +16,16 @@
 
 /* Main modal window styling with card-like appearance */
 .modal-content {
-    /* Background color from theme (e.g., light blue card) */
-    background-color: (var(--primary-container-color)); /* Note: Likely typo - should be var(...) */
-    padding: 1.5rem 2rem; /* 24px vertical and 32px horizontal padding (1.5×16px, 2×16px) */
-    border-radius: 12px; /* Rounded corners with 12px radius */
-    /* Multiple shadows for depth perception */
-    box-shadow:
-        0 10px 25px -5px rgba(0, 0, 0, 0.1),
-        /* Large soft shadow below */ 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Smaller inner shadow */
-    width: 90%; /* Takes 90% of container width */
-    max-width: 500px; /* Caps width at 500px for readability */
-    transform: scale(0.95); /* Starts slightly smaller for zoom effect */
-    animation: zoomIn 0.3s forwards; /* Grows to normal size over 0.3s */
-    position: relative; /* Needed for absolute positioning of children */
+    background-color: var(--card);
+    border: 1px solid var(--outline-soft);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 500px;
+    transform: scale(0.95);
+    animation: zoomIn 0.3s forwards;
+    position: relative;
 }
 
 /* Header section containing title and close button */
@@ -42,32 +39,32 @@
 
 /* Title text styling */
 .modal-title {
-    font-size: 1.25rem; /* 20px text size (1.25 × 16px) */
-    font-weight: 600; /* Semi-bold font weight */
-    color: var(--primary-container-color-on); /* Text color that contrasts with modal background */
-    margin: 0; /* Removes browser default spacing */
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--on-surface);
+    margin: 0;
 }
 
 /* Styling for the close button (X icon) */
 .modal-close-button {
-    background: transparent; /* No background */
-    border: none; /* No border */
-    font-size: 1.5rem; /* 24px icon size (1.5 × 16px) */
-    line-height: 1; /* Tightens vertical spacing */
-    cursor: pointer; /* Hand cursor for clickability */
-    color: var(--secondary-color); /* Theme-defined secondary color */
-    padding: 0.25rem; /* 4px spacing around button (0.25 × 16px) */
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--on-surface-variant);
+    padding: 0.25rem;
 }
 
 /* Visual feedback when hovering over close button */
 .modal-close-button:hover {
-    color: var(--black-color); /* Changes to pure black on hover */
+    color: var(--on-surface);
 }
 
 /* Main content area between header and footer */
 .modal-body {
-    margin-bottom: 1.5rem; /* 24px spacing below content (1.5 × 16px) */
-    color: var(--primary-container-color-on); /* Consistent text color */
+    margin-bottom: 1.5rem;
+    color: var(--on-surface);
 }
 
 /* Footer containing action buttons */

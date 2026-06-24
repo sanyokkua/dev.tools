@@ -1,149 +1,130 @@
-# Client-Side Text Transformation, Code Editing & LLM VRAM Calculator Toolkit
+# dev.tools
 
-A **fully client-side application** for text manipulation, code editing, LLM VRAM estimation, and cheat-sheets for configuring environment.
-Built with the [Monaco Editor](https://microsoft.github.io/monaco-editor/) (VS Code's engine) and deployed via GitHub
-Pages, this Next.js app performs all operations directly in the browser — no data is sent to external servers.
-Ideal for developers, technical writers, and data engineers requiring secure, offline-capable tools without opening any
-editors on your local PC (or to use on the Cloud VMs).
+> Browser-based developer utilities — 23 tools for text manipulation, code editing, JWT/Cron/QR generation,
+> software installer scripting, and AI tooling. Fully client-side, installable as a PWA, works offline.
 
 🔗 **[Live App](https://sanyokkua.github.io/dev.tools/)**
 
 ---
 
-## Core Features
+## Tools
 
-### **Text Manipulation**
+### Text & Code
 
-- **String Conversion**: Slugify (dash/underscore), camelCase, snake_case, PascalCase, kebab-case, and 15+ variants.
-- **Case Control**: Lower/upper/title/sentence case, and swap-case inversion.
-- **Line Operations**: Split, sort, deduplicate, and shuffle lines using custom delimiters (commas, pipes, etc.).
+| Tool                                                                       | Description                                                                      |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [String Utils](https://sanyokkua.github.io/dev.tools/string-utils)         | 20+ case, slugify, and text transforms via a 3-pane editor                       |
+| [JSON Formatter](https://sanyokkua.github.io/dev.tools/json-formatter)     | Beautify or minify JSON; JSONPath query mode                                     |
+| [XML Formatter](https://sanyokkua.github.io/dev.tools/xml-formatter)       | Format and validate XML                                                          |
+| [Hashing Tools](https://sanyokkua.github.io/dev.tools/hashing-tools)       | MD5, SHA-1, SHA-256, SHA-512 hashes in real time                                 |
+| [Encoding Tools](https://sanyokkua.github.io/dev.tools/encoding-tools)     | Base64, URL, HTML entity encode and decode                                       |
+| [Terminal Utils](https://sanyokkua.github.io/dev.tools/terminal-utils)     | Join shell commands into a single line (bash / bat / PowerShell)                 |
+| [Code Editor](https://sanyokkua.github.io/dev.tools/code-editor)           | Monaco editor with syntax highlighting, format, and file open/save               |
+| [Markdown Tools](https://sanyokkua.github.io/dev.tools/markdown-tools)     | Live GitHub-flavored preview with Mermaid, KaTeX, and PDF export                 |
+| [Mermaid Editor](https://sanyokkua.github.io/dev.tools/mermaid-editor)     | Write and preview Mermaid diagrams                                               |
+| [Diff](https://sanyokkua.github.io/dev.tools/diff)                         | Side-by-side and inline text diff                                                |
+| [HTML Editor](https://sanyokkua.github.io/dev.tools/html-editor)           | Write HTML and see a live sandboxed preview                                      |
+| [JWT](https://sanyokkua.github.io/dev.tools/jwt)                           | Decode and encode JSON Web Tokens                                                |
+| [Cron](https://sanyokkua.github.io/dev.tools/cron)                         | Cron expression builder with human-readable description                          |
+| [QR](https://sanyokkua.github.io/dev.tools/qr)                             | QR code generator — copy or download as PNG                                      |
+| [Converting Tools](https://sanyokkua.github.io/dev.tools/converting-tools) | Number base, data format (JSON/YAML/CSV/Markdown table), color, unit conversions |
+| [Date Tools](https://sanyokkua.github.io/dev.tools/date-tools)             | Timestamp ↔ date, timezone, duration between dates                               |
 
-### **Code & Data Tools**
+### Install & Setup
 
-- **Monaco Code Editor**:
-    - Syntax highlighting for all major languages.
-    - Manual syntax selection and Monaco commands via `F1`.
-- **JSON Formatter**: Minify or format JSON with 4-space indentation.
-- **Hashing & Encoding**:
-    - Generate MD5, SHA1, SHA256, SHA384, SHA512 hashes.
-    - Encode/decode Base64 and URL-safe strings.
+| Tool                                                                           | Description                                                                                        |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [Software Installer](https://sanyokkua.github.io/dev.tools/software-installer) | Generate install / update / upgrade / remove scripts for 148 apps across macOS, Windows, and Linux |
+| [macOS Setup](https://sanyokkua.github.io/dev.tools/mac-os-setup)              | Homebrew, shell PATH, env vars, and Apple Silicon VRAM manager                                     |
+| [Windows Setup](https://sanyokkua.github.io/dev.tools/windows-setup)           | winget, Chocolatey, and Scoop setup                                                                |
+| [Linux Setup](https://sanyokkua.github.io/dev.tools/linux-setup)               | apt / dnf / pacman / zypper + Flatpak and Snap                                                     |
+| [Git Cheat-sheet](https://sanyokkua.github.io/dev.tools/git-cheat-sheet)       | SSH, GPG, and identity setup — interactive or step-by-step guide                                   |
 
-### **Specialized Editors**
+### AI
 
-- **Markdown Editor**: Live preview, syntax highlighting, PDF export via browser print.
-- **Terminal Script Editor**: Syntax support for Bash, PowerShell, Shell, and Batch scripts.
-
-### **Git Configuration Assistant**
-
-- **Interactive Guides**: Step-by-step SSH, GPG, and email setup for Git.
-- **Command Generator**: Auto-generate Git commands based on user input.
-
-### **MacOS Configuration Assistant**
-
-- **Interactive Guides**: Step-by-step brew setup for macOS.
-- **Command Generator**: Auto-generate brew install commands based on selected apps.
-
-### **Prompts Collection**
-
-- **Prompt Library for LLMs**: Access a variety of pre-built prompts organized by task categories and available in multiple formats.
-- **Editable Prompt Templates**: Customize and fine-tune prompt templates directly within the app before executing them.
-- **Parameterized Prompts**: Build dynamic prompts using configurable parameters to tailor them to specific use cases and prepare them for immediate use.
-
-### **LLM VRAM Calculator**
-
-- **VRAM Estimation for GGUF-Quantized LLMs**: Calculate GPU/unified memory requirements for running Large Language Models in GGUF format.
-- **Quantization Analysis**: Support for 11 quantization levels (Q2_K through F32) with per-quantization context tables and KV cache sizing.
-- **OS Overhead Calculation**: Accounts for operating system memory reservation — macOS unified memory (~25%), Windows, Linux GUI, and Linux headless profiles.
-- **Fit Analysis & Recommendations**: Provides optimal, minimum, and maximum quality recommendations based on your available VRAM.
-- **VRAM Preset Buttons**: Quick-select common GPU memory sizes (4, 8, 12, 16, 32, 64, 96, 128 GB).
-- **MoE Model Support**: Handles Mixture-of-Experts architectures with expert count and active expert parameters.
+| Tool                                                                             | Description                                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [LLM VRAM Calculator](https://sanyokkua.github.io/dev.tools/llm-vram-calculator) | Estimate GPU or unified memory for GGUF-quantized LLMs                                                                                                                                                                                                                        |
+| [Prompts Collection](https://sanyokkua.github.io/dev.tools/prompts-collection)   | Browse hierarchical prompt library by domain/category; fill editable parameters (predefined or free-text); switch chat↔agent and model variants; copy filled or raw templates; explore skills with per-agent install guides; share stable deep links; browse the full catalog |
 
 ---
 
-## Screenshots of some app pages
+## PWA / Offline
 
-![App Interface MainPage](docs/MainPage.png)
-![App Interface StringUtils](docs/StringUtils.png)
-![App Interface CodeEditor](docs/CodeEditor.png)
-![App Interface CodeFormatter](docs/CodeFormatter.png)
-![App Interface Hashing](docs/Hashing.png)
-![App Interface Encoding](docs/Encoding.png)
-![App Interface Terminal](docs/Terminal.png)
-![App Interface Markdown](docs/Markdown.png)
-![App Interface Git](docs/Git.png)
-![App Interface MacOS_1](docs/MacOS_1.png)
-![App Interface MacOS_2](docs/MacOS_2.png)
-![App Interface Prompt_1](docs/Prompt_1.png)
-![App Interface Prompt_2](docs/Prompt_2.png)
-![App Interface Prompt_3](docs/Prompt_3.png)
+dev.tools is a **Progressive Web App**. Install it from the browser address bar (Chrome / Edge) or the iOS /
+Android share sheet. A service worker caches all assets on first visit — every tool then works **offline** with
+no network required.
 
 ---
 
-## Dependencies
+## Screenshots
 
-### **Runtime Dependencies**
+![Main Page](docs/Main_Welcome.png)
+![Markdown Tools](docs/Markdown.png)
+![Software Installer](docs/Installer.png)
 
-| Package                                                                    | Functionality                                                                |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [@monaco-editor/react](https://www.npmjs.com/package/@monaco-editor/react) | Monaco Editor integration for code editing                                   |
-| [copy-to-clipboard](https://www.npmjs.com/package/copy-to-clipboard)       | Clipboard copy functionality                                                 |
-| [highlight.js](https://highlightjs.org/)                                   | Syntax highlighting in Markdown and code editors                             |
-| [react-markdown](https://www.npmjs.com/package/react-markdown)             | Markdown parsing with [remark-gfm](https://www.npmjs.com/package/remark-gfm) |
-| [remark-gfm](https://www.npmjs.com/package/remark-gfm)                     | GitHub Flavored Markdown extensions (tables, tasklists, autolinks)           |
-| [remark-math](https://www.npmjs.com/package/remark-math)                   | Math notation support in Markdown                                            |
-| [rehype](https://www.npmjs.com/package/rehype)                             | HTML processing framework for markdown-to-html transformations               |
-| [rehype-highlight](https://www.npmjs.com/package/rehype-highlight)         | Syntax highlighting for code blocks using Highlight.js                       |
-| [rehype-katex](https://www.npmjs.com/package/rehype-katex)                 | Renders LaTeX math equations using KaTeX                                     |
-| [react-to-print](https://www.npmjs.com/package/react-to-print)             | PDF export from Markdown editor                                              |
-| [uuid](https://www.npmjs.com/package/uuid)                                 | Unique identifier generation                                                 |
-| [coreutilsts](https://www.npmjs.com/package/coreutilsts)                   | Wrapper for popular utility libraries                                        |
-| [sass](https://sass-lang.com/)                                             | CSS preprocessor with variables, mixins, and nested CSS support              |
-
----
-
-## Technical Highlights
-
-- **Client-Side Only**: All computations occur in the browser. No data is stored or transmitted.
-- **Framework**: Built with [Next.js](https://nextjs.org/) (v15)
-- **Deployment**: Static export hosted on [GitHub Pages](https://pages.github.com/).
-- **Security**: No external APIs or server dependencies.
+> See [`docs/screenshots/`](docs/screenshots/) for all screenshots.
 
 ---
 
 ## Getting Started
 
-### **Prerequisites**
+### Prerequisites
 
-- Node.js (v18+)
-- npm or yarn
+- Node.js v18+
+- npm
 
-### **Installation**
+### Install & run
 
 ```bash
 git clone https://github.com/sanyokkua/dev.tools.git
 cd dev.tools
 npm install
+npm run dev          # http://localhost:3000
 ```
 
-### **Running Locally**
+### Test
 
 ```bash
-npm run dev
+npm run verify       # format → lint → unit tests with coverage
+npm run verify:ui    # live-Chrome: 24 routes × 3 widths × 2 themes + smoke tests
 ```
 
-Visit `http://localhost:3000` in your browser.
-
-### **Building for Production**
+### Build
 
 ```bash
-npm run build
+npm run build        # static export to ./out
+npm run validate:sw  # verify service-worker precache covers all routes
 ```
+
+---
+
+## Technical Highlights
+
+- **Client-side only** — all computation happens in the browser; no data leaves your machine
+- **Framework** — [Next.js 16](https://nextjs.org/) (Pages Router), [React 19](https://react.dev/), TypeScript
+- **Deployment** — static export hosted on [GitHub Pages](https://pages.github.com/)
+- **PWA** — service worker via [@ducanh2912/next-pwa](https://www.npmjs.com/package/@ducanh2912/next-pwa); offline-capable
+- **Editor** — [Monaco Editor](https://microsoft.github.io/monaco-editor/) (VS Code's engine) for code editing and diffing
+- **Security** — no external APIs; no telemetry; no cookies
+
+---
+
+## Documentation
+
+| Doc                                                                            | Purpose                                         |
+| ------------------------------------------------------------------------------ | ----------------------------------------------- |
+| [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)                             | Commands, architecture summary, quick-start     |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)                                   | Component tree, routing, contexts, data flow    |
+| [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)                                 | Design tokens and CSS primitives                |
+| [docs/TOOLS.md](docs/TOOLS.md)                                                 | Per-tool reference with routes and source files |
+| [docs/howto/add-a-tool-page.md](docs/howto/add-a-tool-page.md)                 | Add a new tool page                             |
+| [docs/howto/add-prompts.md](docs/howto/add-prompts.md)                         | Add prompts to the library                      |
+| [docs/howto/add-software-to-catalog.md](docs/howto/add-software-to-catalog.md) | Add software to the installer catalog           |
+| [docs/howto/vram-model.md](docs/howto/vram-model.md)                           | Update the VRAM estimation model                |
 
 ---
 
 ## License
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE).  
-For more details, see the [LICENSE file](LICENSE).
-
----
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
