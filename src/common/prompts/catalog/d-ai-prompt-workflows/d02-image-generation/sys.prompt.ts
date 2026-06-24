@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Image-Prompt Engineer (System Prompt)',
     subtitle: 'Mode that turns a plain idea into a model-specific text-to-image prompt',
     description: 'Mode that turns a plain idea into a model-specific text-to-image prompt',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'SYS-D02-image-generation',
     modeClass: 'chat-only-meta',
     variants: [

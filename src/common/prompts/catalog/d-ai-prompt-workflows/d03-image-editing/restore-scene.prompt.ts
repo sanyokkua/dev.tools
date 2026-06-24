@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Repair a Damaged Landscape or Cityscape',
     subtitle: 'Remove damage from an old nature or city photo while preserving the era-accurate scene',
     description: 'Remove damage from an old nature or city photo while preserving the era-accurate scene',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-restore-scene-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

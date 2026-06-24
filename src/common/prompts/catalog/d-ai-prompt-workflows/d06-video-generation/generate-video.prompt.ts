@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Generate a Video',
     subtitle: 'Turn a plain idea into a ready-to-paste text-to-video or image-to-video prompt for your chosen model',
     description: 'Turn a plain idea into a ready-to-paste text-to-video or image-to-video prompt for your chosen model',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D06-generate-video-veo',
     modeClass: 'chat-only-meta',
     variants: [

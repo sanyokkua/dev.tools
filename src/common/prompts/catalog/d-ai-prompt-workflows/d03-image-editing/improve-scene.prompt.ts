@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Improve Landscape or Cityscape Quality',
     subtitle: 'Clarify and dehaze an undamaged scene without changing what is in it',
     description: 'Clarify and dehaze an undamaged scene without changing what is in it',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-improve-scene-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Convert a Cartoon or Anime to a Real Photo',
     subtitle: 'Render an illustration as a believable photograph while keeping the character and pose',
     description: 'Render an illustration as a believable photograph while keeping the character and pose',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-cartoon-to-photo-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Improve Portrait Quality',
     subtitle: 'Sharpen and clean an undamaged portrait without changing the person',
     description: 'Sharpen and clean an undamaged portrait without changing the person',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-improve-portrait-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

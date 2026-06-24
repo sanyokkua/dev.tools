@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Repair a Damaged Portrait',
     subtitle: 'Remove scratches, tears, dust, and fading while keeping the exact same person',
     description: 'Remove scratches, tears, dust, and fading while keeping the exact same person',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-restore-portrait-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

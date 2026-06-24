@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Colorize a Black-and-White Photo',
     subtitle: 'Add natural, era-appropriate color while keeping faces, composition, and detail identical',
     description: 'Add natural, era-appropriate color while keeping faces, composition, and detail identical',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-colorize-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

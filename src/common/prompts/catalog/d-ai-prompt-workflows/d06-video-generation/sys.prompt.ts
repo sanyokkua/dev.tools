@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Video-Prompt Engineer (System Prompt)',
     subtitle: 'Mode that turns a plain idea into a model-specific text-to-video or image-to-video prompt',
     description: 'Mode that turns a plain idea into a model-specific text-to-video or image-to-video prompt',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'SYS-D06-video-generation',
     modeClass: 'chat-only-meta',
     variants: [

@@ -8,7 +8,7 @@ export const prompt: LogicalPromptDef = {
         'Full revival — denoise, upscale, deblur, repair, recolor, relight, detail — any old or low-quality photo, identity strictly preserved',
     description:
         'Full revival — denoise, upscale, deblur, repair, recolor, relight, detail — any old or low-quality photo, identity strictly preserved',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-restore-modernize-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

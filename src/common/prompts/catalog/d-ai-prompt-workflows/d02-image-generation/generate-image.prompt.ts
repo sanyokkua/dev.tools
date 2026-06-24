@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Generate an Image',
     subtitle: 'Turn a plain idea into a ready-to-paste text-to-image prompt for your chosen model',
     description: 'Turn a plain idea into a ready-to-paste text-to-image prompt for your chosen model',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D02-generate-image-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

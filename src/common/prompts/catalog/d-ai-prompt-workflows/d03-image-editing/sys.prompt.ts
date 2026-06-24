@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Image-Editing Prompt Specialist (System Prompt)',
     subtitle: 'Mode for image-to-image edits that lock identity and layout',
     description: 'Mode for image-to-image edits that lock identity and layout',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'SYS-D03-image-editing',
     modeClass: 'chat-only-meta',
     variants: [

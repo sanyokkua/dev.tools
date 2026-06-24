@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Re-style a Scene with a Cinematic Grade',
     subtitle: 'Give a landscape or city photo a film-still look while keeping the content and composition',
     description: 'Give a landscape or city photo a film-still look while keeping the content and composition',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-restyle-scene-cinematic-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [

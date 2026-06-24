@@ -6,7 +6,7 @@ export const prompt: LogicalPromptDef = {
     title: 'Re-style a Portrait as a Professional Camera Shot',
     subtitle: 'Give a casual portrait a studio/editorial look while keeping the exact same face',
     description: 'Give a casual portrait a studio/editorial look while keeping the exact same face',
-    variantAxes: [],
+    variantAxes: ['model'],
     defaultVariantId: 'USR-D03-restyle-portrait-nano-banana-pro',
     modeClass: 'chat-only-meta',
     variants: [
