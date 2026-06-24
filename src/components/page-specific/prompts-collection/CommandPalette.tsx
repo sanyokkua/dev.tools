@@ -28,14 +28,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, manife
     }, [isOpen]);
 
     useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
+        const handler = (e: KeyboardEvent): void => {
             if (isOpen && e.key === 'Escape') {
                 e.preventDefault();
                 onClose();
             }
         };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
+        globalThis.addEventListener('keydown', handler);
+        return (): void => globalThis.removeEventListener('keydown', handler);
     }, [isOpen, onClose]);
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, manife
 
     if (!isOpen || typeof document === 'undefined') return null;
 
-    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             setActiveIndex((i) => Math.min(i + 1, results.length - 1));
@@ -61,7 +61,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, manife
         }
     };
 
-    const resultKey = (r: PaletteResult, i: number) => {
+    const resultKey = (r: PaletteResult, i: number): string => {
         const id = (r.item as ManifestLogical).id ?? (r.item as ManifestSkill).slug;
         return `${r.type}-${id}-${i}`;
     };

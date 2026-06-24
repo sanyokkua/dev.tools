@@ -76,7 +76,7 @@ const EditableCombobox: React.FC<Props> = ({
     );
 
     const handleBlur = useCallback((e: React.FocusEvent) => {
-        if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+        if (!containerRef.current?.contains(e.relatedTarget)) {
             setOpen(false);
             setActiveIndex(-1);
         }

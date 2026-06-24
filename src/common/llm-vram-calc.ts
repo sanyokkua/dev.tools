@@ -27,9 +27,9 @@ const QUANT_CATALOG = {
     'Q4_0': { bpw: 4.58, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit block-scale' },
     'Q4_1': { bpw: 5.05, family: 'legacy', sweetSpot: false, hint: 'Legacy 4-bit + min-offset' },
     'Q5_0': { bpw: 5.5, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit block-scale' },
-    'Q5_1': { bpw: 6.0, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit + min-offset' },
+    'Q5_1': { bpw: 6, family: 'legacy', sweetSpot: false, hint: 'Legacy 5-bit + min-offset' },
     'Q8_0': { bpw: 8.5, family: 'legacy', sweetSpot: true, hint: '★ Near-lossless, larger files' },
-    'Q2_K': { bpw: 3.0, family: 'k-quant', sweetSpot: false, hint: 'Very small, noticeable quality loss' },
+    'Q2_K': { bpw: 3, family: 'k-quant', sweetSpot: false, hint: 'Very small, noticeable quality loss' },
     'Q2_K_L': { bpw: 3.1, family: 'k-quant', sweetSpot: false, hint: 'Q2_K + higher-precision layers' },
     'Q3_K_S': { bpw: 3.5, family: 'k-quant', sweetSpot: false, hint: 'Small 3-bit mixed-precision' },
     'Q3_K_M': { bpw: 3.91, family: 'k-quant', sweetSpot: false, hint: 'Medium 3-bit mixed-precision' },
@@ -52,22 +52,22 @@ const QUANT_CATALOG = {
     'IQ4_XS': { bpw: 4.35, family: 'i-quant', sweetSpot: true, hint: '★ Excellent size/quality; smaller than Q4_K_M' },
     'IQ4_NL': { bpw: 4.58, family: 'i-quant', sweetSpot: false, hint: 'Non-linear 4-bit imatrix' },
     'UD-IQ1_S': { bpw: 1.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit; best quality at 1-bit' },
-    'UD-IQ1_M': { bpw: 2.0, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit M' },
+    'UD-IQ1_M': { bpw: 2, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 1-bit M' },
     'UD-IQ2_XXS': { bpw: 2.3, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit XXS' },
     'UD-IQ2_M': { bpw: 2.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 2-bit M' },
     'UD-Q2_K_XL': { bpw: 3.15, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q2_K XL layers' },
     'UD-IQ3_XXS': { bpw: 3.2, family: 'unsloth', sweetSpot: false, hint: 'Dynamic 3-bit XXS' },
-    'UD-Q3_K_XL': { bpw: 4.0, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q3_K XL layers' },
+    'UD-Q3_K_XL': { bpw: 4, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q3_K XL layers' },
     'UD-Q4_K_XL': { bpw: 4.9, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q4_K XL; best quality/GB at 4-bit' },
     'UD-Q5_K_XL': { bpw: 5.7, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q5_K XL layers' },
     'UD-Q6_K_XL': { bpw: 7.05, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q6_K XL layers' },
     'UD-Q8_K_XL': { bpw: 9.8, family: 'unsloth', sweetSpot: false, hint: 'Dynamic Q8_K XL; maximum quality' },
     'MXFP4': { bpw: 4.25, family: 'fp4', sweetSpot: false, hint: 'MX FP4 (OCP standard, in GGUF; Blackwell)' },
     'NVFP4': { bpw: 4.5, family: 'fp4', sweetSpot: false, hint: 'NVIDIA FP4 (vLLM/TensorRT; Blackwell)' },
-    'FP8': { bpw: 8.0, family: 'full', sweetSpot: false, hint: '8-bit float; hardware-dependent support' },
-    'FP16': { bpw: 16.0, family: 'full', sweetSpot: false, hint: 'Half precision; reference quality' },
-    'BF16': { bpw: 16.0, family: 'full', sweetSpot: false, hint: 'BFloat16; training standard' },
-    'FP32': { bpw: 32.0, family: 'full', sweetSpot: false, hint: 'Full precision; rarely practical locally' },
+    'FP8': { bpw: 8, family: 'full', sweetSpot: false, hint: '8-bit float; hardware-dependent support' },
+    'FP16': { bpw: 16, family: 'full', sweetSpot: false, hint: 'Half precision; reference quality' },
+    'BF16': { bpw: 16, family: 'full', sweetSpot: false, hint: 'BFloat16; training standard' },
+    'FP32': { bpw: 32, family: 'full', sweetSpot: false, hint: 'Full precision; rarely practical locally' },
 } as const satisfies Record<string, QuantEntry>;
 
 type Quantization = keyof typeof QUANT_CATALOG;
@@ -321,8 +321,8 @@ type ValidationError =
  * Used in exact KV cache calculation when layer count is known.
  */
 const KV_CACHE_BYTES = {
-    f16: 2.0,
-    q8_0: 1.0,
+    f16: 2,
+    q8_0: 1,
     q5_1: 0.69,
     q5_0: 0.66,
     q4_1: 0.56,
@@ -335,7 +335,7 @@ const KV_CACHE_BYTES = {
  * Relative to F16 baseline (factor 1.0).
  */
 const KV_CACHE_FACTOR = {
-    f16: 1.0,
+    f16: 1,
     q8_0: 0.5,
     q5_1: 0.345,
     q5_0: 0.33,
@@ -365,7 +365,7 @@ const COMPUTE_BUFFER_TIERS: readonly [number, number][] = [
     [16384, 0.4],
     [32768, 0.5],
     [65536, 0.75],
-    [131072, 1.0],
+    [131072, 1],
     [262144, 1.5],
     [Infinity, 2.5],
 ];
@@ -525,7 +525,7 @@ function estimateModelSize(params_b: number, quantization: Quantization): number
 /**
  * Estimates compute buffer in GB based on context size, batch size, and MoE active ratio.
  */
-function estimateComputeBuffer(context_size: number, batch_size: number, active_ratio: number = 1.0): number {
+function estimateComputeBuffer(context_size: number, batch_size: number, active_ratio: number = 1): number {
     const base = COMPUTE_BUFFER_TIERS.find(([maxCtx]) => context_size <= maxCtx)?.[1] ?? 2.5;
     return base * batch_size * active_ratio;
 }
@@ -534,7 +534,7 @@ function estimateComputeBuffer(context_size: number, batch_size: number, active_
  * Returns backend baseline GB for the given inference engine.
  */
 function getBackendBaseline(engine: InferenceEngine | null): number {
-    return engine !== null ? BACKEND_BASELINE_GB[engine] : 0.75;
+    return engine === null ? 0.75 : BACKEND_BASELINE_GB[engine];
 }
 
 /**
@@ -980,14 +980,14 @@ function buildInputSummary(
 
     return {
         params_b,
-        model_size_gb: model_size_gb !== null ? model_size_gb : 'estimated',
-        quantization: quantization !== null ? quantization : 'all',
-        context_size: context_size !== null ? context_size : 'all',
+        model_size_gb: model_size_gb ?? 'estimated',
+        quantization: quantization ?? 'all',
+        context_size: context_size ?? 'all',
         kv_cache_enabled,
         kv_cache_quant,
         os,
         vram_gb,
-        layers: layers !== null ? layers : 'estimated',
+        layers: layers ?? 'estimated',
         sliding_window,
         is_moe: expert_count !== null,
         expert_info: expertInfo,
@@ -1097,22 +1097,22 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
     const active_ratio =
         expert_count !== null && expert_count !== undefined && active_experts !== null && active_experts !== undefined
             ? Math.min(1, active_experts / expert_count)
-            : 1.0;
+            : 1;
     const backendGb = getBackendBaseline(engine);
 
     // Step 1: Determine quantization list
-    const quantList: readonly Quantization[] = quantization !== null ? [quantization] : STANDARD_QUANTIZATIONS;
+    const quantList: readonly Quantization[] = quantization === null ? STANDARD_QUANTIZATIONS : [quantization];
 
     // Step 2: Determine context list
     let contextList: readonly number[];
-    if (context_size !== null) {
+    if (context_size === null) {
+        contextList = STANDARD_CONTEXTS;
+    } else {
         const contextSet = new Set<number>([context_size]);
         for (const stdCtx of STANDARD_CONTEXTS) {
             contextSet.add(stdCtx);
         }
         contextList = Array.from(contextSet).sort((a, b) => a - b);
-    } else {
-        contextList = STANDARD_CONTEXTS;
     }
 
     // Step 3: Calculate OS overhead
@@ -1200,7 +1200,7 @@ function calculateVramCore(input: CalculatorInput): CalculatorOutput {
             eff_bpw: QUANT_CATALOG[quant].bpw,
             family: QUANT_CATALOG[quant].family,
             sweet_spot: QUANT_CATALOG[quant].sweetSpot,
-            estimated_gguf_gb: estimatedSize !== null ? roundTo(estimatedSize, 2) : null,
+            estimated_gguf_gb: estimatedSize === null ? null : roundTo(estimatedSize, 2),
             min_vram_no_cache_gb: roundTo(minVramNoCache, 2),
             min_vram_with_cache_gb: roundTo(minVramWithCache, 2),
             context_table: contextTable,

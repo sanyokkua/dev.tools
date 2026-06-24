@@ -188,9 +188,9 @@ describe('getFieldDefs', () => {
 
         it('last field has name "year" and allowed containing "2024"', () => {
             const defs = getFieldDefs('aws');
-            const last = defs[defs.length - 1];
-            expect(last.name).toBe('year');
-            expect(last.allowed).toContain('2024');
+            const last = defs.at(-1);
+            expect(last?.name).toBe('year');
+            expect(last?.allowed).toContain('2024');
         });
     });
 });

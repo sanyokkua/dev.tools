@@ -68,7 +68,7 @@ const Select: React.FC<SelectProps> = ({
         const itemId = e.target.value;
         const foundItem = items.find((it) => it.itemId === itemId);
         if (!foundItem) {
-            throw Error(`Could not find item: ${itemId}`);
+            throw new Error(`Could not find item: ${itemId}`);
         }
         onSelect(foundItem);
     };

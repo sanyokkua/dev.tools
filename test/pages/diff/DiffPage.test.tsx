@@ -82,7 +82,7 @@ function mountDiffEditor() {
 beforeEach(() => {
     capturedOnMount = undefined;
     mockSetModelLanguage.mockClear();
-    window.matchMedia = jest
+    globalThis.matchMedia = jest
         .fn()
         .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
     document.documentElement.removeAttribute('data-theme');
@@ -186,7 +186,7 @@ describe('DiffPage – Swap', () => {
 });
 
 describe('DiffPage – Copy Modified', () => {
-    it('copies modified editor content to clipboard', () => {
+    it('copies modified editor content to clipboard', async () => {
         wrap(<DiffPage />);
         mountDiffEditor();
 
@@ -197,7 +197,9 @@ describe('DiffPage – Copy Modified', () => {
             mockModEditor._fireChange();
         });
 
-        fireEvent.click(screen.getByRole('button', { name: /copy modified/i }));
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /copy modified/i }));
+        });
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith('copy me');
     });

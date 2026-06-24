@@ -37,13 +37,13 @@ const PromptDetailPanel: React.FC<Props> = ({
     category,
     logical,
     variants = [],
-    onVariantSwitch = () => {},
+    onVariantSwitch = (): void => {},
     style = null,
     tone = null,
     context = null,
-    onStyleChange = () => {},
-    onToneChange = () => {},
-    onContextChange = () => {},
+    onStyleChange = (): void => {},
+    onToneChange = (): void => {},
+    onContextChange = (): void => {},
 }) => {
     const { showToast } = useToast();
     const [paramValues, setParamValues] = useState<Record<string, string>>({});
@@ -108,9 +108,9 @@ const PromptDetailPanel: React.FC<Props> = ({
     }, [variant]);
 
     const handleShare = useCallback(async () => {
-        if (typeof window === 'undefined') return;
+        if (!('location' in globalThis)) return;
         try {
-            await navigator.clipboard.writeText(window.location.href);
+            await navigator.clipboard.writeText(globalThis.location.href);
             showToast({ message: 'Link copied!', type: ToastType.SUCCESS });
         } catch {
             showToast({ message: 'Copy failed', type: ToastType.ERROR });
@@ -130,7 +130,7 @@ const PromptDetailPanel: React.FC<Props> = ({
     const sysId = variant.recommendedSystemPromptId;
     const sysHref =
         sysId && domain && category ? buildSysPromptHref(sysId, domain.slug, category.slug, basePath) : null;
-    const sysFullUrl = sysHref && typeof window !== 'undefined' ? window.location.origin + sysHref : sysHref;
+    const sysFullUrl = sysHref && 'location' in globalThis ? globalThis.location.origin + sysHref : sysHref;
 
     // Axis control derived values
     const activeAxes = logical?.variantAxes ?? [];
@@ -253,7 +253,8 @@ const PromptDetailPanel: React.FC<Props> = ({
                             const displayLabel = param.label ?? param.name;
                             const placeholder = param.optional ? 'Leave blank to omit…' : undefined;
                             const val = paramValues[param.name] ?? '';
-                            const onChange = (v: string) => setParamValues((prev) => ({ ...prev, [param.name]: v }));
+                            const onChange = (v: string): void =>
+                                setParamValues((prev) => ({ ...prev, [param.name]: v }));
                             return (
                                 <div key={param.name} className="pc-param-row">
                                     <label className="pc-param-label" htmlFor={`param-${param.name}`}>

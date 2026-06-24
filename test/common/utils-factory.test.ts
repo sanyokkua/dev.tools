@@ -368,13 +368,13 @@ describe('createHashingUtils', () => {
     it('encode-to-md-5 returns a thenable (async hash)', () => {
         const tool = findTool(utils, 'encode-to-md-5');
         const result = tool.toolFunction('hello');
-        expect(typeof (result as unknown as Promise<string>).then).toBe('function');
+        expect(typeof result.then).toBe('function');
     });
 
     it('encode-to-sha-256 returns a thenable', () => {
         const tool = findTool(utils, 'encode-to-sha-256');
         const result = tool.toolFunction('hello');
-        expect(typeof (result as unknown as Promise<string>).then).toBe('function');
+        expect(typeof result.then).toBe('function');
     });
 
     it('encode-to-sha-256 resolves to a 64-char hex string for "hello"', async () => {

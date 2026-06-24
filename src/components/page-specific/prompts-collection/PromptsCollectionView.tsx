@@ -74,21 +74,21 @@ const PromptsCollectionView: React.FC = () => {
     }, [pageState.selectedId, pageState.type]);
 
     useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
+        const handler = (e: KeyboardEvent): void => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 setPaletteOpen((open) => !open);
             }
         };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
+        globalThis.addEventListener('keydown', handler);
+        return (): void => globalThis.removeEventListener('keydown', handler);
     }, []);
 
     // --- Derived selections (synchronous from manifest) ---
 
     const domains = manifest.domains;
 
-    const skillDomainCodes = useMemo(() => new Set(manifest.skills.map((s) => s.domainCode)), [manifest]);
+    const skillDomainCodes = useMemo((): Set<string> => new Set(manifest.skills.map((s) => s.domainCode)), [manifest]);
 
     const effectiveDomains = useMemo(() => {
         if (pageState.type === 'skills') {
@@ -137,7 +137,7 @@ const PromptsCollectionView: React.FC = () => {
         if (!selectedPromptDef) return null;
         return (
             (selectVariant(
-                selectedPromptDef.variants as unknown as Parameters<typeof selectVariant>[0],
+                selectedPromptDef.variants,
                 pageState.variantContext,
                 pageState.variantModel,
                 pageState.variantSub,
@@ -457,7 +457,7 @@ const PromptsCollectionView: React.FC = () => {
                         <PromptDetailPanel
                             logical={selectedPromptDef}
                             variant={selectedVariant}
-                            variants={(selectedPromptDef?.variants as unknown as PromptVariant[]) ?? []}
+                            variants={selectedPromptDef?.variants ?? []}
                             domain={activeDomain}
                             category={activeCategory}
                             onVariantSwitch={onVariantSwitch}

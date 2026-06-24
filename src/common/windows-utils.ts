@@ -21,11 +21,11 @@ export const WINDOWS_SCOOP_VERIFY = `scoop --version`;
 
 export const WINDOWS_SCOOP_UPDATE_ALL = `scoop update *`;
 
-export const WINDOWS_ENV_SET_VARIABLE = `[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\\Program Files\\Eclipse Adoptium\\jdk-21", "User")`;
+export const WINDOWS_ENV_SET_VARIABLE = String.raw`[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Eclipse Adoptium\jdk-21", "User")`;
 
 export const WINDOWS_ENV_ADD_TO_PATH =
     `$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n` +
-    `[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\MyTool\\bin", "User")`;
+    String.raw`[Environment]::SetEnvironmentVariable("PATH", "$current;C:\MyTool\bin", "User")`;
 
 export const WINDOWS_ENV_VIEW_VARIABLE = `[Environment]::GetEnvironmentVariable("JAVA_HOME", "User")`;
 

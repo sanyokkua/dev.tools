@@ -1,8 +1,6 @@
 import { CronExpressionParser } from 'cron-parser';
 import cronstrue from 'cronstrue';
-import { formatInTimezone, TIMEZONES } from './date-utils';
-
-export { TIMEZONES };
+import { formatInTimezone } from './date-utils';
 
 export type CronDialect = 'linux' | 'quartz' | 'aws';
 
@@ -54,7 +52,7 @@ function adaptAwsForParsing(expression: string): string {
 }
 
 export function describeCron(expression: string, dialect: CronDialect): string | null {
-    if (!expression || !expression.trim()) return null;
+    if (!expression?.trim()) return null;
     try {
         if (dialect === 'aws') {
             const adapted = adaptAwsForDescription(expression);
@@ -72,7 +70,7 @@ export function getNextRuns(
     timezone: string,
     count: number,
 ): string[] | null {
-    if (!expression || !expression.trim()) return null;
+    if (!expression?.trim()) return null;
     try {
         const tz = timezone || 'UTC';
         const expr = dialect === 'aws' ? adaptAwsForParsing(expression) : expression;
@@ -100,3 +98,5 @@ export function getDialectHints(dialect: CronDialect): string[] {
         'Year range: 2024–2199 or *',
     ];
 }
+
+export { TIMEZONES } from './date-utils';

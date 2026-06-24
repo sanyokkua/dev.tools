@@ -97,6 +97,7 @@ describe('saveAs', () => {
     });
 
     it('shows error toast when saveAsFile rejects', async () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
         mockSaveAsFile.mockRejectedValue(new Error('disk full'));
         (bfa as { supported: boolean }).supported = true;
 
@@ -104,6 +105,7 @@ describe('saveAs', () => {
         fireEvent.click(screen.getByText('save-as'));
 
         await waitFor(() => expect(screen.getByText('Failed to Save file')).toBeInTheDocument());
+        consoleSpy.mockRestore();
     });
 });
 

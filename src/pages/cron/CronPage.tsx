@@ -111,12 +111,12 @@ const CronPage: React.FC = () => {
                     {/* Description card */}
                     <div className="card pad">
                         <div className="cron-section-label">Description</div>
-                        {description !== null ? (
-                            <span data-testid="cron-description">{description}</span>
-                        ) : (
+                        {description === null ? (
                             <span className="pill no" data-testid="cron-error">
                                 Invalid expression
                             </span>
+                        ) : (
+                            <span data-testid="cron-description">{description}</span>
                         )}
                     </div>
 
@@ -136,7 +136,9 @@ const CronPage: React.FC = () => {
                                 aria-label="Run count"
                             />
                         </div>
-                        {nextRuns !== null ? (
+                        {nextRuns === null ? (
+                            <span className="pill no">Could not compute run times</span>
+                        ) : (
                             <ol className="cron-runs-list" data-testid="cron-next-runs">
                                 {nextRuns.map((r, i) => (
                                     <li key={i} className="cron-run-item" data-testid="cron-run-item">
@@ -144,8 +146,6 @@ const CronPage: React.FC = () => {
                                     </li>
                                 ))}
                             </ol>
-                        ) : (
-                            <span className="pill no">Could not compute run times</span>
                         )}
                         {dialect === 'aws' && (
                             <p className="cron-aws-note">

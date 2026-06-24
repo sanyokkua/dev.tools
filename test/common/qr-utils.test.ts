@@ -17,22 +17,27 @@ describe('buildWifiPayload', () => {
 
     it('escapes semicolon in SSID', () => {
         const result = buildWifiPayload({ ssid: 'My;Net', password: 'pass', encryption: 'WPA', hidden: false });
-        expect(result).toContain('S:My\\;Net;');
+        expect(result).toContain(String.raw`S:My\;Net;`);
     });
 
     it('escapes backslash in SSID', () => {
-        const result = buildWifiPayload({ ssid: 'My\\Net', password: 'pass', encryption: 'WPA', hidden: false });
-        expect(result).toContain('S:My\\\\Net;');
+        const result = buildWifiPayload({
+            ssid: String.raw`My\Net`,
+            password: 'pass',
+            encryption: 'WPA',
+            hidden: false,
+        });
+        expect(result).toContain(String.raw`S:My\\Net;`);
     });
 
     it('escapes double-quote in SSID', () => {
         const result = buildWifiPayload({ ssid: 'My"Net', password: 'pass', encryption: 'WPA', hidden: false });
-        expect(result).toContain('S:My\\"Net;');
+        expect(result).toContain(String.raw`S:My\"Net;`);
     });
 
     it('escapes comma in password', () => {
         const result = buildWifiPayload({ ssid: 'MyNet', password: 'pass,word', encryption: 'WPA', hidden: false });
-        expect(result).toContain('P:pass\\,word;');
+        expect(result).toContain(String.raw`P:pass\,word;`);
     });
 
     it('hidden=true adds H:true; to the output', () => {

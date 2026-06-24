@@ -44,9 +44,9 @@ const HashingPage: React.FC = () => {
         const results = await Promise.allSettled(
             ALGORITHMS.map(async (r) => {
                 if (r.alg === 'MD5') {
-                    return isBuffer ? md5(new Uint8Array(input as ArrayBuffer)) : md5(input as string);
+                    return isBuffer ? md5(new Uint8Array(input)) : md5(input);
                 }
-                const buf = isBuffer ? (input as ArrayBuffer) : new TextEncoder().encode(input as string);
+                const buf = isBuffer ? input : new TextEncoder().encode(input);
                 const hash = await crypto.subtle.digest(r.subtleAlg!, buf);
                 return Array.from(new Uint8Array(hash))
                     .map((b) => b.toString(16).padStart(2, '0'))
@@ -58,7 +58,7 @@ const HashingPage: React.FC = () => {
             ALGORITHMS.map((r, i) => ({
                 ...r,
                 loading: false,
-                digest: results[i].status === 'fulfilled' ? (results[i] as PromiseFulfilledResult<string>).value : null,
+                digest: results[i].status === 'fulfilled' ? results[i].value : null,
             })),
         );
     }, []);

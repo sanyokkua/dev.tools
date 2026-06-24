@@ -1,5 +1,5 @@
 export function base64UrlDecode(str: string): string {
-    const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = str.replaceAll('-', '+').replaceAll('_', '/');
     const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
     const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
     return new TextDecoder().decode(bytes);
@@ -64,9 +64,9 @@ async function importHmacKey(secret: string, hash: string): Promise<CryptoKey> {
 function encodeBase64Url(obj: object): string {
     const json = JSON.stringify(obj);
     const bytes = new TextEncoder().encode(json);
-    return btoa(String.fromCharCode(...bytes))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
+    return btoa(String.fromCodePoint(...bytes))
+        .replaceAll('+', '-')
+        .replaceAll('/', '_')
         .replace(/=+$/, '');
 }
 
@@ -80,7 +80,7 @@ export async function hmacVerify(
         if (parts.length !== 3) return false;
         const key = await importHmacKey(secret, ALG_MAP[algorithm]);
         const data = new TextEncoder().encode(parts[0] + '.' + parts[1]);
-        const sigBase64 = parts[2].replace(/-/g, '+').replace(/_/g, '/');
+        const sigBase64 = parts[2].replaceAll('-', '+').replaceAll('_', '/');
         const sigPadded = sigBase64 + '='.repeat((4 - (sigBase64.length % 4)) % 4);
         const sig = Uint8Array.from(atob(sigPadded), (c) => c.charCodeAt(0));
         return await crypto.subtle.verify('HMAC', key, sig, data);
@@ -100,9 +100,9 @@ export async function hmacSign(
     const key = await importHmacKey(secret, ALG_MAP[algorithm]);
     const data = new TextEncoder().encode(headerB64 + '.' + payloadB64);
     const sigBuf = await crypto.subtle.sign('HMAC', key, data);
-    const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sigBuf)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
+    const sigB64 = btoa(String.fromCodePoint(...new Uint8Array(sigBuf)))
+        .replaceAll('+', '-')
+        .replaceAll('/', '_')
         .replace(/=+$/, '');
     return `${headerB64}.${payloadB64}.${sigB64}`;
 }

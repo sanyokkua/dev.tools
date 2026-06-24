@@ -230,11 +230,11 @@ export function createStringUtilList(): UtilList[] {
 
 function encodeHtmlEntities(input: string): string {
     return input
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
 }
 
 function decodeHtmlEntities(input: string): string {
@@ -280,7 +280,7 @@ export function createDecodingUtils(): IStringUtil[] {
             toolId: 'decode-base-64-url',
             textToDisplay: 'Decode Base64Url',
             toolFunction: (input: string): string => {
-                const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+                const base64 = input.replaceAll('-', '+').replaceAll('_', '/');
                 const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
                 return atob(padded);
             },

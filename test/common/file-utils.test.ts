@@ -85,16 +85,16 @@ describe('saveTextFile', () => {
     let createElementSpy: jest.SpyInstance;
     let appendChildSpy: jest.SpyInstance;
     let removeChildSpy: jest.SpyInstance;
-    let mockAnchor: { href: string; download: string; click: jest.Mock };
+    let mockAnchor: { href: string; download: string; click: jest.Mock; remove: jest.Mock };
 
     beforeEach(() => {
-        mockAnchor = { href: '', download: '', click: jest.fn() };
+        mockAnchor = { href: '', download: '', click: jest.fn(), remove: jest.fn() };
         createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLElement);
         appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
         removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation((node) => node);
         // jsdom doesn't implement URL.createObjectURL — define as jest.fn() directly
-        global.URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url');
-        global.URL.revokeObjectURL = jest.fn();
+        globalThis.URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url');
+        globalThis.URL.revokeObjectURL = jest.fn();
     });
 
     afterEach(() => {
@@ -165,7 +165,9 @@ describe('createDefaultFile', () => {
 
 describe('handleFileOpenFailure', () => {
     it('returns empty file', () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
         const result = handleFileOpenFailure(new Error('read error'));
+        consoleSpy.mockRestore();
         expect(result).toEqual(createEmptyFile());
     });
 
@@ -195,10 +197,10 @@ describe('createFileReadPromise', () => {
                 setTimeout(() => this.onerror?.(), 0);
             }),
         };
-        jest.spyOn(window, 'FileReader').mockImplementation(() => mockReader as unknown as FileReader);
+        jest.spyOn(globalThis, 'FileReader').mockImplementation(() => mockReader);
 
         await expect(createFileReadPromise(new File(['x'], 'x.txt'))).rejects.toThrow('Failed to read file');
-        (window.FileReader as jest.MockedClass<typeof FileReader>).mockRestore();
+        (globalThis.FileReader as jest.MockedClass<typeof FileReader>).mockRestore();
     });
 });
 
@@ -222,15 +224,15 @@ describe('downloadSkillZip', () => {
         ],
     };
 
-    let mockAnchor: { href: string; download: string; click: jest.Mock };
+    let mockAnchor: { href: string; download: string; click: jest.Mock; remove: jest.Mock };
 
     beforeEach(() => {
-        mockAnchor = { href: '', download: '', click: jest.fn() };
+        mockAnchor = { href: '', download: '', click: jest.fn(), remove: jest.fn() };
         jest.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLElement);
         jest.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
         jest.spyOn(document.body, 'removeChild').mockImplementation((node) => node);
-        global.URL.createObjectURL = jest.fn(() => 'blob:mock');
-        global.URL.revokeObjectURL = jest.fn();
+        globalThis.URL.createObjectURL = jest.fn(() => 'blob:mock');
+        globalThis.URL.revokeObjectURL = jest.fn();
     });
 
     it('calls zipSync with slug-prefixed paths for all files', async () => {
@@ -252,6 +254,6 @@ describe('downloadSkillZip', () => {
 
     it('revokes the object URL after triggering download', async () => {
         await downloadSkillZip(mockSkill);
-        expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock');
+        expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock');
     });
 });

@@ -10,7 +10,7 @@ const mm = mermaidDefault as { initialize: jest.Mock; parse: jest.Mock; render: 
 
 beforeEach(() => {
     jest.clearAllMocks();
-    document.documentElement.removeAttribute('data-theme');
+    delete document.documentElement.dataset.theme;
     mm.parse.mockResolvedValue(true);
     mm.render.mockResolvedValue({ svg: '<svg>mock</svg>' });
 });
@@ -40,13 +40,13 @@ describe('renderMermaid', () => {
     });
 
     it('passes theme: "dark" when data-theme="dark"', async () => {
-        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.dataset.theme = 'dark';
         await renderMermaid('d4', 'graph TD\nA --> B');
         expect(mm.initialize).toHaveBeenCalledWith(expect.objectContaining({ theme: 'dark' }));
     });
 
     it('passes theme: "default" when data-theme="light"', async () => {
-        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.dataset.theme = 'light';
         await renderMermaid('d5', 'graph TD\nA --> B');
         expect(mm.initialize).toHaveBeenCalledWith(expect.objectContaining({ theme: 'default' }));
     });
@@ -76,7 +76,7 @@ describe('parseMermaid', () => {
     });
 
     it('passes theme: "dark" when data-theme="dark"', async () => {
-        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.dataset.theme = 'dark';
         await parseMermaid('graph TD\nA --> B');
         expect(mm.initialize).toHaveBeenCalledWith(expect.objectContaining({ theme: 'dark' }));
     });

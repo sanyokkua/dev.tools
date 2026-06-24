@@ -82,7 +82,7 @@ export function expandAbbreviations(text: string): string {
     if (!text) return text;
     const keys = Object.keys(ABBREVIATIONS)
         .sort((a, b) => b.length - a.length)
-        .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`));
     const re = new RegExp(`(?<![A-Za-z(])(${keys.join('|')})(?![A-Za-z(])`, 'g');
     return text.replace(re, (_, g) => ABBREVIATIONS[g]);
 }

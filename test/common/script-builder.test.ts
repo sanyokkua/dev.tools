@@ -429,7 +429,7 @@ describe('getCommand', () => {
         });
 
         it('does not substitute when version is undefined', () => {
-            expect(getCommand(correttoBrewMethod, 'install', undefined)).toBe('brew install --cask corretto@{version}');
+            expect(getCommand(correttoBrewMethod, 'install')).toBe('brew install --cask corretto@{version}');
         });
     });
 });

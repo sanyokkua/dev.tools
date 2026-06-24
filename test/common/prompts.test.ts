@@ -14,11 +14,12 @@ import {
     relatedOf,
     replaceParams,
     searchAll,
+    selectVariant,
     skillsByDomain,
     variantsOf,
 } from '@/common/prompts/data';
 import type { Manifest } from '@/common/prompts/model/types';
-import type { CatalogRow, PromptsData, SkillsData } from '@/common/prompts/types';
+import type { CatalogRow, PromptsData, PromptVariant, SkillsData } from '@/common/prompts/types';
 
 const FIXTURE_PROMPTS: PromptsData = {
     domains: [{ code: 'A', slug: 'software-engineering', title: 'Software Engineering', description: '' }],
@@ -338,9 +339,6 @@ describe('multi-axis (model) — inherited system prompt', () => {
     });
 });
 
-import { selectVariant } from '@/common/prompts/data';
-import type { PromptVariant } from '@/common/prompts/types';
-
 const makeV = (id: string, overrides: Partial<PromptVariant> = {}): PromptVariant => ({
     id,
     kind: 'user',
@@ -510,7 +508,7 @@ describe('catalog helpers', () => {
         const rows = buildCatalogRows(FIXTURE_MANIFEST);
         const result = filterCatalogRows(rows, '', null, new Set(['chat']));
         expect(result.some((r) => r.id === 'LP-A03-review-change')).toBe(true);
-        expect(result.every((r) => (r.hasChat || r.kind === 'skill' ? false : true)) || true).toBe(true); // chat only
+        expect(result.every((r) => !(r.hasChat || r.kind === 'skill')) || true).toBe(true); // chat only
     });
 
     test('filterCatalogRows: "agent" type facet matches prompt with hasAgent', () => {

@@ -114,7 +114,7 @@ const QrPage: React.FC = () => {
         a.download = 'qr.png';
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        a.remove();
     }, [payload, ecLevel]);
 
     const handleDownloadSvg = useCallback(async () => {

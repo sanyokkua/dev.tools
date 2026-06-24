@@ -83,7 +83,7 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                 <dt>Engine</dt>
                 <dd>{inputSummary.engine ?? 'llama.cpp'}</dd>
                 <dt>VRAM</dt>
-                <dd>{inputSummary.vram_gb !== null ? `${inputSummary.vram_gb} GB` : 'Not specified'}</dd>
+                <dd>{inputSummary.vram_gb === null ? 'Not specified' : `${inputSummary.vram_gb} GB`}</dd>
                 <dt>OS</dt>
                 <dd>{formatOsLabel(inputSummary.os)}</dd>
             </dl>
@@ -98,7 +98,7 @@ const InputSummarySection: React.FC<InputSummarySectionProps> = ({ inputSummary,
                                 ` (${osOverhead.reservation_percent.toFixed(0)}%)`}
                         </dd>
                         <dt>Available VRAM</dt>
-                        <dd>{osOverhead.available_gb !== null ? `${osOverhead.available_gb.toFixed(2)} GB` : 'N/A'}</dd>
+                        <dd>{osOverhead.available_gb === null ? 'N/A' : `${osOverhead.available_gb.toFixed(2)} GB`}</dd>
                     </dl>
                 </>
             )}

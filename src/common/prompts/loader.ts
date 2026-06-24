@@ -33,6 +33,6 @@ export async function loadSkill(slug: string): Promise<SkillDef> {
     const cached = _skillCache[slug];
     if (cached) return cached;
     const loader = SKILL_LOADERS[slug];
-    if (!loader) return Promise.reject(new Error(`Unknown skill: ${slug}`));
+    if (!loader) throw new Error(`Unknown skill: ${slug}`);
     return (_skillCache[slug] = loader().then((m) => m.skill));
 }

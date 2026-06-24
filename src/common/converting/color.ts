@@ -31,13 +31,13 @@ function hexToRgb(hex: string): Rgb | null {
             : cleaned;
     if (full.length !== 6) return null;
     if (!/^[0-9a-fA-F]{6}$/.test(full)) return null;
-    const n = parseInt(full, 16);
-    if (isNaN(n)) return null;
+    const n = Number.parseInt(full, 16);
+    if (Number.isNaN(n)) return null;
     return { r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff };
 }
 
 function rgbStringToRgb(input: string): Rgb | null {
-    const m = input.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+    const m = new RegExp(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i).exec(input);
     if (!m) return null;
     const r = +m[1],
         g = +m[2],
@@ -78,7 +78,7 @@ function hslToRgb(h: number, s: number, l: number): Rgb {
 }
 
 function hslStringToRgb(input: string): Rgb | null {
-    const m = input.match(/^hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i);
+    const m = new RegExp(/^hsl\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i).exec(input);
     if (!m) return null;
     const h = +m[1],
         s = +m[2],
@@ -88,7 +88,7 @@ function hslStringToRgb(input: string): Rgb | null {
 }
 
 function hsvStringToRgb(input: string): Rgb | null {
-    const m = input.match(/^hsv\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i);
+    const m = new RegExp(/^hsv\s*\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*\)$/i).exec(input);
     if (!m) return null;
     const hRaw = +m[1],
         sRaw = +m[2],

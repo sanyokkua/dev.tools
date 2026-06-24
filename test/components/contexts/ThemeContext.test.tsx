@@ -8,25 +8,25 @@ const ThemeDisplay: React.FC = () => {
 };
 
 describe('ThemeProvider', () => {
-    let originalMatchMedia: typeof window.matchMedia;
+    let originalMatchMedia: typeof globalThis.matchMedia;
 
     beforeEach(() => {
         localStorage.clear();
-        originalMatchMedia = window.matchMedia;
-        window.matchMedia = jest
+        originalMatchMedia = globalThis.matchMedia;
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         document.documentElement.removeAttribute('data-theme');
     });
 
     afterEach(() => {
-        window.matchMedia = originalMatchMedia;
+        globalThis.matchMedia = originalMatchMedia;
         document.documentElement.removeAttribute('data-theme');
         localStorage.clear();
     });
 
     it('initializes to dark when prefers-color-scheme is dark', async () => {
-        window.matchMedia = jest
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: true, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         await act(async () => {
@@ -40,7 +40,7 @@ describe('ThemeProvider', () => {
     });
 
     it('initializes to light when prefers-color-scheme is light', async () => {
-        window.matchMedia = jest
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         await act(async () => {
@@ -54,7 +54,7 @@ describe('ThemeProvider', () => {
     });
 
     it('toggleTheme switches theme', () => {
-        window.matchMedia = jest
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         let toggle: () => void = () => {};
@@ -119,19 +119,19 @@ const wrapper = ({ children }: { children: React.ReactNode }): React.JSX.Element
 );
 
 describe('useTheme hook', () => {
-    let originalMatchMedia: typeof window.matchMedia;
+    let originalMatchMedia: typeof globalThis.matchMedia;
 
     beforeEach(() => {
         localStorage.clear();
-        originalMatchMedia = window.matchMedia;
-        window.matchMedia = jest
+        originalMatchMedia = globalThis.matchMedia;
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
         document.documentElement.removeAttribute('data-theme');
     });
 
     afterEach(() => {
-        window.matchMedia = originalMatchMedia;
+        globalThis.matchMedia = originalMatchMedia;
         document.documentElement.removeAttribute('data-theme');
         localStorage.clear();
     });

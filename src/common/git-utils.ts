@@ -78,30 +78,37 @@ function generateCommand(description: string, command: string): Command {
 export function generateGitCommands(name: string, email: string, globalConfig: boolean, os: OSType): Command[] {
     const commands: Command[] = [];
 
-    commands.push(generateCommand('Install Git', GIT_INSTALL[os]));
-    commands.push(generateCommand('Verify Git', GIT_VERIFY_INSTALL));
+    commands.push(generateCommand('Install Git', GIT_INSTALL[os]), generateCommand('Verify Git', GIT_VERIFY_INSTALL));
 
     if (globalConfig) {
-        commands.push(generateCommand('Configure Git Global User Name', `${GIT_CONFIG_GLOBAL_USER_NAME} "${name}"`));
-        commands.push(generateCommand('Configure Git Global User Email', `${GIT_CONFIG_GLOBAL_USER_EMAIL} "${email}"`));
-        commands.push(generateCommand('Verify Git Global Config', GIT_CONFIG_GLOBAL_VERIFY));
+        commands.push(
+            generateCommand('Configure Git Global User Name', `${GIT_CONFIG_GLOBAL_USER_NAME} "${name}"`),
+            generateCommand('Configure Git Global User Email', `${GIT_CONFIG_GLOBAL_USER_EMAIL} "${email}"`),
+            generateCommand('Verify Git Global Config', GIT_CONFIG_GLOBAL_VERIFY),
+        );
     } else {
-        commands.push(generateCommand('Configure Git User Name', `${GIT_CONFIG_USER_NAME} "${name}"`));
-        commands.push(generateCommand('Configure Git User Email', `${GIT_CONFIG_USER_EMAIL} "${email}"`));
-        commands.push(generateCommand('Verify Git Config', GIT_CONFIG_VERIFY));
+        commands.push(
+            generateCommand('Configure Git User Name', `${GIT_CONFIG_USER_NAME} "${name}"`),
+            generateCommand('Configure Git User Email', `${GIT_CONFIG_USER_EMAIL} "${email}"`),
+            generateCommand('Verify Git Config', GIT_CONFIG_VERIFY),
+        );
     }
 
-    commands.push(generateCommand('Generate SSH Key', `${SSH_KEY_GENERATE} "${email}"`));
-    commands.push(generateCommand('Add SSH Key to SSH Agent', SSH_KEY_ADD_AGENT));
+    commands.push(
+        generateCommand('Generate SSH Key', `${SSH_KEY_GENERATE} "${email}"`),
+        generateCommand('Add SSH Key to SSH Agent', SSH_KEY_ADD_AGENT),
+    );
     if (os === 'linux') {
         commands.push(generateCommand('Install xclip for copy from terminal', INSTALL_XCLIP));
     }
-    commands.push(generateCommand('Copy SSH Public Key', SSH_KEY_COPY[os]));
-    commands.push(generateCommand('Test SSH Connection', SSH_KEY_TEST));
-    commands.push(generateCommand('Install GPG', GPG_INSTALL[os]));
-    commands.push(generateCommand('Verify GPG', GPG_VERIFY_INSTALL));
-    commands.push(generateCommand('Generate GPG Key', GPG_GENERATE_KEY));
-    commands.push(generateCommand('Get GPG Key ID (sec   algorithm/YOUR_KEY_ID YYYY-MM-DD [SC]\n)', GPG_GET_KEY_ID));
+    commands.push(
+        generateCommand('Copy SSH Public Key', SSH_KEY_COPY[os]),
+        generateCommand('Test SSH Connection', SSH_KEY_TEST),
+        generateCommand('Install GPG', GPG_INSTALL[os]),
+        generateCommand('Verify GPG', GPG_VERIFY_INSTALL),
+        generateCommand('Generate GPG Key', GPG_GENERATE_KEY),
+        generateCommand('Get GPG Key ID (sec   algorithm/YOUR_KEY_ID YYYY-MM-DD [SC]\n)', GPG_GET_KEY_ID),
+    );
 
     if (globalConfig) {
         commands.push(
@@ -109,14 +116,10 @@ export function generateGitCommands(name: string, email: string, globalConfig: b
                 'Configure Git Global Signing (replace YOUR_KEY_ID with the key ID from the previous command)',
                 GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ADD_KEY,
             ),
-        );
-        commands.push(
             generateCommand(
                 'Configure Git Global Commit Signing',
                 GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_COMMIT_SIGNING,
             ),
-        );
-        commands.push(
             generateCommand('Configure Git Global Tag Signing', GPG_CONFIGURE_GIT_GLOBAL_SIGNING_ENABLE_TAG_SIGNING),
         );
     } else {
@@ -125,35 +128,26 @@ export function generateGitCommands(name: string, email: string, globalConfig: b
                 'Configure Git Signing (replace YOUR_KEY_ID with the key ID from the previous command)',
                 GPG_CONFIGURE_GIT_SIGNING_ADD_KEY,
             ),
+            generateCommand('Configure Git Commit Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING),
+            generateCommand('Configure Git Tag Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING),
         );
-        commands.push(generateCommand('Configure Git Commit Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_COMMIT_SIGNING));
-        commands.push(generateCommand('Configure Git Tag Signing', GPG_CONFIGURE_GIT_SIGNING_ENABLE_TAG_SIGNING));
     }
     if (os === 'macos') {
         commands.push(
             generateCommand('To enable visual pass prompts for GPG signing, install pinentry', GPG_PINENTRY_INSTALL),
-        );
-        commands.push(
             generateCommand("Create GPG config folder (if it doesn't exist)", GPG_PINENTRY_SETUP_MKDIR_GNUPG),
-        );
-        commands.push(
             generateCommand(
                 'Add pinentry to gpg-agent config (if entry not present)',
                 GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
             ),
-        );
-        commands.push(
             generateCommand("Add 'use-agent' to GPG config (if missing)", GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG),
-        );
-        commands.push(
             generateCommand(
                 'Add environment variable export to shell profile (~/.zprofile or ~/.bashrc or ~/.zshrc)',
                 GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
             ),
         );
     }
-    commands.push(generateCommand('Test GPG', GPG_TEST));
-    commands.push(generateCommand('Test SSH', SSH_KEY_TEST));
+    commands.push(generateCommand('Test GPG', GPG_TEST), generateCommand('Test SSH', SSH_KEY_TEST));
 
     return commands;
 }

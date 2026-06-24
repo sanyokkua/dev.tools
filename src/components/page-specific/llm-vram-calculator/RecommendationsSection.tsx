@@ -32,7 +32,7 @@ const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({ recomme
             <h2>Recommendations</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {recommendations.map((rec) => {
-                    const catalogEntry = QUANT_CATALOG[rec.quantization as keyof typeof QUANT_CATALOG];
+                    const catalogEntry = QUANT_CATALOG[rec.quantization];
                     return (
                         <div key={rec.tier} className="card pad vram-recommendation-card">
                             <span className={`vram-tier-badge vram-tier-${rec.tier}`}>{formatTierLabel(rec.tier)}</span>

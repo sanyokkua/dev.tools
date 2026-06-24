@@ -11,22 +11,22 @@ export function validateXml(xmlStr: string): XmlValidationResult {
     const parseerror = doc.querySelector('parsererror');
     if (!parseerror) return { valid: true };
     const errorText = parseerror.textContent ?? 'Unknown parse error';
-    const line = errorText.match(/line (\d+)/i)?.[1];
-    const col = errorText.match(/column (\d+)/i)?.[1];
+    const line = new RegExp(/line (\d+)/i).exec(errorText)?.[1];
+    const col = new RegExp(/column (\d+)/i).exec(errorText)?.[1];
     return {
         valid: false,
         error: errorText,
-        ...(line !== undefined ? { line: Number(line) } : {}),
-        ...(col !== undefined ? { column: Number(col) } : {}),
+        ...(line === undefined ? {} : { line: Number(line) }),
+        ...(col === undefined ? {} : { column: Number(col) }),
     };
 }
 
 function escapeXml(s: string): string {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
 function escapeAttr(s: string): string {
-    return escapeXml(s).replace(/"/g, '&quot;');
+    return escapeXml(s).replaceAll('"', '&quot;');
 }
 
 export function formatXml(xmlStr: string, indent: number | string = 2): string {

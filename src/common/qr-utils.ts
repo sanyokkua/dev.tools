@@ -85,8 +85,7 @@ export function buildVEventPayload(f: VEventFields): string {
     ];
     if (f.location) lines.push(`LOCATION:${f.location}`);
     if (f.description) lines.push(`DESCRIPTION:${f.description}`);
-    lines.push('END:VEVENT');
-    lines.push('END:VCALENDAR');
+    lines.push('END:VEVENT', 'END:VCALENDAR');
     return lines.join('\n');
 }
 

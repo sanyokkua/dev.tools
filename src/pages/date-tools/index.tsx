@@ -70,7 +70,7 @@ const DateToolsPage: React.FC = () => {
     // ── Timestamp results (reactive) ──────────────────────────────────────────
     const tsResult = useMemo((): TimestampBreakdown | null => {
         const num = Number(tsInput);
-        if (!tsInput.trim() || isNaN(num)) return null;
+        if (!tsInput.trim() || Number.isNaN(num)) return null;
         return convertTimestamp(num, timezone, format, customPattern);
     }, [tsInput, timezone, format, customPattern]);
 
@@ -160,9 +160,7 @@ const DateToolsPage: React.FC = () => {
 
                     {/* Right: Results */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        {!tsResult ? (
-                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Enter a valid Unix timestamp.</p>
-                        ) : (
+                        {tsResult ? (
                             <>
                                 {/* KPI row */}
                                 <div className="date-kpi-row">
@@ -225,6 +223,8 @@ const DateToolsPage: React.FC = () => {
                                     </table>
                                 </div>
                             </>
+                        ) : (
+                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Enter a valid Unix timestamp.</p>
                         )}
                     </div>
                 </div>
@@ -247,9 +247,7 @@ const DateToolsPage: React.FC = () => {
 
                     {/* Right: results */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        {!durationResult ? (
-                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Select a valid date range.</p>
-                        ) : (
+                        {durationResult ? (
                             <>
                                 {/* Stats grid */}
                                 <div className="date-stats-grid">
@@ -288,6 +286,8 @@ const DateToolsPage: React.FC = () => {
                                     ))}
                                 </div>
                             </>
+                        ) : (
+                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Select a valid date range.</p>
                         )}
                     </div>
                 </div>

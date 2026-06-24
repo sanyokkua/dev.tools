@@ -80,5 +80,5 @@ export function paletteSearch(manifest: Manifest, query: string): PaletteResult[
     }
 
     if (!trimmed) return results.slice(0, MAX_PALETTE_RESULTS);
-    return results.sort((a, b) => b.score - a.score).slice(0, MAX_PALETTE_RESULTS);
+    return results.toSorted((a, b) => b.score - a.score).slice(0, MAX_PALETTE_RESULTS);
 }

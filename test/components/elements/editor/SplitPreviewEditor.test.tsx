@@ -33,7 +33,7 @@ describe('SplitPreviewEditor', () => {
         fireMonacoChange = undefined;
         localStorage.clear();
         document.documentElement.removeAttribute('data-theme');
-        window.matchMedia = jest
+        globalThis.matchMedia = jest
             .fn()
             .mockReturnValue({ matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() });
     });

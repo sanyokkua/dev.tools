@@ -53,7 +53,7 @@ const IndexPage = (): React.JSX.Element => {
 
     const platformManagers = useMemo<CatalogManager[]>(() => {
         if (platform === 'linux') return APPS_CATALOG.managers.linux[linuxDistro] ?? [];
-        const raw = APPS_CATALOG.managers[platform as 'macos' | 'windows'] ?? [];
+        const raw = APPS_CATALOG.managers[platform] ?? [];
         return raw.filter((m) => !HIDDEN_MANAGERS.includes(m));
     }, [platform, linuxDistro]);
 

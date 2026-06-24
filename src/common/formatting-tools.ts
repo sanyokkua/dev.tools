@@ -19,7 +19,7 @@ function sortKeysDeep(val: unknown): unknown {
         const rec = val as Record<string, unknown>;
         return Object.fromEntries(
             Object.keys(rec)
-                .sort()
+                .sort((a, b) => a.localeCompare(b))
                 .map((k) => [k, sortKeysDeep(rec[k])]),
         );
     }
@@ -55,8 +55,8 @@ export function validateJson(jsonStr: string): JsonValidationResult {
         return { valid: true };
     } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        const line = msg.match(/line (\d+)/i)?.[1];
-        const col = msg.match(/column (\d+)/i)?.[1];
+        const line = new RegExp(/line (\d+)/i).exec(msg)?.[1];
+        const col = new RegExp(/column (\d+)/i).exec(msg)?.[1];
         return {
             valid: false,
             error: msg,

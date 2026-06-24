@@ -58,7 +58,7 @@ export function saveTextFile({
     document.body.appendChild(htmlATag);
     htmlATag.click();
 
-    document.body.removeChild(htmlATag);
+    htmlATag.remove();
     URL.revokeObjectURL(url);
 }
 
@@ -230,6 +230,6 @@ export async function downloadSkillZip(skill: SkillDef): Promise<void> {
     a.download = `${skill.slug}.zip`;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    a.remove();
     URL.revokeObjectURL(url);
 }

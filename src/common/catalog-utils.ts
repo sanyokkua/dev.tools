@@ -32,7 +32,7 @@ export function filterCatalog(apps: CatalogApp[], search: string, category: stri
 }
 
 export function getCategories(apps: CatalogApp[]): string[] {
-    return [...new Set(apps.map((a) => a.category))].sort();
+    return [...new Set(apps.map((a) => a.category))].sort((a, b) => a.localeCompare(b));
 }
 
 export function getAvailableManagers(

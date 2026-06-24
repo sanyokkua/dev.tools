@@ -554,7 +554,7 @@ describe('PromptDetailPanel — Share button (T2.4)', () => {
     const SHARE_PATH = '/prompts-collection?domain=eng&variant=chat';
 
     beforeEach(() => {
-        window.history.pushState({}, '', SHARE_PATH);
+        globalThis.history.pushState({}, '', SHARE_PATH);
     });
 
     it('renders Share button in detail panel', () => {

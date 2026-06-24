@@ -178,7 +178,7 @@ export function calculateWorkingDays(start: Date, end: Date): number {
 export function calculateDuration(startDateStr: string, endDateStr: string): DurationResult | null {
     const startRaw = new Date(startDateStr);
     const endRaw = new Date(endDateStr);
-    if (isNaN(startRaw.getTime()) || isNaN(endRaw.getTime())) return null;
+    if (Number.isNaN(startRaw.getTime()) || Number.isNaN(endRaw.getTime())) return null;
 
     const [start, end] = startRaw <= endRaw ? [startRaw, endRaw] : [endRaw, startRaw];
     const totalMs = end.getTime() - start.getTime();
@@ -196,10 +196,10 @@ export function calculateDuration(startDateStr: string, endDateStr: string): Dur
         totalDays,
         workingDays,
         weekendDays,
-        totalWeeks: parseFloat((totalDays / 7).toFixed(2)),
-        totalMonths: parseFloat((totalDays / 30.4375).toFixed(2)),
-        totalYears: parseFloat((totalDays / 365.25).toFixed(2)),
-        totalDecades: parseFloat((totalDays / 3652.5).toFixed(2)),
+        totalWeeks: Number.parseFloat((totalDays / 7).toFixed(2)),
+        totalMonths: Number.parseFloat((totalDays / 30.4375).toFixed(2)),
+        totalYears: Number.parseFloat((totalDays / 365.25).toFixed(2)),
+        totalDecades: Number.parseFloat((totalDays / 3652.5).toFixed(2)),
         startCard: toCard(start),
         endCard: toCard(end),
     };

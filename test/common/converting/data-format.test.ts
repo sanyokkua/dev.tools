@@ -258,7 +258,7 @@ describe('convertDataFormat — markdown-table input', () => {
         expect(parsed[0].age).toBe('30');
     });
 
-    it('table with pipe characters in values (escaped \\|) round-trips', () => {
+    it(String.raw`table with pipe characters in values (escaped \|) round-trips`, () => {
         const mdInput = '| name | value |\n| --- | --- |\n| a\\|b | c\\|d |';
         const results = convertDataFormat(mdInput, 'markdown-table');
         const json = results.find((r) => r.format === 'json');

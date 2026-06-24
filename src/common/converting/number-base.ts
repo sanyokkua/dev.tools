@@ -27,8 +27,8 @@ export function parseInputAsDecimal(input: string, fromBase: number): number | n
     cleaned = cleaned.replace(/\s/g, '');
     if (!cleaned) return null;
     if (!isValidForBase(cleaned, fromBase)) return null;
-    const value = parseInt(cleaned, fromBase);
-    return isNaN(value) ? null : value;
+    const value = Number.parseInt(cleaned, fromBase);
+    return Number.isNaN(value) ? null : value;
 }
 
 function groupBits(bits: string, size: number): string {

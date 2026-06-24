@@ -125,8 +125,8 @@ describe('Exported Constants', () => {
 
     describe('KV_CACHE_BYTES', () => {
         it('should map KV cache quantizations to correct byte values', () => {
-            expect(KV_CACHE_BYTES['f16']).toBe(2.0);
-            expect(KV_CACHE_BYTES['q8_0']).toBe(1.0);
+            expect(KV_CACHE_BYTES['f16']).toBe(2);
+            expect(KV_CACHE_BYTES['q8_0']).toBe(1);
             expect(KV_CACHE_BYTES['q5_1']).toBeCloseTo(0.69, 2);
             expect(KV_CACHE_BYTES['q5_0']).toBeCloseTo(0.66, 2);
             expect(KV_CACHE_BYTES['q4_1']).toBeCloseTo(0.56, 2);
@@ -137,7 +137,7 @@ describe('Exported Constants', () => {
 
     describe('KV_CACHE_FACTOR', () => {
         it('should map KV cache quantizations to correct factors', () => {
-            expect(KV_CACHE_FACTOR['f16']).toBe(1.0);
+            expect(KV_CACHE_FACTOR['f16']).toBe(1);
             expect(KV_CACHE_FACTOR['q8_0']).toBe(0.5);
             expect(KV_CACHE_FACTOR['q5_1']).toBeCloseTo(0.345, 3);
             expect(KV_CACHE_FACTOR['q4_0']).toBe(0.25);
@@ -182,7 +182,7 @@ describe('Input Validation - params_b (required)', () => {
 
     describe('invalid params_b values', () => {
         it('should reject NaN', () => {
-            const result = calculateVram({ params_b: NaN });
+            const result = calculateVram({ params_b: Number.NaN });
             expectError(result, 'PARAMS_B_NOT_FINITE');
         });
 
@@ -272,7 +272,7 @@ describe('Input Validation - Optional Parameters', () => {
         });
 
         it('should reject NaN', () => {
-            const result = calculateVram({ ...validBase, model_size_gb: NaN });
+            const result = calculateVram({ ...validBase, model_size_gb: Number.NaN });
             expectError(result, 'INVALID_MODEL_SIZE');
         });
     });
@@ -427,7 +427,7 @@ describe('Input Validation - Optional Parameters', () => {
         });
 
         it('should reject NaN', () => {
-            const result = calculateVram({ ...validBase, vram_gb: NaN });
+            const result = calculateVram({ ...validBase, vram_gb: Number.NaN });
             expectError(result, 'INVALID_VRAM');
         });
     });
@@ -992,7 +992,7 @@ describe('Calculation Tests', () => {
             const output = expectSuccess(result);
             const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-            expect(estimated).toBeCloseTo(16.0, 1);
+            expect(estimated).toBeCloseTo(16, 1);
         });
 
         it('should estimate FP32 model size correctly (32 bpw)', () => {
@@ -1001,7 +1001,7 @@ describe('Calculation Tests', () => {
             const output = expectSuccess(result);
             const estimated = output.quantization_analysis[0].estimated_gguf_gb!;
 
-            expect(estimated).toBeCloseTo(32.0, 1);
+            expect(estimated).toBeCloseTo(32, 1);
         });
 
         it('should use provided model_size_gb when quantization is specific', () => {
@@ -1237,7 +1237,7 @@ describe('Edge Cases', () => {
             const result = calculateVram({ params_b: 8, quantization: 'FP32' });
             const output = expectSuccess(result);
             // 8 × 32 / 8 = 32.0 GB (no overhead)
-            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(32.0, 1);
+            expect(output.quantization_analysis[0].estimated_gguf_gb).toBeCloseTo(32, 1);
         });
     });
 
@@ -1339,9 +1339,9 @@ describe('Edge Cases', () => {
             const output = expectSuccess(result);
             const maxQuality = output.recommendations!.find((r) => r.tier === 'maximum_quality')!;
 
-            const maxBpw = QUANT_CATALOG[maxQuality.quantization as Quantization]?.bpw ?? 0;
+            const maxBpw = QUANT_CATALOG[maxQuality.quantization]?.bpw ?? 0;
             for (const rec of output.recommendations!) {
-                const recBpw = QUANT_CATALOG[rec.quantization as Quantization]?.bpw ?? 0;
+                const recBpw = QUANT_CATALOG[rec.quantization]?.bpw ?? 0;
                 expect(maxBpw).toBeGreaterThanOrEqual(recBpw);
             }
         });
@@ -1649,7 +1649,7 @@ describe('KV Cache Formula Verification', () => {
         const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 8192)!;
 
         expect(entry).toBeDefined();
-        expect(entry.kv_cache_gb).toBeCloseTo(1.0, 1);
+        expect(entry.kv_cache_gb).toBeCloseTo(1, 1);
     });
 
     it('exact 8B@32K F16 KV ≈ 4.0 GB', () => {
@@ -1666,9 +1666,9 @@ describe('KV Cache Formula Verification', () => {
         });
         const output = expectSuccess(result);
         const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 32768)!;
-        expect(entry.kv_cache_gb).toBeCloseTo(4.0, 1);
-        expect(entry.kv_cache_gb).toBeGreaterThanOrEqual(3.0);
-        expect(entry.kv_cache_gb).toBeLessThanOrEqual(6.0);
+        expect(entry.kv_cache_gb).toBeCloseTo(4, 1);
+        expect(entry.kv_cache_gb).toBeGreaterThanOrEqual(3);
+        expect(entry.kv_cache_gb).toBeLessThanOrEqual(6);
     });
 
     it('exact 70B@128K F16 KV ≈ 40.0 GB (corrected)', () => {
@@ -1689,7 +1689,7 @@ describe('KV Cache Formula Verification', () => {
         const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 131072)!;
 
         expect(entry).toBeDefined();
-        expect(entry.kv_cache_gb).toBeCloseTo(40.0, 0);
+        expect(entry.kv_cache_gb).toBeCloseTo(40, 0);
     });
 
     it('should respect KV_CACHE_BYTES mapping in calculation', () => {
@@ -1950,7 +1950,7 @@ describe('Real Model Validation', () => {
                 const output = expectSuccess(result);
                 const entry = output.quantization_analysis[0].context_table.find((e) => e.context_size === 262144)!;
 
-                expect(entry.kv_cache_gb).toBeCloseTo(36.0, 0);
+                expect(entry.kv_cache_gb).toBeCloseTo(36, 0);
             });
 
             it('should scale KV cache linearly with batch_size', () => {
@@ -2578,8 +2578,8 @@ describe('KV Cache Types (2.5d)', () => {
     });
 
     it('KV_CACHE_BYTES should have correct byte values', () => {
-        expect(KV_CACHE_BYTES['f16']).toBe(2.0);
-        expect(KV_CACHE_BYTES['q8_0']).toBe(1.0);
+        expect(KV_CACHE_BYTES['f16']).toBe(2);
+        expect(KV_CACHE_BYTES['q8_0']).toBe(1);
         expect(KV_CACHE_BYTES['q5_1']).toBeCloseTo(0.69, 2);
         expect(KV_CACHE_BYTES['q5_0']).toBeCloseTo(0.66, 2);
         expect(KV_CACHE_BYTES['q4_1']).toBeCloseTo(0.56, 2);

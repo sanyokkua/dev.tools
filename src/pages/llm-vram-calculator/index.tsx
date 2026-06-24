@@ -20,27 +20,27 @@ import VramResultsDisplay from '../../components/page-specific/llm-vram-calculat
 /** @description Parses a string to a float, returning null for empty or invalid values. */
 function parseOptionalFloat(value: string): number | null {
     if (value.trim() === '') return null;
-    const num = parseFloat(value);
-    return isNaN(num) ? null : num;
+    const num = Number.parseFloat(value);
+    return Number.isNaN(num) ? null : num;
 }
 
 /** @description Parses a string to an integer, returning null for empty or invalid values. */
 function parseOptionalInt(value: string): number | null {
     if (value.trim() === '') return null;
-    const num = parseInt(value, 10);
-    return isNaN(num) ? null : num;
+    const num = Number.parseInt(value, 10);
+    return Number.isNaN(num) ? null : num;
 }
 
 /** @description Converts form state strings into a typed CalculatorInput for the VRAM calculation engine. */
 function buildCalculatorInput(form: VramFormState): CalculatorInput {
-    const quantizationValues = Object.keys(QUANT_CATALOG) as string[];
+    const quantizationValues = Object.keys(QUANT_CATALOG);
     const kvCacheValues = Object.values(KVCacheQuant) as string[];
     const osValues = Object.values(OperatingSystem) as string[];
     const gpuTypeValues = Object.values(GpuType) as string[];
     const engineValues = Object.values(InferenceEngine) as string[];
 
     return {
-        params_b: parseFloat(form.params_b) || 0,
+        params_b: Number.parseFloat(form.params_b) || 0,
         model_size_gb: parseOptionalFloat(form.model_size_gb),
         quantization: quantizationValues.includes(form.quantization) ? (form.quantization as Quantization) : null,
         context_size: parseOptionalInt(form.context_size),

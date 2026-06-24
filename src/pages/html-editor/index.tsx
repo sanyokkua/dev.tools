@@ -38,7 +38,7 @@ function buildSrcDoc(html: string, isDark: boolean): string {
     if (!isDark || !html.trim()) return html;
     const tag = '<style>:root{color-scheme:dark}</style>';
     const headClose = html.indexOf('</head>');
-    return headClose !== -1 ? html.slice(0, headClose) + tag + html.slice(headClose) : tag + html;
+    return headClose === -1 ? tag + html : html.slice(0, headClose) + tag + html.slice(headClose);
 }
 
 interface HtmlPreviewProps {

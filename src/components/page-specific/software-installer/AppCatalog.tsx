@@ -112,7 +112,7 @@ const AppCatalog = ({
                                     onToggle(app);
                                 }}
                                 style={{ cursor: app.platforms[platform] ? 'pointer' : 'not-allowed' }}
-                                className={!app.platforms[platform] ? 'installer-catalog-row--unavailable' : ''}
+                                className={app.platforms[platform] ? '' : 'installer-catalog-row--unavailable'}
                             >
                                 <td>
                                     <input

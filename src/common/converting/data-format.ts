@@ -25,7 +25,7 @@ export const DATA_FORMATS: DataFormat[] = ['json', 'yaml', 'querystring', 'toml'
 
 function csvQuoteField(value: string): string {
     if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
-        return '"' + value.replace(/"/g, '""') + '"';
+        return '"' + value.replaceAll('"', '""') + '"';
     }
     return value;
 }
@@ -65,14 +65,14 @@ function csvParseRow(line: string): string[] {
         }
     }
     // RFC 4180: trailing comma means final empty field
-    if (line.length > 0 && line[line.length - 1] === ',') {
+    if (line.length > 0 && line.at(-1) === ',') {
         fields.push('');
     }
     return fields;
 }
 
 function csvParse(input: string): unknown {
-    const lines = input.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const lines = input.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
     while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
     if (lines.length === 0) throw new Error('CSV input is empty');
     const headers = csvParseRow(lines[0]);
@@ -123,11 +123,14 @@ function csvStringify(obj: unknown): string {
 // --- Markdown table helpers (GFM; no multi-line cells) ---
 
 function mdTableQuoteCell(value: string): string {
-    return value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+    return value.replaceAll('\\', '\\\\').replaceAll('|', String.raw`\|`);
 }
 
 function mdTableUnquoteCell(raw: string): string {
-    return raw.trim().replace(/\\\|/g, '|').replace(/\\\\/g, '\\');
+    return raw
+        .trim()
+        .replaceAll(String.raw`\|`, '|')
+        .replaceAll('\\\\', '\\');
 }
 
 function mdTableParseRow(line: string): string[] {
@@ -155,11 +158,11 @@ function mdTableParseRow(line: string): string[] {
 }
 
 function mdTableParse(input: string): unknown {
-    const lines = input.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const lines = input.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
     while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
     if (lines.length < 2) throw new Error('Markdown table must have at least a header row and a separator row');
     const headers = mdTableParseRow(lines[0]);
-    if (headers.length === 0 || headers.every((h) => h === '')) throw new Error('Markdown table has no headers');
+    if (headers.every((h) => h === '')) throw new Error('Markdown table has no headers');
     const sepCells = lines[1]
         .replace(/^\|/, '')
         .replace(/\|$/, '')

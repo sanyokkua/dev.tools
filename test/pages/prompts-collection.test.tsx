@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ManifestLogical } from '../../src/common/prompts/model/types';
 import PromptCatalogView from '../../src/components/page-specific/prompts-collection/PromptCatalogView';

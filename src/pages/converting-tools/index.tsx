@@ -54,7 +54,7 @@ const CATEGORY_OPTIONS: SegmentedOption[] = [
     { value: 'length', label: 'Length' },
 ];
 
-function StepLabel({ letter, title }: { letter: string; title: string }): React.JSX.Element {
+function StepLabel({ letter, title }: Readonly<{ letter: string; title: string }>): React.JSX.Element {
     return (
         <div className="converting-step-label">
             <span className="converting-step-circle">{letter}</span>
@@ -121,9 +121,9 @@ const ConvertingToolsPage: React.FC = () => {
     const swatchColor = colorResults.find((r) => !r.error)?.swatchColor;
 
     // --- Units results ---
-    const parsedUnitsValue = parseFloat(unitsValue);
+    const parsedUnitsValue = Number.parseFloat(unitsValue);
     const unitsResults = useMemo(
-        () => (isNaN(parsedUnitsValue) ? [] : convertUnit(parsedUnitsValue, fromUnit, unitCategory)),
+        () => (Number.isNaN(parsedUnitsValue) ? [] : convertUnit(parsedUnitsValue, fromUnit, unitCategory)),
         [parsedUnitsValue, fromUnit, unitCategory],
     );
 
@@ -183,7 +183,7 @@ const ConvertingToolsPage: React.FC = () => {
                                         id="custom-base"
                                         type="number"
                                         value={String(nbCustomBase)}
-                                        onChange={(v) => setNbCustomBase(parseInt(v, 10) || 36)}
+                                        onChange={(v) => setNbCustomBase(Number.parseInt(v, 10) || 36)}
                                         min={2}
                                         max={36}
                                     />

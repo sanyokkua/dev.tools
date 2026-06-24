@@ -16,11 +16,7 @@ const SummarySection: React.FC<SummarySectionProps> = ({ summary }) => {
                 <dt>Total Configurations</dt>
                 <dd>{summary.total_configurations}</dd>
                 <dt>Fitting Configurations</dt>
-                <dd>
-                    {summary.fitting_configurations !== null
-                        ? summary.fitting_configurations
-                        : 'N/A (no VRAM specified)'}
-                </dd>
+                <dd>{summary.fitting_configurations ?? 'N/A (no VRAM specified)'}</dd>
                 <dt>Smallest Config</dt>
                 <dd>{summary.smallest_config_gb.toFixed(2)} GB</dd>
                 <dt>Largest Config</dt>

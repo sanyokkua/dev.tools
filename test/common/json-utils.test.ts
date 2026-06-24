@@ -57,6 +57,6 @@ describe('escapeJsonString / unescapeJsonString', () => {
         expect(escapeJsonString('hi')).toBe('"hi"');
     });
     it('unescapeJsonString accepts bare escaped content', () => {
-        expect(unescapeJsonString('hello\\nworld')).toBe('hello\nworld');
+        expect(unescapeJsonString(String.raw`hello\nworld`)).toBe('hello\nworld');
     });
 });

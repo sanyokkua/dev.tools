@@ -22,8 +22,8 @@ export async function loadPromptsData(): Promise<PromptsData> {
         );
         const allDefs = categoryModules.flatMap((m) => m.prompts);
         _prompts = {
-            domains: manifest.domains as Domain[],
-            categories: manifest.categories as Category[],
+            domains: manifest.domains,
+            categories: manifest.categories,
             logical: allDefs.map((lp) => ({
                 id: lp.id,
                 categoryCode: lp.categoryCode,
@@ -170,7 +170,7 @@ export function buildCatalogRows(manifest: Manifest): CatalogRow[] {
 
         let variantSummary = '—';
         if (lp.hasModel) {
-            variantSummary = `${lp.modelCount} model${lp.modelCount !== 1 ? 's' : ''}`;
+            variantSummary = `${lp.modelCount} model${lp.modelCount === 1 ? '' : 's'}`;
         } else if (lp.hasChat && lp.hasAgent) {
             variantSummary = 'chat · agent';
         } else if (lp.hasChat) {
