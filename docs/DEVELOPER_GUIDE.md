@@ -1,6 +1,6 @@
 # dev.tools — Developer Guide
 
-> **Version:** 3.0.0 | **Framework:** Next.js 16 (Pages Router) | **Language:** TypeScript + React 19
+> **Version:** 4.0.0 | **Framework:** Next.js 16 (Pages Router) | **Language:** TypeScript + React 19
 > **Deployment:** Static export → GitHub Pages | **Live:** [sanyokkua.github.io/dev.tools](https://sanyokkua.github.io/dev.tools/)
 
 ---

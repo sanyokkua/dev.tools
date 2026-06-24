@@ -1,4 +1,4 @@
-# dev.tools Architecture (v3.0.0)
+# dev.tools Architecture (v4.0.0)
 
 Static Next.js export deployed to GitHub Pages. Browser-based developer utilities suite.
 
