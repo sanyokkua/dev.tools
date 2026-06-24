@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-hr',
+    id: 'LP-B09-context-hr',
     categoryCode: 'B09',
     title: 'Write a Message to Human Resources (HR)',
     description: 'Write a Message to Human Resources (HR)',
@@ -52,7 +52,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-government', 'LP-B04-style-riskReduce'],
+            relatedPromptIds: ['LP-B09-context-government', 'LP-B04-style-riskReduce'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

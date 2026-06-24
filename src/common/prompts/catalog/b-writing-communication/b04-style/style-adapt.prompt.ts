@@ -68,7 +68,7 @@ Return ONLY the rewritten text in {{user_format}}, with no commentary. If there 
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B04-style',
-            relatedPromptIds: ['LP-B04-style-simplify', 'LP-B03-tone-adjust', 'LP-B-style-tone-rewrite'],
+            relatedPromptIds: ['LP-B04-style-simplify', 'LP-B03-tone-adjust', 'LP-B04-style-tone-rewrite'],
             relatedSkillIds: [],
             supports: { style: true, tone: false, context: false },
         },

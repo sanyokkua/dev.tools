@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-jira',
+    id: 'LP-B09-context-jira',
     categoryCode: 'B09',
     title: 'Write a Jira / Confluence Entry',
     description: 'Write a Jira / Confluence Entry',
@@ -50,7 +50,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-pr-description', 'LP-B06-docstruct-spec'],
+            relatedPromptIds: ['LP-B09-context-pr-description', 'LP-B06-docstruct-spec'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

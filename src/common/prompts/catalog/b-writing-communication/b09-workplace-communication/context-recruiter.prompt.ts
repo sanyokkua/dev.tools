@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-recruiter',
+    id: 'LP-B09-context-recruiter',
     categoryCode: 'B09',
     title: 'Reply to a Recruiter / Interview Follow-up',
     description: 'Reply to a Recruiter / Interview Follow-up',
@@ -52,7 +52,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-hr', 'LP-B05-format-resume'],
+            relatedPromptIds: ['LP-B09-context-hr', 'LP-B05-format-resume'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

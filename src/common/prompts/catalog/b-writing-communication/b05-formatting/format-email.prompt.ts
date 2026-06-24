@@ -49,7 +49,7 @@ Return ONLY the formatted email in {{user_format}}, with no commentary. If there
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B05-formatting',
-            relatedPromptIds: ['LP-B09-work-customerReply', 'LP-B03-tone-adjust', 'LP-B-context-write'],
+            relatedPromptIds: ['LP-B09-work-customerReply', 'LP-B03-tone-adjust', 'LP-B09-context-write'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

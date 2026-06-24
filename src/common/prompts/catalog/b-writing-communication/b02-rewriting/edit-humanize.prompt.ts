@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-edit-humanize',
+    id: 'LP-B02-edit-humanize',
     categoryCode: 'B02',
     title: 'Make it Sound Human (De-AI / Humanize)',
     subtitle: 'Strip AI tells, add specificity and a real voice — facts unchanged.',
@@ -54,7 +54,7 @@ Return ONLY the humanized text in {{user_format}}, with no commentary. If there 
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B02-rewriting',
-            relatedPromptIds: ['LP-B-edit-polish', 'LP-B04-style-adapt'],
+            relatedPromptIds: ['LP-B01-edit-polish', 'LP-B04-style-adapt'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-edit-professionalize',
+    id: 'LP-B04-edit-professionalize',
     categoryCode: 'B04',
     title: 'Professionalize (Raise the Register)',
     subtitle: 'Lift a casual draft to a polished professional register — meaning preserved.',
@@ -52,7 +52,7 @@ Return ONLY the professionalized text in {{user_format}}, with no commentary. If
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B04-style',
-            relatedPromptIds: ['LP-B04-style-adapt', 'LP-B-edit-polish'],
+            relatedPromptIds: ['LP-B04-style-adapt', 'LP-B01-edit-polish'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

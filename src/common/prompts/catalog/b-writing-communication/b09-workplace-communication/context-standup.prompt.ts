@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-standup',
+    id: 'LP-B09-context-standup',
     categoryCode: 'B09',
     title: 'Write a Standup / Status Note',
     description: 'Write a Standup / Status Note',

@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-police',
+    id: 'LP-B09-context-police',
     categoryCode: 'B09',
     title: 'Write a Police Statement',
     description: 'Write a Police Statement',
@@ -52,7 +52,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-government'],
+            relatedPromptIds: ['LP-B09-context-government'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

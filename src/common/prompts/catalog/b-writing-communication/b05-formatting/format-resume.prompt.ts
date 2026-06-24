@@ -49,7 +49,7 @@ Return ONLY the formatted resume content in {{user_format}}, with no commentary.
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B05-formatting',
-            relatedPromptIds: ['LP-B05-format-bullets', 'LP-B04-style-adapt', 'LP-B-context-recruiter'],
+            relatedPromptIds: ['LP-B05-format-bullets', 'LP-B04-style-adapt', 'LP-B09-context-recruiter'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

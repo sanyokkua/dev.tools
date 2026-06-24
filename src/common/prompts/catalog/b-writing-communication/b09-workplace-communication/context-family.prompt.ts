@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-family',
+    id: 'LP-B09-context-family',
     categoryCode: 'B09',
     title: 'Write a Family / Parent Note',
     description: 'Write a Family / Parent Note',
@@ -50,7 +50,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-friend'],
+            relatedPromptIds: ['LP-B09-context-friend'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

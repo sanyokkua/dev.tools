@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-receiving-criticism',
+    id: 'LP-B09-context-receiving-criticism',
     categoryCode: 'B09',
     title: 'Respond to Criticism You Received',
     description: 'Respond to Criticism You Received',
@@ -57,7 +57,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-sensitive', 'LP-B-context-junior-feedback'],
+            relatedPromptIds: ['LP-B09-context-sensitive', 'LP-B09-context-junior-feedback'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-service-provider',
+    id: 'LP-B09-context-service-provider',
     categoryCode: 'B09',
     title: 'Write to a Service Provider (Refund / Complaint / Booking)',
     description: 'Write to a Service Provider (Refund / Complaint / Booking)',
@@ -50,7 +50,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-landlord', 'LP-B-context-government'],
+            relatedPromptIds: ['LP-B09-context-landlord', 'LP-B09-context-government'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

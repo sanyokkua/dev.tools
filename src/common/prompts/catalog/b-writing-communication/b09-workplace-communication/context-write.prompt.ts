@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-write',
+    id: 'LP-B09-context-write',
     categoryCode: 'B09',
     title: 'Write for a Context',
     subtitle: 'Pick a communication context; it presets the right style, tone, and structure.',
@@ -64,7 +64,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-style-tone-rewrite'],
+            relatedPromptIds: ['LP-B04-style-tone-rewrite'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

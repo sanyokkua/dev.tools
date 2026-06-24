@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-slack',
+    id: 'LP-B09-context-slack',
     categoryCode: 'B09',
     title: 'Write a Slack / Teams Quick Ask',
     description: 'Write a Slack / Teams Quick Ask',
@@ -48,7 +48,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-standup', 'LP-B05-format-social'],
+            relatedPromptIds: ['LP-B09-context-standup', 'LP-B05-format-social'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

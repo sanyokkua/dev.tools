@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-sensitive',
+    id: 'LP-B09-context-sensitive',
     categoryCode: 'B09',
     title: 'Raise a Sensitive Topic',
     description: 'Raise a Sensitive Topic',
@@ -57,7 +57,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-receiving-criticism', 'LP-B03-tone-apology'],
+            relatedPromptIds: ['LP-B09-context-receiving-criticism', 'LP-B03-tone-apology'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

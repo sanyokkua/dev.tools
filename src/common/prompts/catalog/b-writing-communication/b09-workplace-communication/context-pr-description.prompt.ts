@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-pr-description',
+    id: 'LP-B09-context-pr-description',
     categoryCode: 'B09',
     title: 'Write a Pull Request (PR) Description',
     description: 'Write a Pull Request (PR) Description',
@@ -57,7 +57,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-code-review', 'LP-B-context-jira'],
+            relatedPromptIds: ['LP-B09-context-code-review', 'LP-B09-context-jira'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

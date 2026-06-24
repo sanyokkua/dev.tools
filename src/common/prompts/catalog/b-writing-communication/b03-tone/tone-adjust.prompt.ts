@@ -55,7 +55,7 @@ Return ONLY the rewritten text in {{user_format}}, with no commentary. If there 
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B03-tone',
-            relatedPromptIds: ['LP-B03-tone-deEscalate', 'LP-B04-style-adapt', 'LP-B-style-tone-rewrite'],
+            relatedPromptIds: ['LP-B03-tone-deEscalate', 'LP-B04-style-adapt', 'LP-B04-style-tone-rewrite'],
             relatedSkillIds: [],
             supports: { style: false, tone: true, context: false },
         },

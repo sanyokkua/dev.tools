@@ -57,7 +57,7 @@ Return ONLY the customer reply in {{user_format}}. If there is no processable te
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B03-tone-apology', 'LP-B04-style-riskReduce', 'LP-B-context-customer'],
+            relatedPromptIds: ['LP-B03-tone-apology', 'LP-B04-style-riskReduce', 'LP-B09-context-customer'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

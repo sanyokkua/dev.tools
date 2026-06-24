@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-style-tone-rewrite',
+    id: 'LP-B04-style-tone-rewrite',
     categoryCode: 'B04',
     title: 'Rewrite with a Style and Tone',
     subtitle: 'Apply a chosen style AND tone together — each injects its own rules.',
@@ -66,7 +66,7 @@ Return ONLY the rewritten text in {{user_format}}, with no commentary. If there 
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B04-style',
-            relatedPromptIds: ['LP-B03-tone-adjust', 'LP-B04-style-adapt', 'LP-B-context-write'],
+            relatedPromptIds: ['LP-B03-tone-adjust', 'LP-B04-style-adapt', 'LP-B09-context-write'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: false },
         },

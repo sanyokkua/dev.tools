@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-stakeholder',
+    id: 'LP-B09-context-stakeholder',
     categoryCode: 'B09',
     title: 'Update a Stakeholder',
     description: 'Update a Stakeholder',
@@ -52,7 +52,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-manager', 'LP-B07-sum-executive'],
+            relatedPromptIds: ['LP-B09-context-manager', 'LP-B07-sum-executive'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

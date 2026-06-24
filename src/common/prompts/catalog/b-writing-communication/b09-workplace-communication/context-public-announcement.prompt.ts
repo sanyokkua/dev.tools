@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-public-announcement',
+    id: 'LP-B09-context-public-announcement',
     categoryCode: 'B09',
     title: 'Write a Public Announcement',
     description: 'Write a Public Announcement',
@@ -57,7 +57,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-urgent', 'LP-B09-work-customerReply'],
+            relatedPromptIds: ['LP-B09-context-urgent', 'LP-B09-work-customerReply'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

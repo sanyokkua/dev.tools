@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-forum',
+    id: 'LP-B09-context-forum',
     categoryCode: 'B09',
     title: 'Post to a Forum / Stack Overflow / Open-source Issue',
     description: 'Post to a Forum / Stack Overflow / Open-source Issue',
@@ -57,7 +57,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-senior-engineer', 'LP-B-context-community'],
+            relatedPromptIds: ['LP-B09-context-senior-engineer', 'LP-B09-context-community'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

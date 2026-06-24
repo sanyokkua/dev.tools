@@ -58,7 +58,7 @@ Return ONLY the formatted post in {{user_format}}, with no commentary. If there 
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B05-formatting',
-            relatedPromptIds: ['LP-B07-sum-hashtags', 'LP-B04-style-marketing', 'LP-B-context-linkedin'],
+            relatedPromptIds: ['LP-B07-sum-hashtags', 'LP-B04-style-marketing', 'LP-B09-context-linkedin'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

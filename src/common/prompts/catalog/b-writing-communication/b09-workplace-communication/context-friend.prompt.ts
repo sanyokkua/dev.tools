@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-friend',
+    id: 'LP-B09-context-friend',
     categoryCode: 'B09',
     title: 'Message a Friend',
     description: 'Message a Friend',
@@ -50,7 +50,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-family', 'LP-B-context-neighbor'],
+            relatedPromptIds: ['LP-B09-context-family', 'LP-B09-context-neighbor'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

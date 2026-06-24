@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-article',
+    id: 'LP-B09-context-article',
     categoryCode: 'B09',
     title: 'Write an Article / Blog Post (Context)',
     description: 'Write an Article / Blog Post (Context)',

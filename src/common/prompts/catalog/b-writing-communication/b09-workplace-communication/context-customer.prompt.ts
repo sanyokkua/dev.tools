@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-customer',
+    id: 'LP-B09-context-customer',
     categoryCode: 'B09',
     title: 'Reply to a Customer',
     description: 'Reply to a Customer',
@@ -48,7 +48,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B09-work-customerReply', 'LP-B-context-sensitive'],
+            relatedPromptIds: ['LP-B09-work-customerReply', 'LP-B09-context-sensitive'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

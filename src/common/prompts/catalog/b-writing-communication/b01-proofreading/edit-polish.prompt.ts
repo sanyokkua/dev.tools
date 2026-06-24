@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-edit-polish',
+    id: 'LP-B01-edit-polish',
     categoryCode: 'B01',
     title: 'Polish (Final Aesthetic Pass)',
     subtitle: 'A light refinement of already-correct text — word choice and rhythm only.',
@@ -51,7 +51,7 @@ Return ONLY the polished text in {{user_format}}, with no commentary. If there i
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B01-proofreading',
-            relatedPromptIds: ['LP-B01-proof-enhanced', 'LP-B-edit-humanize'],
+            relatedPromptIds: ['LP-B01-proof-enhanced', 'LP-B02-edit-humanize'],
             relatedSkillIds: [],
             supports: { style: false, tone: false, context: false },
         },

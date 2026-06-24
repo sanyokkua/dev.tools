@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-neighbor',
+    id: 'LP-B09-context-neighbor',
     categoryCode: 'B09',
     title: 'Make a Neighbor Request',
     description: 'Make a Neighbor Request',
@@ -50,7 +50,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-friend', 'LP-B-context-community'],
+            relatedPromptIds: ['LP-B09-context-friend', 'LP-B09-context-community'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },

@@ -1,7 +1,7 @@
 import type { LogicalPromptDef } from '../../../model/types';
 
 export const prompt: LogicalPromptDef = {
-    id: 'LP-B-context-x-threads',
+    id: 'LP-B09-context-x-threads',
     categoryCode: 'B09',
     title: 'Write an X / Threads Post',
     description: 'Write an X / Threads Post',
@@ -52,7 +52,7 @@ Return ONLY the finished message in {{user_format}}, with no commentary. If ther
             model: null,
             isMetaPrompt: false,
             recommendedSystemPromptId: 'SYS-B09-workplace-communication',
-            relatedPromptIds: ['LP-B-context-linkedin', 'LP-B05-format-social'],
+            relatedPromptIds: ['LP-B09-context-linkedin', 'LP-B05-format-social'],
             relatedSkillIds: [],
             supports: { style: true, tone: true, context: true },
         },
