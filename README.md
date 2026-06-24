@@ -32,13 +32,13 @@
 
 ### Install & Setup
 
-| Tool                                                                           | Description                                                                                         |
-| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| [Software Installer](https://sanyokkua.github.io/dev.tools/software-installer) | Generate install / update / upgrade / remove scripts for 160+ apps across macOS, Windows, and Linux |
-| [macOS Setup](https://sanyokkua.github.io/dev.tools/mac-os-setup)              | Homebrew, shell PATH, env vars, and Apple Silicon VRAM manager                                      |
-| [Windows Setup](https://sanyokkua.github.io/dev.tools/windows-setup)           | winget, Chocolatey, and Scoop setup                                                                 |
-| [Linux Setup](https://sanyokkua.github.io/dev.tools/linux-setup)               | apt / dnf / pacman / zypper + Flatpak and Snap                                                      |
-| [Git Cheat-sheet](https://sanyokkua.github.io/dev.tools/git-cheat-sheet)       | SSH, GPG, and identity setup — interactive or step-by-step guide                                    |
+| Tool                                                                           | Description                                                                                        |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [Software Installer](https://sanyokkua.github.io/dev.tools/software-installer) | Generate install / update / upgrade / remove scripts for 148 apps across macOS, Windows, and Linux |
+| [macOS Setup](https://sanyokkua.github.io/dev.tools/mac-os-setup)              | Homebrew, shell PATH, env vars, and Apple Silicon VRAM manager                                     |
+| [Windows Setup](https://sanyokkua.github.io/dev.tools/windows-setup)           | winget, Chocolatey, and Scoop setup                                                                |
+| [Linux Setup](https://sanyokkua.github.io/dev.tools/linux-setup)               | apt / dnf / pacman / zypper + Flatpak and Snap                                                     |
+| [Git Cheat-sheet](https://sanyokkua.github.io/dev.tools/git-cheat-sheet)       | SSH, GPG, and identity setup — interactive or step-by-step guide                                   |
 
 ### AI
 

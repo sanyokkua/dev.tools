@@ -71,8 +71,8 @@ Use the `run-verification` skill for a guided walkthrough.
 
 - `src/pages/` — Next.js routes, one folder per tool
 - `src/components/app-layout/` — top bar, sidebar, main layout
-- `src/components/contexts/` — React Context providers (PageContext, ToasterContext, FileOpenContext, FileSaveDialogContext)
-- `src/components/controls/` — reusable UI (Button, Input, Select, Modal, TextEditor/Monaco wrapper)
+- `src/components/contexts/` — React Context providers (ThemeContext, PageContext, ToasterContext, FileOpenContext, FileSaveDialogContext)
+- `src/components/controls/` — reusable UI (Button, Input, Select, Modal, Textarea, AutoTextarea, Checkbox, Switch, Chip, EditableCombobox, SegmentedControl, SaveFileDialog, ToolAbout)
 - `src/components/layouts/` — layout primitives (flex/grid containers)
 - `src/components/page-specific/` — complex feature components (VRAM calculator, prompts, git cheat sheet)
 - `src/common/` — pure utility functions and type definitions
