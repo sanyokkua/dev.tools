@@ -108,13 +108,13 @@ For async tools (hashing), wrap `func.toolFunction` in a `.then(onSuccess).catch
 
 ### 4. Register in sidebar — `src/components/app-layout/ApplicationSidebar.tsx`
 
-Add an entry to `sideBarItems`:
+Add an entry to the appropriate group's `items` array in the `navGroups` constant:
 
 ```ts
-{ itemName: '<Display Name>', itemLink: '/<name>' },
+{ itemName: '<Display Name>', itemLink: '/<name>', icon: '?' },
 ```
 
-To disable a route without removing it (coming soon feature), comment it out with `// TODO: Feature releases`.
+Pick a single Unicode character for `icon` that visually relates to the tool. See existing entries in `src/components/app-layout/ApplicationSidebar.tsx` for examples.
 
 ### 5. Tests — `test/common/<name>-utils.test.ts`
 

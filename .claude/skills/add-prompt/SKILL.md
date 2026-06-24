@@ -209,4 +209,4 @@ These additions require no runtime code changes — edit one registry file and r
 | `Missing recommendedSystemPromptId target: <sys-id>` | `recommendedSystemPromptId` references an ID that doesn't exist | Add the system prompt or fix the reference                |
 | `Invalid control type: <type>`                       | `control` value is not one of the allowed set                   | Use `select`, `textarea`, `text`, or `combobox`           |
 | `Dual prompt missing agent/chat variant`             | `modeClass: 'dual'` but only one variant                        | Add the missing `kind: 'agent'` or `kind: 'user'` variant |
-| `Parameter name contains abbreviation`               | Validator V09 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |
+| `Parameter name contains abbreviation`               | Validator V13 rejects abbreviated param names                   | Use the full word (e.g. `requirements` not `req`)         |

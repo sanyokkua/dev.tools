@@ -11,10 +11,11 @@ Internal reference skill. Not user-invocable. Apply these conventions whenever r
 
 React Context API only. No Redux, no Zustand, no external state libraries.
 
-The three contexts in `src/components/contexts/`:
+The five contexts in `src/components/contexts/`:
 
 | Context                 | Import path                        | Purpose                                                                                            |
 | ----------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ThemeContext`          | `@/contexts/ThemeContext`          | Light/dark theme; persists to `localStorage`; sets `data-theme` on `<html>`                        |
 | `PageContext`           | `@/contexts/PageContext`           | Page title (setPageTitle()), About panel visibility (helpVisible, setHelpVisible, setHasToolAbout) |
 | `ToasterContext`        | `@/contexts/ToasterContext`        | User feedback toasts                                                                               |
 | `FileOpenContext`       | `@/contexts/FileOpenContext`       | File open dialog                                                                                   |
@@ -73,9 +74,13 @@ All tool factory functions (`createXxxUtils()`, `createXxxUtilList()`) live in `
     "useTabs": false,
     "semi": true,
     "singleQuote": true,
+    "quoteProps": "consistent",
     "trailingComma": "all",
     "bracketSpacing": true,
-    "arrowParens": "always"
+    "arrowParens": "always",
+    "objectWrap": "collapse",
+    "proseWrap": "preserve",
+    "plugins": ["prettier-plugin-organize-imports"]
 }
 ```
 
@@ -84,10 +89,6 @@ PostToolUse hook auto-runs Prettier on every edit — do not fight the formatter
 ## Comments
 
 Write no comments by default. Only add one when the WHY is non-obvious: a hidden constraint, a subtle invariant, or a workaround for a specific bug. Do not document WHAT the code does.
-
-## Disabled Routes
-
-Some sidebar entries are commented out (converting-tools, date-tools, windows-cheat-sheet). The route files still exist. Do not delete them. To re-enable, uncomment the sidebar entry.
 
 ## ToolAbout Component
 
