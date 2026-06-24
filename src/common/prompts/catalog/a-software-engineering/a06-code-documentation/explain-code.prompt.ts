@@ -32,10 +32,6 @@ Cover:
 Rules: explain only what the code shows; if intent is unclear, say so rather than guessing. Use plain language; avoid restating each line — focus on understanding.
 
 Output contract: a clear explanation (prose + short structure), suitable for a developer new to this code.
-
-Worked example —
-Input language: "Python 3.12"; code: a memoized recursive Fibonacci using a dict cache.
-Expected output: Purpose — "computes the nth Fibonacci number efficiently." Flow — "checks the cache; on miss, recurses and stores the result." Key decision — "memoization turns exponential recursion into linear time." Gotcha — "the module-level cache persists across calls and is not thread-safe."
 `,
             parameters: [
                 {

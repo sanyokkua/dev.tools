@@ -25,7 +25,7 @@ Cover, in order, only what the idea supports: subject + key attributes; setting/
 Idea: \`\`\`{{idea}}\`\`\`
 Aspect ratio: {{aspect}}
 
-Output: ONLY the natural-language image prompt (one paragraph), then a one-line "Assumptions:" note. (Defaults: up to 4K; keep the chosen aspect ratio so nothing is cropped; refine afterward with conversational follow-ups like "make the light warmer".)
+Output: ONLY the natural-language image prompt (one paragraph), then a one-line "Assumptions:" note.
 `,
             parameters: [
                 {
@@ -70,7 +70,7 @@ Write ONE natural-language brief in clear conversational prose. This model's par
 Idea: \`\`\`{{idea}}\`\`\`
 Aspect ratio: {{aspect}}
 
-Output: ONLY the natural-language image prompt (one short paragraph), then a one-line "Assumptions:" note. (Defaults: set output quality to High; request the chosen aspect ratio; if a detail comes back wrong, re-run pointing at it specifically, e.g. "the sign should read clearly".)
+Output: ONLY the natural-language image prompt (one short paragraph), then a one-line "Assumptions:" note.
 `,
             parameters: [
                 {

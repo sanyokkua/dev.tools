@@ -34,10 +34,6 @@ Rules:
 3. Favor hypotheses that are cheap to test and high-information. Note what evidence would most quickly narrow the field.
 
 Output contract: a ranked list — Hypothesis · Why plausible · How to test (confirm/refute). End with the single most informative next experiment.
-
-Worked example —
-Input symptom: "Checkout occasionally charges twice"; context: "Mobile clients on flaky networks; retries enabled; deployed last Tuesday."
-Expected (excerpt): 1. Client retry re-sends the charge with no idempotency key (most likely) — fits "flaky networks + retries"; test: search logs for duplicate charge requests with the same payload but different request IDs. 2. Race in the payment handler — test: add a correlation ID and check for concurrent processing. 3. Last Tuesday's deploy removed a dedupe guard — test: diff the deploy. Most informative next experiment: add idempotency-key logging and look for duplicates.
 `,
             parameters: [
                 {

@@ -37,10 +37,6 @@ Rules:
 2. Conversational-but-professional tone; scannable headings.
 
 Output contract: ONLY the README in Markdown.
-
-Worked example —
-Input: "A command-line tool that converts CSV to JSON. Node 20. Install via npm i -g csv2json. Usage: csv2json input.csv."
-Expected output: a README beginning with \`# csv2json\` + one-liner, then \`## Quickstart\` showing \`npm i -g csv2json\` and \`csv2json input.csv > out.json\`, a \`## Usage\` example, and \`## License\` marked "TODO: confirm" (not invented).
 `,
             parameters: [
                 {

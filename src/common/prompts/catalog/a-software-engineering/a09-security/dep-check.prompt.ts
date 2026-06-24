@@ -33,17 +33,6 @@ Check for and flag:
 Rules: do not assert a specific Common Vulnerabilities and Exposures (CVE) or version as vulnerable unless it is provided in the input — instead recommend running a real Software Composition Analysis (SCA)/audit tool (\`npm audit\`, \`pip-audit\`, OSV-Scanner, Snyk). Be explicit about what must be VERIFIED versus what is a CONFIRMED observation.
 
 Output contract: a table — Package · Risk type · Why · Recommended action (pin / verify on registry / replace / run SCA). End with the top actions.
-
-Worked example —
-Input: "express ^4, lodash *, reqwest, momentjs, leftpad-utils"
-Expected (excerpt):
-| Package | Risk type | Why | Action |
-|---|---|---|---|
-| lodash \`*\` | Unpinned | \`*\` pulls any version incl. malicious updates | pin to a known-good range |
-| reqwest | Typosquat/verify | resembles \`request\`/\`requests\` — confirm it's the intended package | verify on registry |
-| momentjs | Abandoned (verify) | moment is in maintenance mode; consider date-fns/Luxon | verify + plan replace |
-| leftpad-utils | Hallucination risk | cannot confirm this package exists | verify on registry before adding |
-Top actions: pin all loose ranges; verify reqwest and leftpad-utils on the registry; run \`npm audit\`.
 `,
             parameters: [
                 {

@@ -44,20 +44,6 @@ Output contract:
 1. The query in a fenced \`\`\`sql\`\`\` block.
 2. A one-line explanation of what it returns and the row grain.
 3. A bullet list of assumptions and performance notes.
-
-Worked example —
-Input dialect: "PostgreSQL"; need: "Top 10 customers by total order value in the last 90 days."; schema: "customers(id, name); orders(id, customer_id, total, created_at)"
-Expected query:
-\`\`\`sql
-SELECT c.id, c.name, SUM(o.total) AS total_value
-FROM customers c
-JOIN orders o ON o.customer_id = c.id
-WHERE o.created_at >= NOW() - INTERVAL '90 days'
-GROUP BY c.id, c.name
-ORDER BY total_value DESC
-LIMIT 10;
-\`\`\`
-Explanation: one row per customer, ranked by 90-day order total. Assumptions: \`total\` is a per-order amount; an index on \`orders(created_at, customer_id)\` would help.
 `,
             parameters: [
                 {

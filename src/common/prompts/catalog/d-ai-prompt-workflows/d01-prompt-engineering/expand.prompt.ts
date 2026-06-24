@@ -35,20 +35,6 @@ Rules:
 5. Replace any vague "think step by step" with explicit, named steps.
 
 Output contract: ONLY the expanded prompt, well-structured (Markdown) and ready to use. Do not run it.
-
-Worked example —
-Input (DATA): "review my code"
-Expected output (expanded prompt, excerpt):
-  "## Role
-  You are a senior code reviewer.
-  ## Input
-  [SPECIFY: paste the code or diff to review]
-  ## What to check
-  1. Correctness and edge cases. 2. Security (injection, secrets, auth). 3. Performance (e.g. N+1 queries). 4. Readability and naming. 5. Tests — present and meaningful?
-  ## Constraints
-  Review only the provided code; do not rewrite the whole file; do not invent requirements.
-  ## Output
-  A prioritized list: each finding as Issue → Why it matters → Suggested fix, then the top 3 to address first."
 `,
             parameters: [
                 {

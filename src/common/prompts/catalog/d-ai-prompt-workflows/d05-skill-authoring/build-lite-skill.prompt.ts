@@ -45,34 +45,6 @@ Produce a valid \`SKILL.md\` with:
 Rules: keep it lean and generic — do not invent tools the agent won't have; do not bake one project's specifics into a reusable skill. Where the description is thin, make minimal sensible choices and mark them as assumptions.
 
 Output contract: ONLY the complete \`SKILL.md\` (frontmatter + body), as a single fenced code block. Do not execute the capability.
-
-Worked example —
-Input description (DATA): "Convert a Comma-Separated Values (CSV) file into a clean Markdown table and a short summary."; triggers: "csv to markdown, tabulate this csv"; tools: "Read, Write".
-Expected output (excerpt):
-  \`\`\`markdown
-  ---
-  name: csv-to-markdown
-  version: 1.0.0
-  description: >
-    Convert a Comma-Separated Values (CSV) file into a clean Markdown table plus a short summary.
-    Use when the user says "csv to markdown", "tabulate this csv", or shares a .csv to render as a table.
-    Does NOT transform data or run analytics — for analysis, defer to a data-analysis skill.
-  tags: [csv, markdown, table, conversion]
-  allowed-tools: Read, Write
-  ---
-  # CSV to Markdown
-  You convert CSV files into readable Markdown tables.
-  ## When to use
-  A .csv needs to be shown as a Markdown table with a brief summary.
-  ## Workflow
-  1. Read the CSV; detect the delimiter and header row. 2. Escape pipe characters in cells. 3. Build the Markdown table. 4. Add a 1–2 line summary (row count, columns). 
-  ## Validation (mandatory before output)
-  - [ ] Header row present and aligned. - [ ] Pipes inside cells escaped. - [ ] Column count consistent across rows.
-  ## Output
-  The Markdown table followed by the summary.
-  ## Gotchas
-  - Commas inside quoted fields are not delimiters. - Very wide tables may need column trimming.
-  \`\`\`
 `,
             parameters: [
                 {

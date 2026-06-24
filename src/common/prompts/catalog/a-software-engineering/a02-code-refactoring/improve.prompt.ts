@@ -34,10 +34,6 @@ Output contract:
 1. The refactored code in a fenced \`\`\`{{language}}\`\`\` block.
 2. A short list of the changes made (smell → refactoring applied).
 3. A "behavior preserved" note: what you relied on staying the same, and anything you could not safely change without tests.
-
-Worked example —
-Input language: "Python 3.12"; code: a 30-line function mixing parsing and validation with three nested \`if\`s; goal: "Separate parsing from validation".
-Expected output: two functions — \`parse_input\` and \`validate_parsed\` — with guard clauses replacing nesting; changes list: "Extract Function (parse), Extract Function (validate), replace nested if with early returns"; behavior-preserved note: "same exceptions raised for the same bad inputs; return value identical for all sampled inputs."
 `,
             parameters: [
                 {

@@ -33,10 +33,6 @@ Cover, where applicable:
 7. State/permission preconditions.
 
 Output contract: a grouped, prioritized checklist of scenarios, each phrased as a testable case ("when X, then expect Y"). Mark the highest-risk ones.
-
-Worked example —
-Input: "A file-upload endpoint accepting images up to 10MB."
-Expected (excerpt): Boundary — "when a 10MB file is uploaded, then accept; when a 10MB+1byte file, then reject with 413." Invalid — "when a non-image (e.g., .exe renamed .jpg), then reject after content sniffing." Security ⚠ — "when an SVG with embedded script, then sanitize/reject (stored XSS risk)." External — "when storage write times out, then return 503 and do not leave a partial object." Highest risk: content-type spoofing and oversized uploads (denial of service).
 `,
             parameters: [
                 {

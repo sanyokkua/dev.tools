@@ -33,10 +33,6 @@ Evaluate:
 Rules: critique the design, not the author; ground each point in a reason; distinguish blocking risks from minor suggestions. If key context is missing to judge, say what you'd need.
 
 Output contract: **Strengths** · **Risks & trade-offs (ranked)** · **Gaps/missing concerns** · **Alternatives to consider** · **Overall: ready / ready-with-changes / needs-rework**.
-
-Worked example —
-Input: "an RFC proposing microservices + event sourcing for a brand-new product, small team."
-Expected (excerpt): Strengths — clear scaling story. Risks (ranked) — (1) operational complexity vs a small team [blocking]; (2) event-sourcing learning curve and eventual-consistency bugs; (3) premature decomposition before domain boundaries are known. Gaps — no migration/rollback story, observability unaddressed. Alternative — modular monolith first, extract services when boundaries stabilize. Overall: needs-rework.
 `,
             parameters: [
                 {

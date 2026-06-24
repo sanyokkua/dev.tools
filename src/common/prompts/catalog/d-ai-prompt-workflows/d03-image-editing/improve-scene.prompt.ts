@@ -25,8 +25,6 @@ Improve only the technical quality:
 - sharpen textures and widen dynamic range in shadows and highlights for a clean, well-exposed result.
 
 Do NOT change: the composition, perspective, architecture, terrain, content, or scene layout. Do not add or remove buildings, vehicles, signage, people, or any element, and do not apply a stylistic color grade. Keep colors natural and plausible — no oversaturation, no neon, no over-processing. Quality only; keep everything else faithful.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "dehaze the distance a bit more" or "the sky looks oversaturated — pull it back".)
 `,
             parameters: [],
             examples: {},
@@ -59,8 +57,6 @@ Do NOT change: the composition, perspective, architecture, terrain, content, or 
 Improve clarity and recover fine detail in foliage, architecture, terrain, water, and sky; remove haze; reduce noise; restore natural balanced colors and correct white balance; sharpen textures; and widen dynamic range.
 
 Keep the exact same composition, perspective, architecture, terrain, and content. Don't add or remove buildings, vehicles, signage, people, or any element, and don't apply a stylistic color grade. Keep colors natural — no oversaturation or neon. Quality only.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. If colors come out too punchy or it's still hazy, say so — e.g. "more dehaze, keep colors natural".)
 `,
             parameters: [],
             examples: {},

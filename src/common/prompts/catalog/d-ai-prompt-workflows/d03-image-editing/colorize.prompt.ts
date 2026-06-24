@@ -25,8 +25,6 @@ Add natural, realistic, era-appropriate color:
 - physically sensible color distribution across the whole scene, with correct light and shadow.
 
 Do NOT change: the faces, identity, expressions, composition, pose, framing, or any fine detail — keep all of it exactly as it is; change only color. Avoid oversaturated, modern, or neon hues; keep the palette grounded and era-appropriate.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "make the jacket dark navy" or "warmer skin tones". Honesty: AI-added color is plausible reconstruction, not documentary truth — if you actually know a real color, state it so I can apply it.)
 `,
             parameters: [],
             examples: {},
@@ -56,8 +54,6 @@ Do NOT change: the faces, identity, expressions, composition, pose, framing, or 
             template: `I'm uploading a black-and-white (or sepia) photo. Please add natural, realistic, era-appropriate color — believable skin tones, period-correct clothing colors, and coherent background colors — while keeping everything else exactly the same.
 
 Keep the faces, identity, expressions, composition, pose, framing, and all fine detail exactly as they are; change only color. Avoid oversaturated, modern, or neon hues — keep the palette grounded and era-appropriate, with sensible light and shadow.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. Refine with "make the dress deep red" or "cooler skin tones". Honesty: AI-added color is plausible reconstruction, not documentary truth — tell me any real colors you know and I'll apply them.)
 `,
             parameters: [],
             examples: {},

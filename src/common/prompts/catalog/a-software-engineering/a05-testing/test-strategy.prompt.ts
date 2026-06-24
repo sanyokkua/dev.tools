@@ -31,10 +31,6 @@ Cover:
 5. What NOT to over-test (avoid brittle, low-value tests).
 
 Output contract: a concise strategy — Test levels & focus · High-risk areas · Mocking boundaries · Non-functional considerations · Anti-over-testing notes. Keep it actionable, not academic.
-
-Worked example —
-Input: "A payment-processing service integrating a third-party gateway."
-Expected (excerpt): Levels — heavy unit tests on amount/idempotency logic; integration tests with a sandboxed/mocked gateway; a few end-to-end happy-path + decline flows; contract tests against the gateway's API. High-risk — double-charge, partial failures, refund correctness. Mocking — mock the gateway HTTP boundary, not the internal money logic. Non-functional — load test the charge endpoint; security review of secret handling. Don't over-test — avoid asserting exact gateway response JSON shapes that change.
 `,
             parameters: [
                 {

@@ -33,10 +33,6 @@ Produce:
 Rules: blameless — describe systems and decisions, never blame individuals. Use only facts from the notes; mark gaps as "Unknown". Do not invent timestamps or causes.
 
 Output contract: ONLY the postmortem in Markdown.
-
-Worked example —
-Input notes: "prod down 12 min after deploy; config pointed at dead redis host; rolled back; alert fired late"
-Expected (excerpt): Summary — "12-minute production outage after a deploy; severity SEV2." Timeline — "deploy at T0; errors at T0+1; alert at T0+6 (late); rollback at T0+10; recovered at T0+12." Root causes (multiple) — (1) deploy shipped a config pointing at a decommissioned Redis host; (2) the alert threshold was too slow to detect the failure. What went poorly — late alerting; no config validation in the pipeline. Action items — "add a config-validation gate to CI [prevent, owner TBD]"; "tighten the error-rate alert window [detect faster]." No individual is named.
 `,
             parameters: [
                 {

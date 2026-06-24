@@ -39,18 +39,6 @@ Output contract:
 1. The CQL in a fenced \`\`\`sql\`\`\` block — OR a note that the schema cannot support the access pattern, plus the recommended modeling fix (with the new table's \`PRIMARY KEY\` shown).
 2. The partition/clustering keys it relies on and the row grain.
 3. A bullet list of assumptions and modeling notes.
-
-Worked example —
-Input need: "Get the latest 20 events for a given device, newest first."; schema: "events(device_id, event_time, payload) PRIMARY KEY (device_id, event_time)) WITH CLUSTERING ORDER BY (event_time DESC)"
-Expected query:
-\`\`\`sql
-SELECT event_time, payload
-FROM events
-WHERE device_id = ?
-ORDER BY event_time DESC
-LIMIT 20;
-\`\`\`
-Keys: partition key \`device_id\` (equality), clustering key \`event_time\` (ordering). Row grain: one row per event within the device partition. Note: clustering order is already DESC in the table, so no \`ALLOW FILTERING\` is needed.
 `,
             parameters: [
                 {

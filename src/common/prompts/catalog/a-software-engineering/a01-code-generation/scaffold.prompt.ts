@@ -33,10 +33,6 @@ Output contract:
 1. A directory tree (as text).
 2. The starter content for each key file in fenced blocks, each labeled with its path.
 3. Setup/run notes and a bullet list of assumptions.
-
-Worked example —
-Input language: "Node.js 20 / TypeScript"; spec: "A REST API service for managing tasks, using Express and a Postgres client; include a health endpoint."
-Expected output shape: a tree with \`src/index.ts\`, \`src/routes/tasks.ts\`, \`src/routes/health.ts\`, \`src/db/pool.ts\`, \`src/config.ts\`, \`test/health.test.ts\`, plus \`package.json\` and \`tsconfig.json\`; each file given as a labeled fenced block with minimal working code (Express app, a GET /health returning 200, a typed Postgres pool reading config from env). Notes: "run \`npm install\` then \`npm run dev\`; verify \`express\` and \`pg\` versions." Assumption: "connection string supplied via DATABASE_URL."
 `,
             parameters: [
                 {

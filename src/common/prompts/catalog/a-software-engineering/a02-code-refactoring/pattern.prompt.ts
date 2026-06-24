@@ -35,10 +35,6 @@ Output contract:
 1. The pattern chosen and why it fits.
 2. The refactored code in a fenced \`\`\`{{language}}\`\`\` block.
 3. A "behavior preserved" note and any trade-offs the pattern introduces.
-
-Worked example —
-Input language: "Java 21"; code: a class with a large \`switch(employeeType)\` computing pay; pattern: (blank).
-Expected output: chosen pattern "Strategy — pay rules vary by type"; refactored to a \`PayCalculator\` interface with \`HourlyPay\`/\`SalariedPay\`/\`CommissionPay\` implementations selected by a small factory; behavior-preserved note: "same totals for each employee type"; trade-off: "more classes; gains testability and open/closed extension."
 `,
             parameters: [
                 {

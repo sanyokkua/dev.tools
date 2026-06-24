@@ -35,10 +35,6 @@ Produce:
 Rules: present options fairly (no strawmen); support positions with reasons; use only facts from the input, marking gaps as "TODO: confirm".
 
 Output contract: ONLY the RFC in Markdown.
-
-Worked example —
-Input problem: "How should we deliver async work: queue vs event bus vs DB outbox?"
-Expected (excerpt): Summary + Context; Options — (1) managed queue: simple, at-least-once, no fan-out; (2) event bus: fan-out, more ops; (3) DB outbox: transactional consistency, polling lag. Recommendation: "outbox + queue for transactional consistency, accepting polling latency"; Open questions: "expected throughput? need fan-out to multiple consumers?".
 `,
             parameters: [
                 {

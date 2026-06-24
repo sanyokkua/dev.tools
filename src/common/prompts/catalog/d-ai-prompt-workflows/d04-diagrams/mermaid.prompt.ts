@@ -45,18 +45,6 @@ STEP 3 — Apply these render-reliability rules (these are the common failure ca
 STEP 4 — Self-validate before output: exact case-sensitive type keyword; IDs valid/unique/not reserved; labels quoted and special chars encoded; flowchart direction declared; every block-opener has \`end\`; arrows valid; no inline comments / trailing semicolons; class diagrams kept simple; no Markdown-fragile tokens if it will be embedded; chosen type fits the intent; experimental-type caveat added if relevant. (Note: passing a parser/linter is not the same as rendering — when you can, prefer the simplest construct that conveys the meaning.)
 
 Output contract: ONLY a fenced \`\`\`mermaid code block (plus a single caveat line above it ONLY when an experimental type is used).
-
-Worked example —
-Input: "the login flow: user → app → auth service → database, with a failure path"
-Expected output:
-  \`\`\`mermaid
-  flowchart TD
-      user(["User"]) --> app["Web App"]
-      app --> authService["Auth Service"]
-      authService --> db[("User Database")]
-      authService -->|"invalid credentials"| failNode["Show login error"]
-      db -->|"ok"| success["Grant session"]
-  \`\`\`
 `,
             parameters: [
                 {

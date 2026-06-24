@@ -37,10 +37,6 @@ Produce:
 Rules: prioritize data integrity and minimal downtime; call out backward-compatibility needs; if key facts (volumes, downtime tolerance) are missing, state assumptions.
 
 Output contract: the migration roadmap (the sections above), with risks and rollback explicit.
-
-Worked example —
-Input source: "Oracle 12c"; target: "PostgreSQL 16".
-Expected (excerpt): Assessment — catalog stored procs/triggers/sequences (Oracle-specific), data volume, downtime tolerance. Strategy — phased with dual-write to reduce risk. Phases — (1) schema convert (ora2pg), (2) backfill historical data + integrity checks, (3) dual-write new data, (4) shadow-read to compare, (5) cut over reads, (6) decommission Oracle. Data — type mapping (NUMBER→numeric, DATE→timestamp), validate row counts/checksums. Rollback — keep Oracle authoritative until cutover validated; revert reads if checksum mismatch.
 `,
             parameters: [
                 {

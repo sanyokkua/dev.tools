@@ -30,14 +30,6 @@ Rules:
 4. Prioritize: list the highest-impact smells first.
 
 Output contract: a prioritized list — **Smell** · Location · Why it matters · Suggested refactoring. End with the single most valuable change to make first.
-
-Worked example —
-Input language: "Python 3.12"; code: a 120-line \`process_order\` function with nested if/else, repeated tax math in three branches, and four positional args (price, qty, region, coupon).
-Expected output (excerpt):
-1. **Long Function** · \`process_order\` (120 lines) · hard to test/understand · Extract Function (split validation, pricing, persistence).
-2. **Duplicated Code** · tax calculation in 3 branches · changes must be made in 3 places · Extract Function \`compute_tax\`.
-3. **Long Parameter List / Data Clumps** · (price, qty, region, coupon) travel together · Introduce Parameter Object \`OrderRequest\`.
-Most valuable first: extract \`compute_tax\` (kills duplication, lowest risk).
 `,
             parameters: [
                 {

@@ -62,22 +62,6 @@ Output contract — exactly these parts:
 5. **Assumptions**.
 6. **Alternatives** (2–4).
 7. **Notes** (only if a constraint/cost risk applies).
-
-Worked example —
-Input requirement: "p50/p95/p99 Lambda duration per hour for the last day."; platform: "CloudWatch, Lambda logs".
-Expected output:
-1. Explanation: This aggregates Lambda REPORT lines into hourly buckets and computes duration percentiles. It filters to REPORT events early to minimize scan, and assumes the time range (last 24h) is set in the console.
-2. Primary Query:
-\`\`\`
-filter @type = "REPORT"
-| stats pct(@duration, 50) as p50, pct(@duration, 95) as p95, pct(@duration, 99) as p99 by bin(1h)
-| sort bin(1h) asc
-\`\`\`
-3. Output Shape: one row per hour with p50/p95/p99 duration in milliseconds.
-4. Customization Hints: change \`bin(1h)\` to \`bin(5m)\` for finer granularity; add \`, @logStream\` to \`by\` to split per function instance.
-5. Assumptions: querying a Lambda function's log group; time range set to last 24h in the console; \`@duration\` is in milliseconds.
-6. Alternatives: (a) \`stats avg(@duration), max(@duration) by bin(1h)\` for averages; (b) add \`filter @duration > 1000\` to focus on slow invocations; (c) \`stats count(*) by bin(1h)\` for invocation volume.
-7. Notes: \`pct\` (percentiles) works on both the Standard and Infrequent Access log classes, but \`diff\`/\`pattern\` work only on the Standard class (not on Infrequent Access). Cost scales with the time range — keep it tight.
 `,
             parameters: [
                 {

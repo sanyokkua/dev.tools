@@ -29,16 +29,6 @@ Rules:
 3. Use only facts from the input; do not invent ticket numbers or rationale that isn't supported.
 
 Output contract: ONLY the commit message (subject + blank line + body + optional footer), in a plain code block.
-
-Worked example —
-Input: "fixed the redirect loop when a token expires by guarding re-entry in session middleware"
-Expected output:
-\`\`\`
-fix(auth): prevent redirect loop on expired token
-
-Guard re-entry in the session middleware so an expired token no longer
-triggers an infinite redirect to the login page.
-\`\`\`
 `,
             parameters: [
                 {

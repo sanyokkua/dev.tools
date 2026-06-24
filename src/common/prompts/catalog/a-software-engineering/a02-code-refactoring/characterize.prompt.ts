@@ -32,10 +32,6 @@ Rules:
 Output contract:
 1. The characterization tests in a fenced block.
 2. Notes on any seams required and any behaviors that must be confirmed by execution (TODOs).
-
-Worked example —
-Input language: "Python 3.12 / pytest"; code: an untested \`format_price(value, region)\` with branching and a side-effecting log call.
-Expected output: parameterized pytest cases asserting the literal string returned for each (value, region) pair sampled (e.g., \`assert format_price(10, "US") == "$10.00"\`), a TODO on a branch whose output is unclear, and a note: "patch the logger as a seam; current behavior logs on negative values — captured, not judged."
 `,
             parameters: [
                 {

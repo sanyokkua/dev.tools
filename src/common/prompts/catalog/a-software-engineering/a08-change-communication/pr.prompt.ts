@@ -33,10 +33,6 @@ Produce:
 Rules: concise, semi-formal, professional. Use only facts from the input; mark unknowns as "TODO". Do not invent ticket numbers or test results.
 
 Output contract: ONLY the PR description in Markdown.
-
-Worked example —
-Input: "adds email notifications on order shipment, with fallback template; new POST /notifications/email"
-Expected output: \`## What & why\` ("Customers weren't notified when orders shipped; this adds an email on shipment."), \`## Changes\` (bullets: new \`POST /notifications/email\`, fallback template, hook into the shipment event), \`## Testing\` ("unit tests for the notifier; manual: shipped a test order and confirmed the email — TODO: add an integration test"), \`## Notes for reviewers\` ("template fallback path is the riskiest part").
 `,
             parameters: [
                 {

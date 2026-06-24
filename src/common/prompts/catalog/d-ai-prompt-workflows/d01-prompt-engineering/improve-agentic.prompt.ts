@@ -40,16 +40,6 @@ Rewrite it as a mini-specification. Include ONLY the parts the task actually nee
 Cleanup rules: remove persona flattery, motivational filler, the phrase "think step by step", vague exit conditions, and contradictions. If critical details are missing (environment, constraints, acceptance criteria), insert clearly-marked placeholders \`[SPECIFY: …]\` plus sensible default constraints (minimal diff, no new dependencies, preserve public behaviour) explicitly labelled as defaults.
 
 Output contract: ONLY the rewritten prompt — Extensible Markup Language (XML) tags for Claude-style targets, Markdown otherwise. Do not run the task; add no commentary before or after.
-
-Worked example —
-Input (DATA): "fix the bug where login loops on expired tokens"
-Expected output (the rewritten agentic prompt, excerpt):
-  "<objective>Fix the redirect loop that occurs when a user's session token is expired.</objective>
-  <scope>You MAY edit auth/session and login redirect code. You MUST NOT change unrelated modules or public API signatures.</scope>
-  <steps>1. Reproduce: find where expired tokens are detected and how the redirect is issued. 2. Identify the loop cause. 3. Apply a minimal fix (e.g. clear the stale token and route to the login page once). 4. Add a regression test for the expired-token path.</steps>
-  <constraints>Minimal focused diff; no new dependencies; preserve existing valid-session behaviour.</constraints>
-  <verification>Run \`[SPECIFY: test command]\`; the new test passes and existing auth tests stay green.</verification>
-  <done>Emit a summary: files changed, test added, commands+results, assumptions, risks. End with TASK_COMPLETE.</done>"
 `,
             parameters: [
                 {

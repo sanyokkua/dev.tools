@@ -33,10 +33,6 @@ Rules:
 4. Do not include real personal data; synthesize values. Keep output strictly in {{format}}.
 
 Output contract: ONLY the dataset in {{format}} (a fenced block), with no commentary.
-
-Worked example —
-Input model: "User { id: uuid, name: string, age: int(0-120), email: string, active: bool }"; format: JSON; count: 3.
-Expected output (a fenced JSON array): three objects with valid UUIDs, varied realistic names, ages spanning the range (including a boundary like 0 or 120), synthetic emails matching the names, and a mix of \`active\` true/false — no commentary outside the block.
 `,
             parameters: [
                 {

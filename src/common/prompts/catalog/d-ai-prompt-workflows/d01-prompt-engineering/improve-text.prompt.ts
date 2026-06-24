@@ -37,22 +37,6 @@ Improve it by applying these rules:
 9. Do NOT invent capabilities, APIs, or facts. Mark missing critical details as \`[SPECIFY: …]\`.
 
 Output contract: ONLY the improved prompt, in clean Markdown structure, ready to paste and use. No preamble, no explanation, no running of the task.
-
-Worked example —
-Input (DATA): "write me a summary of this article and make it good"
-Expected output (the improved prompt, excerpt):
-  "## Role
-  You are a careful summarizer.
-  ## Task
-  Summarize the article provided below in \`[SPECIFY: target length, e.g. 150 words]\`.
-  ## Article
-  [SPECIFY: paste the article text here]
-  ## Rules
-  - Capture the main claim, key evidence, and the conclusion.
-  - Use only facts present in the article; do not add outside information.
-  - Plain, neutral language; no marketing tone.
-  ## Output
-  A single paragraph (or 3–5 bullets if the article is list-like). Output only the summary."
 `,
             parameters: [
                 {

@@ -34,10 +34,6 @@ Output contract:
 2. Likely reviewer questions (pre-empt them).
 3. Suggested PR-description points.
 4. Optional follow-ups / things to split out.
-
-Worked example —
-Input language: "TypeScript"; code: a feature change that also reformats an unrelated file and adds a TODO with no test.
-Expected (excerpt): Must-fix: add a test for the new branch; revert the unrelated reformat (keeps the diff reviewable). Likely questions: "why the new dependency?" Suggested PR points: motivation, manual test steps. Split out: the reformat into its own commit/PR.
 `,
             parameters: [
                 {

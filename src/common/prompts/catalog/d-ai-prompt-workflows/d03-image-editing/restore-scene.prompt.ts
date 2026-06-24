@@ -27,8 +27,6 @@ Repair only the damage:
 - reconstruct small missing or destroyed areas plausibly, matching surrounding texture, lighting direction, perspective, and grain.
 
 Do NOT change: the composition, horizon line, perspective, architecture, terrain, period/era detail, scene layout, framing, or lighting mood. Do not add modern buildings, signage, vehicles, wires, or any anachronistic element, and do not remove or move anything that is genuinely in the scene. Keep textures natural and realistic; no over-processing, no over-sharpening, no plastic look. Keep everything else pixel-faithful.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "there is still a crease across the sky" or "recover more detail in the building facade". Note: reconstructed detail is plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},
@@ -61,8 +59,6 @@ Do NOT change: the composition, horizon line, perspective, architecture, terrain
 Remove the scratches, tears, creases, fold lines, dust, spots, stains, and surface marks; reduce film grain and noise to a natural level; correct fading, discoloration, and uneven exposure; recover detail in foliage, architecture, terrain, water, and sky; and plausibly reconstruct any small missing areas using the surrounding texture, light, and perspective.
 
 Keep the composition, horizon, perspective, architecture, terrain, era detail, scene layout, framing, and lighting mood exactly as they are. Don't add modern buildings, signage, vehicles, wires, or any anachronistic element. Keep textures natural and realistic — no over-processing or plastic look.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. If a defect remains, point at it specifically — e.g. "there's still a scratch across the rooftop". Reconstructed detail is plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},

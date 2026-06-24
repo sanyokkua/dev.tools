@@ -31,14 +31,6 @@ Rules:
 3. Mark each finding blocking / non-blocking / nit.
 
 Output contract: numbered findings — **[area] title** · Location · Why · Suggested change (small example if helpful) · severity. Then a top-issues summary and an overall recommendation (approve / approve-with-nits / changes-requested).
-
-Worked example —
-Input language: "Go"; code: a diff adding an HTTP handler that runs \`db.Query("SELECT … WHERE id=" + r.URL.Query().Get("id"))\` and ignores the error.
-Expected findings (excerpt):
-1. **[security] SQL injection in handler** · handler.go (the Query line) · user input concatenated into SQL — exploitable · use a parameterized query \`db.Query("… WHERE id=$1", id)\` · blocking.
-2. **[correctness] Unchecked error** · same call · ignored \`err\` hides failures · check and return 500 · blocking.
-3. **[tests] No test for the handler** · — · regressions go unnoticed · add a handler test with a bad id · non-blocking.
-Summary: two blocking issues (injection, error handling). Recommendation: changes-requested.
 `,
             parameters: [
                 {

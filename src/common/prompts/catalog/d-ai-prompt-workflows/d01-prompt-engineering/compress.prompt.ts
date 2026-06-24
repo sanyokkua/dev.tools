@@ -33,10 +33,6 @@ Rules:
 5. Keep structure where it aids the model; prefer tight bullets over long paragraphs.
 
 Output contract: ONLY the compressed prompt, ready to use. No notes on what you removed. Do not run the task.
-
-Worked example —
-Input (DATA, abridged): "You are a really excellent and world-class assistant. I want you to please carefully and thoughtfully translate the text. Make sure you translate it well. The text should be translated into French. Please keep the meaning. Keep the meaning the same. Don't add anything. Translate into French."
-Expected output (compressed): "Translate the text below into French. Preserve the meaning exactly; add nothing."
 `,
             parameters: [
                 {

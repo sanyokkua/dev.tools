@@ -32,10 +32,6 @@ Output contract:
 1. The simplified code in a fenced \`\`\`{{language}}\`\`\` block.
 2. A short list of simplifications made.
 3. A "behavior preserved" note and anything you could not simplify safely without tests.
-
-Worked example —
-Input language: "JavaScript"; code: a deeply nested if/else returning a discount tier.
-Expected output: rewritten with early \`return\` guard clauses (invalid → throw early; then a flat tier ladder); simplifications: "inverted conditions to guard clauses; removed an else by returning early; deduplicated the tier lookup into a table"; behavior-preserved: "same tier returned for all sampled inputs; same error on invalid input."
 `,
             parameters: [
                 {

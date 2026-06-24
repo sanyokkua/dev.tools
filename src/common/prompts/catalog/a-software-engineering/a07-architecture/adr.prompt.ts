@@ -38,10 +38,6 @@ Produce these sections:
 Rules: capture ONE decision. Keep it short (1–2 pages). Use only facts from the input; mark gaps as "TODO: confirm". ADRs are immutable once accepted — this records the decision as of now.
 
 Output contract: ONLY the ADR in Markdown.
-
-Worked example —
-Input decision: "Use idempotency keys on all payment write endpoints."; context: "Mobile retries cause duplicate charges; at-least-once delivery; small team."
-Expected output: \`# ADR-0007: Idempotency keys on payment write endpoints\` · Status: Proposed · Context: "Mobile clients on flaky networks retry; at-least-once delivery; duplicate charges observed." · Decision: "We will require an \`Idempotency-Key\` header on all payment write endpoints and store keys for 24h to deduplicate." · Consequences: +(no duplicate charges), −(added storage + key lifecycle to maintain), neutral(clients must generate keys).
 `,
             parameters: [
                 {

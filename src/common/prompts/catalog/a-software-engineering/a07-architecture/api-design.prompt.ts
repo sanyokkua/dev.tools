@@ -32,10 +32,6 @@ Output contract:
 1. The contract sketch (endpoints/schema/proto) in a fenced block.
 2. Conventions: versioning, pagination, errors, idempotency, auth approach.
 3. A short example request/response and a bullet list of assumptions.
-
-Worked example —
-Input requirements: "CRUD for orders + list by customer; public third-party consumers; needs caching."; style: REST.
-Expected (excerpt): endpoints \`POST /v1/orders\`, \`GET /v1/orders/{id}\`, \`GET /v1/customers/{id}/orders?cursor=&limit=\`; idempotency via \`Idempotency-Key\` header on POST; cursor pagination; ETag/Cache-Control on GETs; error model \`{ "error": { "code", "message" } }\`; versioned at \`/v1\`. Example: \`GET /v1/orders/42\` → \`200 {...}\` with \`ETag\`.
 `,
             parameters: [
                 {

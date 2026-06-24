@@ -30,10 +30,6 @@ Do the following:
 4. Give the next diagnostic checks to confirm the cause (commands, log points, or inspections).
 
 Output contract: **What it means** · **Where it originates** · **Likely causes (ranked)** · **Next checks**. Do not fabricate code that wasn't shown; if the trace is truncated, say what additional context would help.
-
-Worked example —
-Input language: "Java 21"; error: "java.lang.NullPointerException at com.example.OrderService.process(OrderService.java:42)"
-Expected output: What it means — a null reference was dereferenced. Where it originates — \`OrderService.process\` line 42 (your code, not a library). Likely causes (ranked) — (1) a field/parameter expected non-null was null (e.g., a lookup returned null); (2) an uninitialized dependency. Next checks — inspect line 42 to see which reference; add a null check or log the inputs; confirm the upstream lookup populates the value.
 `,
             parameters: [
                 {

@@ -36,10 +36,6 @@ Produce a report with these sections (omit a section only if the notes truly con
 Rules: use only facts present in the notes; do not invent steps, versions, or errors. Mark missing-but-important fields as "Unknown — please provide." Redact any secrets.
 
 Output contract: ONLY the structured bug report in Markdown.
-
-Worked example —
-Input notes: "search breaks sometimes when you put weird characters, prod only, started after last deploy"
-Expected output: a report whose Summary = "Search fails on special characters (production only)", Environment = "Production — Unknown runtime/build", Steps = "1. Open search; 2. Enter a query with special characters (e.g., \`%\` or \`'\`); 3. Submit", Expected = "results or a graceful empty state", Actual = "search breaks (exact error Unknown — please provide)", Reproducibility = "Intermittent ('sometimes')", Scope = "Started after the last deploy".
 `,
             parameters: [
                 {

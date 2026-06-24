@@ -74,19 +74,6 @@ Rules:
 5. Keep ids unique; group related shapes in a \`swimlane\` container when they form a tier.
 
 Output contract: ONLY the complete \`.drawio\` XML (the full \`<mxfile>…</mxfile>\`), ready to save as a \`.drawio\` file. No prose.
-
-Worked example —
-Input: "a simple flow: Client calls API Gateway, which calls the Orders service, which reads the Orders database"
-Expected output (excerpt — full file uses the skeleton above):
-  \`\`\`xml
-  <mxCell id="2" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="80" width="120" height="50" as="geometry"/></mxCell>
-  <mxCell id="3" value="API Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="220" y="80" width="120" height="50" as="geometry"/></mxCell>
-  <mxCell id="4" value="Orders Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="400" y="80" width="130" height="50" as="geometry"/></mxCell>
-  <mxCell id="5" value="Orders DB" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1"><mxGeometry x="590" y="75" width="80" height="70" as="geometry"/></mxCell>
-  <mxCell id="6" value="HTTP" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"/></mxCell>
-  <mxCell id="7" value="gRPC" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="3" target="4"><mxGeometry relative="1" as="geometry"/></mxCell>
-  <mxCell id="8" value="SQL" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="4" target="5"><mxGeometry relative="1" as="geometry"/></mxCell>
-  \`\`\`
 `,
             parameters: [
                 {

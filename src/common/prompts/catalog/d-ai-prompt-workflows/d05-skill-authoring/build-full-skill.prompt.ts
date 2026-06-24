@@ -58,15 +58,6 @@ my-skill/
 └── assets/<template>.md
 \`\`\`
 Then the complete body of each file. Do not execute the capability.
-
-Worked example —
-Input description (DATA): "Review SQL migration files in a repo for unsafe operations (table locks, dropped columns, missing rollbacks) and produce a report."
-Expected output (shape): a folder \`sql-migration-reviewer/\` with
-  - \`SKILL.md\` (frontmatter: description = "Review SQL migrations for unsafe operations. Use when a PR adds/changes files under migrations/… Does NOT run migrations — read-only."; \`allowed-tools: Read, Grep, Glob\`; lists the two references + the asset below; body with a phased workflow that says "read references/unsafe-operations.md at step 2");
-  - \`references/unsafe-operations.md\` (the catalog of risky patterns and safe alternatives);
-  - \`references/review-procedure.md\` (the step-by-step audit);
-  - \`assets/migration-review-template.md\` (the report template the skill fills in).
-All four files present and listed in frontmatter — none dangling.
 `,
             parameters: [
                 {

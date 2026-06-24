@@ -34,23 +34,6 @@ Output contract — return exactly these three parts:
 1. The function in a fenced \`\`\`{{language}}\`\`\` block.
 2. One line stating its contract: inputs, return value, and error behavior.
 3. A bullet list of any assumptions made.
-
-Worked example —
-Input language: "Python 3.12"; requirement: "Parse an ISO-8601 date string and return the number of whole days until today; raise on invalid input."
-Expected output shape:
-\`\`\`python
-from datetime import date, datetime
-
-def days_until(iso_date: str) -> int:
-    """Return whole days from today until the given ISO-8601 date (negative if past)."""
-    try:
-        target = datetime.fromisoformat(iso_date).date()
-    except ValueError as exc:
-        raise ValueError(f"invalid ISO-8601 date: {iso_date!r}") from exc
-    return (target - date.today()).days
-\`\`\`
-Contract: input an ISO-8601 string; returns int days (negative if in the past); raises ValueError on malformed input.
-Assumptions: dates compared at day granularity in the system local date; time component ignored.
 `,
             parameters: [
                 {

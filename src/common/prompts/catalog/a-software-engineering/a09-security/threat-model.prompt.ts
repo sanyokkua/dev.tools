@@ -33,10 +33,6 @@ Cover:
 Rules: be defensive; prioritize by realistic risk (likelihood × impact); do not produce attack tooling. If details are missing, state assumptions.
 
 Output contract: a structured threat model (the sections above), with threats ranked by priority.
-
-Worked example —
-Input: "A public file-upload + sharing feature storing user files in S3."
-Expected (excerpt): Assets — user files, the S3 bucket, share links. Entry points — the upload endpoint, the public share URL. Threats (STRIDE): Tampering — "malicious file (malware/SVG-XSS) served to other users" → mitigate by content sniffing + Content-Disposition + serving from a sandboxed domain; Information disclosure — "guessable share URLs leak files" → use unguessable tokens + expiry; Denial of service — "oversized/zip-bomb uploads" → size limits + scanning. Out-of-scope: the S3 account's IAM posture.
 `,
             parameters: [
                 {

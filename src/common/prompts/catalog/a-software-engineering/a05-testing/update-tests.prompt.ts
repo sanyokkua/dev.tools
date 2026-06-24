@@ -37,10 +37,6 @@ Rules:
 Output contract:
 1. The updated tests in a fenced block.
 2. A change log: what was added/modified/removed and why.
-
-Worked example —
-Input: code now adds a \`currency\` parameter to a previously single-currency \`format_price\`; existing tests assume a default currency.
-Expected output: existing tests kept but parameterized to pass the currency explicitly; new tests added for two currencies and for an unsupported currency (expecting an error); change log: "modified 2 tests to pass currency; added 2 currency tests; removed none."
 `,
             parameters: [
                 {

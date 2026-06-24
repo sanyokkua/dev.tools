@@ -25,8 +25,6 @@ Apply the anime/cartoon look:
 - expressive, stylized anime eyes and hair, with simplified but recognizable features.
 
 Keep the SAME subject, the same pose and gesture, the same number of people, the same clothing design, and the same overall composition and framing so it's clearly the same scene re-drawn. Do not change who is in the picture, where they are, or what they're doing. Render it as an illustration — not a photorealistic image.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "stronger cel shading" or "make the line art cleaner". You can dial the stylization up or down by asking for "more stylized" / "closer to the photo".)
 `,
             parameters: [],
             examples: {},
@@ -57,8 +55,6 @@ Keep the SAME subject, the same pose and gesture, the same number of people, the
             template: `I'm uploading a real photo. Please re-render it as an anime / cartoon illustration — clean line art, cel shading, vibrant flat colors, and expressive stylized eyes and hair — while keeping the same subject, pose, and composition recognizable.
 
 Keep the same subject(s), the same pose and gesture, the same clothing design, and the same overall composition and framing so it reads as the same scene re-drawn as anime. Don't change who is in the picture or what they're doing. Render it clearly as an illustration, not a photorealistic image.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. Refine with "stronger cel shading", "cleaner line art", or "more stylized eyes". If the pose drifts, say "keep the same pose and composition".)
 `,
             parameters: [],
             examples: {},

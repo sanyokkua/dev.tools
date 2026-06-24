@@ -34,10 +34,6 @@ For each endpoint or public function, document:
 Rules: document only what the source defines; do not invent endpoints, fields, or status codes. Keep entries consistent and scannable. Mark anything ambiguous as "TODO: confirm".
 
 Output contract: the reference docs in Markdown, one consistent entry per item.
-
-Worked example —
-Input: an Express route \`router.get('/users/:id', ...)\` returning a user or 404.
-Expected entry: \`### GET /users/:id\` · "Returns a single user by id." · Parameters: \`id\` (path, string, required). · Returns: \`200\` with \`{ id, name, email }\`; \`404\` if not found. · Example: \`GET /users/42\` → \`200 { "id": "42", "name": "...", "email": "..." }\`.
 `,
             parameters: [
                 {

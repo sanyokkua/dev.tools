@@ -29,8 +29,6 @@ Run the full cycle:
 - Detail: rebuild realistic fine texture — skin pores, hair strands, detailed eyes, fabric weave — keeping skin natural, never plastic or waxy.
 
 STRICTLY preserve: the same people with their exact identities, facial structure, features, expressions, and ages; the same poses, body proportions, hairstyles, and clothing design; the same objects, background, scene layout, composition, camera angle, and framing. Do not add, remove, move, restyle, or invent anyone or anything.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. If a tone is off or the scene drifts, follow up conversationally, e.g. "make the skin a little warmer" or "the jacket should read as dark navy"; if it returns a different scene, re-run or split into passes — repair, then recolor, then modernize. Note: added color and reconstructed detail are plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},
@@ -64,8 +62,6 @@ STRICTLY preserve: the same people with their exact identities, facial structure
 Run the full cycle: denoise (remove grain, noise, and compression artifacts); upscale and deblur (recover sharp resolution and focus, fix blur and softness); repair (remove scratches, tears, creases, dust, spots, stains, and fading, and reconstruct any missing detail); recolor only where needed (if it's black-and-white, sepia, faded, or color-shifted, add natural era-appropriate color with believable skin tones, period-correct clothing, and coherent background colors; if it already has good color, just correct white balance and faded tones — keep colors grounded, no neon or anachronistic hues); relight (improve white balance, dynamic range, local contrast, and lighting realism with subtle HDR-like depth); and detail (rebuild fine texture — skin pores, hair, eyes, fabric weave — keeping skin natural, no plastic or waxy look).
 
 Keep the faces exactly as they appear — same eyes, nose, mouth, and face shape. Keep the same people, identities, expressions, ages, poses, body proportions, hairstyles, and clothing design; the same objects, background, scene layout, composition, camera angle, and framing. Don't add, remove, move, or restyle anyone or anything.
-
-(Set output quality to High and request the same aspect ratio as the upload so nothing is cropped. If it comes back too yellow, too dark, or off-color, re-run — optionally adding "neutral white balance, brighter exposure". Added color and reconstructed detail are plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},

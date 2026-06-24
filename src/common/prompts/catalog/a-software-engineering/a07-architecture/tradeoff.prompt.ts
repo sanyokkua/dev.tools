@@ -35,10 +35,6 @@ Rules:
 4. Do not reverse-engineer scores to a predetermined answer; show the negatives of the recommended option.
 
 Output contract: the matrix (with weighted totals) · sensitivity & trade-off points · an honest recommendation with rationale and conditions under which it would change.
-
-Worked example —
-Input options: "Kafka | RabbitMQ | SQS"; criteria: "throughput (5), ops simplicity (5), ordering (3), cost (3)".
-Expected (excerpt): a matrix scoring each (e.g., Kafka throughput 5 / ops 2; SQS throughput 3 / ops 5), weighted totals computed; sensitivity point: "ops simplicity flips the winner for a small team"; recommendation: "SQS if the team is small and throughput < Kafka's sweet spot — accepting weaker ordering; revisit if throughput needs grow."
 `,
             parameters: [
                 {

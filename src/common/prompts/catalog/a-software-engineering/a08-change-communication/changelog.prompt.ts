@@ -30,19 +30,6 @@ Rules:
 4. Use only facts from the input; omit internal-only noise.
 
 Output contract: ONLY the changelog section in Markdown.
-
-Worked example —
-Input: "added webhook support; fixed timezone bug in email notifications; patched XSS in comments"
-Expected output:
-\`\`\`
-## [Unreleased]
-### Added
-- Webhook support for event subscriptions.
-### Fixed
-- Email notifications now use the correct timezone.
-### Security
-- Fixed a cross-site scripting (XSS) vulnerability in comments.
-\`\`\`
 `,
             parameters: [
                 {

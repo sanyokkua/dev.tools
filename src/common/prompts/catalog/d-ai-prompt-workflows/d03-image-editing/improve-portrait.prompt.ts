@@ -25,8 +25,6 @@ Improve only the technical quality:
 - balance the lighting, white balance, and contrast for a clean, well-exposed result.
 
 Do NOT change: identity, facial structure or features, expression, age, hairstyle, clothing, pose, composition, or background. Do not beautify, slim, smooth, or retouch anyone. Keep natural skin texture with real pores — no waxy or plastic over-smoothing, no over-sharpening, no warped anatomy. Quality only; keep everything else pixel-faithful.
-
-(Attach the source portrait. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "sharpen the eyes a little more" or "the skin looks too smooth — bring back texture".)
 `,
             parameters: [],
             examples: {},
@@ -59,8 +57,6 @@ Do NOT change: identity, facial structure or features, expression, age, hairstyl
 Remove the blur, softness, compression artifacts, noise, and haze; sharpen the eyes, skin, and hair to natural crisp focus; recover fine detail and widen dynamic range; and balance the lighting, white balance, and contrast.
 
 Keep the faces exactly as they appear — same eyes, nose, mouth, face shape, expression, and age. Keep the same hairstyle, clothing, pose, composition, and background. Don't beautify, smooth, slim, or retouch anyone, and keep natural skin texture with real pores (no waxy or plastic look). Quality only — don't add, remove, or restyle anything.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. If it comes back over-smoothed or still soft, say so — e.g. "bring back skin texture" or "sharpen the eyes more".)
 `,
             parameters: [],
             examples: {},

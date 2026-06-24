@@ -32,10 +32,6 @@ Design the pipeline with explicit stages: build → test → security scan (Stat
 Rules: use {{platform}}-correct concepts/syntax at a high level; do not hard-code secrets; call out cost drivers. State assumptions for anything unspecified.
 
 Output contract: the pipeline plan (stages + gates), a config sketch for {{platform}}, and security/cost notes.
-
-Worked example —
-Input platform: "GitHub Actions"; targets: "A Dockerized service to ECS Fargate across dev/staging/prod."
-Expected (excerpt): Stages — build & unit test (gate: tests pass) → SAST + \`npm audit\`/SCA (gate: no high severity) → build & push image to ECR (immutable, tagged by commit SHA) → deploy to dev → integration tests → promote to staging → canary to prod with CloudWatch alarm-based auto-rollback. Secrets via GitHub OIDC → AWS IAM role (no long-lived keys) + Secrets Manager. Config sketch: a \`workflow\` with jobs and \`environments\` for approvals. Cost note: Fargate per-task pricing; avoid idle staging tasks.
 `,
             parameters: [
                 {

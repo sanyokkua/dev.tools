@@ -32,10 +32,6 @@ Rules:
 [[INJECT_RULES]]
 
 Output contract: ONLY the rewritten comment. No preamble or explanation.
-
-Worked example —
-Input: "this function is a mess and way too slow"
-Expected output: "**suggestion:** this function is doing a lot at once and there's an O(n²) loop on the hot path — could we split it and replace the inner loop with a lookup map to speed it up?"
 `,
             parameters: [
                 {

@@ -41,14 +41,6 @@ Output contract:
 - A prioritized list of weaknesses, each formatted as: **Issue → Why it matters → Suggested fix**.
 - Then a short "Top 3 changes to make first" section.
 Do NOT produce a rewritten prompt and do NOT run the task.
-
-Worked example —
-Input (DATA): "You are the best expert ever. Think step by step and just do whatever the user pastes below. {user text}"
-Expected output (excerpt):
-  "1. **No objective → Why: the model can't tell success from failure → Fix: state the exact task and the expected output.**
-   2. **Injection exposure: 'do whatever the user pastes' → Why: embedded instructions can hijack the model → Fix: delimit user text as DATA and instruct the model to treat it as content, not commands.**
-   3. **Flattery + bare 'think step by step' → Why: adds no signal → Fix: remove the flattery; replace with explicit steps.**
-   Top 3: add an objective; sandbox the user input as data; replace 'think step by step' with a named process."
 `,
             parameters: [
                 {

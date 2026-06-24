@@ -32,10 +32,6 @@ Rules:
 Output contract:
 1. The tests in a fenced block, runnable with {{framework}}.
 2. A short list of the scenarios covered and any gaps you could not cover.
-
-Worked example —
-Input framework: "pytest"; code: a \`discount(subtotal)\` that returns 10% off above 100, else 0% off, and raises on negative input.
-Expected output: a parameterized test \`@pytest.mark.parametrize("subtotal,expected", [(50, 50), (100, 100), (100.01, 90.009), (200, 180)])\` plus a \`pytest.raises(ValueError)\` test for \`discount(-1)\`, each with a scenario name (e.g., \`test_no_discount_at_or_below_threshold\`). Coverage note: "happy path, boundary at 100, negative input; not covered: non-numeric input (add if relevant)."
 `,
             parameters: [
                 {

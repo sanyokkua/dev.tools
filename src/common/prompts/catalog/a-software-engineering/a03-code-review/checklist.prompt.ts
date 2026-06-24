@@ -34,10 +34,6 @@ Checklist — mark each ✅ pass / ⚠️ concern / ❌ fail / — not applicabl
 8. Style/consistency: conforms to conventions (defer detail to linters)?
 
 Output contract: the checklist with statuses and reasons, then the top 3 must-fix items and an overall recommendation (approve / approve-with-nits / changes-requested).
-
-Worked example —
-Input language: "Python 3.12"; code: a service method that loops over user IDs and issues one DB query per ID, with no input validation.
-Expected (excerpt): 1. Correctness ⚠️ — works but no empty-list handling. 6. Security ⚠️ — IDs not validated. 7. Performance ❌ — N+1 queries in the loop; batch into one query. Top must-fix: (a) batch the query, (b) validate IDs, (c) handle empty input. Recommendation: changes-requested.
 `,
             parameters: [
                 {

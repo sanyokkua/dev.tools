@@ -34,10 +34,6 @@ Output contract:
 1. The class in a fenced \`\`\`{{language}}\`\`\` block.
 2. A short note on its responsibility and public interface.
 3. A bullet list of assumptions made.
-
-Worked example —
-Input language: "TypeScript"; spec: "An immutable Money value type with a currency, supporting add/subtract and value equality."
-Expected output shape: an exported \`class Money\` with \`readonly amount\` and \`readonly currency\`, constructor validation that amount is finite and currency is a 3-letter code, \`add\`/\`subtract\` methods that throw on currency mismatch and return a NEW Money (immutability preserved), and an \`equals(other)\` method. Responsibility note: "represents a monetary amount in a single currency; immutable; arithmetic returns new instances." Assumption: "amounts stored as integer minor units to avoid floating-point error."
 `,
             parameters: [
                 {

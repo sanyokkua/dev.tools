@@ -34,10 +34,6 @@ Do the following:
 IF the content is compressed/encoded (a base64 string inside \`<diagram>\` rather than raw \`<mxGraphModel>\` XML), say so explicitly and that it must be decoded/opened in draw.io first — interpret only the parts that are readable. Recall: \`id="0"\` and \`id="1"\` are root cells; user shapes start at \`id="2"\`.
 
 Output contract: a structured explanation with these sections — Pages · Components · Connections · Containers · Flow · Issues. Read-only: do not generate or modify any diagram.
-
-Worked example —
-Input: an \`<mxfile>\` with one page; cells: \`id=2 "Client"\`, \`id=3 "API"\`, an edge \`source=2 target=3 value="HTTP"\`, and an unconnected \`id=4 "Legacy"\`.
-Expected output (excerpt): "Pages: 1 (Page-1). Components: Client (rounded rectangle), API (rounded rectangle), Legacy (rounded rectangle). Connections: Client —HTTP→ API. Containers: none. Flow: left-to-right, Client → API; no exit edge from API. Issues: 'Legacy' is orphaned (no connections)."
 `,
             parameters: [
                 {

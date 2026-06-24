@@ -29,13 +29,6 @@ For each quality attribute (performance, availability, scalability, security, mo
 Rules: every scenario must have a measurable response measure (latency, %, throughput, recovery time). If a number is not given, propose a reasonable target and mark it as a proposed value to confirm. Separate true constraints from assumptions.
 
 Output contract: a table or list of scenarios (one per priority quality attribute), with proposed measures clearly marked, and a short note on which are highest priority.
-
-Worked example —
-Input: "It should be fast and highly available."
-Expected (excerpt):
-- Performance — Source: a user · Stimulus: submits a search · Artifact: search API · Environment: peak load · Response: returns results · Measure: p95 ≤ 500ms [proposed].
-- Availability — Source: a node failure · Stimulus: instance crashes · Artifact: the service · Environment: production · Response: traffic reroutes · Measure: ≥ 99.9% monthly uptime, recovery < 30s [proposed].
-Highest priority: availability (revenue-impacting).
 `,
             parameters: [
                 {

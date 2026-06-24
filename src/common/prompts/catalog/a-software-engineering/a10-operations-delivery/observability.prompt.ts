@@ -34,10 +34,6 @@ Cover the three signals and more:
 Rules: least-privilege for collection; call out cost drivers (log volume, high-cardinality metrics). State assumptions.
 
 Output contract: the plan organized by the sections above, with proposed SLOs/thresholds flagged.
-
-Worked example —
-Input: "A Java service on ECS behind an ALB, using RDS and SQS; Datadog available."
-Expected (excerpt): Metrics — request rate, error rate, p50/p95/p99 latency (RED); RDS connections + CPU, SQS queue depth/age (USE). Logs — structured JSON with request/correlation IDs; never log auth tokens. Traces — trace across ALB → service → RDS/SQS spans. SLIs/SLOs — availability ≥ 99.9% [proposed], p95 latency ≤ 300ms [proposed]. Alerts — page on SLO error-budget burn and SQS age > threshold, not on raw CPU. Cost note: high-cardinality tags (e.g., per-user) inflate Datadog custom-metric cost.
 `,
             parameters: [
                 {

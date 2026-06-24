@@ -26,8 +26,6 @@ Apply the photographic look:
 - sharp focus with a natural, shallow depth of field.
 
 Keep the SAME character, the same pose and gesture, the same outfit design and colors, the same hairstyle, and the same overall composition and framing so it reads as the same character photographed for real. Render it as a true photograph — not an illustration, drawing, or 3D render. Aim for natural skin — avoid a plastic, waxy, or doll-like look.
-
-(Attach the source image. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "more realistic skin texture" or "keep the same outfit colors". If proportions look off, ask for "natural human proportions".)
 `,
             parameters: [],
             examples: {},
@@ -58,8 +56,6 @@ Keep the SAME character, the same pose and gesture, the same outfit design and c
             template: `I'm uploading a cartoon or anime image. Please re-render it as a believable photorealistic photograph of the same character in the same pose and outfit — realistic skin texture, natural fabric, true-to-life lighting, accurate anatomy, and a natural shallow depth of field.
 
 Keep the same character, the same pose and gesture, the same outfit design and colors, the same hairstyle, and the same composition and framing so it reads as the same character photographed for real. Render it as a true photograph, not an illustration or 3D render. Keep natural skin texture — avoid a plastic, waxy, or doll-like look.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. Refine with "more realistic skin texture", "natural human proportions", or "keep the same outfit". If the character changes, say "keep the same character and pose".)
 `,
             parameters: [],
             examples: {},

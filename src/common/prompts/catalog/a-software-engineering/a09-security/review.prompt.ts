@@ -45,23 +45,6 @@ Per-finding output schema (use exactly these fields):
 Rules: be defensive only — do not produce exploit code. Validate input server-side, fail closed, never log secrets. If context is insufficient to judge a risk, say what's missing. Redact any secrets seen.
 
 Output contract: numbered findings in the schema above, then a summary grouped by severity. If none found, say so and note what was checked.
-
-Worked example —
-Input language: "Python 3.12"; code:
-\`\`\`python
-@app.get("/user")
-def get_user(req):
-    uid = req.args["id"]
-    cur.execute("SELECT * FROM users WHERE id = '" + uid + "'")
-    return cur.fetchone()
-\`\`\`
-Expected finding:
-1. **[SQL Injection]** — Location: \`get_user\`, the \`execute\` line. — Severity: Critical (estimate). — Why exploitable: \`id\` is concatenated into the SQL string, so \`id=' OR '1'='1\` dumps all users (and worse via stacked queries/UNION). — Remediation: use a parameterized query —
-   \`\`\`python
-   cur.execute("SELECT * FROM users WHERE id = %s", (uid,))
-   \`\`\`
-   Also enforce that the requesting user may read this \`id\` (otherwise this is also an IDOR).
-Summary: 1 Critical (SQL injection), 1 potential High (missing authorization / IDOR).
 `,
             parameters: [
                 {

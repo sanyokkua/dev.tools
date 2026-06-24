@@ -29,10 +29,6 @@ Rules:
 3. Be honest and specific; do not overstate. Use only facts from the input; mark unknowns as "TODO".
 
 Output contract: ONLY the release notes in Markdown, with a short intro line and grouped highlights.
-
-Worked example —
-Input changes: "webhook support; faster search; timezone fix for email; security patch"; audience: "End users".
-Expected output: a one-line intro, then \`### New\` ("Get notified instantly with webhooks"), \`### Improved\` ("Search is now noticeably faster"), \`### Fixed\` ("Email times now show in your local timezone") — written in benefit language, with the security patch summarized plainly without internal detail.
 `,
             parameters: [
                 {

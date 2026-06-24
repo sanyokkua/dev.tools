@@ -33,14 +33,6 @@ Output contract:
 1. The implementation in fenced \`\`\`{{language}}\`\`\` block(s), organized sensibly.
 2. A mapping of each acceptance criterion → how the code satisfies it.
 3. A bullet list of assumptions and any spec ambiguities you resolved.
-
-Worked example —
-Input language: "Python 3.12"; spec: "GIVEN a cart with items, WHEN checkout is called, THEN apply a 10% discount over $100 and return the final total; reject empty carts."
-Expected mapping output:
-- "reject empty carts" → checkout raises ValueError when items is empty.
-- "10% discount over $100" → subtotal computed, then \`if subtotal > 100: total = subtotal * 0.9\`.
-- "return the final total" → returns a Money/decimal rounded to 2 places.
-Assumption: "$100 is the threshold exclusive; exactly $100 gets no discount (stated as a resolved ambiguity)."
 `,
             parameters: [
                 {

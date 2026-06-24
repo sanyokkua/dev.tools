@@ -35,10 +35,6 @@ Output contract:
 2. A part-by-part explanation.
 3. Examples: should-match and should-not-match.
 4. A bullet list of caveats/assumptions.
-
-Worked example —
-Input flavor: "JavaScript"; description: "Extract semantic version numbers like 1.2.3 or 10.0.0-beta from text."
-Expected output shape: pattern \`\` \`/\\b(\\d+)\\.(\\d+)\\.(\\d+)(?:-([0-9A-Za-z.-]+))?\\b/g\` \`\` with groups explained (major/minor/patch, optional pre-release), should-match \`["1.2.3","10.0.0-beta"]\`, should-not-match \`["1.2","v1.2.3.4"]\`, caveat "does not validate build-metadata \`+\` segment; SemVer's full grammar is stricter."
 `,
             parameters: [
                 {

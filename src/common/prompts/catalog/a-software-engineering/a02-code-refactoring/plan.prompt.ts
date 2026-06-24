@@ -32,15 +32,6 @@ Rules:
 4. Do not rewrite the code here; output the plan only.
 
 Output contract: a numbered plan — Step · Refactoring · What changes · How to verify. End with risks and a recommended stopping point if time is limited.
-
-Worked example —
-Input language: "TypeScript"; code: module with a god class and duplicated logic; smells: "Large Class, Duplicated Code, Long Parameter List".
-Expected plan (excerpt):
-1. Add characterization tests for the public methods · pin current behavior · run, confirm green.
-2. Extract Function for duplicated logic · removes one of the duplicates · tests stay green.
-3. Move the extracted function + related fields into a new class (Extract Class) · shrinks the god class · tests green.
-4. Introduce Parameter Object for the repeated arg group · shortens signatures · tests green.
-Risks: hidden global state may break extraction — verify after step 2. Stop after step 2 if time is short (already a net win).
 `,
             parameters: [
                 {

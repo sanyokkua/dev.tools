@@ -32,10 +32,6 @@ Apply the chosen mode strictly:
 Rules: produce ONLY the chosen mode — do not mix modes. Use only information present in the content; mark gaps as "TODO: confirm". Match tone to the mode.
 
 Output contract: the content rewritten in {{mode}}, in Markdown.
-
-Worked example —
-Input mode: "how-to"; content: mixed notes — "our API needs a token; tokens are JWTs that expire in 1h; to get one POST /auth with creds; we use JWT because it's stateless."
-Expected output: a how-to titled "How to obtain an API token" with numbered steps (1. POST your credentials to \`/auth\`; 2. read the \`token\` field; 3. send it as \`Authorization: Bearer <token>\`; 4. refresh after ~1 hour) — and it OMITS the "why JWT" rationale (that belongs in Explanation mode, not how-to).
 `,
             parameters: [
                 {

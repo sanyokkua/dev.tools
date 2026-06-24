@@ -30,21 +30,6 @@ Rules:
 4. Return the code with docs added, unchanged otherwise.
 
 Output contract: the documented code in a fenced \`\`\`{{language}}\`\`\` block. Note any member whose behavior was unclear and needs author confirmation.
-
-Worked example —
-Input language: "TypeScript"; code: \`export function clamp(n, lo, hi) { return Math.min(Math.max(n, lo), hi); }\`
-Expected output: the same function preceded by a TSDoc block —
-\`\`\`ts
-/**
- * Constrains a number to the inclusive range [lo, hi].
- * @param n - the value to clamp
- * @param lo - lower bound (inclusive)
- * @param hi - upper bound (inclusive)
- * @returns n bounded to the range; if lo > hi the result follows Math.min/Math.max ordering
- */
-export function clamp(n: number, lo: number, hi: number): number { ... }
-\`\`\`
-Note: "behavior when lo > hi is unusual — confirm intended."
 `,
             parameters: [
                 {

@@ -30,10 +30,6 @@ Do the following:
 4. Note non-functional considerations and open questions/risks.
 
 Output contract: a concise design — Requirements summary · Options considered (≥2) · Recommended architecture (components, data flow) · Trade-offs & risks · Open questions.
-
-Worked example —
-Input: "Ingest 10k events/sec, store 90 days, serve dashboards with <1s p95; small team."
-Expected (excerpt): Options — (A) managed stream (Kinesis/Kafka) → time-series store → cached query API; (B) direct writes to a relational DB with materialized views. Recommend A for the ingest rate; downside: more moving parts and ops burden for a small team — mitigate with managed services. Components: ingest gateway → stream → consumer → time-series store → dashboard API with a cache. Risks: high-cardinality metrics blow up cost; 90-day retention sizing. Open question: query patterns (aggregations vs raw)?
 `,
             parameters: [
                 {

@@ -25,8 +25,6 @@ Apply the cinematic look:
 - dramatic but believable natural lighting, like a frame from a high-end film.
 
 Do NOT change: the composition, perspective, architecture, terrain, content, scene layout, or framing. Do not add or remove buildings, vehicles, signage, people, or any element. Change only the color grade, atmosphere, and lighting mood. Keep it photographic — no cartoon or illustration look, no garish oversaturation.
-
-(Attach the source photo. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "warmer golden-hour grade" or "ease off the grain". Render one grade at a time so you can compare.)
 `,
             parameters: [],
             examples: {},
@@ -57,8 +55,6 @@ Do NOT change: the composition, perspective, architecture, terrain, content, sce
             template: `I'm uploading a landscape or cityscape. Please re-render it as a cinematic film still with a single professional color grade (choose ONE: teal-and-orange OR warm golden-hour), soft atmospheric light, subtle film grain, and a wide filmic dynamic range — change only the grade and lighting mood, keeping the scene exactly the same.
 
 Keep the exact same composition, perspective, architecture, terrain, content, and framing. Don't add or remove buildings, vehicles, signage, people, or any element. Keep it photographic — no cartoon look, no garish oversaturation.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. Pick one grade per render; refine with "warmer golden-hour" or "less grain". If structures shift, say "keep the exact same composition" and re-run.)
 `,
             parameters: [],
             examples: {},

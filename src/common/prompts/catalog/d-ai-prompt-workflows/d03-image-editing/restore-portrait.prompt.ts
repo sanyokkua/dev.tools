@@ -27,8 +27,6 @@ Repair only the damage:
 - reconstruct small missing or destroyed areas of face, hair, skin, eyes, and clothing plausibly, matching surrounding texture, lighting direction, and grain.
 
 Do NOT change: identity, facial structure or features, expression, age, hairstyle, clothing, pose, composition, lighting mood, background, or era. Do not beautify, slim, smooth, or retouch anyone. No waxy or AI-looking skin, no over-smoothing, no over-sharpening, no warped anatomy, no extra fingers, no distorted eyes. Keep everything else pixel-faithful.
-
-(Attach the source portrait. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "fix the left eye area" or "make the skin texture more natural". Note: reconstructed detail is plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},
@@ -52,8 +50,6 @@ Do NOT change: identity, facial structure or features, expression, age, hairstyl
 Remove the scratches, tears, creases, fold lines, dust, spots, stains, and surface marks; reduce film grain and noise to a natural level; correct fading, discoloration, and uneven exposure; recover detail in shadows and highlights; and plausibly reconstruct any small missing areas of the face, hair, skin, eyes, or clothing using the surrounding texture and light.
 
 Keep the faces exactly as they appear — same eyes, nose, mouth, face shape, expression, and age. Keep the same hairstyle, clothing, pose, composition, lighting mood, background, and era. Don't beautify, smooth, slim, or retouch anyone, and keep natural skin texture (no waxy or plastic look). Don't add or remove anything.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. If a defect remains, point at it specifically — e.g. "there's still a scratch across the left cheek". Reconstructed detail is plausible inference, not documentary truth.)
 `,
             parameters: [],
             examples: {},

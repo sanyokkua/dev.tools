@@ -36,10 +36,6 @@ Rules:
 5. Redact any secrets or Personally Identifiable Information (PII) seen.
 
 Output contract: **Issue** · **Most likely cause** (with evidence + confidence) · **Fix** (concrete change) · **Regression test** · **Verification steps**.
-
-Worked example —
-Input error: "TypeError: cannot read properties of undefined (reading 'id')"; context: "Node 20 / Express handler; \`const id = req.user.id;\` happens only when the request has no auth token."
-Expected output: Issue — handler crashes for unauthenticated requests. Most likely cause (high) — \`req.user\` is undefined when no auth middleware ran; the optional path lacks a guard. Fix — add \`if (!req.user) return res.status(401).end();\` before reading \`id\`. Regression test — request without a token expects 401, not a 500. Verification — run the handler test suite.
 `,
             parameters: [
                 {

@@ -25,8 +25,6 @@ Restyle the look:
 - polished, professional editorial color and contrast.
 
 Do NOT change: the face, identity, facial structure or features, expression, age, or the person's natural likeness. Keep the same hairstyle and clothing unless lighting naturally affects how they read. Keep natural skin texture with real pores even with editorial polish — no waxy, plastic, or over-retouched look; no beautifying that alters the face shape; no warped anatomy. Change only the lighting, lens rendering, depth of field, and backdrop.
-
-(Attach the source portrait. Output up to 4K; keep the original aspect ratio so nothing is cropped. Refine with follow-ups like "soften the key light" or "make the backdrop a touch darker". The face must remain unmistakably the same person.)
 `,
             parameters: [],
             examples: {},
@@ -59,8 +57,6 @@ Do NOT change: the face, identity, facial structure or features, expression, age
 Give it a soft, flattering key light with a gentle rim light; a clean studio backdrop (seamless neutral or softly graded); an 85mm portrait-lens look with shallow depth of field and pleasing background blur; and polished editorial color and contrast.
 
 Keep the face exactly as the same person — same eyes, nose, mouth, face shape, expression, and age. Keep the same hairstyle and clothing. Don't beautify in a way that changes the face, and keep natural skin texture with real pores (no waxy, plastic, or over-retouched look). Change only the lighting, lens rendering, depth of field, and backdrop.
-
-(Set output quality to High and keep the same aspect ratio as the upload so nothing is cropped. If the face drifts, say "keep the exact same face" and re-run; refine the look with "softer key light" or "cleaner backdrop".)
 `,
             parameters: [],
             examples: {},
