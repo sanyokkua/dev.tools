@@ -1,5 +1,6 @@
 import { copyToClipboard } from '@/common/clipboard-utils';
 import {
+    applyCustomPattern,
     calculateDuration,
     convertTimestamp,
     DateComponents,
@@ -7,6 +8,7 @@ import {
     DurationResult,
     formatInTimezone,
     FormatOption,
+    smartParseDate,
     TimestampBreakdown,
     TIMEZONES,
     TimezoneValue,
@@ -20,11 +22,12 @@ import { ToastType } from '@/controls/toaster/types';
 import ToolAbout from '@/controls/ToolAbout';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-type DateMode = 'timestamp' | 'calculator';
+type DateMode = 'timestamp' | 'formatter' | 'calculator';
 type TimestampDirection = 'unixToDate' | 'dateToUnix';
 
 const MODE_OPTIONS: SegmentedOption[] = [
     { value: 'timestamp', label: 'Timestamp ↔ Date' },
+    { value: 'formatter', label: 'Formatter' },
     { value: 'calculator', label: 'Calculator' },
 ];
 
@@ -74,6 +77,12 @@ const DateToolsPage: React.FC = () => {
     const [customPattern, setCustomPattern] = useState('YYYY-MM-DD HH:mm:ss');
     const [dtInput, setDtInput] = useState<string>(() => formatInTimezone(new Date(), 'UTC').replace(' ', 'T'));
 
+    // ── Formatter mode state ──────────────────────────────────────────────────
+    const [fmtInput, setFmtInput] = useState('2025-10-09T08:53:20.000Z');
+    const [fmtInputPattern, setFmtInputPattern] = useState('');
+    const [fmtTimezone, setFmtTimezone] = useState<TimezoneValue>('UTC');
+    const [fmtOutputPattern, setFmtOutputPattern] = useState('YYYY-MM-DD HH:mm:ss');
+
     // ── Duration mode state ───────────────────────────────────────────────────
     const today = new Date().toISOString().slice(0, 10);
     const oneYearAgo = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
@@ -108,6 +117,13 @@ const DateToolsPage: React.FC = () => {
         if (!components) return null;
         return dateToUnix(components, timezone);
     }, [dtInput, timezone]);
+
+    // ── Formatter result (reactive) ───────────────────────────────────────────
+    const fmtResult = useMemo((): { formatted: string; strategy: string } | null => {
+        const parsed = smartParseDate(fmtInput, fmtTimezone, fmtInputPattern || undefined);
+        if (!parsed) return null;
+        return { formatted: applyCustomPattern(parsed.date, fmtOutputPattern, fmtTimezone), strategy: parsed.strategy };
+    }, [fmtInput, fmtInputPattern, fmtTimezone, fmtOutputPattern]);
 
     // ── Duration results (reactive) ───────────────────────────────────────────
     const durationResult = useMemo((): DurationResult | null => {
@@ -360,6 +376,81 @@ const DateToolsPage: React.FC = () => {
                         )}
                     </div>
                 </>
+            )}
+
+            {/* ───────────────── FORMATTER MODE ───────────────── */}
+            {mode === 'formatter' && (
+                <div className="date-page-layout">
+                    {/* Left: input card */}
+                    <div className="card pad date-formatter-grid">
+                        <div className="field">
+                            <label htmlFor="fmt-input">Value to parse</label>
+                            <Input
+                                id="fmt-input"
+                                value={fmtInput}
+                                onChange={setFmtInput}
+                                placeholder="Unix timestamp, ISO 8601, RFC 2822…"
+                                block
+                            />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="fmt-input-pattern">Input pattern (optional)</label>
+                            <Input
+                                id="fmt-input-pattern"
+                                value={fmtInputPattern}
+                                onChange={setFmtInputPattern}
+                                placeholder="e.g. DD/MM/YYYY HH:mm"
+                                block
+                            />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="fmt-tz-select">Timezone</label>
+                            <Select
+                                id="fmt-tz-select"
+                                items={TIMEZONE_ITEMS}
+                                selectedItem={fmtTimezone}
+                                onSelect={(item) => setFmtTimezone(item.itemId as TimezoneValue)}
+                                block
+                            />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="fmt-output-pattern">Output pattern</label>
+                            <Input
+                                id="fmt-output-pattern"
+                                value={fmtOutputPattern}
+                                onChange={setFmtOutputPattern}
+                                placeholder="YYYY-MM-DD HH:mm:ss"
+                                block
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right: result */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        {fmtResult ? (
+                            <div className="date-kpi-card">
+                                <div className="date-kpi-value">
+                                    {fmtResult.formatted}
+                                    <button
+                                        className="btn ghost date-copy-btn"
+                                        onClick={() => handleCopy(fmtResult.formatted)}
+                                        aria-label="Copy formatted result"
+                                        style={{ marginLeft: 'var(--s2)' }}
+                                    >
+                                        ⧉
+                                    </button>
+                                </div>
+                                <div className="date-kpi-label">
+                                    Result <span className="date-unit-chip">{fmtResult.strategy}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
+                                Could not parse this value with the given pattern/format.
+                            </p>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* ───────────────── CALCULATOR MODE ───────────────── */}

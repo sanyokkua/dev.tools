@@ -149,3 +149,34 @@ describe('DateToolsPage — timestamp direction toggle', () => {
         expect(screen.getByLabelText(/unix timestamp/i)).toBeInTheDocument();
     });
 });
+
+describe('DateToolsPage — formatter mode', () => {
+    it('switching to Formatter mode shows the value, pattern, and timezone inputs', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        expect(screen.getByLabelText(/value to parse/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/input pattern/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/output pattern/i)).toBeInTheDocument();
+    });
+
+    it('formats the default seeded value using the default output pattern', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        expect(screen.getByText('2025-10-09 08:53:20')).toBeInTheDocument();
+    });
+
+    it('shows a parse-error message for an unparseable value', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        fireEvent.change(screen.getByLabelText(/value to parse/i), { target: { value: 'not-a-date' } });
+        expect(screen.getByText(/could not parse this value/i)).toBeInTheDocument();
+    });
+
+    it('uses the pattern strategy when an input pattern matches an all-digit value', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        fireEvent.change(screen.getByLabelText(/value to parse/i), { target: { value: '20251009' } });
+        fireEvent.change(screen.getByLabelText(/input pattern/i), { target: { value: 'YYYYMMDD' } });
+        expect(screen.getByText('pattern')).toBeInTheDocument();
+    });
+});
