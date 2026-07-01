@@ -1,10 +1,13 @@
 import { copyToClipboard } from '@/common/clipboard-utils';
 import {
+    addBusinessDays,
+    addCalendarDays,
     applyCustomPattern,
     calculateDuration,
     convertTimestamp,
     DateComponents,
     dateToUnix,
+    DayOffsetResult,
     DurationResult,
     formatInTimezone,
     FormatOption,
@@ -15,6 +18,7 @@ import {
 } from '@/common/date-utils';
 import { usePage } from '@/contexts/PageContext';
 import { useToast } from '@/contexts/ToasterContext';
+import Checkbox from '@/controls/Checkbox';
 import Input from '@/controls/Input';
 import SegmentedControl, { SegmentedOption } from '@/controls/SegmentedControl';
 import Select, { createSelectItemsFromStringArray, SelectItem } from '@/controls/Select';
@@ -24,6 +28,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type DateMode = 'timestamp' | 'formatter' | 'calculator';
 type TimestampDirection = 'unixToDate' | 'dateToUnix';
+type CalculatorSubMode = 'between' | 'addSubtract';
 
 const MODE_OPTIONS: SegmentedOption[] = [
     { value: 'timestamp', label: 'Timestamp ↔ Date' },
@@ -34,6 +39,11 @@ const MODE_OPTIONS: SegmentedOption[] = [
 const DIRECTION_OPTIONS: SegmentedOption[] = [
     { value: 'unixToDate', label: 'Unix → Date' },
     { value: 'dateToUnix', label: 'Date → Unix' },
+];
+
+const CALCULATOR_SUBMODE_OPTIONS: SegmentedOption[] = [
+    { value: 'between', label: 'Between two dates' },
+    { value: 'addSubtract', label: 'Add or subtract days' },
 ];
 
 const SELECT_FORMAT_ITEMS: SelectItem[] = [
@@ -83,11 +93,15 @@ const DateToolsPage: React.FC = () => {
     const [fmtTimezone, setFmtTimezone] = useState<TimezoneValue>('UTC');
     const [fmtOutputPattern, setFmtOutputPattern] = useState('YYYY-MM-DD HH:mm:ss');
 
-    // ── Duration mode state ───────────────────────────────────────────────────
+    // ── Calculator mode state ─────────────────────────────────────────────────
     const today = new Date().toISOString().slice(0, 10);
     const oneYearAgo = new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10);
+    const [calcSubMode, setCalcSubMode] = useState<CalculatorSubMode>('between');
     const [startDate, setStartDate] = useState(oneYearAgo);
     const [endDate, setEndDate] = useState(today);
+    const [baseDate, setBaseDate] = useState(today);
+    const [dayAmount, setDayAmount] = useState('7');
+    const [businessDaysOnly, setBusinessDaysOnly] = useState(false);
 
     const handleCopy = useCallback(
         (text: string): void => {
@@ -125,11 +139,18 @@ const DateToolsPage: React.FC = () => {
         return { formatted: applyCustomPattern(parsed.date, fmtOutputPattern, fmtTimezone), strategy: parsed.strategy };
     }, [fmtInput, fmtInputPattern, fmtTimezone, fmtOutputPattern]);
 
-    // ── Duration results (reactive) ───────────────────────────────────────────
+    // ── Calculator results (reactive) ─────────────────────────────────────────
     const durationResult = useMemo((): DurationResult | null => {
         if (!startDate || !endDate) return null;
         return calculateDuration(startDate, endDate);
     }, [startDate, endDate]);
+
+    const addSubResult = useMemo((): DayOffsetResult | null => {
+        const amount = Number(dayAmount);
+        if (!baseDate || Number.isNaN(amount)) return null;
+        const base = new Date(`${baseDate}T00:00:00Z`);
+        return businessDaysOnly ? addBusinessDays(base, amount) : addCalendarDays(base, amount);
+    }, [baseDate, dayAmount, businessDaysOnly]);
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
@@ -455,65 +476,143 @@ const DateToolsPage: React.FC = () => {
 
             {/* ───────────────── CALCULATOR MODE ───────────────── */}
             {mode === 'calculator' && (
-                <div className="date-page-layout">
-                    {/* Left: date range inputs */}
-                    <div className="card pad" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s3)' }}>
-                        <div className="field">
-                            <label htmlFor="start-date">Start date</label>
-                            <Input id="start-date" type="date" value={startDate} onChange={setStartDate} block />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="end-date">End date</label>
-                            <Input id="end-date" type="date" value={endDate} onChange={setEndDate} block />
-                        </div>
+                <>
+                    <div className="date-submode-toggle">
+                        <SegmentedControl
+                            options={CALCULATOR_SUBMODE_OPTIONS}
+                            value={calcSubMode}
+                            onChange={(v) => setCalcSubMode(v as CalculatorSubMode)}
+                            aria-label="Calculator sub-mode"
+                        />
                     </div>
-
-                    {/* Right: results */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        {durationResult ? (
-                            <>
-                                {/* Stats grid */}
-                                <div className="date-stats-grid">
-                                    {(
-                                        [
-                                            { label: 'Total days', value: durationResult.totalDays },
-                                            { label: 'Working days', value: durationResult.workingDays },
-                                            { label: 'Weekend days', value: durationResult.weekendDays },
-                                            { label: 'Weeks', value: durationResult.totalWeeks },
-                                            { label: 'Months', value: durationResult.totalMonths },
-                                            { label: 'Years', value: durationResult.totalYears },
-                                            { label: 'Decades', value: durationResult.totalDecades },
-                                        ] as { label: string; value: number }[]
-                                    ).map(({ label, value }) => (
-                                        <div key={label} className="date-stat-card">
-                                            <div className="date-stat-value">{value}</div>
-                                            <div className="date-stat-label">{label}</div>
-                                        </div>
-                                    ))}
+                    {calcSubMode === 'between' ? (
+                        <div className="date-page-layout">
+                            {/* Left: date range inputs */}
+                            <div
+                                className="card pad"
+                                style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s3)' }}
+                            >
+                                <div className="field">
+                                    <label htmlFor="start-date">Start date</label>
+                                    <Input
+                                        id="start-date"
+                                        type="date"
+                                        value={startDate}
+                                        onChange={setStartDate}
+                                        block
+                                    />
                                 </div>
-
-                                {/* Endpoint cards */}
-                                <div className="date-endpoint-cards">
-                                    {(
-                                        [
-                                            { title: 'Start', card: durationResult.startCard },
-                                            { title: 'End', card: durationResult.endCard },
-                                        ] as const
-                                    ).map(({ title, card }) => (
-                                        <div key={title} className="date-endpoint-card">
-                                            <div className="date-endpoint-header">{title}</div>
-                                            <div className="date-endpoint-day">{card.dayName}</div>
-                                            <div className="date-endpoint-month">{card.monthName}</div>
-                                            <div className="date-endpoint-year">{card.year}</div>
-                                        </div>
-                                    ))}
+                                <div className="field">
+                                    <label htmlFor="end-date">End date</label>
+                                    <Input id="end-date" type="date" value={endDate} onChange={setEndDate} block />
                                 </div>
-                            </>
-                        ) : (
-                            <p style={{ color: 'var(--muted)', fontSize: '13px' }}>Select a valid date range.</p>
-                        )}
-                    </div>
-                </div>
+                            </div>
+
+                            {/* Right: results */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                {durationResult ? (
+                                    <>
+                                        {/* Stats grid */}
+                                        <div className="date-stats-grid">
+                                            {(
+                                                [
+                                                    { label: 'Total days', value: durationResult.totalDays },
+                                                    { label: 'Working days', value: durationResult.workingDays },
+                                                    { label: 'Weekend days', value: durationResult.weekendDays },
+                                                    { label: 'Weeks', value: durationResult.totalWeeks },
+                                                    { label: 'Months', value: durationResult.totalMonths },
+                                                    { label: 'Years', value: durationResult.totalYears },
+                                                    { label: 'Decades', value: durationResult.totalDecades },
+                                                ] as { label: string; value: number }[]
+                                            ).map(({ label, value }) => (
+                                                <div key={label} className="date-stat-card">
+                                                    <div className="date-stat-value">{value}</div>
+                                                    <div className="date-stat-label">{label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Endpoint cards */}
+                                        <div className="date-endpoint-cards">
+                                            {(
+                                                [
+                                                    { title: 'Start', card: durationResult.startCard },
+                                                    { title: 'End', card: durationResult.endCard },
+                                                ] as const
+                                            ).map(({ title, card }) => (
+                                                <div key={title} className="date-endpoint-card">
+                                                    <div className="date-endpoint-header">{title}</div>
+                                                    <div className="date-endpoint-day">{card.dayName}</div>
+                                                    <div className="date-endpoint-month">{card.monthName}</div>
+                                                    <div className="date-endpoint-year">{card.year}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
+                                        Select a valid date range.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="date-page-layout">
+                            {/* Left: base date, amount, business-days toggle */}
+                            <div
+                                className="card pad"
+                                style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s3)' }}
+                            >
+                                <div className="field">
+                                    <label htmlFor="base-date">Base date</label>
+                                    <Input id="base-date" type="date" value={baseDate} onChange={setBaseDate} block />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="day-amount">Days to add/subtract</label>
+                                    <Input
+                                        id="day-amount"
+                                        type="number"
+                                        value={dayAmount}
+                                        onChange={setDayAmount}
+                                        placeholder="e.g. 7 or -14"
+                                        block
+                                    />
+                                </div>
+                                <Checkbox
+                                    checked={businessDaysOnly}
+                                    onChange={setBusinessDaysOnly}
+                                    label="Business days only (skip weekends)"
+                                />
+                            </div>
+
+                            {/* Right: result */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                {addSubResult ? (
+                                    <div className="date-endpoint-card">
+                                        <div className="date-endpoint-header">Result</div>
+                                        <div className="date-endpoint-day">{addSubResult.dayName}</div>
+                                        <div className="date-endpoint-month">{addSubResult.monthName}</div>
+                                        <div className="date-endpoint-year">
+                                            {addSubResult.isoDate}
+                                            <button
+                                                className="btn ghost date-copy-btn"
+                                                onClick={() => handleCopy(addSubResult.isoDate)}
+                                                aria-label="Copy result date"
+                                                style={{ marginLeft: 'var(--s2)' }}
+                                            >
+                                                ⧉
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
+                                        Enter a valid base date and amount.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

@@ -180,3 +180,52 @@ describe('DateToolsPage — formatter mode', () => {
         expect(screen.getByText('pattern')).toBeInTheDocument();
     });
 });
+
+describe('DateToolsPage — calculator add/subtract sub-mode', () => {
+    it('switching to Add or subtract days shows base date, amount, and business-days checkbox', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        expect(screen.getByLabelText(/base date/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/days to add\/subtract/i)).toBeInTheDocument();
+        expect(screen.getByRole('checkbox', { name: /business days only/i })).toBeInTheDocument();
+    });
+
+    it('calendar-day addition updates the result date', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-01' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '10' } });
+        expect(screen.getByText('2025-01-11')).toBeInTheDocument();
+    });
+
+    it('business-day addition skips a weekend (Friday + 1 = Monday)', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-10' } }); // Friday
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '1' } });
+        fireEvent.click(screen.getByRole('checkbox', { name: /business days only/i }));
+        expect(screen.getByText('Monday')).toBeInTheDocument();
+        expect(screen.getByText('2025-01-13')).toBeInTheDocument();
+    });
+
+    it('amount 0 leaves the base date unchanged', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-06-15' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '0' } });
+        expect(screen.getByText('2025-06-15')).toBeInTheDocument();
+    });
+
+    it('switching back to Between two dates restores the start/end date inputs', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.click(screen.getByRole('button', { name: /between two dates/i }));
+        expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
+    });
+});
