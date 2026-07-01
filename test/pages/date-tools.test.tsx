@@ -42,10 +42,10 @@ describe('DateToolsPage — button variants (Task 2.4)', () => {
 });
 
 describe('DateToolsPage — timestamp conversion behavior', () => {
-    it('renders the mode selector with Timestamp and Duration options', () => {
+    it('renders the mode selector with Timestamp and Calculator options', () => {
         render(<DateToolsPage />);
         expect(screen.getAllByRole('button', { name: /timestamp/i }).length).toBeGreaterThan(0);
-        expect(screen.getAllByRole('button', { name: /duration/i }).length).toBeGreaterThan(0);
+        expect(screen.getAllByRole('button', { name: /calculator/i }).length).toBeGreaterThan(0);
     });
 
     it('defaults to timestamp mode showing the Unix timestamp input', () => {
@@ -98,26 +98,54 @@ describe('DateToolsPage — timestamp conversion behavior', () => {
     });
 });
 
-describe('DateToolsPage — duration mode behavior', () => {
-    it('switching to Duration mode shows start and end date inputs', () => {
+describe('DateToolsPage — calculator mode / between-dates sub-mode', () => {
+    it('switching to Calculator mode shows start and end date inputs', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 
-    it('duration mode shows computed stat labels', () => {
+    it('calculator mode shows computed stat labels', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByText('Total days')).toBeInTheDocument();
         expect(screen.getByText('Working days')).toBeInTheDocument();
         expect(screen.getByText('Weeks')).toBeInTheDocument();
     });
 
-    it('duration mode shows Start and End endpoint cards', () => {
+    it('calculator mode shows Start and End endpoint cards', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByText('Start')).toBeInTheDocument();
         expect(screen.getByText('End')).toBeInTheDocument();
+    });
+});
+
+describe('DateToolsPage — timestamp direction toggle', () => {
+    it('defaults to Unix -> Date direction showing the Unix timestamp input', () => {
+        render(<DateToolsPage />);
+        expect(screen.getByLabelText(/unix timestamp/i)).toBeInTheDocument();
+    });
+
+    it('switching to Date -> Unix direction shows the date/time input and hides the Unix input', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        expect(screen.getByLabelText(/date & time/i)).toBeInTheDocument();
+        expect(screen.queryByLabelText(/unix timestamp/i)).not.toBeInTheDocument();
+    });
+
+    it('Date -> Unix direction shows Unix seconds and milliseconds results', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        expect(screen.getByText('Unix seconds')).toBeInTheDocument();
+        expect(screen.getByText('Unix milliseconds')).toBeInTheDocument();
+    });
+
+    it('switching back to Unix -> Date restores the Unix timestamp input', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        fireEvent.click(screen.getByRole('button', { name: /unix → date/i }));
+        expect(screen.getByLabelText(/unix timestamp/i)).toBeInTheDocument();
     });
 });

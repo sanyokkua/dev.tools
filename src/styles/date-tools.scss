@@ -207,3 +207,9 @@
     color: var(--muted);
     white-space: nowrap;
 }
+
+.date-submode-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--s3);
+}
