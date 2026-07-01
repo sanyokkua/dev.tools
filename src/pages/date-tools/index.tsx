@@ -155,10 +155,12 @@ const DateToolsPage: React.FC = () => {
     return (
         <div style={{ padding: 'var(--s3)' }}>
             <ToolAbout routeKey="date-tools">
-                Work with dates two ways: <strong>Timestamp ↔ Date</strong> (Unix seconds/ms ↔ formatted date, timezone
-                and format selectors, "Now", and a breakdown with day-of-week, day-of-year and ISO week) and{' '}
-                <strong>Calculator</strong> (total / working / weekend days, weeks, months, years between two dates).
-                All computed locally.
+                Work with dates three ways: <strong>Timestamp ↔ Date</strong> (convert Unix seconds/ms to a formatted
+                date and back, with timezone, format, and a breakdown of day-of-week, day-of-year, and ISO week);{' '}
+                <strong>Formatter</strong> (parse almost any date string — Unix timestamps, ISO/RFC dates, or a custom
+                input pattern — and reformat it with your own output pattern); and <strong>Calculator</strong> (find the
+                duration between two dates including working/weekend days, or add/subtract calendar or business days
+                from a date). All computed locally.
             </ToolAbout>
             <div className="date-toolbar">
                 <SegmentedControl
