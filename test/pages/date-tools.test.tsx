@@ -42,10 +42,10 @@ describe('DateToolsPage — button variants (Task 2.4)', () => {
 });
 
 describe('DateToolsPage — timestamp conversion behavior', () => {
-    it('renders the mode selector with Timestamp and Duration options', () => {
+    it('renders the mode selector with Timestamp and Calculator options', () => {
         render(<DateToolsPage />);
         expect(screen.getAllByRole('button', { name: /timestamp/i }).length).toBeGreaterThan(0);
-        expect(screen.getAllByRole('button', { name: /duration/i }).length).toBeGreaterThan(0);
+        expect(screen.getAllByRole('button', { name: /calculator/i }).length).toBeGreaterThan(0);
     });
 
     it('defaults to timestamp mode showing the Unix timestamp input', () => {
@@ -98,26 +98,156 @@ describe('DateToolsPage — timestamp conversion behavior', () => {
     });
 });
 
-describe('DateToolsPage — duration mode behavior', () => {
-    it('switching to Duration mode shows start and end date inputs', () => {
+describe('DateToolsPage — calculator mode / between-dates sub-mode', () => {
+    it('switching to Calculator mode shows start and end date inputs', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 
-    it('duration mode shows computed stat labels', () => {
+    it('calculator mode shows computed stat labels', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByText('Total days')).toBeInTheDocument();
         expect(screen.getByText('Working days')).toBeInTheDocument();
         expect(screen.getByText('Weeks')).toBeInTheDocument();
     });
 
-    it('duration mode shows Start and End endpoint cards', () => {
+    it('calculator mode shows Start and End endpoint cards', () => {
         render(<DateToolsPage />);
-        fireEvent.click(screen.getByRole('button', { name: /duration/i }));
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
         expect(screen.getByText('Start')).toBeInTheDocument();
         expect(screen.getByText('End')).toBeInTheDocument();
+    });
+});
+
+describe('DateToolsPage — timestamp direction toggle', () => {
+    it('defaults to Unix -> Date direction showing the Unix timestamp input', () => {
+        render(<DateToolsPage />);
+        expect(screen.getByLabelText(/unix timestamp/i)).toBeInTheDocument();
+    });
+
+    it('switching to Date -> Unix direction shows the date/time input and hides the Unix input', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        expect(screen.getByLabelText(/date & time/i)).toBeInTheDocument();
+        expect(screen.queryByLabelText(/unix timestamp/i)).not.toBeInTheDocument();
+    });
+
+    it('Date -> Unix direction shows Unix seconds and milliseconds results', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        expect(screen.getByText('Unix seconds')).toBeInTheDocument();
+        expect(screen.getByText('Unix milliseconds')).toBeInTheDocument();
+    });
+
+    it('switching back to Unix -> Date restores the Unix timestamp input', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /date → unix/i }));
+        fireEvent.click(screen.getByRole('button', { name: /unix → date/i }));
+        expect(screen.getByLabelText(/unix timestamp/i)).toBeInTheDocument();
+    });
+});
+
+describe('DateToolsPage — formatter mode', () => {
+    it('switching to Formatter mode shows the value, pattern, and timezone inputs', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        expect(screen.getByLabelText(/value to parse/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/input pattern/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/output pattern/i)).toBeInTheDocument();
+    });
+
+    it('formats the default seeded value using the default output pattern', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        expect(screen.getByText('2025-10-09 08:53:20')).toBeInTheDocument();
+    });
+
+    it('shows a parse-error message for an unparseable value', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        fireEvent.change(screen.getByLabelText(/value to parse/i), { target: { value: 'not-a-date' } });
+        expect(screen.getByText(/could not parse this value/i)).toBeInTheDocument();
+    });
+
+    it('uses the pattern strategy when an input pattern matches an all-digit value', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /formatter/i }));
+        fireEvent.change(screen.getByLabelText(/value to parse/i), { target: { value: '20251009' } });
+        fireEvent.change(screen.getByLabelText(/input pattern/i), { target: { value: 'YYYYMMDD' } });
+        expect(screen.getByText('pattern')).toBeInTheDocument();
+    });
+});
+
+describe('DateToolsPage — calculator add/subtract sub-mode', () => {
+    it('switching to Add or subtract days shows base date, amount, and business-days checkbox', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        expect(screen.getByLabelText(/base date/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/days to add\/subtract/i)).toBeInTheDocument();
+        expect(screen.getByRole('checkbox', { name: /business days only/i })).toBeInTheDocument();
+    });
+
+    it('calendar-day addition updates the result date', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-01' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '10' } });
+        expect(screen.getByText('2025-01-11')).toBeInTheDocument();
+    });
+
+    it('business-day addition skips a weekend (Friday + 1 = Monday)', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-10' } }); // Friday
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '1' } });
+        fireEvent.click(screen.getByRole('checkbox', { name: /business days only/i }));
+        // "Monday" appears in both the Result card and the breakdown's End card (same resulting date).
+        expect(screen.getAllByText('Monday')).toHaveLength(2);
+        expect(screen.getByText('2025-01-13')).toBeInTheDocument();
+    });
+
+    it('shows the duration breakdown (stats + Start/End cards) between the base and result dates', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-01' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '10' } });
+        expect(screen.getByText('Total days')).toBeInTheDocument();
+        expect(screen.getByText('Working days')).toBeInTheDocument();
+        expect(screen.getByText('Weekend days')).toBeInTheDocument();
+        expect(screen.getByText('Weeks')).toBeInTheDocument();
+        expect(screen.getByText('Months')).toBeInTheDocument();
+        expect(screen.getByText('Years')).toBeInTheDocument();
+        expect(screen.getByText('Decades')).toBeInTheDocument();
+        expect(screen.getByText('Start')).toBeInTheDocument();
+        expect(screen.getByText('End')).toBeInTheDocument();
+        // Jan 1 2025 (Wednesday) + 10 calendar days = Jan 11 2025 (Saturday).
+        // "Saturday" appears twice: once in the Result card, once in the breakdown's End card.
+        expect(screen.getByText('Wednesday')).toBeInTheDocument();
+        expect(screen.getAllByText('Saturday')).toHaveLength(2);
+    });
+
+    it('amount 0 leaves the base date unchanged', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-06-15' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '0' } });
+        expect(screen.getByText('2025-06-15')).toBeInTheDocument();
+    });
+
+    it('switching back to Between two dates restores the start/end date inputs', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.click(screen.getByRole('button', { name: /between two dates/i }));
+        expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
     });
 });

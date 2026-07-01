@@ -204,3 +204,199 @@ export function calculateDuration(startDateStr: string, endDateStr: string): Dur
         endCard: toCard(end),
     };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Date/time ↔ Unix, pattern-based parsing, and add/subtract-days helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type DateComponents = {
+    year: number;
+    month: number; // 1-12
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
+};
+
+function readZonedComponents(instantMs: number, timezone: string): DateComponents {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).formatToParts(new Date(instantMs));
+    const get = (type: string): number => Number(parts.find((p) => p.type === type)?.value ?? '0');
+    const hour = get('hour');
+    return {
+        year: get('year'),
+        month: get('month'),
+        day: get('day'),
+        hour: hour === 24 ? 0 : hour,
+        minute: get('minute'),
+        second: get('second'),
+    };
+}
+
+function componentsToEpoch(c: DateComponents): number {
+    return Date.UTC(c.year, c.month - 1, c.day, c.hour, c.minute, c.second);
+}
+
+/**
+ * Converts wall-clock date/time components in an IANA timezone to the UTC instant they represent.
+ * Uses two-pass offset correction (guess as UTC, read the offset back via Intl, correct, repeat once)
+ * to handle DST boundaries. Spring-forward gaps and fall-back overlaps resolve to whichever offset the
+ * second pass converges on rather than being user-selectable — an accepted limitation of this approach.
+ */
+export function zonedComponentsToUtc(components: DateComponents, timezone: string): Date {
+    const guess = componentsToEpoch(components);
+
+    const offset1 = componentsToEpoch(readZonedComponents(guess, timezone)) - guess;
+    const instant1 = guess - offset1;
+
+    const offset2 = componentsToEpoch(readZonedComponents(instant1, timezone)) - instant1;
+    const instant2 = guess - offset2;
+
+    return new Date(instant2);
+}
+
+export function dateToUnix(components: DateComponents, timezone: string): { seconds: number; milliseconds: number } {
+    const milliseconds = zonedComponentsToUtc(components, timezone).getTime();
+    return { seconds: Math.round(milliseconds / 1000), milliseconds };
+}
+
+const PATTERN_TOKEN_GROUPS: Record<string, string> = {
+    YYYY: 'year',
+    MM: 'month',
+    DD: 'day',
+    HH: 'hour',
+    mm: 'minute',
+    ss: 'second',
+};
+
+const PATTERN_TOKEN_SPLIT = /(YYYY|MM|DD|HH|mm|ss)/;
+
+function escapeRegExp(text: string): string {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildPatternRegex(pattern: string): RegExp {
+    const source = pattern
+        .split(PATTERN_TOKEN_SPLIT)
+        .map((segment) => {
+            const group = PATTERN_TOKEN_GROUPS[segment];
+            return group ? `(?<${group}>\\d{${segment.length}})` : escapeRegExp(segment);
+        })
+        .join('');
+    return new RegExp(`^${source}$`);
+}
+
+function daysInMonth(year: number, month: number): number {
+    return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+function isValidDateComponents(c: DateComponents): boolean {
+    if (c.month < 1 || c.month > 12) return false;
+    if (c.day < 1 || c.day > daysInMonth(c.year, c.month)) return false;
+    if (c.hour < 0 || c.hour > 23) return false;
+    if (c.minute < 0 || c.minute > 59) return false;
+    if (c.second < 0 || c.second > 59) return false;
+    return true;
+}
+
+/**
+ * Inverse of applyCustomPattern: derives a regex from the pattern's fixed-width tokens (YYYY MM DD HH mm ss)
+ * and extracts date/time components from a matching value. 2-digit years, variable-width M/D, and
+ * month/day-name tokens are intentionally out of scope, matching applyCustomPattern's token set.
+ */
+export function parsePatternComponents(value: string, pattern: string): DateComponents | null {
+    const match = buildPatternRegex(pattern).exec(value.trim());
+    if (!match?.groups) return null;
+
+    const { year, month, day, hour, minute, second } = match.groups;
+    if (year === undefined || month === undefined || day === undefined) return null;
+
+    const components: DateComponents = {
+        year: Number(year),
+        month: Number(month),
+        day: Number(day),
+        hour: hour === undefined ? 0 : Number(hour),
+        minute: minute === undefined ? 0 : Number(minute),
+        second: second === undefined ? 0 : Number(second),
+    };
+
+    return isValidDateComponents(components) ? components : null;
+}
+
+export function parseWithPattern(value: string, pattern: string, timezone: string): Date | null {
+    const components = parsePatternComponents(value, pattern);
+    return components ? zonedComponentsToUtc(components, timezone) : null;
+}
+
+export type ParseStrategy = 'unix-seconds' | 'unix-milliseconds' | 'pattern' | 'native';
+export type SmartParseResult = { date: Date; strategy: ParseStrategy } | null;
+
+/**
+ * Best-effort date parser for the Formatter mode. If an input pattern is supplied, parsing is strict —
+ * a mismatch returns null rather than silently falling back, since an explicit pattern signals the user
+ * wants unambiguous parsing. Otherwise tries Unix-timestamp auto-detection, then native Date parsing.
+ */
+export function smartParseDate(value: string, timezone: string, inputPattern?: string): SmartParseResult {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    if (inputPattern?.trim()) {
+        const parsed = parseWithPattern(trimmed, inputPattern.trim(), timezone);
+        return parsed ? { date: parsed, strategy: 'pattern' } : null;
+    }
+
+    if (/^-?\d+$/.test(trimmed)) {
+        const num = Number(trimmed);
+        const unit = detectUnit(Math.abs(num));
+        return { date: new Date(toMs(num)), strategy: unit === 'seconds' ? 'unix-seconds' : 'unix-milliseconds' };
+    }
+
+    const native = new Date(trimmed);
+    return Number.isNaN(native.getTime()) ? null : { date: native, strategy: 'native' };
+}
+
+export type DayOffsetResult = { resultDate: Date; dayName: string; monthName: string; year: number; isoDate: string };
+
+function normalizeToUtcMidnight(date: Date): Date {
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+function toDayOffsetResult(date: Date): DayOffsetResult {
+    return {
+        resultDate: date,
+        dayName: new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(date),
+        monthName: new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' }).format(date),
+        year: date.getUTCFullYear(),
+        isoDate: date.toISOString().slice(0, 10),
+    };
+}
+
+/** Shifts a date by a signed number of calendar days. Millisecond-based arithmetic handles month/year/leap-year rollovers correctly. */
+export function addCalendarDays(base: Date, amount: number): DayOffsetResult {
+    const normalized = normalizeToUtcMidnight(base);
+    return toDayOffsetResult(new Date(normalized.getTime() + amount * 86400000));
+}
+
+/**
+ * Shifts a date by a signed number of business days (Mon-Fri), skipping Sat/Sun. The base day itself is
+ * never counted, and amount 0 returns the base unchanged even if it falls on a weekend.
+ */
+export function addBusinessDays(base: Date, amount: number): DayOffsetResult {
+    let cur = normalizeToUtcMidnight(base);
+    const step = amount >= 0 ? 1 : -1;
+    let remaining = Math.abs(amount);
+    while (remaining > 0) {
+        cur = new Date(cur.getTime() + step * 86400000);
+        const day = cur.getUTCDay();
+        if (day !== 0 && day !== 6) remaining--;
+    }
+    return toDayOffsetResult(cur);
+}
