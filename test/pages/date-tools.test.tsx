@@ -207,8 +207,30 @@ describe('DateToolsPage — calculator add/subtract sub-mode', () => {
         fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-10' } }); // Friday
         fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '1' } });
         fireEvent.click(screen.getByRole('checkbox', { name: /business days only/i }));
-        expect(screen.getByText('Monday')).toBeInTheDocument();
+        // "Monday" appears in both the Result card and the breakdown's End card (same resulting date).
+        expect(screen.getAllByText('Monday')).toHaveLength(2);
         expect(screen.getByText('2025-01-13')).toBeInTheDocument();
+    });
+
+    it('shows the duration breakdown (stats + Start/End cards) between the base and result dates', () => {
+        render(<DateToolsPage />);
+        fireEvent.click(screen.getByRole('button', { name: /calculator/i }));
+        fireEvent.click(screen.getByRole('button', { name: /add or subtract days/i }));
+        fireEvent.change(screen.getByLabelText(/base date/i), { target: { value: '2025-01-01' } });
+        fireEvent.change(screen.getByLabelText(/days to add\/subtract/i), { target: { value: '10' } });
+        expect(screen.getByText('Total days')).toBeInTheDocument();
+        expect(screen.getByText('Working days')).toBeInTheDocument();
+        expect(screen.getByText('Weekend days')).toBeInTheDocument();
+        expect(screen.getByText('Weeks')).toBeInTheDocument();
+        expect(screen.getByText('Months')).toBeInTheDocument();
+        expect(screen.getByText('Years')).toBeInTheDocument();
+        expect(screen.getByText('Decades')).toBeInTheDocument();
+        expect(screen.getByText('Start')).toBeInTheDocument();
+        expect(screen.getByText('End')).toBeInTheDocument();
+        // Jan 1 2025 (Wednesday) + 10 calendar days = Jan 11 2025 (Saturday).
+        // "Saturday" appears twice: once in the Result card, once in the breakdown's End card.
+        expect(screen.getByText('Wednesday')).toBeInTheDocument();
+        expect(screen.getAllByText('Saturday')).toHaveLength(2);
     });
 
     it('amount 0 leaves the base date unchanged', () => {

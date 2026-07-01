@@ -69,6 +69,47 @@ function parseDateTimeLocal(value: string): DateComponents | null {
     };
 }
 
+function DurationBreakdown({ result }: { result: DurationResult }): React.ReactElement {
+    return (
+        <>
+            <div className="date-stats-grid">
+                {(
+                    [
+                        { label: 'Total days', value: result.totalDays },
+                        { label: 'Working days', value: result.workingDays },
+                        { label: 'Weekend days', value: result.weekendDays },
+                        { label: 'Weeks', value: result.totalWeeks },
+                        { label: 'Months', value: result.totalMonths },
+                        { label: 'Years', value: result.totalYears },
+                        { label: 'Decades', value: result.totalDecades },
+                    ] as { label: string; value: number }[]
+                ).map(({ label, value }) => (
+                    <div key={label} className="date-stat-card">
+                        <div className="date-stat-value">{value}</div>
+                        <div className="date-stat-label">{label}</div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="date-endpoint-cards">
+                {(
+                    [
+                        { title: 'Start', card: result.startCard },
+                        { title: 'End', card: result.endCard },
+                    ] as const
+                ).map(({ title, card }) => (
+                    <div key={title} className="date-endpoint-card">
+                        <div className="date-endpoint-header">{title}</div>
+                        <div className="date-endpoint-day">{card.dayName}</div>
+                        <div className="date-endpoint-month">{card.monthName}</div>
+                        <div className="date-endpoint-year">{card.year}</div>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+}
+
 const DateToolsPage: React.FC = () => {
     const { setPageTitle } = usePage();
     const { showToast } = useToast();
@@ -151,6 +192,11 @@ const DateToolsPage: React.FC = () => {
         const base = new Date(`${baseDate}T00:00:00Z`);
         return businessDaysOnly ? addBusinessDays(base, amount) : addCalendarDays(base, amount);
     }, [baseDate, dayAmount, businessDaysOnly]);
+
+    const addSubDuration = useMemo((): DurationResult | null => {
+        if (!addSubResult || !baseDate) return null;
+        return calculateDuration(baseDate, addSubResult.isoDate);
+    }, [addSubResult, baseDate]);
 
     return (
         <div style={{ padding: 'var(--s3)' }}>
@@ -513,44 +559,7 @@ const DateToolsPage: React.FC = () => {
                             {/* Right: results */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                                 {durationResult ? (
-                                    <>
-                                        {/* Stats grid */}
-                                        <div className="date-stats-grid">
-                                            {(
-                                                [
-                                                    { label: 'Total days', value: durationResult.totalDays },
-                                                    { label: 'Working days', value: durationResult.workingDays },
-                                                    { label: 'Weekend days', value: durationResult.weekendDays },
-                                                    { label: 'Weeks', value: durationResult.totalWeeks },
-                                                    { label: 'Months', value: durationResult.totalMonths },
-                                                    { label: 'Years', value: durationResult.totalYears },
-                                                    { label: 'Decades', value: durationResult.totalDecades },
-                                                ] as { label: string; value: number }[]
-                                            ).map(({ label, value }) => (
-                                                <div key={label} className="date-stat-card">
-                                                    <div className="date-stat-value">{value}</div>
-                                                    <div className="date-stat-label">{label}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Endpoint cards */}
-                                        <div className="date-endpoint-cards">
-                                            {(
-                                                [
-                                                    { title: 'Start', card: durationResult.startCard },
-                                                    { title: 'End', card: durationResult.endCard },
-                                                ] as const
-                                            ).map(({ title, card }) => (
-                                                <div key={title} className="date-endpoint-card">
-                                                    <div className="date-endpoint-header">{title}</div>
-                                                    <div className="date-endpoint-day">{card.dayName}</div>
-                                                    <div className="date-endpoint-month">{card.monthName}</div>
-                                                    <div className="date-endpoint-year">{card.year}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
+                                    <DurationBreakdown result={durationResult} />
                                 ) : (
                                     <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
                                         Select a valid date range.
@@ -590,22 +599,25 @@ const DateToolsPage: React.FC = () => {
                             {/* Right: result */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                                 {addSubResult ? (
-                                    <div className="date-endpoint-card">
-                                        <div className="date-endpoint-header">Result</div>
-                                        <div className="date-endpoint-day">{addSubResult.dayName}</div>
-                                        <div className="date-endpoint-month">{addSubResult.monthName}</div>
-                                        <div className="date-endpoint-year">
-                                            {addSubResult.isoDate}
-                                            <button
-                                                className="btn ghost date-copy-btn"
-                                                onClick={() => handleCopy(addSubResult.isoDate)}
-                                                aria-label="Copy result date"
-                                                style={{ marginLeft: 'var(--s2)' }}
-                                            >
-                                                ⧉
-                                            </button>
+                                    <>
+                                        <div className="date-endpoint-card">
+                                            <div className="date-endpoint-header">Result</div>
+                                            <div className="date-endpoint-day">{addSubResult.dayName}</div>
+                                            <div className="date-endpoint-month">{addSubResult.monthName}</div>
+                                            <div className="date-endpoint-year">
+                                                {addSubResult.isoDate}
+                                                <button
+                                                    className="btn ghost date-copy-btn"
+                                                    onClick={() => handleCopy(addSubResult.isoDate)}
+                                                    aria-label="Copy result date"
+                                                    style={{ marginLeft: 'var(--s2)' }}
+                                                >
+                                                    ⧉
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                        {addSubDuration && <DurationBreakdown result={addSubDuration} />}
+                                    </>
                                 ) : (
                                     <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
                                         Enter a valid base date and amount.
