@@ -13,6 +13,7 @@ import '@/styles/converting-tools.scss';
 import '@/styles/cron.scss';
 import '@/styles/dashboard.scss';
 import '@/styles/date-tools.scss';
+import '@/styles/dev-environment-setup.scss';
 import '@/styles/diff.scss';
 import '@/styles/editable-combobox.scss';
 import '@/styles/git-cheat-sheet.scss';

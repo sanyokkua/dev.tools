@@ -27,6 +27,7 @@ const ROUTES = [
     '/windows-setup',
     '/linux-setup',
     '/git-cheat-sheet',
+    '/dev-environment-setup',
     '/llm-vram-calculator',
     '/prompts-collection',
     '/mermaid-editor',
