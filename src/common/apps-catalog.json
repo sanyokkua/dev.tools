@@ -15,7 +15,7 @@
         },
         "dev": ["npm", "uv", "pipx", "cargo", "go"]
     },
-    "appCount": 153,
+    "appCount": 155,
     "apps": [
         {
             "id": "firefox",
@@ -7723,6 +7723,83 @@
             "notes": "uv self update only works for Astral-script installs, not Homebrew/winget/distro builds."
         },
         {
+            "id": "pipx",
+            "name": "pipx",
+            "category": "Developer Utilities",
+            "description": "Install and run Python CLI applications in isolated virtual environments",
+            "site": "https://pipx.pypa.io/",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "pipx",
+                        "kind": "formula",
+                        "install": "brew install pipx",
+                        "update": "brew upgrade pipx",
+                        "remove": "brew uninstall pipx",
+                        "verify": "pipx --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "script",
+                        "install": "py -m pip install --user pipx; py -m pipx ensurepath",
+                        "update": "py -m pip install --user --upgrade pipx",
+                        "remove": "py -m pip uninstall -y pipx",
+                        "verify": "pipx --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "pipx",
+                        "install": "scoop install pipx",
+                        "update": "scoop update pipx",
+                        "remove": "scoop uninstall pipx",
+                        "verify": "pipx --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "apt",
+                            "install": "sudo apt-get install -y pipx",
+                            "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y pipx",
+                            "remove": "sudo apt-get remove -y pipx",
+                            "verify": "pipx --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "dnf",
+                            "install": "sudo dnf install -y pipx",
+                            "update": "sudo dnf upgrade -y pipx",
+                            "remove": "sudo dnf remove -y pipx",
+                            "verify": "pipx --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "install": "sudo pacman -S --noconfirm python-pipx",
+                            "update": "sudo pacman -Syu",
+                            "remove": "sudo pacman -Rs python-pipx",
+                            "verify": "pipx --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "install": "sudo zypper install -y python3-pipx",
+                            "update": "sudo zypper update python3-pipx",
+                            "remove": "sudo zypper remove python3-pipx",
+                            "verify": "pipx --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Requires a system Python already present (pipx is a thin wrapper over pip/venv). Package names vary: Debian/Ubuntu and Fedora ship a top-level `pipx` package; Arch is `python-pipx`; openSUSE is `python3-pipx`. No official winget or Chocolatey package is published — Windows uses `py -m pip` / `ensurepath` directly. Confirm exact package availability for your distro/release before relying on the native manager path; older LTS releases may need `python3 -m pip install --user pipx` instead."
+        },
+        {
             "id": "tree",
             "name": "tree",
             "category": "Developer Utilities",
@@ -11860,6 +11937,127 @@
                 }
             },
             "notes": "Single unpinned entry (tracks latest stable). Distro `golang-go` lags upstream — the official go.dev/dl tarball is the recommended way to get the current release; longsleep PPA is the apt alternative. `go install <pkg>@latest` installs tools once Go is present. GOPATH / GOROOT / module detail in go.md. Arch: `pacman -S go` (official [extra] repo, not AUR) and openSUSE Tumbleweed: `zypper install go` (official OSS repo) are preferred over snap. openSUSE Leap has no official `go` package in its default repos — add the version-pinned OBS repo first: `sudo zypper addrepo https://download.opensuse.org/repositories/devel:languages:go/16.0/devel:languages:go.repo && sudo zypper refresh` then `sudo zypper install go` (update via `sudo zypper update go`, not `zypper dup`, since Leap is a point release, not rolling). This OBS repo path is pinned to Leap 16.0 and must be revisited when the catalog is next updated for a newer Leap release."
+        },
+        {
+            "id": "rust",
+            "name": "Rust",
+            "category": "Runtimes & Build Tooling",
+            "description": "Systems programming language toolchain (rustc, cargo) installed via rustup",
+            "site": "https://www.rust-lang.org/tools/install",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "rust",
+                        "kind": "formula",
+                        "install": "brew install rust",
+                        "update": "brew upgrade rust",
+                        "remove": "brew uninstall rust",
+                        "verify": "cargo --version"
+                    },
+                    {
+                        "manager": "script",
+                        "install": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                        "update": "rustup update",
+                        "remove": "rustup self uninstall",
+                        "verify": "cargo --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "Rustlang.Rustup",
+                        "install": "winget install --id Rustlang.Rustup -e",
+                        "update": "rustup update",
+                        "remove": "rustup self uninstall",
+                        "verify": "cargo --version"
+                    },
+                    {
+                        "manager": "choco",
+                        "id": "rust",
+                        "install": "choco install rust -y",
+                        "update": "choco upgrade rust -y",
+                        "remove": "choco uninstall rust -y",
+                        "verify": "cargo --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "main/rustup",
+                        "install": "scoop install main/rustup",
+                        "update": "rustup update",
+                        "remove": "rustup self uninstall",
+                        "verify": "cargo --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "apt",
+                            "install": "sudo apt-get install -y rustc cargo",
+                            "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y rustc cargo",
+                            "remove": "sudo apt-get remove -y rustc cargo",
+                            "verify": "cargo --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                            "update": "rustup update",
+                            "remove": "rustup self uninstall",
+                            "verify": "cargo --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "dnf",
+                            "install": "sudo dnf install -y rust cargo",
+                            "update": "sudo dnf upgrade -y rust cargo",
+                            "remove": "sudo dnf remove -y rust cargo",
+                            "verify": "cargo --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                            "update": "rustup update",
+                            "remove": "rustup self uninstall",
+                            "verify": "cargo --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "install": "sudo pacman -S --noconfirm rust",
+                            "update": "sudo pacman -Syu",
+                            "remove": "sudo pacman -Rs rust",
+                            "verify": "cargo --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                            "update": "rustup update",
+                            "remove": "rustup self uninstall",
+                            "verify": "cargo --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "install": "sudo zypper install -y rust cargo",
+                            "update": "sudo zypper update rust cargo",
+                            "remove": "sudo zypper remove rust cargo",
+                            "verify": "cargo --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                            "update": "rustup update",
+                            "remove": "rustup self uninstall",
+                            "verify": "cargo --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Distro rustc/cargo packages typically lag the upstream release — rustup (the `script` method here) is the toolchain-official installer and manages a self-updating rustc/cargo pair; prefer it when you need a current or pinned Rust version. The winget package id (`Rustlang.Rustup`) and the Scoop bucket path (`main/rustup`) should be reverified against current listings before relying on them verbatim."
         },
         {
             "id": "maven",

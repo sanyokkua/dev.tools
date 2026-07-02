@@ -1,8 +1,8 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 
 describe('APPS_CATALOG integrity', () => {
-    it('loads and has exactly 153 apps', () => {
-        expect(APPS_CATALOG.apps).toHaveLength(153);
+    it('loads and has exactly 155 apps', () => {
+        expect(APPS_CATALOG.apps).toHaveLength(155);
     });
 
     it('appCount field matches actual apps array length', () => {
