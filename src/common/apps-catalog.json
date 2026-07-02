@@ -15,7 +15,7 @@
         },
         "dev": ["npm", "uv", "pipx", "cargo", "go"]
     },
-    "appCount": 148,
+    "appCount": 153,
     "apps": [
         {
             "id": "firefox",
@@ -11950,6 +11950,394 @@
                 }
             },
             "notes": "Maven installs only the binary — it picks its JDK via JAVA_HOME and does not install one. Prefer the committed wrapper `./mvnw` per project. SDKMAN!: `sdk install maven`. Maven 4.0 is not GA as of 2026-06-11 (3.9.x is stable). Category BUILD_TOOLING."
+        },
+        {
+            "id": "sdkman",
+            "name": "SDKMAN!",
+            "category": "Developer Utilities",
+            "description": "Software Development Kit Manager for Java, Kotlin, Maven, Gradle and more",
+            "site": "https://sdkman.io",
+            "platforms": { "macos": true, "windows": false, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "script",
+                        "install": "curl -s \"https://get.sdkman.io\" | bash",
+                        "update": "sdk selfupdate",
+                        "remove": "rm -rf ~/.sdkman",
+                        "verify": "sdk version"
+                    }
+                ],
+                "windows": [],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "script",
+                            "install": "curl -s \"https://get.sdkman.io\" | bash",
+                            "update": "sdk selfupdate",
+                            "remove": "rm -rf ~/.sdkman",
+                            "verify": "sdk version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "script",
+                            "install": "curl -s \"https://get.sdkman.io\" | bash",
+                            "update": "sdk selfupdate",
+                            "remove": "rm -rf ~/.sdkman",
+                            "verify": "sdk version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "script",
+                            "install": "curl -s \"https://get.sdkman.io\" | bash",
+                            "update": "sdk selfupdate",
+                            "remove": "rm -rf ~/.sdkman",
+                            "verify": "sdk version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "script",
+                            "install": "curl -s \"https://get.sdkman.io\" | bash",
+                            "update": "sdk selfupdate",
+                            "remove": "rm -rf ~/.sdkman",
+                            "verify": "sdk version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Windows only via WSL — this schema doesn't model WSL as a distinct platform, so no Windows method is listed; run the same install command inside a WSL shell. Uninstalling also requires removing the SDKMAN init line from your shell profile (~/.bashrc or ~/.zshrc); `rm -rf ~/.sdkman` alone does not do that. `sdk selfupdate` updates SDKMAN itself; `sdk upgrade` updates installed candidates (Java/Maven/Gradle/Kotlin/etc)."
+        },
+        {
+            "id": "fnm",
+            "name": "fnm",
+            "category": "Developer Utilities",
+            "description": "Fast and simple Node.js version manager, built in Rust",
+            "site": "https://github.com/Schniz/fnm",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "fnm",
+                        "kind": "formula",
+                        "install": "brew install fnm",
+                        "update": "brew upgrade fnm",
+                        "remove": "brew uninstall fnm",
+                        "verify": "fnm --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "Schniz.fnm",
+                        "install": "winget install --id Schniz.fnm -e",
+                        "update": "winget upgrade --id Schniz.fnm -e",
+                        "remove": "winget uninstall --id Schniz.fnm -e",
+                        "verify": "fnm --version"
+                    },
+                    {
+                        "manager": "choco",
+                        "id": "fnm",
+                        "install": "choco install fnm -y",
+                        "update": "choco upgrade fnm -y",
+                        "remove": "choco uninstall fnm -y",
+                        "verify": "fnm --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "fnm",
+                        "install": "scoop install fnm",
+                        "update": "scoop update fnm",
+                        "remove": "scoop uninstall fnm",
+                        "verify": "fnm --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://fnm.vercel.app/install | bash",
+                            "verify": "fnm --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://fnm.vercel.app/install | bash",
+                            "verify": "fnm --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://fnm.vercel.app/install | bash",
+                            "verify": "fnm --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://fnm.vercel.app/install | bash",
+                            "verify": "fnm --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Add `eval \"$(fnm env --use-on-cd)\"` to your shell profile (bash/zsh/fish supported natively; PowerShell: `fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression` in $PROFILE) to enable automatic version switching via `.node-version`/`.nvmrc` files. For the Linux curl installer, no single verified uninstall path is documented here — remove fnm's install directory and the eval line above manually, or reinstall via brew/winget/choco/scoop instead if you want a scripted uninstall."
+        },
+        {
+            "id": "goenv",
+            "name": "goenv",
+            "category": "Developer Utilities",
+            "description": "Go version manager, similar to pyenv/rbenv",
+            "site": "https://github.com/go-nv/goenv",
+            "platforms": { "macos": true, "windows": false, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "goenv",
+                        "kind": "formula",
+                        "install": "brew install goenv",
+                        "update": "brew upgrade goenv",
+                        "remove": "brew uninstall goenv",
+                        "verify": "goenv --version"
+                    }
+                ],
+                "windows": [],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "script",
+                            "install": "git clone https://github.com/go-nv/goenv.git ~/.goenv",
+                            "update": "git -C ~/.goenv pull",
+                            "remove": "rm -rf ~/.goenv",
+                            "verify": "goenv --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "script",
+                            "install": "git clone https://github.com/go-nv/goenv.git ~/.goenv",
+                            "update": "git -C ~/.goenv pull",
+                            "remove": "rm -rf ~/.goenv",
+                            "verify": "goenv --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "script",
+                            "install": "git clone https://github.com/go-nv/goenv.git ~/.goenv",
+                            "update": "git -C ~/.goenv pull",
+                            "remove": "rm -rf ~/.goenv",
+                            "verify": "goenv --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "script",
+                            "install": "git clone https://github.com/go-nv/goenv.git ~/.goenv",
+                            "update": "git -C ~/.goenv pull",
+                            "remove": "rm -rf ~/.goenv",
+                            "verify": "goenv --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "No Windows support — macOS and Linux only. After install, add `export GOENV_ROOT=\"$HOME/.goenv\"`, `export PATH=\"$GOENV_ROOT/bin:$PATH\"`, and `eval \"$(goenv init -)\"` to your shell profile (~/.bashrc or ~/.zshrc), placed near the end since it manipulates PATH. Add a version with `goenv install {version}`, then switch with `goenv global {version}` (system-wide) or `goenv local {version}` (per-directory, writes a `.go-version` file). Removing also requires deleting those three profile lines."
+        },
+        {
+            "id": "corepack",
+            "name": "Corepack",
+            "category": "Developer Utilities",
+            "description": "Manage and pin Node.js package managers (npm, pnpm, Yarn) via a single tool",
+            "site": "https://github.com/nodejs/corepack",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "npm",
+                        "id": "corepack",
+                        "install": "npm install -g corepack",
+                        "update": "npm install -g corepack@latest",
+                        "remove": "npm uninstall -g corepack",
+                        "verify": "corepack --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "npm",
+                        "id": "corepack",
+                        "install": "npm install -g corepack",
+                        "update": "npm install -g corepack@latest",
+                        "remove": "npm uninstall -g corepack",
+                        "verify": "corepack --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "npm",
+                            "id": "corepack",
+                            "install": "npm install -g corepack",
+                            "update": "npm install -g corepack@latest",
+                            "remove": "npm uninstall -g corepack",
+                            "verify": "corepack --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "npm",
+                            "id": "corepack",
+                            "install": "npm install -g corepack",
+                            "update": "npm install -g corepack@latest",
+                            "remove": "npm uninstall -g corepack",
+                            "verify": "corepack --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "npm",
+                            "id": "corepack",
+                            "install": "npm install -g corepack",
+                            "update": "npm install -g corepack@latest",
+                            "remove": "npm uninstall -g corepack",
+                            "verify": "corepack --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "npm",
+                            "id": "corepack",
+                            "install": "npm install -g corepack",
+                            "update": "npm install -g corepack@latest",
+                            "remove": "npm uninstall -g corepack",
+                            "verify": "corepack --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Bundled experimentally with Node 16–24; removed from Node.js 25+ — install explicitly going forward. Enable with `corepack enable`; pin a package manager with `corepack use pnpm@9` (writes the `packageManager` field in package.json)."
+        },
+        {
+            "id": "bun",
+            "name": "Bun",
+            "category": "Runtimes & Build Tooling",
+            "description": "Fast all-in-one JavaScript runtime, bundler, test runner, and package manager",
+            "site": "https://bun.com",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "oven-sh/bun/bun",
+                        "kind": "formula",
+                        "install": "brew install oven-sh/bun/bun",
+                        "update": "brew upgrade bun",
+                        "remove": "brew uninstall bun",
+                        "verify": "bun --version"
+                    },
+                    {
+                        "manager": "npm",
+                        "id": "bun",
+                        "install": "npm install -g bun",
+                        "update": "bun upgrade",
+                        "remove": "npm uninstall -g bun",
+                        "verify": "bun --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "scoop",
+                        "install": "scoop install bun",
+                        "update": "scoop update bun",
+                        "remove": "scoop uninstall bun",
+                        "verify": "bun --version"
+                    },
+                    {
+                        "manager": "npm",
+                        "id": "bun",
+                        "install": "npm install -g bun",
+                        "update": "bun upgrade",
+                        "remove": "npm uninstall -g bun",
+                        "verify": "bun --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "npm",
+                            "id": "bun",
+                            "install": "npm install -g bun",
+                            "update": "bun upgrade",
+                            "remove": "npm uninstall -g bun",
+                            "verify": "bun --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://bun.com/install | bash",
+                            "update": "bun upgrade",
+                            "remove": "rm -rf ~/.bun",
+                            "verify": "bun --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "npm",
+                            "id": "bun",
+                            "install": "npm install -g bun",
+                            "update": "bun upgrade",
+                            "remove": "npm uninstall -g bun",
+                            "verify": "bun --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://bun.com/install | bash",
+                            "update": "bun upgrade",
+                            "remove": "rm -rf ~/.bun",
+                            "verify": "bun --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "npm",
+                            "id": "bun",
+                            "install": "npm install -g bun",
+                            "update": "bun upgrade",
+                            "remove": "npm uninstall -g bun",
+                            "verify": "bun --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://bun.com/install | bash",
+                            "update": "bun upgrade",
+                            "remove": "rm -rf ~/.bun",
+                            "verify": "bun --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "npm",
+                            "id": "bun",
+                            "install": "npm install -g bun",
+                            "update": "bun upgrade",
+                            "remove": "npm uninstall -g bun",
+                            "verify": "bun --version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fsSL https://bun.com/install | bash",
+                            "update": "bun upgrade",
+                            "remove": "rm -rf ~/.bun",
+                            "verify": "bun --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Homebrew requires the `oven-sh/bun/bun` tap — plain `brew install bun` is not the documented command. No official winget package exists; Scoop is the documented Windows path alongside npm. The official installer script (`curl -fsSL https://bun.com/install | bash`) is also available directly on macOS as an alternative to Homebrew, not currently wired as a separate catalog method here. Linux's curl installer needs `unzip` available first (`sudo apt install unzip` or your distro's equivalent). Once installed, `bun upgrade` self-upgrades the binary directly — except for Homebrew/Scoop installs, which should use `brew upgrade bun` / `scoop update bun` instead to avoid conflicts."
         }
     ]
 }

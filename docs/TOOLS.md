@@ -214,7 +214,7 @@ Work with dates two ways: **Timestamp ↔ date** (Unix seconds/ms ↔ formatted 
 
 ## Software Installer
 
-Generate **install / update / upgrade / remove** scripts for a catalog of 148 apps across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select apps (with per-app method override and multi-version JDKs), then build a single resilient script per action or bare one-line commands per app — copy or download. The catalog and scripts are generated client-side; nothing is installed by this tool.
+Generate **install / update / upgrade / remove** scripts for a catalog of 153 apps across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select apps (with per-app method override and multi-version JDKs), then build a single resilient script per action or bare one-line commands per app — copy or download. The catalog and scripts are generated client-side; nothing is installed by this tool.
 
 **Technical**
 

@@ -1,8 +1,8 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 
 describe('APPS_CATALOG integrity', () => {
-    it('loads and has exactly 148 apps', () => {
-        expect(APPS_CATALOG.apps).toHaveLength(148);
+    it('loads and has exactly 153 apps', () => {
+        expect(APPS_CATALOG.apps).toHaveLength(153);
     });
 
     it('appCount field matches actual apps array length', () => {
@@ -118,5 +118,51 @@ describe('APPS_CATALOG integrity', () => {
         const app = APPS_CATALOG.apps.find((a) => a.id === 'microsoft-openjdk');
         expect(app?.methods.linux?.fedora).toBeDefined();
         expect(app?.methods.linux?.fedora).toHaveLength(0);
+    });
+
+    describe('newly added package/version-manager entries (Task 6)', () => {
+        const newIds = ['sdkman', 'fnm', 'goenv', 'corepack', 'bun'];
+
+        it('all five new apps exist in the catalog', () => {
+            for (const id of newIds) {
+                expect(APPS_CATALOG.apps.find((a) => a.id === id)).toBeDefined();
+            }
+        });
+
+        it('sdkman and goenv are macOS/Linux-only, with no Windows methods', () => {
+            for (const id of ['sdkman', 'goenv']) {
+                const app = APPS_CATALOG.apps.find((a) => a.id === id);
+                expect(app?.platforms.windows).toBe(false);
+                expect(app?.methods.windows).toEqual([]);
+            }
+        });
+
+        it('fnm, corepack, and bun support Windows with at least one method', () => {
+            for (const id of ['fnm', 'corepack', 'bun']) {
+                const app = APPS_CATALOG.apps.find((a) => a.id === id);
+                expect(app?.platforms.windows).toBe(true);
+                expect(app?.methods.windows?.length).toBeGreaterThan(0);
+            }
+        });
+
+        it('bun installs via the oven-sh/bun/bun tap on macOS, not plain "brew install bun"', () => {
+            const app = APPS_CATALOG.apps.find((a) => a.id === 'bun');
+            const brewMethod = app?.methods.macos?.find((m) => m.manager === 'brew');
+            expect(brewMethod?.install).toContain('oven-sh/bun/bun');
+        });
+
+        it('bun has no winget method anywhere (none is officially documented)', () => {
+            const app = APPS_CATALOG.apps.find((a) => a.id === 'bun');
+            expect(app?.methods.windows?.some((m) => m.manager === 'winget')).toBe(false);
+        });
+
+        it('corepack installs via npm on every platform and every Linux distro', () => {
+            const app = APPS_CATALOG.apps.find((a) => a.id === 'corepack');
+            expect(app?.methods.macos?.some((m) => m.manager === 'npm')).toBe(true);
+            expect(app?.methods.windows?.some((m) => m.manager === 'npm')).toBe(true);
+            for (const distro of ['debian', 'fedora', 'arch', 'suse'] as const) {
+                expect(app?.methods.linux?.[distro]?.some((m) => m.manager === 'npm')).toBe(true);
+            }
+        });
     });
 });
