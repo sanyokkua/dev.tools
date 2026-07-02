@@ -120,6 +120,48 @@ describe('APPS_CATALOG integrity', () => {
         expect(app?.methods.linux?.fedora).toHaveLength(0);
     });
 
+    describe('Task 7 — Arch/openSUSE Go gaps', () => {
+        const apps = APPS_CATALOG.apps;
+        const findMethod = (appId: string, distro: string, manager: string) => {
+            const app = apps.find((a) => a.id === appId);
+            const methods = app?.methods.linux?.[distro as keyof typeof app.methods.linux] ?? [];
+            return methods.find((m) => m.manager === manager);
+        };
+
+        it("go's Arch methods lead with a native pacman entry, not snap-only", () => {
+            const app = apps.find((a) => a.id === 'go');
+            const archMethods = app?.methods.linux?.arch ?? [];
+            expect(archMethods[0]?.manager).toBe('pacman');
+            expect(findMethod('go', 'arch', 'pacman')?.install).toBe('sudo pacman -S go');
+        });
+
+        it("go's openSUSE methods lead with a native zypper entry, not snap-only", () => {
+            const app = apps.find((a) => a.id === 'go');
+            const suseMethods = app?.methods.linux?.suse ?? [];
+            expect(suseMethods[0]?.manager).toBe('zypper');
+            expect(findMethod('go', 'suse', 'zypper')?.install).toBe('sudo zypper install go');
+        });
+
+        it("go's suse array has exactly one zypper method (no unreachable duplicate manager)", () => {
+            const app = apps.find((a) => a.id === 'go');
+            const suseMethods = app?.methods.linux?.suse ?? [];
+            expect(suseMethods.filter((m) => m.manager === 'zypper')).toHaveLength(1);
+        });
+
+        it("go's notes document the openSUSE Leap OBS-repo caveat", () => {
+            const app = apps.find((a) => a.id === 'go');
+            expect(app?.notes).toContain('devel:languages:go');
+        });
+
+        it('JDK vendor entries note the AUR-vs-official Arch distinction, with no functional Arch method', () => {
+            for (const id of ['corretto', 'temurin', 'microsoft-openjdk', 'zulu']) {
+                const app = apps.find((a) => a.id === id);
+                expect(app?.notes).toContain('archlinux-java');
+                expect(app?.methods.linux?.arch).toHaveLength(0);
+            }
+        });
+    });
+
     describe('newly added package/version-manager entries (Task 6)', () => {
         const newIds = ['sdkman', 'fnm', 'goenv', 'corepack', 'bun'];
 

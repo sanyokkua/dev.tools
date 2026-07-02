@@ -11313,7 +11313,7 @@
                     ]
                 }
             },
-            "notes": "Free AWS long-term support. All five majors (8, 11, 17, 21, 25) available. apt package schema is `java-{version}-amazon-corretto-jdk`; yum/dnf/zypper uses `…-devel`. SDKMAN!: `sdk install java {version}.x.y-amzn`. Deep JAVA_HOME / multi-JDK guidance in java.md."
+            "notes": "Free AWS long-term support. All five majors (8, 11, 17, 21, 25) available. apt package schema is `java-{version}-amazon-corretto-jdk`; yum/dnf/zypper uses `…-devel`. SDKMAN!: `sdk install java {version}.x.y-amzn`. Deep JAVA_HOME / multi-JDK guidance in java.md. Arch has no vendor-specific method here — Corretto is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install."
         },
         {
             "id": "temurin",
@@ -11397,7 +11397,7 @@
                     ]
                 }
             },
-            "notes": "Most widely used free, vendor-neutral build. All five majors (8, 11, 17, 21, 25) available. apt/dnf/zypper package schema is `temurin-{version}-jdk`. On Linux Mint substitute UBUNTU_CODENAME for VERSION_CODENAME. zypper RPMs are built for SLES 12/15 and openSUSE derivatives; other versions may work but are untested per Adoptium's own docs. SDKMAN!: `sdk install java {version}.x.y-tem`."
+            "notes": "Most widely used free, vendor-neutral build. All five majors (8, 11, 17, 21, 25) available. apt/dnf/zypper package schema is `temurin-{version}-jdk`. On Linux Mint substitute UBUNTU_CODENAME for VERSION_CODENAME. zypper RPMs are built for SLES 12/15 and openSUSE derivatives; other versions may work but are untested per Adoptium's own docs. SDKMAN!: `sdk install java {version}.x.y-tem`. Arch has no vendor-specific method here — Temurin is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install."
         },
         {
             "id": "microsoft-openjdk",
@@ -11472,7 +11472,7 @@
                     ]
                 }
             },
-            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`. No documented Fedora install path exists for this vendor — use the generic TAR.GZ archive, or prefer Temurin/Corretto/Zulu on Fedora, all of which have genuine dnf repos there. The apt bootstrap (packages-microsoft-prod.deb) is validated only for Ubuntu 18.04/20.04/22.04/24.04 and Debian 10–12; other versions should use the generic TAR.GZ archive instead. The openSUSE/SLES zypper `update` step will interactively prompt to accept the new repo's signing key.",
+            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`. No documented Fedora install path exists for this vendor — use the generic TAR.GZ archive, or prefer Temurin/Corretto/Zulu on Fedora, all of which have genuine dnf repos there. The apt bootstrap (packages-microsoft-prod.deb) is validated only for Ubuntu 18.04/20.04/22.04/24.04 and Debian 10–12; other versions should use the generic TAR.GZ archive instead. The openSUSE/SLES zypper `update` step will interactively prompt to accept the new repo's signing key. Arch has no vendor-specific method here — Microsoft's OpenJDK build is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install.",
             "verifyBeforeEmit": true
         },
         {
@@ -11557,7 +11557,7 @@
                     ]
                 }
             },
-            "notes": "Widest version/arch coverage of the four. All five majors (8, 11, 17, 21, 25) available. Azul apt/dnf/zypper package schema is `zulu{version}-jdk` (e.g. zulu21-jdk). The `zulu-repo-*.rpm` filename used to bootstrap the zypper/SLES repo is versioned by Azul and may change — verify the current filename at cdn.azul.com/zulu/bin/ before relying on this long-term. SDKMAN!: `sdk install java {version}.x.y-zulu`."
+            "notes": "Widest version/arch coverage of the four. All five majors (8, 11, 17, 21, 25) available. Azul apt/dnf/zypper package schema is `zulu{version}-jdk` (e.g. zulu21-jdk). The `zulu-repo-*.rpm` filename used to bootstrap the zypper/SLES repo is versioned by Azul and may change — verify the current filename at cdn.azul.com/zulu/bin/ before relying on this long-term. SDKMAN!: `sdk install java {version}.x.y-zulu`. Arch has no vendor-specific method here — Zulu is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install."
         },
         {
             "id": "node",
@@ -11825,6 +11825,13 @@
                     ],
                     "arch": [
                         {
+                            "manager": "pacman",
+                            "install": "sudo pacman -S go",
+                            "update": "sudo pacman -Syu",
+                            "remove": "sudo pacman -Rs go",
+                            "verify": "go version"
+                        },
+                        {
                             "manager": "snap",
                             "id": "go",
                             "install": "sudo snap install go --classic",
@@ -11834,6 +11841,13 @@
                         }
                     ],
                     "suse": [
+                        {
+                            "manager": "zypper",
+                            "install": "sudo zypper install go",
+                            "update": "sudo zypper dup",
+                            "remove": "sudo zypper remove go",
+                            "verify": "go version"
+                        },
                         {
                             "manager": "snap",
                             "id": "go",
@@ -11845,7 +11859,7 @@
                     ]
                 }
             },
-            "notes": "Single unpinned entry (tracks latest stable). Distro `golang-go` lags upstream — the official go.dev/dl tarball is the recommended way to get the current release; longsleep PPA is the apt alternative. `go install <pkg>@latest` installs tools once Go is present. GOPATH / GOROOT / module detail in go.md."
+            "notes": "Single unpinned entry (tracks latest stable). Distro `golang-go` lags upstream — the official go.dev/dl tarball is the recommended way to get the current release; longsleep PPA is the apt alternative. `go install <pkg>@latest` installs tools once Go is present. GOPATH / GOROOT / module detail in go.md. Arch: `pacman -S go` (official [extra] repo, not AUR) and openSUSE Tumbleweed: `zypper install go` (official OSS repo) are preferred over snap. openSUSE Leap has no official `go` package in its default repos — add the version-pinned OBS repo first: `sudo zypper addrepo https://download.opensuse.org/repositories/devel:languages:go/16.0/devel:languages:go.repo && sudo zypper refresh` then `sudo zypper install go` (update via `sudo zypper update go`, not `zypper dup`, since Leap is a point release, not rolling). This OBS repo path is pinned to Leap 16.0 and must be revisited when the catalog is next updated for a newer Leap release."
         },
         {
             "id": "maven",
