@@ -152,7 +152,8 @@ await runSmoke('hashing', async (page) => {
             Array.from(document.querySelectorAll('table.t td.mono')).some(
                 (td) => td.textContent?.trim() && !td.querySelector('.spinner'),
             ),
-        { timeout: 8000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     await page.screenshot({ path: `${OUT}/smoke__hashing__after.png` });
@@ -173,7 +174,8 @@ await runSmoke('converting', async (page) => {
             Array.from(document.querySelectorAll('.converting-value-mono')).some((el) =>
                 /7[Ff]/.test(el.textContent?.trim() ?? ''),
             ),
-        { timeout: 3000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     await page.screenshot({ path: `${OUT}/smoke__converting__after.png` });
@@ -214,7 +216,8 @@ await runSmoke('markdown', async (page) => {
     // Wait for preview to reflect the typed content
     await page.waitForFunction(
         () => document.querySelector('.markdown-tools__preview')?.textContent?.includes('Hello'),
-        { timeout: 5000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     // Print button must be present
@@ -636,7 +639,8 @@ await runSmoke('converting-md-table', async (page) => {
             Array.from(document.querySelectorAll('.converting-value-mono')).some((el) =>
                 el.textContent?.includes('| name | age |'),
             ),
-        { timeout: 5000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     await page.screenshot({ path: `${OUT}/smoke__converting_md_table__csv_to_md.png` });
@@ -651,7 +655,8 @@ await runSmoke('converting-md-table', async (page) => {
             Array.from(document.querySelectorAll('.converting-value-mono')).some((el) =>
                 el.textContent?.includes('Alice'),
             ),
-        { timeout: 5000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     await page.screenshot({ path: `${OUT}/smoke__converting_md_table__md_to_json.png` });
@@ -814,15 +819,18 @@ await runSmoke('html-editor', async (page) => {
     await page.waitForSelector('.monaco-editor', { timeout: 8000 });
     await page.screenshot({ path: `${OUT}/smoke__html_editor__before.png` });
 
-    // Replace default content with fresh HTML
+    // Replace default content with fresh HTML. Use insertText (one atomic input event) rather
+    // than type() (per-keystroke) — under load, char-by-char typing into Monaco can get CPU-starved
+    // and drop/misorder keystrokes, which no timeout increase can fix.
     await page.locator('.split-preview-editor .editorpane .monaco-editor .view-lines').first().click();
     await page.keyboard.press('ControlOrMeta+A');
-    await page.keyboard.type('<h1>Hello World</h1>');
+    await page.keyboard.insertText('<h1>Hello World</h1>');
 
     // iframe srcdoc must update to include the typed content
     await page.waitForFunction(
         () => document.querySelector('.html-editor__preview-frame')?.getAttribute('srcdoc')?.includes('Hello World'),
-        { timeout: 5000 },
+        undefined,
+        { timeout: 45000 },
     );
     await page.screenshot({ path: `${OUT}/smoke__html_editor__after.png` });
 
@@ -830,7 +838,8 @@ await runSmoke('html-editor', async (page) => {
     await page.locator('[role="switch"]').click();
     await page.waitForFunction(
         () => document.querySelector('.html-editor__preview-frame')?.getAttribute('sandbox') === 'allow-scripts',
-        { timeout: 3000 },
+        undefined,
+        { timeout: 45000 },
     );
     await page.screenshot({ path: `${OUT}/smoke__html_editor__scripts_on.png` });
 });
@@ -851,7 +860,7 @@ await runSmoke('jwt-decode', async (page) => {
     const headerOut = await page.locator('[data-testid="jwt-header-output"]').innerText();
     if (!headerOut.includes('HS256')) throw new Error('Header missing alg:HS256');
 
-    await page.waitForFunction(() => document.body.innerText.includes('John Doe'), { timeout: 3000 });
+    await page.waitForFunction(() => document.body.innerText.includes('John Doe'), undefined, { timeout: 30000 });
 
     await page.screenshot({ path: `${OUT}/smoke__jwt__decoded.png` });
 });
@@ -934,7 +943,8 @@ await runSmoke('qr-url', async (page) => {
             const c = document.querySelector('[data-testid="qr-canvas"]');
             return c && Number(c.getAttribute('width')) > 0;
         },
-        { timeout: 8000 },
+        undefined,
+        { timeout: 30000 },
     );
 
     const width = await page.evaluate(() => {
@@ -1369,6 +1379,7 @@ if (process.env.TEST_PWA_OFFLINE === 'true') {
         await page.waitForFunction(
             () =>
                 navigator.serviceWorker.controller !== null && navigator.serviceWorker.controller.state === 'activated',
+            undefined,
             { timeout: 30000 },
         );
         await page.waitForTimeout(2000); // let Workbox finish writing precache entries
