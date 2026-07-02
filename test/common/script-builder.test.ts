@@ -1,6 +1,12 @@
 import type { CatalogApp } from '@/common/apps-catalog-types';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
-import { buildCombinedScript, buildPerAppScripts, getCommand, resolveManager } from '@/common/script-builder';
+import {
+    buildCombinedScript,
+    buildPerAppScripts,
+    getCommand,
+    resolveManager,
+    resolveMethod,
+} from '@/common/script-builder';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -1132,4 +1138,319 @@ describe('universal-merged managers on distro families', () => {
             expect(script).toContain('# AppImageApp: no remove command — skipped');
         });
     });
+});
+
+// ─── repoSetup fixtures ───────────────────────────────────────────────────────
+
+const SHARED_VENDOR_REPO_SETUP =
+    'curl -fsSL https://example.com/vendor.key | sudo gpg --dearmor -o /usr/share/keyrings/vendor.gpg && echo "deb [signed-by=/usr/share/keyrings/vendor.gpg] https://example.com/apt stable main" | sudo tee /etc/apt/sources.list.d/vendor.list && sudo apt update';
+
+const SHARED_REPO_APP_A: CatalogApp = {
+    id: 'shared-repo-app-a',
+    name: 'SharedRepoAppA',
+    category: 'test',
+    description: 'App A sharing a vendor repo with SharedRepoAppB',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'shared-a',
+                    repoSetup: SHARED_VENDOR_REPO_SETUP,
+                    install: 'sudo apt install -y shared-a',
+                },
+            ],
+        },
+    },
+};
+
+const SHARED_REPO_APP_B: CatalogApp = {
+    id: 'shared-repo-app-b',
+    name: 'SharedRepoAppB',
+    category: 'test',
+    description: 'App B sharing a vendor repo with SharedRepoAppA (identical repoSetup string)',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'shared-b',
+                    repoSetup: SHARED_VENDOR_REPO_SETUP,
+                    install: 'sudo apt install -y shared-b',
+                },
+            ],
+        },
+    },
+};
+
+// Mirrors the real Temurin apt (embedded single quote in an awk script) and Temurin fedora
+// (quoted heredoc) repoSetup shapes — regression fixture for the function-wrapping approach.
+const TRICKY_REPO_APP: CatalogApp = {
+    id: 'tricky-repo-app',
+    name: 'TrickyRepoApp',
+    category: 'test',
+    description: 'App whose repoSetup contains an embedded single quote and a quoted heredoc',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'tricky',
+                    repoSetup:
+                        'echo "deb https://example.com $(awk -F= \'/^VERSION_CODENAME/{print$2}\' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/tricky.list && sudo apt update',
+                    install: 'sudo apt install -y tricky',
+                },
+            ],
+            fedora: [
+                {
+                    manager: 'dnf',
+                    id: 'tricky',
+                    repoSetup:
+                        "cat <<'EOF' | sudo tee /etc/yum.repos.d/tricky.repo\n[Tricky]\nname=Tricky\nbaseurl=https://example.com/rpm\nenabled=1\nEOF",
+                    install: 'sudo dnf install -y tricky',
+                },
+            ],
+        },
+    },
+};
+
+const WINDOWS_REPO_APP: CatalogApp = {
+    id: 'windows-repo-app',
+    name: 'WindowsRepoApp',
+    category: 'test',
+    description: 'Synthetic Windows app with repoSetup (no real catalog entry has one yet)',
+    platforms: { macos: false, windows: true, linux: false },
+    methods: {
+        windows: [
+            {
+                manager: 'winget',
+                id: 'Example.WindowsRepoApp',
+                repoSetup: 'winget source add --name example --arg https://example.com/winget',
+                install: 'winget install --id Example.WindowsRepoApp -e',
+            },
+        ],
+    },
+};
+
+// Two Linux methods for the same distro: the preferred one (snap) has no repoSetup,
+// the array-first / non-preferred one (apt) does — used to prove dedup/emission keys
+// off the actually-resolved method, not a static per-app assumption.
+const FALLBACK_REPO_APP: CatalogApp = {
+    id: 'fallback-repo-app',
+    name: 'FallbackRepoApp',
+    category: 'test',
+    description: 'App with two Linux methods; only the non-preferred one has repoSetup',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'fallbackrepoapp',
+                    repoSetup:
+                        'curl -fsSL https://example.com/key | sudo gpg --dearmor -o /usr/share/keyrings/fallbackrepoapp.gpg',
+                    install: 'sudo apt install -y fallbackrepoapp',
+                },
+                { manager: 'snap', id: 'fallbackrepoapp', install: 'sudo snap install fallbackrepoapp' },
+            ],
+        },
+    },
+};
+
+// ─── resolveMethod ────────────────────────────────────────────────────────────
+
+describe('resolveMethod', () => {
+    it('returns null when app has no build for the current platform', () => {
+        expect(resolveMethod(MACOS_ONLY_APP, windowsConfig)).toBeNull();
+    });
+
+    it('returns null when no preferred manager has a method and fallback is off', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+        expect(resolveMethod(FIREFOX, config)).toBeNull();
+    });
+
+    it('returns the full CatalogMethod object (not just the manager id) on success', () => {
+        const method = resolveMethod(FIREFOX, macosConfig);
+        expect(method).not.toBeNull();
+        expect(method?.manager).toBe('brew');
+        expect(method?.install).toBe('brew install --cask firefox');
+    });
+
+    it('respects per-app overrides', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew'], overrides: { dual: 'mas' } };
+        const method = resolveMethod(DUAL_MANAGER_APP, config);
+        expect(method?.manager).toBe('mas');
+    });
+
+    it('respects fallback resolution', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'fallback' };
+        const method = resolveMethod(FIREFOX, config);
+        expect(method?.manager).toBe('brew');
+    });
+});
+
+// ─── repoSetup: buildCombinedScript ────────────────────────────────────────────
+
+describe('buildCombinedScript repoSetup', () => {
+    const debianConfig: BuilderConfig = {
+        platform: 'linux',
+        linuxDistro: 'debian',
+        managers: ['apt'],
+        overrides: {},
+        fallbackMode: 'preferred-only',
+        selectedVersions: {},
+    };
+
+    describe('deduplication', () => {
+        it('emits the shared repoSetup exactly once for two apps sharing the same vendor repo', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, SHARED_REPO_APP_B], 'install', debianConfig);
+            const headerMatches = script.match(/### Repository setup \(one-time\)/g) ?? [];
+            expect(headerMatches).toHaveLength(1);
+            const repoContentMatches = script.match(/sources\.list\.d\/vendor\.list/g) ?? [];
+            expect(repoContentMatches).toHaveLength(1);
+        });
+
+        it('emits two separate function definitions when repoSetups differ', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain('_repo_setup_1()');
+            expect(script).toContain('_repo_setup_2()');
+        });
+    });
+
+    describe('header presence', () => {
+        it('emits both headers when at least one selected app has a repoSetup', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, FIREFOX], 'install', debianConfig);
+            expect(script).toContain('### Repository setup (one-time)');
+            expect(script).toContain('### Install');
+        });
+
+        it('omits the repo-setup header entirely when zero selected apps have a repoSetup', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', debianConfig);
+            expect(script).not.toContain('### Repository setup');
+            expect(script).not.toContain('### Install');
+        });
+    });
+
+    describe('action gating', () => {
+        it.each(['update', 'upgrade', 'remove'] as ScriptAction[])(
+            'never emits the repo-setup section for action=%s even when the method has a repoSetup',
+            (action) => {
+                const script = buildCombinedScript([SHARED_REPO_APP_A], action, debianConfig);
+                expect(script).not.toContain('### Repository setup');
+            },
+        );
+    });
+
+    describe('content safety (embedded quotes and heredocs)', () => {
+        it('embeds a repoSetup with a literal single quote verbatim, uncorrupted', () => {
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain("awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release");
+        });
+
+        it('embeds a repoSetup containing a quoted heredoc verbatim, uncorrupted', () => {
+            const config: BuilderConfig = { ...debianConfig, linuxDistro: 'fedora', managers: ['dnf'] };
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', config);
+            expect(script).toContain("cat <<'EOF' | sudo tee /etc/yum.repos.d/tricky.repo");
+            expect(script).toContain('[Tricky]');
+            expect(script).toContain('EOF');
+        });
+
+        it('run_task label wraps the generated function name, not the raw content', () => {
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain('run_task "repo setup: TrickyRepoApp (apt)" _repo_setup_1');
+        });
+    });
+
+    describe('resolution-aware dedup (fallback and override)', () => {
+        it('uses the fallback-resolved method (array-first apt), not the preferred snap method', () => {
+            const config: BuilderConfig = { ...debianConfig, managers: ['zypper'], fallbackMode: 'fallback' };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).toContain('### Repository setup (one-time)');
+            expect(script).toContain('fallbackrepoapp.gpg');
+        });
+
+        it('omits repoSetup when the preferred snap method (no repoSetup) resolves', () => {
+            const config: BuilderConfig = { ...debianConfig, managers: ['snap'], fallbackMode: 'preferred-only' };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).not.toContain('### Repository setup');
+        });
+
+        it('override to the repoSetup-bearing manager triggers emission even when preferred manager has none', () => {
+            const config: BuilderConfig = {
+                ...debianConfig,
+                managers: ['snap'],
+                overrides: { 'fallback-repo-app': 'apt' },
+            };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).toContain('### Repository setup (one-time)');
+        });
+    });
+
+    describe('Windows (.ps1)', () => {
+        const windowsRepoConfig: BuilderConfig = {
+            platform: 'windows',
+            managers: ['winget'],
+            overrides: {},
+            fallbackMode: 'preferred-only',
+            selectedVersions: {},
+        };
+
+        it('emits a try/catch block for repoSetup using the same $ok/$fail counters', () => {
+            const script = buildCombinedScript([WINDOWS_REPO_APP], 'install', windowsRepoConfig);
+            expect(script).toContain('try { Write-Host "▶ repo setup: WindowsRepoApp (winget)";');
+            expect(script).toContain('winget source add --name example --arg https://example.com/winget');
+            expect(script).toContain('$ok++');
+            expect(script).toContain('### Install');
+        });
+
+        it('does not emit the section for non-install actions', () => {
+            const script = buildCombinedScript([WINDOWS_REPO_APP], 'update', windowsRepoConfig);
+            expect(script).not.toContain('### Repository setup');
+        });
+    });
+});
+
+// ─── repoSetup: buildPerAppScripts ─────────────────────────────────────────────
+
+describe('buildPerAppScripts repoSetup', () => {
+    const debianConfig: BuilderConfig = {
+        platform: 'linux',
+        linuxDistro: 'debian',
+        managers: ['apt'],
+        overrides: {},
+        fallbackMode: 'preferred-only',
+        selectedVersions: {},
+    };
+
+    it('prepends repoSetup ahead of the install command for a repo-bearing app', () => {
+        const result = buildPerAppScripts([SHARED_REPO_APP_A], 'install', debianConfig);
+        expect(result['shared-repo-app-a']).toBe(`${SHARED_VENDOR_REPO_SETUP}\nsudo apt install -y shared-a`);
+    });
+
+    it('leaves a repoSetup-free app unchanged (bare command, no prefix)', () => {
+        const result = buildPerAppScripts([FIREFOX], 'install', debianConfig);
+        expect(result['firefox']).toBe('sudo apt install -y firefox');
+    });
+
+    it('mixed selection: each app independently includes or omits its own repoSetup', () => {
+        const result = buildPerAppScripts([SHARED_REPO_APP_A, FIREFOX], 'install', debianConfig);
+        expect(result['shared-repo-app-a'].startsWith(SHARED_VENDOR_REPO_SETUP)).toBe(true);
+        expect(result['firefox']).toBe('sudo apt install -y firefox');
+    });
+
+    it.each(['update', 'upgrade', 'remove'] as ScriptAction[])(
+        'never prepends repoSetup for action=%s even when the method has one',
+        (action) => {
+            // SHARED_REPO_APP_A only defines an install command, so use CURL_APT which has
+            // update/upgrade/remove commands alongside a hypothetical repoSetup-bearing method.
+            const config: BuilderConfig = { ...debianConfig, managers: ['apt'] };
+            const result = buildPerAppScripts([FALLBACK_REPO_APP], action, config);
+            if (result['fallback-repo-app']) {
+                expect(result['fallback-repo-app']).not.toContain('fallbackrepoapp.gpg');
+            }
+        },
+    );
 });

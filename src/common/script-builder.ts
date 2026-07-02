@@ -73,6 +73,18 @@ export function resolveManager(app: CatalogApp, config: BuilderConfig): CatalogM
 }
 
 /**
+ * Resolves the actual CatalogMethod object for the manager resolveManager() would pick.
+ * Returns null under the same conditions resolveManager() returns null.
+ */
+export function resolveMethod(app: CatalogApp, config: BuilderConfig): CatalogMethod | null {
+    const manager = resolveManager(app, config);
+    if (!manager) return null;
+    const methods = getMethodsForPlatform(app, config);
+    if (!methods) return null;
+    return findMethodByManager(methods, manager) ?? null;
+}
+
+/**
  * Extracts and returns the command string for the given action from a method.
  * Applies {version} substitution (all occurrences) when version is provided.
  * Returns null when the method has no command for that action.
@@ -105,6 +117,57 @@ function skipReason(app: CatalogApp, config: BuilderConfig): string {
     return `# ${app.name}: no preferred manager (fallback off) — skipped`;
 }
 
+// ─── Repo-setup section (install action only) ─────────────────────────────────
+
+interface RepoSetupEntry {
+    repoSetup: string;
+    manager: CatalogManager;
+    appName: string;
+}
+
+function collectRepoSetupEntries(apps: CatalogApp[], config: BuilderConfig): RepoSetupEntry[] {
+    const seen = new Set<string>();
+    const entries: RepoSetupEntry[] = [];
+    for (const app of apps) {
+        const method = resolveMethod(app, config);
+        if (method?.repoSetup && !seen.has(method.repoSetup)) {
+            seen.add(method.repoSetup);
+            entries.push({ repoSetup: method.repoSetup, manager: method.manager, appName: app.name });
+        }
+    }
+    return entries;
+}
+
+/**
+ * Emits a deduplicated "### Repository setup (one-time)" section followed by "### Install"
+ * into `lines`, only when at least one selected app's resolved method has a repoSetup.
+ * bash: each unique repoSetup is wrapped in a generated shell function (safe for embedded
+ * quotes/heredocs/&&-chains with zero escaping) and invoked via the existing run_task counter.
+ * PowerShell: inlined into the same try/catch convention used for every other command.
+ */
+function emitRepoSetupSection(lines: string[], apps: CatalogApp[], config: BuilderConfig, isWindows: boolean): void {
+    const entries = collectRepoSetupEntries(apps, config);
+    if (entries.length === 0) return;
+
+    lines.push('### Repository setup (one-time)');
+    entries.forEach((entry, i) => {
+        if (isWindows) {
+            lines.push(
+                `try { Write-Host "▶ repo setup: ${entry.appName} (${entry.manager})"; ${entry.repoSetup}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ repo setup: ${entry.appName} failed: $_"; $fail++ }`,
+            );
+        } else {
+            const fnName = `_repo_setup_${i + 1}`;
+            lines.push(
+                `${fnName}() {`,
+                entry.repoSetup,
+                '}',
+                `run_task "repo setup: ${entry.appName} (${entry.manager})" ${fnName}`,
+            );
+        }
+    });
+    lines.push('### Install');
+}
+
 // ─── Combined script builder ──────────────────────────────────────────────────
 
 /**
@@ -128,6 +191,10 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
         );
     }
 
+    if (action === 'install') {
+        emitRepoSetupSection(lines, apps, config, isWindows);
+    }
+
     for (const app of apps) {
         const manager = resolveManager(app, config);
         if (!manager) {
@@ -135,8 +202,7 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
             continue;
         }
 
-        const methods = getMethodsForPlatform(app, config)!;
-        const method = findMethodByManager(methods, manager)!;
+        const method = resolveMethod(app, config)!;
 
         if (app.parameterized) {
             const versions = config.selectedVersions[app.id] ?? [];
@@ -199,18 +265,18 @@ export function buildPerAppScripts(
         const manager = resolveManager(app, config);
         if (!manager) continue;
 
-        const methods = getMethodsForPlatform(app, config)!;
-        const method = findMethodByManager(methods, manager)!;
+        const method = resolveMethod(app, config)!;
+        const repoSetupPrefix = action === 'install' && method.repoSetup ? `${method.repoSetup}\n` : '';
 
         if (app.parameterized) {
             const versions = config.selectedVersions[app.id] ?? [];
             const cmds = versions.map((v) => getCommand(method, action, v)).filter((c): c is string => c !== null);
             if (cmds.length === 0) continue;
-            result[app.id] = cmds.join('\n');
+            result[app.id] = repoSetupPrefix + cmds.join('\n');
         } else {
             const cmd = getCommand(method, action);
             if (!cmd) continue;
-            result[app.id] = cmd;
+            result[app.id] = repoSetupPrefix + cmd;
         }
     }
 

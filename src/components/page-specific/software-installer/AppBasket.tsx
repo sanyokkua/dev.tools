@@ -2,7 +2,7 @@ import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { MANAGER_LABEL, getAvailableManagers } from '@/common/catalog-utils';
 import type { BuilderConfig } from '@/common/script-builder';
-import { resolveManager } from '@/common/script-builder';
+import { resolveManager, resolveMethod } from '@/common/script-builder';
 import React, { useMemo } from 'react';
 
 type PrefMode = 'preferred' | 'fallback';
@@ -103,12 +103,20 @@ const AppBasket = ({
                         const fallback = available.filter((m) => !selectedManagers.includes(m));
                         const override = selectedApps[app.id];
                         const status = getStatus(app, config, selectedManagers);
+                        const requiresRepo = Boolean(resolveMethod(app, config)?.repoSetup);
 
                         return (
                             <div key={app.id} className="installer-basket-card">
                                 <div className="installer-basket-card__top">
                                     <div className="installer-basket-card__info">
-                                        <span className="installer-basket-card__name">{app.name}</span>
+                                        <div className="installer-basket-card__name-row">
+                                            <span className="installer-basket-card__name">{app.name}</span>
+                                            {requiresRepo && (
+                                                <span className="pill warn" data-testid={`repo-badge-${app.id}`}>
+                                                    requires repo
+                                                </span>
+                                            )}
+                                        </div>
                                         <span className="installer-basket-card__cat">{app.category}</span>
                                     </div>
                                     <button
