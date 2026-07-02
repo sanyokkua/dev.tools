@@ -12,11 +12,12 @@
 
 **Runtime layer**
 
-| File                            | Purpose                                                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- |
-| `src/common/catalog-utils.ts`   | Filters and resolves the catalog at runtime                                         |
-| `src/common/script-builder.ts`  | `buildCombined()` / `buildIndividual()` — turns resolved methods into shell scripts |
-| `src/pages/software-installer/` | UI — consumes `APPS_CATALOG` via `catalog-utils.ts`                                 |
+| File                                      | Purpose                                                                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `src/common/catalog-utils.ts`             | Filters and resolves the catalog at runtime                                                                 |
+| `src/common/script-builder.ts`            | `buildCombined()` / `buildIndividual()` — turns resolved methods into shell scripts                         |
+| `src/common/manager-bootstrap-catalog.ts` | Maps each non-OS-native `CatalogManager` to how it gets bootstrapped (the "Setup managers" tab) — see below |
+| `src/pages/software-installer/`           | UI — consumes `APPS_CATALOG` via `catalog-utils.ts`                                                         |
 
 ---
 
@@ -135,11 +136,41 @@ Delete its JSON entry from `apps-catalog.json`. TypeScript compilation confirms 
 
 ---
 
-## Add a new Linux package manager
+## Add a new package manager
 
 1. Add the manager identifier to the `CatalogManager` union type in `src/common/apps-catalog-types.ts`.
 2. Add method entries using the new manager to relevant apps in `apps-catalog.json`.
 3. Update the manager selector UI in `src/pages/software-installer/` to surface the new manager.
+4. **Unless the manager is OS-native** (ships with the OS — `apt`/`dnf`/`pacman`/`zypper`/`winget`), add a
+   `MANAGER_BOOTSTRAP` entry in `src/common/manager-bootstrap-catalog.ts` (see below) so the "Setup managers" tab
+   knows how to bootstrap it. Skipping this step doesn't break anything at build time, but the generated Install
+   script will fail on a machine that doesn't already have the manager, with no bootstrap script offered to fix it.
+
+---
+
+## Package-manager bootstrap ("Setup managers" tab)
+
+The Software Installer assumes every non-native manager it resolves an app against is already usable in the shell
+that runs the script. `manager-bootstrap-catalog.ts` is what lets it generate a separate script to fix that first.
+Every `CatalogManager` falls into one of three buckets:
+
+1. **OS-native** (`apt`, `dnf`, `pacman`, `zypper`, `winget`) — no entry in `MANAGER_BOOTSTRAP` at all. Absence from
+   the catalog _is_ the signal that nothing needs to be bootstrapped.
+2. **Root/self-contained** (`brew`, `choco`, `scoop`, `flatpak`, `snap`) — a `kind: 'fixed'` entry whose `command`/
+   `verify` strings are imported directly from the existing `macos-utils.ts` / `windows-utils.ts` / `linux-utils.ts`
+   constants (the same ones the `mac-os-setup` / `windows-setup` / `linux-setup` cheat-sheet pages already render).
+   **Never re-type these commands** — reuse the constant, so the two places can't drift.
+3. **Provider-app** (`npm`, `go`, `uv`, `cargo`, `pipx`) — a `kind: 'provider-app'` entry listing, in priority order,
+   the `apps-catalog.json` app id(s) that provide that manager once installed (e.g. `npm` → `['node', 'nvm', 'fnm']`).
+   The Setup tab resolves the _provider app's own_ install command using `resolveProviderCommand()` in
+   `script-builder.ts` — which itself only ever picks an OS-native or root/self-contained method for that provider
+   app, never another provider-resolved manager. That one rule is what keeps a bootstrap chain to at most two levels
+   (e.g. `npm` → `node` → `brew`) and makes cycles (e.g. `uv`'s own methods list `pipx` and `cargo`) structurally
+   impossible — don't work around it by hand-picking a "safe" method elsewhere.
+
+If a dev-manager has no provider app yet in `apps-catalog.json` (this was true for `cargo`/Rust and `pipx` until
+they were added), add one first, following the normal "Add an app" steps above, before wiring the
+`MANAGER_BOOTSTRAP` entry.
 
 ---
 

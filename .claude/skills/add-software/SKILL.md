@@ -74,3 +74,10 @@ Edit `src/common/apps-catalog.json` directly — no code generation step.
 1. Add the manager identifier to `CatalogManager` union in `apps-catalog-types.ts`.
 2. Add method entries in `apps-catalog.json`.
 3. Update the manager selector UI in `src/pages/software-installer/`.
+4. **Unless the manager is OS-native** (`apt`/`dnf`/`pacman`/`zypper`/`winget`), add a `MANAGER_BOOTSTRAP` entry in
+   `src/common/manager-bootstrap-catalog.ts` so the "Setup managers" tab can bootstrap it — either a `kind: 'fixed'`
+   command reused from `macos-utils.ts`/`windows-utils.ts`/`linux-utils.ts` (root managers like `brew`/`choco`/
+   `scoop`/`flatpak`/`snap`), or a `kind: 'provider-app'` entry naming the `apps-catalog.json` app id(s) that provide
+   it (dev-managers like `npm`/`go`/`uv`/`cargo`/`pipx` — add the provider app first if one doesn't exist yet). See
+   `docs/howto/add-software-to-catalog.md` for the full rules (especially why a provider app's own resolved manager
+   can never itself be another provider-resolved manager).
