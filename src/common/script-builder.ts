@@ -1,4 +1,6 @@
+import { APPS_CATALOG } from './apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogMethod, CatalogPlatform, LinuxDistro } from './apps-catalog-types';
+import { getBootstrapSource, PROVIDER_RESOLVED_MANAGERS, type BootstrapSource } from './manager-bootstrap-catalog';
 import { MANAGER_MAINTENANCE, type ManagerMaintenanceEntry } from './manager-maintenance-catalog';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -18,7 +20,10 @@ export interface BuilderConfig {
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
-function getMethodsForPlatform(app: CatalogApp, config: BuilderConfig): CatalogMethod[] | undefined {
+function getMethodsForPlatform(
+    app: CatalogApp,
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+): CatalogMethod[] | undefined {
     if (config.platform === 'linux') {
         if (!config.linuxDistro) {
             throw new Error('linuxDistro is required when platform is linux');
@@ -199,7 +204,12 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
     for (const app of apps) {
         const manager = resolveManager(app, config);
         if (!manager) {
-            lines.push(skipReason(app, config));
+            const reason = skipReason(app, config);
+            lines.push(reason);
+            const warning = reason.replace(/^#\s*/, '⚠ ');
+            lines.push(
+                isWindows ? `Write-Host "${warning}" -ForegroundColor Red` : `echo -e "\\033[0;31m${warning}\\033[0m"`,
+            );
             continue;
         }
 
@@ -377,6 +387,177 @@ export function buildManagerWideScript(
         lines.push('Write-Host "✔ $ok ok / ✖ $fail failed"');
     } else {
         lines.push('echo "✔ $SUCCESS ok / ✖ $FAILED failed"');
+    }
+
+    return lines.join('\n');
+}
+
+// ─── Manager-bootstrap ("Setup managers") script builder ──────────────────────
+
+export interface RequiredBootstrap {
+    manager: CatalogManager;
+    source: BootstrapSource;
+}
+
+/**
+ * Resolves each app's manager (same rule as install/update/etc — including fallback-picked
+ * managers the user never explicitly selected) and keeps the distinct ones that actually need
+ * bootstrapping, in first-seen order. Managers with no MANAGER_BOOTSTRAP entry for this
+ * platform/distro (OS-native managers, or ones this catalog doesn't model) are omitted.
+ */
+export function getRequiredBootstrap(apps: CatalogApp[], config: BuilderConfig): RequiredBootstrap[] {
+    const seen = new Set<CatalogManager>();
+    const result: RequiredBootstrap[] = [];
+    for (const app of apps) {
+        const manager = resolveManager(app, config);
+        if (!manager || seen.has(manager)) continue;
+        const source = getBootstrapSource(manager, config.platform, config.linuxDistro);
+        if (!source) continue;
+        seen.add(manager);
+        result.push({ manager, source });
+    }
+    return result;
+}
+
+/**
+ * Finds the first method on a provider app that is NOT itself a provider-resolved manager
+ * (npm/go/uv/cargo/pipx). This is what caps a bootstrap chain at exactly one level of
+ * indirection — a provider app can only be installed via an OS-native or root/self-contained
+ * manager, never via another dev-manager that would itself need bootstrapping.
+ */
+function getProviderInstallMethod(
+    app: CatalogApp,
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+): CatalogMethod | null {
+    const methods = getMethodsForPlatform(app, config);
+    if (!methods) return null;
+    return methods.find((m) => !PROVIDER_RESOLVED_MANAGERS.includes(m.manager)) ?? null;
+}
+
+/**
+ * Tries each candidate app id in order and returns the first one that both supports the target
+ * platform/distro and has a non-provider-resolved install method. Returns null if none do.
+ * Exposes the resolved `method` (not just its command string) so callers can check whether the
+ * manager that method itself uses (e.g. `brew` for `node`) needs its own bootstrap first.
+ */
+export function resolveProviderCommand(
+    appIds: string[],
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+): { app: CatalogApp; method: CatalogMethod; command: string } | null {
+    for (const id of appIds) {
+        const app = APPS_CATALOG.apps.find((a) => a.id === id);
+        if (!app || !app.platforms[config.platform]) continue;
+        const method = getProviderInstallMethod(app, config);
+        if (!method) continue;
+        const cmd = getCommand(method, 'install');
+        if (cmd) return { app, method, command: cmd };
+    }
+    return null;
+}
+
+/**
+ * Builds the "Setup managers" script: bootstraps every manager in `required`, either via its
+ * fixed (already fact-checked) command or by installing the resolved provider app, then always
+ * ends with a colored notice that a new shell session is needed before running Install — PATH/
+ * profile changes made here are not visible in the current one.
+ * macOS/Linux → bash (.sh); Windows → PowerShell (.ps1).
+ */
+export function buildBootstrapScript(
+    required: RequiredBootstrap[],
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+    providerChoice: Partial<Record<CatalogManager, string>> = {},
+): string {
+    const lines: string[] = [];
+    const isWindows = config.platform === 'windows';
+
+    if (isWindows) {
+        lines.push('# SETUP MANAGERS — combined (PowerShell)', '$ok=0;$fail=0');
+    } else {
+        lines.push(
+            '#!/usr/bin/env bash',
+            '# SETUP MANAGERS — combined, generated by dev.tools',
+            'set -uo pipefail; SUCCESS=0; FAILED=0',
+            'run_task(){ echo "▶ $1"; shift; if "$@"; then SUCCESS=$((SUCCESS+1)); else FAILED=$((FAILED+1)); fi; }',
+        );
+    }
+
+    if (required.length === 0) {
+        lines.push('# Nothing to set up — every manager your current selection needs is already native to this OS.');
+    }
+
+    let fnIndex = 0;
+    const emitted = new Set<CatalogManager>();
+
+    const emitFixed = (manager: CatalogManager, command: string): void => {
+        fnIndex += 1;
+        if (isWindows) {
+            lines.push(
+                `try { Write-Host "▶ setup ${manager}"; ${command}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ setup ${manager} failed: $_"; $fail++ }`,
+            );
+        } else {
+            const fnName = `_setup_${fnIndex}`;
+            lines.push(`${fnName}() {`, command, '}', `run_task "setup ${manager}" ${fnName}`);
+        }
+        emitted.add(manager);
+    };
+
+    for (const { manager, source } of required) {
+        if (emitted.has(manager)) continue;
+
+        if (source.kind === 'fixed') {
+            emitFixed(manager, source.command);
+            continue;
+        }
+
+        const chosenId = providerChoice[manager];
+        const orderedIds = chosenId ? [chosenId, ...source.appIds.filter((id) => id !== chosenId)] : source.appIds;
+        const resolved = resolveProviderCommand(orderedIds, config);
+        if (!resolved) {
+            const message = `${manager}: no known way to install it on this platform — install it manually first`;
+            lines.push(`# ${message}`);
+            lines.push(
+                isWindows
+                    ? `Write-Host "⚠ ${message}" -ForegroundColor Red`
+                    : `echo -e "\\033[0;31m⚠ ${message}\\033[0m"`,
+            );
+            continue;
+        }
+
+        // The provider app's own resolved manager (e.g. `brew` for `node`) can itself need
+        // bootstrapping — getProviderInstallMethod already guarantees it's never another
+        // provider-resolved manager, so this is at most one extra, terminal step.
+        const subManager = resolved.method.manager;
+        if (subManager !== manager && !emitted.has(subManager)) {
+            const subSource = getBootstrapSource(subManager, config.platform, config.linuxDistro);
+            if (subSource?.kind === 'fixed') {
+                emitFixed(subManager, subSource.command);
+            }
+        }
+
+        fnIndex += 1;
+        const label = `setup ${manager} (via ${resolved.app.name})`;
+        if (isWindows) {
+            lines.push(
+                `try { Write-Host "▶ ${label}"; ${resolved.command}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${label} failed: $_"; $fail++ }`,
+            );
+        } else {
+            const fnName = `_setup_${fnIndex}`;
+            lines.push(`${fnName}() {`, resolved.command, '}', `run_task "${label}" ${fnName}`);
+        }
+        emitted.add(manager);
+    }
+
+    lines.push('');
+    if (isWindows) {
+        lines.push('Write-Host "✔ $ok ok / ✖ $fail failed"');
+        lines.push(
+            'Write-Host "`n⚠ Restart PowerShell (open a new window) before running Install — new PATH entries are not visible in this session." -ForegroundColor Red',
+        );
+    } else {
+        lines.push('echo "✔ $SUCCESS ok / ✖ $FAILED failed"');
+        lines.push(
+            'echo -e "\\n\\033[0;31m⚠ Restart your terminal (or run: source ~/.zshrc / source ~/.bashrc) before running Install — new PATH entries are not visible in this session.\\033[0m"',
+        );
     }
 
     return lines.join('\n');
