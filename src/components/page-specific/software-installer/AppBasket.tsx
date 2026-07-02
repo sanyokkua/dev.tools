@@ -3,6 +3,7 @@ import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@
 import { MANAGER_LABEL, getAvailableManagers } from '@/common/catalog-utils';
 import type { BuilderConfig } from '@/common/script-builder';
 import { resolveManager, resolveMethod } from '@/common/script-builder';
+import type { UpdateScope } from '@/page-specific/software-installer/ScriptOutput';
 import React, { useMemo } from 'react';
 
 type PrefMode = 'preferred' | 'fallback';
@@ -14,6 +15,7 @@ interface AppBasketProps {
     prefMode: PrefMode;
     selectedApps: Record<string, CatalogManager | null>;
     selectedVersions: Record<string, string[]>;
+    updateScope: UpdateScope;
     onRemove: (appId: string) => void;
     onOverride: (appId: string, mgr: CatalogManager | null) => void;
     onVersionSelect: (appId: string, version: string) => void;
@@ -51,11 +53,13 @@ const AppBasket = ({
     prefMode,
     selectedApps,
     selectedVersions,
+    updateScope,
     onRemove,
     onOverride,
     onVersionSelect,
     onClear,
 }: AppBasketProps): React.JSX.Element => {
+    const overrideDisabled = updateScope === 'all-installed';
     const config: BuilderConfig = useMemo(
         () => ({
             platform,
@@ -136,29 +140,40 @@ const AppBasket = ({
                                 </span>
 
                                 {available.length > 0 && (
-                                    <div className="installer-basket-card__field">
-                                        <label htmlFor={`override-${app.id}`}>Method</label>
-                                        <select
-                                            id={`override-${app.id}`}
-                                            value={override ?? ''}
-                                            onChange={(e) =>
-                                                onOverride(app.id, (e.target.value as CatalogManager) || null)
-                                            }
-                                            aria-label={`Install method for ${app.name}`}
+                                    <>
+                                        <div
+                                            className={`installer-basket-card__field${overrideDisabled ? ' installer-override-dim' : ''}`}
                                         >
-                                            <option value="">Auto</option>
-                                            {preferred.map((m) => (
-                                                <option key={m} value={m}>
-                                                    {MANAGER_LABEL[m] ?? m}
-                                                </option>
-                                            ))}
-                                            {fallback.map((m) => (
-                                                <option key={m} value={m}>
-                                                    {MANAGER_LABEL[m] ?? m} (fallback)
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                            <label htmlFor={`override-${app.id}`}>Method</label>
+                                            <select
+                                                id={`override-${app.id}`}
+                                                value={override ?? ''}
+                                                disabled={overrideDisabled}
+                                                onChange={(e) =>
+                                                    onOverride(app.id, (e.target.value as CatalogManager) || null)
+                                                }
+                                                aria-label={`Install method for ${app.name}`}
+                                            >
+                                                <option value="">Auto</option>
+                                                {preferred.map((m) => (
+                                                    <option key={m} value={m}>
+                                                        {MANAGER_LABEL[m] ?? m}
+                                                    </option>
+                                                ))}
+                                                {fallback.map((m) => (
+                                                    <option key={m} value={m}>
+                                                        {MANAGER_LABEL[m] ?? m} (fallback)
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        {overrideDisabled && (
+                                            <p className="installer-hint">
+                                                Ignored — &quot;Everything this manager manages&quot; is selected in
+                                                Output below.
+                                            </p>
+                                        )}
+                                    </>
                                 )}
 
                                 {app.parameterized && app.versions && (

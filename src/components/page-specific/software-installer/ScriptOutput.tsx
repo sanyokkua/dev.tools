@@ -1,13 +1,20 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
+import { HIDDEN_MANAGERS } from '@/common/catalog-utils';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
-import { buildCombinedScript, buildPerAppScripts } from '@/common/script-builder';
+import {
+    buildCombinedScript,
+    buildManagerWideScript,
+    buildPerAppScripts,
+    getMaintenanceEntries,
+} from '@/common/script-builder';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import CodeSnippet from '@/elements/CodeSnippet';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 type PrefMode = 'preferred' | 'fallback';
-type Scope = 'combined' | 'per-app';
+type Scope = 'combined' | 'per-app' | 'system-wide';
+export type UpdateScope = 'selected-apps' | 'all-installed';
 
 export interface ScriptOutputProps {
     platform: CatalogPlatform;
@@ -16,6 +23,8 @@ export interface ScriptOutputProps {
     prefMode: PrefMode;
     selectedApps: Record<string, CatalogManager | null>;
     selectedVersions: Record<string, string[]>;
+    updateScope: UpdateScope;
+    onUpdateScopeChange: (scope: UpdateScope) => void;
 }
 
 const ACTION_OPTIONS: SegmentedOption[] = [
@@ -28,6 +37,12 @@ const ACTION_OPTIONS: SegmentedOption[] = [
 const SCOPE_OPTIONS: SegmentedOption[] = [
     { value: 'combined', label: 'Single combined' },
     { value: 'per-app', label: 'One per app' },
+    { value: 'system-wide', label: 'System-wide maintenance' },
+];
+
+const UPDATE_SCOPE_OPTIONS: SegmentedOption[] = [
+    { value: 'selected-apps', label: 'Selected apps only' },
+    { value: 'all-installed', label: 'Everything this manager manages' },
 ];
 
 function getSkipReason(app: CatalogApp, config: BuilderConfig): string {
@@ -53,9 +68,17 @@ const ScriptOutput = ({
     prefMode,
     selectedApps,
     selectedVersions,
+    updateScope,
+    onUpdateScopeChange,
 }: ScriptOutputProps): React.JSX.Element => {
     const [action, setAction] = useState<ScriptAction>('install');
     const [scope, setScope] = useState<Scope>('combined');
+    const [includeCleanup, setIncludeCleanup] = useState<boolean>(true);
+    const [maintenanceManagers, setMaintenanceManagers] = useState<CatalogManager[]>([]);
+
+    useEffect(() => {
+        setMaintenanceManagers([]);
+    }, [platform, linuxDistro]);
 
     const config = useMemo<BuilderConfig>(
         () => ({
@@ -73,25 +96,63 @@ const ScriptOutput = ({
 
     const selectedList = useMemo(() => APPS_CATALOG.apps.filter((a) => a.id in selectedApps), [selectedApps]);
 
-    const isEmpty = selectedList.length === 0;
-    const ext = platform === 'windows' ? 'ps1' : 'sh';
-
-    const filename = useMemo(
-        () => (scope === 'per-app' ? `${action}-scripts.${ext}` : `${action}.${ext}`),
-        [action, scope, ext],
+    const maintenanceEntries = useMemo(
+        () => getMaintenanceEntries(config).filter((e) => !HIDDEN_MANAGERS.includes(e.manager)),
+        [config],
     );
 
+    function toggleMaintenanceManager(mgr: CatalogManager): void {
+        setMaintenanceManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
+    }
+
+    const showUpdateScope = (action === 'update' || action === 'upgrade') && scope !== 'system-wide';
+    const managerWideActionValid = action === 'update' || action === 'upgrade';
+    const isManagerWideMode = scope === 'system-wide' || (updateScope === 'all-installed' && managerWideActionValid);
+    const managerWideManagers = scope === 'system-wide' ? maintenanceManagers : selectedManagers;
+    const showCleanupCheckbox = scope === 'system-wide' || updateScope === 'all-installed';
+
+    const isEmpty = isManagerWideMode ? managerWideManagers.length === 0 : selectedList.length === 0;
+    const ext = platform === 'windows' ? 'ps1' : 'sh';
+
+    const filename = useMemo(() => {
+        if (isManagerWideMode) return `${action}-maintenance.${ext}`;
+        return scope === 'per-app' ? `${action}-scripts.${ext}` : `${action}.${ext}`;
+    }, [isManagerWideMode, action, scope, ext]);
+
     const scriptContent = useMemo(() => {
-        if (isEmpty || scope === 'per-app') return '';
+        if (isManagerWideMode) {
+            if (!managerWideActionValid || managerWideManagers.length === 0) return '';
+            return buildManagerWideScript(managerWideManagers, action, config, includeCleanup);
+        }
+        if (selectedList.length === 0 || scope === 'per-app') return '';
         return buildCombinedScript(selectedList, action, config);
-    }, [isEmpty, scope, selectedList, action, config]);
+    }, [
+        isManagerWideMode,
+        managerWideActionValid,
+        managerWideManagers,
+        action,
+        config,
+        includeCleanup,
+        selectedList,
+        scope,
+    ]);
 
     const perAppScripts = useMemo(() => {
-        if (scope !== 'per-app' || isEmpty) return null;
+        if (isManagerWideMode || scope !== 'per-app' || selectedList.length === 0) return null;
         return buildPerAppScripts(selectedList, action, config);
-    }, [scope, isEmpty, selectedList, action, config]);
+    }, [isManagerWideMode, scope, selectedList, action, config]);
 
     const language = platform === 'windows' ? 'powershell' : 'bash';
+
+    const emptyMessage = useMemo(() => {
+        if (scope === 'system-wide' && !managerWideActionValid) {
+            return 'System-wide maintenance only supports Update and Upgrade — select one of those actions above.';
+        }
+        if (isManagerWideMode) {
+            return 'Select at least one package manager above to generate a maintenance script.';
+        }
+        return 'Select at least one app in Step 3 to generate a script.';
+    }, [scope, managerWideActionValid, isManagerWideMode]);
 
     return (
         <div className="installer-output">
@@ -114,18 +175,65 @@ const ScriptOutput = ({
                         aria-label="Script scope"
                     />
                 </div>
+                {showUpdateScope && (
+                    <div className="installer-output-control-group">
+                        <span className="installer-mgr-subheading">Update scope</span>
+                        <SegmentedControl
+                            options={UPDATE_SCOPE_OPTIONS}
+                            value={updateScope}
+                            onChange={(v) => onUpdateScopeChange(v as UpdateScope)}
+                            aria-label="Update scope"
+                        />
+                    </div>
+                )}
+                {scope === 'system-wide' && (
+                    <div className="installer-output-control-group">
+                        <span className="installer-mgr-subheading">Package managers</span>
+                        <div
+                            className="installer-chip-row"
+                            data-testid="maintenance-mgr-chips"
+                            role="group"
+                            aria-label="System-wide maintenance managers"
+                        >
+                            {maintenanceEntries.map((entry) => (
+                                <button
+                                    key={entry.manager}
+                                    type="button"
+                                    className={`chip${maintenanceManagers.includes(entry.manager) ? ' on' : ''}`}
+                                    aria-pressed={maintenanceManagers.includes(entry.manager)}
+                                    onClick={() => toggleMaintenanceManager(entry.manager)}
+                                >
+                                    {entry.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {showCleanupCheckbox && (
+                    <div className="installer-output-control-group">
+                        <label className="installer-checkbox-row">
+                            <input
+                                type="checkbox"
+                                checked={includeCleanup}
+                                onChange={(e) => setIncludeCleanup(e.target.checked)}
+                                aria-label="Include cleanup commands"
+                            />
+                            Include cleanup commands
+                        </label>
+                    </div>
+                )}
             </div>
 
             {isEmpty ? (
                 <p className="installer-output-empty" data-testid="output-empty">
-                    Select at least one app in Step 3 to generate a script.
+                    {emptyMessage}
                 </p>
             ) : (
                 <div data-testid="output-code">
                     <span data-testid="output-filename" style={{ display: 'none' }}>
                         {filename}
                     </span>
-                    {scope === 'per-app' && perAppScripts ? (
+                    {!isManagerWideMode && scope === 'per-app' && perAppScripts ? (
                         <div data-testid="output-per-app">
                             {selectedList.map((app) => {
                                 const script = perAppScripts[app.id];

@@ -1,13 +1,13 @@
 // src/pages/software-installer/index.tsx
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
-import { getAvailableManagers, MANAGER_LABEL } from '@/common/catalog-utils';
+import { getAvailableManagers, HIDDEN_MANAGERS, MANAGER_LABEL } from '@/common/catalog-utils';
 import { usePage } from '@/contexts/PageContext';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import ToolAbout from '@/controls/ToolAbout';
 import AppBasket from '@/page-specific/software-installer/AppBasket';
 import AppCatalog from '@/page-specific/software-installer/AppCatalog';
-import ScriptOutput from '@/page-specific/software-installer/ScriptOutput';
+import ScriptOutput, { type UpdateScope } from '@/page-specific/software-installer/ScriptOutput';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const PLATFORM_OPTIONS: SegmentedOption[] = [
@@ -25,8 +25,6 @@ const DISTRO_OPTIONS: SegmentedOption[] = [
 
 const PLATFORM_LABEL: Record<CatalogPlatform, string> = { macos: 'macOS', windows: 'Windows', linux: 'Linux' };
 
-const HIDDEN_MANAGERS: CatalogManager[] = ['mas'];
-
 type PrefMode = 'preferred' | 'fallback';
 
 const PREF_OPTIONS: SegmentedOption[] = [
@@ -42,6 +40,7 @@ const IndexPage = (): React.JSX.Element => {
     const [prefMode, setPrefMode] = useState<PrefMode>('preferred');
     const [selectedApps, setSelectedApps] = useState<Record<string, CatalogManager | null>>({});
     const [selectedVersions, setSelectedVersions] = useState<Record<string, string[]>>({});
+    const [updateScope, setUpdateScope] = useState<UpdateScope>('selected-apps');
 
     useEffect(() => {
         setPageTitle('Software Installer');
@@ -135,11 +134,11 @@ const IndexPage = (): React.JSX.Element => {
     return (
         <div className="installer-page">
             <ToolAbout routeKey="software-installer">
-                Generate <strong>install / update / upgrade / remove</strong> scripts for a catalog of 160+ apps across
-                macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select
-                apps (with per-app method override and multi-version JDKs), then build a single resilient script per
-                action or bare one-line commands per app — copy or download. The catalog and scripts are generated
-                client-side; nothing is installed by this tool.
+                Generate <strong>install / update / upgrade / remove</strong> scripts for a catalog of{' '}
+                {APPS_CATALOG.apps.length} apps across macOS, Windows and Linux. Pick a platform (and Linux distro),
+                choose preferred package managers, select apps (with per-app method override and multi-version JDKs),
+                then build a single resilient script per action or bare one-line commands per app — copy or download.
+                The catalog and scripts are generated client-side; nothing is installed by this tool.
             </ToolAbout>
             {/* Sticky summary */}
             <section className="installer-summary" aria-label="Selection summary">
@@ -272,6 +271,7 @@ const IndexPage = (): React.JSX.Element => {
                         prefMode={prefMode}
                         selectedApps={selectedApps}
                         selectedVersions={selectedVersions}
+                        updateScope={updateScope}
                         onRemove={removeApp}
                         onOverride={setOverride}
                         onVersionSelect={toggleVersion}
@@ -280,7 +280,7 @@ const IndexPage = (): React.JSX.Element => {
                 </div>
             </div>
 
-            {/* Step 4 — Output (Task 3.4) */}
+            {/* Step 4 — Output (Task 3.4, Task 4) */}
             <div className="installer-step" ref={outputRef}>
                 <div className="installer-step__label">
                     <span className="installer-step__number">4</span>
@@ -293,6 +293,8 @@ const IndexPage = (): React.JSX.Element => {
                     prefMode={prefMode}
                     selectedApps={selectedApps}
                     selectedVersions={selectedVersions}
+                    updateScope={updateScope}
+                    onUpdateScopeChange={setUpdateScope}
                 />
             </div>
         </div>

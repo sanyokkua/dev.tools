@@ -1,5 +1,6 @@
 // test/pages/software-installer.test.tsx
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { APPS_CATALOG } from '../../src/common/apps-catalog';
 import { PageProvider } from '../../src/components/contexts/PageContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/software-installer/index';
@@ -698,5 +699,50 @@ describe('Software Installer — handleBulkAdd integration', () => {
         // Nothing should be added.
         expect(screen.getByTestId('sum-apps')).toHaveTextContent('0 apps');
         expect(screen.getByTestId('basket-empty')).toBeInTheDocument();
+    });
+});
+
+describe('Software Installer — ToolAbout live app count (Task 4)', () => {
+    it('renders the live APPS_CATALOG.apps.length count, not a hardcoded string', () => {
+        localStorage.setItem('toolAbout:software-installer', 'true');
+        renderPage();
+        const text = screen.getByTestId('tool-about').textContent ?? '';
+        expect(text).toContain(`${APPS_CATALOG.apps.length} apps`);
+        expect(text).not.toContain('160+ apps');
+    });
+});
+
+describe('Software Installer — Update scope dims per-app override (Task 4)', () => {
+    it('dims and disables the per-app Method select when "Everything this manager manages" is chosen', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+
+        const methodSelect = screen.getByLabelText('Install method for Firefox') as HTMLSelectElement;
+        expect(methodSelect).not.toBeDisabled();
+
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
+        fireEvent.click(
+            within(screen.getByRole('group', { name: 'Update scope' })).getByText('Everything this manager manages'),
+        );
+
+        expect(methodSelect).toBeDisabled();
+        expect(methodSelect.closest('.installer-basket-card__field')).toHaveClass('installer-override-dim');
+    });
+
+    it('re-enables the per-app Method select when switching back to "Selected apps only"', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
+        fireEvent.click(
+            within(screen.getByRole('group', { name: 'Update scope' })).getByText('Everything this manager manages'),
+        );
+
+        const methodSelect = screen.getByLabelText('Install method for Firefox') as HTMLSelectElement;
+        expect(methodSelect).toBeDisabled();
+
+        fireEvent.click(within(screen.getByRole('group', { name: 'Update scope' })).getByText('Selected apps only'));
+        expect(methodSelect).not.toBeDisabled();
     });
 });

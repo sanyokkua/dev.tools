@@ -1,10 +1,12 @@
 import type { CatalogApp } from '@/common/apps-catalog-types';
+import { MANAGER_MAINTENANCE } from '@/common/manager-maintenance-catalog';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
     buildCombinedScript,
     buildManagerWideScript,
     buildPerAppScripts,
     getCommand,
+    getMaintenanceEntries,
     resolveManager,
     resolveMethod,
 } from '@/common/script-builder';
@@ -1559,5 +1561,27 @@ describe('buildManagerWideScript', () => {
         expect(upgradeScript).toContain('brew update && brew upgrade --greedy');
         expect(updateScript).toContain('# UPDATE — manager-wide maintenance');
         expect(upgradeScript).toContain('# UPGRADE — manager-wide maintenance');
+    });
+});
+
+describe('getMaintenanceEntries', () => {
+    it('returns MANAGER_MAINTENANCE.macos for platform=macos', () => {
+        expect(getMaintenanceEntries({ platform: 'macos' })).toEqual(MANAGER_MAINTENANCE.macos);
+    });
+
+    it('returns MANAGER_MAINTENANCE.windows for platform=windows', () => {
+        expect(getMaintenanceEntries({ platform: 'windows' })).toEqual(MANAGER_MAINTENANCE.windows);
+    });
+
+    it('returns MANAGER_MAINTENANCE.linux[distro] for platform=linux', () => {
+        expect(getMaintenanceEntries({ platform: 'linux', linuxDistro: 'debian' })).toEqual(
+            MANAGER_MAINTENANCE.linux.debian,
+        );
+    });
+
+    it('throws when platform is linux and linuxDistro is not provided', () => {
+        expect(() => getMaintenanceEntries({ platform: 'linux' })).toThrow(
+            'linuxDistro is required when platform is linux',
+        );
     });
 });

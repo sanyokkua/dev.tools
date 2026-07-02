@@ -373,6 +373,10 @@
     }
 }
 
+.installer-override-dim {
+    opacity: 0.4;
+}
+
 .installer-basket-card__versions {
     display: flex;
     flex-direction: column;
@@ -424,6 +428,15 @@
     color: var(--muted);
     margin: 0;
     padding: var(--s2) 0;
+}
+
+.installer-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: 13px;
+    margin: var(--s2) 0;
+    cursor: pointer;
 }
 
 @media (max-width: 900px) {

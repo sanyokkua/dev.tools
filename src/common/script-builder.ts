@@ -14,8 +14,6 @@ export interface BuilderConfig {
     overrides: Record<string, CatalogManager>;
     fallbackMode: FallbackMode;
     selectedVersions: Record<string, string[]>;
-    maintenanceScope?: 'apps' | 'all-installed';
-    includeCleanup?: boolean;
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
@@ -288,7 +286,9 @@ export function buildPerAppScripts(
 
 // ─── Manager-wide maintenance script builder ──────────────────────────────────
 
-function getMaintenanceEntries(config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>): ManagerMaintenanceEntry[] {
+export function getMaintenanceEntries(
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+): ManagerMaintenanceEntry[] {
     if (config.platform === 'linux') {
         if (!config.linuxDistro) {
             throw new Error('linuxDistro is required when platform is linux');
