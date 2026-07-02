@@ -358,8 +358,8 @@ Views:
 | JWT                   | `/jwt`                   | Custom   | `src/common/jwt-utils.ts`                                                                                      |
 | Cron                  | `/cron`                  | Custom   | `src/common/cron-utils.ts`                                                                                     |
 | QR                    | `/qr`                    | Custom   | `src/common/qr-utils.ts`                                                                                       |
-| Converting Tools      | `/converting-tools`      | Custom   | `src/common/converting/` (disabled in sidebar)                                                                 |
-| Date Tools            | `/date-tools`            | Custom   | `src/common/date-utils.ts` (disabled in sidebar)                                                               |
+| Converting Tools      | `/converting-tools`      | Custom   | `src/common/converting/`                                                                                       |
+| Date Tools            | `/date-tools`            | Custom   | `src/common/date-utils.ts`                                                                                     |
 | Software Installer    | `/software-installer`    | Custom   | `src/common/apps-catalog.json`, `src/common/script-builder.ts`, `src/common/catalog-utils.ts`                  |
 | macOS Setup           | `/mac-os-setup`          | Custom   | `src/common/macos-utils.ts`, `src/common/vram-script-generator.ts`                                             |
 | Windows Setup         | `/windows-setup`         | Custom   | `src/common/windows-utils.ts`                                                                                  |

@@ -4,7 +4,8 @@
 // and captures before/after screenshots. Called automatically by npm run verify:ui
 // after the static responsive checks in verify-ui.mjs.
 //
-// Flows covered: Software Installer (basic + multi-JDK), Terminal Utils, Hashing,
+// Flows covered: Software Installer (basic + multi-JDK + system-wide maintenance),
+// Dev Environment Setup, Terminal Utils, Hashing,
 // Converting (number-base + data-format + Markdown table), Git Cheat Sheet,
 // Markdown + Mermaid (valid + invalid), Prompts Collection (AutoTextarea),
 // JSON Formatter (JSONPath), XML Formatter (XPath), Code Editor (Format button),
@@ -30,10 +31,12 @@ const OUT = '.tmp/verify-screens';
 mkdirSync(OUT, { recursive: true });
 
 const failures = [];
+let ranCount = 0;
 const HEADLESS = process.env.HEADLESS !== 'false';
 const browser = await chromium.launch(process.env.CI ? { headless: true } : { channel: 'chrome', headless: HEADLESS });
 
 async function runSmoke(name, fn) {
+    ranCount++;
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const page = await ctx.newPage();
     const consoleErrors = [];
@@ -113,6 +116,27 @@ await runSmoke('installer-multi-jdk', async (page) => {
     }
 
     await page.screenshot({ path: `${OUT}/smoke__installer_multi_jdk__after.png` });
+});
+
+// ── 1c. Software Installer — system-wide maintenance mode ────────────────────
+await runSmoke('installer-system-wide', async (page) => {
+    await page.goto(BASE + '/software-installer', { waitUntil: 'networkidle' });
+
+    // System-wide maintenance only supports Update / Upgrade actions
+    await page.locator('[aria-label="Script action"] button', { hasText: 'Update' }).click();
+
+    // Switch scope to System-wide maintenance
+    await page.locator('[aria-label="Script scope"] button', { hasText: 'System-wide maintenance' }).click();
+
+    // Select a package manager chip
+    await page.waitForSelector('[data-testid="maintenance-mgr-chips"] button', { timeout: 5000 });
+    await page.locator('[data-testid="maintenance-mgr-chips"] button').first().click();
+
+    await page.waitForSelector('[data-testid="output-code"]', { timeout: 5000 });
+    const text = await page.locator('[data-testid="output-code"]').innerText();
+    if (!text.trim()) throw new Error('output-code is empty in system-wide maintenance mode');
+
+    await page.screenshot({ path: `${OUT}/smoke__installer_system_wide__after.png` });
 });
 
 // ── 2. Terminal Utils ─────────────────────────────────────────────────────────
@@ -1361,6 +1385,21 @@ await runSmoke('prompts-cmdk-escape-closes', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__prompts-cmdk__escaped.png` });
 });
 
+// ── Dev Environment Setup — select a manager, see instructions ───────────────
+await runSmoke('dev-env-setup', async (page) => {
+    await page.goto(BASE + '/dev-environment-setup', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${OUT}/smoke__dev_env_setup__before.png` });
+
+    await page.waitForSelector('[data-testid="manager-chips"] button', { timeout: 5000 });
+    await page.locator('[data-testid="manager-chips"] button').first().click();
+
+    await page.waitForSelector('.dev-env-manager-group', { timeout: 5000 });
+    const heading = await page.locator('.dev-env-manager-heading').first().innerText();
+    if (!heading.trim()) throw new Error('manager setup heading is empty after selecting a manager');
+
+    await page.screenshot({ path: `${OUT}/smoke__dev_env_setup__after.png` });
+});
+
 // ── PWA offline deep-link restore ─────────────────────────────────────────────
 // Only runs when TEST_PWA_OFFLINE=true (requires npm run build + npx serve out).
 // Simulates re-opening a previously visited deep link while offline: the SW
@@ -1415,5 +1454,4 @@ if (failures.length) {
     process.exit(1);
 }
 
-const totalFlows = process.env.TEST_PWA_OFFLINE === 'true' ? 37 : 36;
-console.log(`\nSMOKE OK — all ${totalFlows} interaction flows passed. Screenshots in ` + OUT);
+console.log(`\nSMOKE OK — all ${ranCount} interaction flows passed. Screenshots in ` + OUT);

@@ -20,11 +20,11 @@ Static Next.js export deployed to GitHub Pages. Browser-based developer utilitie
 
 ### ApplicationSidebar
 
-`src/components/app-layout/ApplicationSidebar.tsx` — wraps the `Sidebar` element. 24 nav items across 3 groups.
+`src/components/app-layout/ApplicationSidebar.tsx` — wraps the `Sidebar` element. 25 nav items across 3 groups.
 
 ---
 
-## Sidebar Routes (24 total)
+## Sidebar Routes (25 total)
 
 ### Text & Code (17 items)
 
@@ -48,15 +48,16 @@ Static Next.js export deployed to GitHub Pages. Browser-based developer utilitie
 | Converting Tools | `/converting-tools` |
 | Date Tools       | `/date-tools`       |
 
-### Install & Setup (5 items)
+### Install & Setup (6 items)
 
-| Label              | Route                 |
-| ------------------ | --------------------- |
-| Software Installer | `/software-installer` |
-| macOS Setup        | `/mac-os-setup`       |
-| Windows Setup      | `/windows-setup`      |
-| Linux Setup        | `/linux-setup`        |
-| Git Cheat-sheet    | `/git-cheat-sheet`    |
+| Label                 | Route                    |
+| --------------------- | ------------------------ |
+| Software Installer    | `/software-installer`    |
+| macOS Setup           | `/mac-os-setup`          |
+| Windows Setup         | `/windows-setup`         |
+| Linux Setup           | `/linux-setup`           |
+| Git Cheat-sheet       | `/git-cheat-sheet`       |
+| Dev Environment Setup | `/dev-environment-setup` |
 
 ### AI (2 items)
 
@@ -64,8 +65,6 @@ Static Next.js export deployed to GitHub Pages. Browser-based developer utilitie
 | ------------------- | ---------------------- |
 | LLM VRAM Calculator | `/llm-vram-calculator` |
 | Prompts Collection  | `/prompts-collection`  |
-
-> **Note:** `/converting-tools`, `/date-tools`, and `/windows-setup` have routes but are hidden/disabled in the sidebar.
 
 ---
 

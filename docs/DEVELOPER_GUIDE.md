@@ -66,11 +66,11 @@ npx jest test/path/to/file.test.ts
 
 ```
 src/
-├── pages/              Next.js routes (24 routes, Pages Router)
+├── pages/              Next.js routes (25 routes, Pages Router)
 │   ├── index.tsx       Dashboard /
 │   ├── string-utils/
 │   ├── json-formatter/
-│   └── ...             (21 more tool folders)
+│   └── ...             (22 more tool folders)
 ├── components/
 │   ├── app-layout/     ApplicationLayout, ApplicationTopBar, ApplicationSidebar
 │   ├── contexts/       5 React Context providers
@@ -105,7 +105,7 @@ All live in `src/components/contexts/`.
 
 ## Page patterns
 
-Three patterns cover all 24 routes:
+Three patterns cover all 25 routes:
 
 | Pattern      | Example page          | Description                                                                     |
 | ------------ | --------------------- | ------------------------------------------------------------------------------- |
