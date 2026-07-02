@@ -542,6 +542,107 @@ describe('Software Installer — Step 4: Output', () => {
     });
 });
 
+describe('Software Installer — Setup managers tab', () => {
+    beforeEach(() => {
+        Object.defineProperty(navigator, 'clipboard', {
+            value: { writeText: jest.fn().mockResolvedValue(undefined) },
+            configurable: true,
+        });
+        global.URL.createObjectURL = jest.fn(() => 'blob:fake');
+        global.URL.revokeObjectURL = jest.fn();
+    });
+
+    it('renders a leading "Setup managers" tab in the action group', () => {
+        renderPage();
+        const grp = screen.getByRole('group', { name: 'Script action' });
+        expect(within(grp).getByText('Setup managers')).toBeInTheDocument();
+    });
+
+    it('shows the empty-state message when nothing resolves to a bootstrap-needing manager', () => {
+        renderPage();
+        // No manager selected — resolveManager returns null for every app, so nothing is "required".
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        expect(screen.getByTestId('output-setup')).toHaveTextContent('Nothing to set up');
+    });
+
+    it('shows the required manager and a runnable script when npm is needed', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        const setupBody = screen.getByTestId('output-setup');
+        expect(setupBody).toHaveTextContent('npm');
+        expect(setupBody.textContent).toContain('brew');
+    });
+
+    it('renders a provider dropdown when a manager has more than one candidate app', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        expect(screen.getByLabelText('Provider app for npm')).toBeInTheDocument();
+    });
+
+    it('switching the provider dropdown updates the generated script', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        fireEvent.change(screen.getByLabelText('Provider app for npm'), { target: { value: 'nvm' } });
+        expect(screen.getByTestId('bootstrap-required-list').textContent).not.toContain('brew install node');
+        expect(screen.getByTestId('output-setup').textContent).toContain('nvm');
+    });
+
+    it('renders a "Full guide" link pointing at the Dev Environment Setup page for npm', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        expect(screen.getByTestId('bootstrap-guide-npm')).toHaveAttribute('href', '/dev-environment-setup');
+    });
+
+    it('hides Scope/Update-scope/cleanup controls while on the Setup managers tab', () => {
+        renderPage();
+        fireEvent.click(screen.getByLabelText('Select Firefox'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        expect(screen.queryByRole('group', { name: 'Script scope' })).not.toBeInTheDocument();
+    });
+
+    it('shows a banner on other tabs when the selection needs a manager not native to the OS', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        expect(screen.getByTestId('bootstrap-banner')).toHaveTextContent('npm');
+    });
+
+    it('hides the banner while already on the Setup managers tab', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Setup managers'));
+        expect(screen.queryByTestId('bootstrap-banner')).not.toBeInTheDocument();
+    });
+
+    it('the banner button switches to the Setup managers tab', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('npm'));
+        fireEvent.click(screen.getByLabelText('Select Corepack'));
+        fireEvent.click(screen.getByRole('button', { name: /Set up managers/i }));
+        expect(
+            within(screen.getByRole('group', { name: 'Script action' }))
+                .getByText('Setup managers')
+                .closest('button'),
+        ).toHaveAttribute('aria-pressed', 'true');
+        expect(screen.getByTestId('output-setup')).toBeInTheDocument();
+    });
+
+    it('does not show the banner when no apps are selected', () => {
+        renderPage();
+        expect(screen.queryByTestId('bootstrap-banner')).not.toBeInTheDocument();
+    });
+});
+
 describe('Software Installer — Multi-version JDK selection', () => {
     it('shows version chip group instead of a version select for parameterized apps', () => {
         renderPage();

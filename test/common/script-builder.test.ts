@@ -1,14 +1,18 @@
+import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp } from '@/common/apps-catalog-types';
 import { MANAGER_MAINTENANCE } from '@/common/manager-maintenance-catalog';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
+    buildBootstrapScript,
     buildCombinedScript,
     buildManagerWideScript,
     buildPerAppScripts,
     getCommand,
     getMaintenanceEntries,
+    getRequiredBootstrap,
     resolveManager,
     resolveMethod,
+    resolveProviderCommand,
 } from '@/common/script-builder';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -656,6 +660,46 @@ describe('buildCombinedScript', () => {
         it('emits no-version comment for parameterized app without selectedVersions entry', () => {
             const script = buildCombinedScript([CORRETTO], 'install', macosConfig);
             expect(script).toContain('no version selected — skipped');
+        });
+
+        describe('colored terminal echo (in addition to the # comment)', () => {
+            it('emits a red PowerShell Write-Host alongside the platform-skip comment on Windows', () => {
+                const script = buildCombinedScript([MACOS_ONLY_APP], 'install', windowsConfig);
+                expect(script).toContain('# IINA: no platform build — skipped');
+                expect(script).toContain('Write-Host "⚠ IINA: no platform build — skipped" -ForegroundColor Red');
+            });
+
+            it('emits a red bash echo alongside the platform-skip comment on Linux', () => {
+                const script = buildCombinedScript([MACOS_ONLY_APP], 'install', linuxDebianConfig);
+                expect(script).toContain('# IINA: no platform build — skipped');
+                expect(script).toContain('echo -e "\\033[0;31m⚠ IINA: no platform build — skipped\\033[0m"');
+            });
+
+            it('emits a red bash echo alongside the no-preferred-manager comment', () => {
+                const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+                const script = buildCombinedScript([FIREFOX], 'install', config);
+                expect(script).toContain(
+                    'echo -e "\\033[0;31m⚠ Firefox: no preferred manager (fallback off) — skipped\\033[0m"',
+                );
+            });
+
+            it('emits a red bash echo alongside the no-version-selected comment', () => {
+                const script = buildCombinedScript([CORRETTO], 'install', macosConfig);
+                expect(script).toContain('⚠ Amazon Corretto: no version selected — skipped');
+            });
+
+            it('does NOT add a colored echo for the distinct "no <action> command" skip reason', () => {
+                const config: BuilderConfig = {
+                    platform: 'linux',
+                    linuxDistro: 'debian',
+                    managers: ['snap'],
+                    overrides: {},
+                    fallbackMode: 'preferred-only',
+                    selectedVersions: {},
+                };
+                const script = buildCombinedScript([SNAP_ONLY_APP], 'update', config);
+                expect(script).not.toContain('\\033[0;31m');
+            });
         });
     });
 
@@ -1583,5 +1627,164 @@ describe('getMaintenanceEntries', () => {
         expect(() => getMaintenanceEntries({ platform: 'linux' })).toThrow(
             'linuxDistro is required when platform is linux',
         );
+    });
+});
+
+// ─── Manager-bootstrap ("Setup managers") ──────────────────────────────────────
+
+const NPM_ONLY_APP: CatalogApp = {
+    id: 'foo',
+    name: 'Foo',
+    category: 'test',
+    description: 'app only installable via npm',
+    platforms: { macos: true, windows: true, linux: true },
+    methods: {
+        macos: [{ manager: 'npm', install: 'npm install -g foo' }],
+        windows: [{ manager: 'npm', install: 'npm install -g foo' }],
+        linux: { debian: [{ manager: 'npm', install: 'npm install -g foo' }] },
+    },
+};
+
+const CARGO_ONLY_APP: CatalogApp = {
+    id: 'bar',
+    name: 'Bar',
+    category: 'test',
+    description: 'app only installable via cargo',
+    platforms: { macos: true, windows: false, linux: false },
+    methods: { macos: [{ manager: 'cargo', install: 'cargo install bar' }] },
+};
+
+describe('getRequiredBootstrap', () => {
+    it('returns empty for apps that resolve entirely via OS-native managers', () => {
+        const required = getRequiredBootstrap([FIREFOX], linuxDebianConfig);
+        expect(required).toEqual([]);
+    });
+
+    it('includes a manager needed by fallback resolution, even when never explicitly selected', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: [], fallbackMode: 'fallback' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        expect(required).toHaveLength(1);
+        expect(required[0].manager).toBe('npm');
+        expect(required[0].source.kind).toBe('provider-app');
+    });
+
+    it('dedupes when multiple apps need the same manager', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP, { ...NPM_ONLY_APP, id: 'foo2', name: 'Foo2' }], config);
+        expect(required).toHaveLength(1);
+    });
+
+    it('omits apps that are skipped entirely (no manager resolved)', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        expect(required).toEqual([]);
+    });
+});
+
+describe('resolveProviderCommand', () => {
+    it('resolves npm via node on macOS, substituting the newest listed version', () => {
+        const resolved = resolveProviderCommand(['node', 'nvm', 'fnm'], { platform: 'macos' });
+        expect(resolved?.app.id).toBe('node');
+        expect(resolved?.command).not.toContain('{version}');
+        expect(resolved?.method.manager).toBe('brew');
+    });
+
+    it('falls through to the next candidate when the first is unavailable on this platform', () => {
+        // nvm has no windows-incompatible id here; use an id that genuinely can't resolve to force fallthrough.
+        const resolved = resolveProviderCommand(['does-not-exist', 'node'], { platform: 'macos' });
+        expect(resolved?.app.id).toBe('node');
+    });
+
+    it('returns null when no candidate resolves', () => {
+        const resolved = resolveProviderCommand(['does-not-exist'], { platform: 'macos' });
+        expect(resolved).toBeNull();
+    });
+
+    it('never resolves through another provider-resolved manager — the uv app itself is the adversarial case', () => {
+        // The real `uv` catalog app's own Linux methods include `pipx` and `cargo` (ways to install
+        // uv), which are themselves provider-resolved managers. Resolving uv as a *provider* must
+        // skip those and land on the self-contained `script` method instead, or the cycle guard is broken.
+        const uvApp = APPS_CATALOG.apps.find((a) => a.id === 'uv')!;
+        const resolved = resolveProviderCommand(['uv'], { platform: 'linux', linuxDistro: 'debian' });
+        expect(resolved?.app.id).toBe('uv');
+        expect(resolved?.method.manager).not.toBe('pipx');
+        expect(resolved?.method.manager).not.toBe('cargo');
+        // sanity: confirm the fixture assumption still holds (uv really does list pipx/cargo methods)
+        expect(uvApp.methods.linux?.debian?.some((m) => m.manager === 'pipx')).toBe(true);
+        expect(uvApp.methods.linux?.debian?.some((m) => m.manager === 'cargo')).toBe(true);
+    });
+});
+
+describe('buildBootstrapScript', () => {
+    it('shows the empty-state comment when nothing is required', () => {
+        const script = buildBootstrapScript([], { platform: 'macos' });
+        expect(script).toContain('Nothing to set up');
+    });
+
+    it('emits a fixed-source manager (brew) as a single idempotent step', () => {
+        const source = { kind: 'fixed' as const, command: 'install-brew', verify: 'brew --version', guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'brew', source }], { platform: 'macos' });
+        expect(script).toContain('run_task "setup brew" _setup_1');
+        expect(script).toContain('install-brew');
+    });
+
+    it('bootstraps the sub-dependency (brew) before installing a provider app (node) that needs it', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        const script = buildBootstrapScript(required, config);
+
+        expect(script).toContain('run_task "setup brew" _setup_1');
+        expect(script).toContain('brew install node@');
+        expect(script).toContain('run_task "setup npm (via Node.js)" _setup_2');
+        // brew must appear before npm in the emitted script
+        expect(script.indexOf('setup brew')).toBeLessThan(script.indexOf('setup npm'));
+    });
+
+    it('lets providerChoice pick an alternate provider app (nvm instead of node)', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        const script = buildBootstrapScript(required, config, { npm: 'nvm' });
+        expect(script).toContain('setup npm (via nvm)');
+        expect(script).not.toContain('via Node.js');
+    });
+
+    it('emits a colored skip warning when a required manager has no known install path', () => {
+        const badSource = { kind: 'provider-app' as const, appIds: ['does-not-exist'], guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'cargo', source: badSource }], { platform: 'macos' });
+        expect(script).toContain('# cargo: no known way to install it on this platform');
+        expect(script).toContain('\\033[0;31m⚠ cargo: no known way to install it');
+    });
+
+    it('always appends a restart-your-shell notice on bash', () => {
+        const script = buildBootstrapScript([], { platform: 'macos' });
+        expect(script).toContain('Restart your terminal');
+    });
+
+    it('always appends a restart-PowerShell notice on Windows', () => {
+        const script = buildBootstrapScript([], { platform: 'windows' });
+        expect(script).toContain('Restart PowerShell');
+    });
+
+    it('emits PowerShell try/catch for a fixed source on Windows', () => {
+        const source = { kind: 'fixed' as const, command: 'choco-install', verify: 'choco -v', guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'choco', source }], { platform: 'windows' });
+        expect(script).toContain('try { Write-Host "▶ setup choco"; choco-install;');
+    });
+
+    it('resolves cargo via the rust provider app on macOS, bootstrapping brew first', () => {
+        const config: BuilderConfig = {
+            platform: 'macos',
+            managers: ['cargo'],
+            overrides: {},
+            fallbackMode: 'preferred-only',
+            selectedVersions: {},
+        };
+        const required = getRequiredBootstrap([CARGO_ONLY_APP], config);
+        expect(required).toHaveLength(1);
+        expect(required[0].manager).toBe('cargo');
+        const script = buildBootstrapScript(required, config);
+        expect(script).toContain('setup brew');
+        expect(script).toContain('brew install rust');
+        expect(script).toContain('setup cargo (via Rust)');
     });
 });
