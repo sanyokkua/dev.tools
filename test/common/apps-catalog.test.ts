@@ -63,4 +63,60 @@ describe('APPS_CATALOG integrity', () => {
             }
         }
     });
+
+    it('every method with a repoSetup also has a non-empty install string', () => {
+        for (const app of APPS_CATALOG.apps) {
+            for (const method of app.methods.macos ?? []) {
+                if (method.repoSetup) expect(method.install).toBeTruthy();
+            }
+            for (const method of app.methods.windows ?? []) {
+                if (method.repoSetup) expect(method.install).toBeTruthy();
+            }
+            if (app.methods.linux) {
+                for (const methods of Object.values(app.methods.linux)) {
+                    for (const method of methods ?? []) {
+                        if (method.repoSetup) expect(method.install).toBeTruthy();
+                    }
+                }
+            }
+        }
+    });
+
+    it('migrated/added JDK vendor repoSetup entries contain the expected key phrase', () => {
+        const apps = APPS_CATALOG.apps;
+        const findMethod = (appId: string, distro: string, manager: string) => {
+            const app = apps.find((a) => a.id === appId);
+            const methods = app?.methods.linux?.[distro as keyof typeof app.methods.linux] ?? [];
+            return methods.find((m) => m.manager === manager);
+        };
+
+        expect(findMethod('temurin', 'debian', 'apt')?.repoSetup).toContain('packages.adoptium.net');
+        expect(findMethod('temurin', 'fedora', 'dnf')?.repoSetup).toContain('adoptium.repo');
+        expect(findMethod('temurin', 'suse', 'zypper')?.repoSetup).toContain('packages.adoptium.net');
+
+        expect(findMethod('corretto', 'debian', 'apt')?.repoSetup).toContain('apt.corretto.aws');
+        expect(findMethod('corretto', 'fedora', 'dnf')?.repoSetup).toContain('yum.corretto.aws');
+        expect(findMethod('corretto', 'suse', 'zypper')?.repoSetup).toContain('yum.corretto.aws');
+
+        expect(findMethod('microsoft-openjdk', 'suse', 'zypper')?.repoSetup).toContain(
+            'packages.microsoft.com/config/opensuse',
+        );
+
+        expect(findMethod('zulu', 'debian', 'apt')?.repoSetup).toContain('repos.azul.com');
+        expect(findMethod('zulu', 'fedora', 'dnf')?.repoSetup).toContain('repos.azul.com');
+        expect(findMethod('zulu', 'suse', 'zypper')?.repoSetup).toContain('cdn.azul.com');
+    });
+
+    it('microsoft-openjdk apt method uses a real repoSetup, not the old placeholder text', () => {
+        const app = APPS_CATALOG.apps.find((a) => a.id === 'microsoft-openjdk');
+        const method = app?.methods.linux?.debian?.find((m) => m.manager === 'apt');
+        expect(method?.install).not.toContain('register the Microsoft');
+        expect(method?.repoSetup).toContain('packages-microsoft-prod.deb');
+    });
+
+    it('microsoft-openjdk has no fedora methods (no documented install path exists)', () => {
+        const app = APPS_CATALOG.apps.find((a) => a.id === 'microsoft-openjdk');
+        expect(app?.methods.linux?.fedora).toBeDefined();
+        expect(app?.methods.linux?.fedora).toHaveLength(0);
+    });
 });

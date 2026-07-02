@@ -66,6 +66,7 @@ export interface CatalogMethod {
     manager: CatalogManager;
     id?: string;
     kind?: 'cask' | 'formula';
+    repoSetup?: string; // one-time repo/GPG-key registration; runs before `install`; never re-run for update/remove
     install: string;
     update?: string;
     upgrade?: string;

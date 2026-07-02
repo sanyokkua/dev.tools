@@ -11283,7 +11283,8 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "wget -O - https://apt.corretto.aws/corretto.key | sudo gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && echo \"deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main\" | sudo tee /etc/apt/sources.list.d/corretto.list && sudo apt-get update && sudo apt-get install -y java-{version}-amazon-corretto-jdk",
+                            "repoSetup": "wget -O - https://apt.corretto.aws/corretto.key | sudo gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && echo \"deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main\" | sudo tee /etc/apt/sources.list.d/corretto.list && sudo apt-get update",
+                            "install": "sudo apt-get install -y java-{version}-amazon-corretto-jdk",
                             "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y java-{version}-amazon-corretto-jdk",
                             "remove": "sudo apt-get remove -y java-{version}-amazon-corretto-jdk",
                             "verify": "java -version"
@@ -11292,17 +11293,27 @@
                     "fedora": [
                         {
                             "manager": "dnf",
-                            "install": "sudo rpm --import https://yum.corretto.aws/corretto.key && sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo && sudo dnf install -y java-{version}-amazon-corretto-devel",
+                            "repoSetup": "sudo rpm --import https://yum.corretto.aws/corretto.key && sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo",
+                            "install": "sudo dnf install -y java-{version}-amazon-corretto-devel",
                             "update": "sudo dnf upgrade -y java-{version}-amazon-corretto-devel",
                             "remove": "sudo dnf remove -y java-{version}-amazon-corretto-devel",
                             "verify": "java -version"
                         }
                     ],
                     "arch": [],
-                    "suse": []
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "repoSetup": "sudo rpm --import https://yum.corretto.aws/corretto.key && sudo zypper addrepo https://yum.corretto.aws/corretto.repo && sudo zypper refresh",
+                            "install": "sudo zypper install -y java-{version}-amazon-corretto-devel",
+                            "update": "sudo zypper update -y java-{version}-amazon-corretto-devel",
+                            "remove": "sudo zypper remove -y java-{version}-amazon-corretto-devel",
+                            "verify": "java -version"
+                        }
+                    ]
                 }
             },
-            "notes": "Free AWS long-term support. All five majors (8, 11, 17, 21, 25) available. apt package schema is `java-{version}-amazon-corretto-jdk`; yum/dnf uses `…-devel`. SDKMAN!: `sdk install java {version}.x.y-amzn`. Deep JAVA_HOME / multi-JDK guidance in java.md."
+            "notes": "Free AWS long-term support. All five majors (8, 11, 17, 21, 25) available. apt package schema is `java-{version}-amazon-corretto-jdk`; yum/dnf/zypper uses `…-devel`. SDKMAN!: `sdk install java {version}.x.y-amzn`. Deep JAVA_HOME / multi-JDK guidance in java.md."
         },
         {
             "id": "temurin",
@@ -11356,7 +11367,8 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "sudo apt install -y wget apt-transport-https gpg && wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null && echo \"deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main\" | sudo tee /etc/apt/sources.list.d/adoptium.list && sudo apt update && sudo apt install -y temurin-{version}-jdk",
+                            "repoSetup": "sudo apt install -y wget apt-transport-https gpg && wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null && echo \"deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main\" | sudo tee /etc/apt/sources.list.d/adoptium.list && sudo apt update",
+                            "install": "sudo apt install -y temurin-{version}-jdk",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y temurin-{version}-jdk",
                             "remove": "sudo apt remove -y temurin-{version}-jdk",
                             "verify": "java -version"
@@ -11365,17 +11377,27 @@
                     "fedora": [
                         {
                             "manager": "dnf",
-                            "install": "cat <<'EOF' | sudo tee /etc/yum.repos.d/adoptium.repo\n[Adoptium]\nname=Adoptium\nbaseurl=https://packages.adoptium.net/artifactory/rpm/fedora/$releasever/$basearch\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public\nEOF\nsudo dnf install -y temurin-{version}-jdk",
+                            "repoSetup": "cat <<'EOF' | sudo tee /etc/yum.repos.d/adoptium.repo\n[Adoptium]\nname=Adoptium\nbaseurl=https://packages.adoptium.net/artifactory/rpm/fedora/$releasever/$basearch\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public\nEOF",
+                            "install": "sudo dnf install -y temurin-{version}-jdk",
                             "update": "sudo dnf upgrade -y temurin-{version}-jdk",
                             "remove": "sudo dnf remove -y temurin-{version}-jdk",
                             "verify": "java -version"
                         }
                     ],
                     "arch": [],
-                    "suse": []
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "repoSetup": "sudo zypper ar -f https://packages.adoptium.net/artifactory/rpm/opensuse/$(. /etc/os-release; echo $VERSION_ID)/$(uname -m) adoptium",
+                            "install": "sudo zypper install -y temurin-{version}-jdk",
+                            "update": "sudo zypper update -y temurin-{version}-jdk",
+                            "remove": "sudo zypper remove -y temurin-{version}-jdk",
+                            "verify": "java -version"
+                        }
+                    ]
                 }
             },
-            "notes": "Most widely used free, vendor-neutral build. All five majors (8, 11, 17, 21, 25) available. apt/dnf package schema is `temurin-{version}-jdk`. On Linux Mint substitute UBUNTU_CODENAME for VERSION_CODENAME. SDKMAN!: `sdk install java {version}.x.y-tem`."
+            "notes": "Most widely used free, vendor-neutral build. All five majors (8, 11, 17, 21, 25) available. apt/dnf/zypper package schema is `temurin-{version}-jdk`. On Linux Mint substitute UBUNTU_CODENAME for VERSION_CODENAME. zypper RPMs are built for SLES 12/15 and openSUSE derivatives; other versions may work but are untested per Adoptium's own docs. SDKMAN!: `sdk install java {version}.x.y-tem`."
         },
         {
             "id": "microsoft-openjdk",
@@ -11429,26 +11451,28 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "register the Microsoft repo for your distro (see learn.microsoft.com/java/openjdk/install), then: sudo apt install -y msopenjdk-{version}",
-                            "update": "sudo apt update && sudo apt install --only-upgrade -y msopenjdk-{version}",
-                            "remove": "sudo apt remove -y msopenjdk-{version}",
+                            "repoSetup": ". /etc/os-release && wget https://packages.microsoft.com/config/${ID}/${VERSION_ID}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb && sudo apt-get install -y apt-transport-https && sudo apt-get update",
+                            "install": "sudo apt-get install -y msopenjdk-{version}",
+                            "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y msopenjdk-{version}",
+                            "remove": "sudo apt-get remove -y msopenjdk-{version}",
                             "verify": "java -version"
                         }
                     ],
-                    "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "register the Microsoft yum repo, then `sudo dnf install -y msopenjdk-{version}`",
-                            "update": "sudo dnf upgrade -y msopenjdk-{version}",
-                            "remove": "sudo dnf remove -y msopenjdk-{version}",
-                            "verify": "java -version"
-                        }
-                    ],
+                    "fedora": [],
                     "arch": [],
-                    "suse": []
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "repoSetup": "sudo rpm -Uvh https://packages.microsoft.com/config/opensuse/15/packages-microsoft-prod.rpm && sudo zypper update",
+                            "install": "sudo zypper install msopenjdk-{version}",
+                            "update": "sudo zypper update msopenjdk-{version}",
+                            "remove": "sudo zypper remove msopenjdk-{version}",
+                            "verify": "java -version"
+                        }
+                    ]
                 }
             },
-            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`.",
+            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`. No documented Fedora install path exists for this vendor — use the generic TAR.GZ archive, or prefer Temurin/Corretto/Zulu on Fedora, all of which have genuine dnf repos there. The apt bootstrap (packages-microsoft-prod.deb) is validated only for Ubuntu 18.04/20.04/22.04/24.04 and Debian 10–12; other versions should use the generic TAR.GZ archive instead. The openSUSE/SLES zypper `update` step will interactively prompt to accept the new repo's signing key.",
             "verifyBeforeEmit": true
         },
         {
@@ -11503,7 +11527,8 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "sudo apt install -y gnupg ca-certificates curl && curl -s https://repos.azul.com/azul-repo.key | sudo gpg --dearmor -o /usr/share/keyrings/azul.gpg && echo \"deb [signed-by=/usr/share/keyrings/azul.gpg] https://repos.azul.com/zulu/deb stable main\" | sudo tee /etc/apt/sources.list.d/zulu.list && sudo apt update && sudo apt install -y zulu{version}-jdk",
+                            "repoSetup": "sudo apt install -y gnupg ca-certificates curl && curl -s https://repos.azul.com/azul-repo.key | sudo gpg --dearmor -o /usr/share/keyrings/azul.gpg && echo \"deb [signed-by=/usr/share/keyrings/azul.gpg] https://repos.azul.com/zulu/deb stable main\" | sudo tee /etc/apt/sources.list.d/zulu.list && sudo apt update",
+                            "install": "sudo apt install -y zulu{version}-jdk",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y zulu{version}-jdk",
                             "remove": "sudo apt remove -y zulu{version}-jdk",
                             "verify": "java -version"
@@ -11512,17 +11537,27 @@
                     "fedora": [
                         {
                             "manager": "dnf",
-                            "install": "sudo rpm --import https://repos.azul.com/azul-repo.key && sudo curl -L -o /etc/yum.repos.d/zulu.repo https://repos.azul.com/zulu/rpm/zulu.repo && sudo dnf install -y zulu{version}-jdk",
+                            "repoSetup": "sudo rpm --import https://repos.azul.com/azul-repo.key && sudo curl -L -o /etc/yum.repos.d/zulu.repo https://repos.azul.com/zulu/rpm/zulu.repo",
+                            "install": "sudo dnf install -y zulu{version}-jdk",
                             "update": "sudo dnf upgrade -y zulu{version}-jdk",
                             "remove": "sudo dnf remove -y zulu{version}-jdk",
                             "verify": "java -version"
                         }
                     ],
                     "arch": [],
-                    "suse": []
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "repoSetup": "curl -O https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-2.noarch.rpm && sudo rpm --import https://repos.azul.com/azul-repo.key && sudo zypper install -y zulu-repo-1.0.0-2.noarch.rpm",
+                            "install": "sudo zypper install -y zulu{version}-jdk",
+                            "update": "sudo zypper update -y zulu{version}-jdk",
+                            "remove": "sudo zypper remove -y zulu{version}-jdk",
+                            "verify": "java -version"
+                        }
+                    ]
                 }
             },
-            "notes": "Widest version/arch coverage of the four. All five majors (8, 11, 17, 21, 25) available. Azul apt/dnf package schema is `zulu{version}-jdk` (e.g. zulu21-jdk). SDKMAN!: `sdk install java {version}.x.y-zulu`."
+            "notes": "Widest version/arch coverage of the four. All five majors (8, 11, 17, 21, 25) available. Azul apt/dnf/zypper package schema is `zulu{version}-jdk` (e.g. zulu21-jdk). The `zulu-repo-*.rpm` filename used to bootstrap the zypper/SLES repo is versioned by Azul and may change — verify the current filename at cdn.azul.com/zulu/bin/ before relying on this long-term. SDKMAN!: `sdk install java {version}.x.y-zulu`."
         },
         {
             "id": "node",
