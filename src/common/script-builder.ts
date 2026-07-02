@@ -449,7 +449,11 @@ export function resolveProviderCommand(
         if (!app || !app.platforms[config.platform]) continue;
         const method = getProviderInstallMethod(app, config);
         if (!method) continue;
-        const cmd = getCommand(method, 'install');
+        // A provider app can itself be parameterized (e.g. node's `node@{version}` formula) —
+        // there's no per-version UI for providers, so default to the newest listed version,
+        // same convention the page uses when an app is first added to the basket.
+        const version = app.parameterized ? app.versions?.[app.versions.length - 1] : undefined;
+        const cmd = getCommand(method, 'install', version);
         if (cmd) return { app, method, command: cmd };
     }
     return null;
