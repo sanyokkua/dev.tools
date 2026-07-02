@@ -1,6 +1,6 @@
 import { WINDOWS_ENV_SET_VARIABLE, WINDOWS_ENV_VIEW_VARIABLE, WINDOWS_SCOOP_INSTALL } from './windows-utils';
 
-export type DevEnvCategory = 'java' | 'python' | 'go' | 'nodejs' | 'bun';
+export type DevEnvCategory = 'java' | 'python' | 'go' | 'rust' | 'nodejs' | 'bun';
 export type DevEnvOS = 'macos' | 'windows' | 'linux';
 export type DevEnvLinuxDistro = 'debian' | 'fedora' | 'arch' | 'suse';
 
@@ -66,6 +66,24 @@ const PIP_ENTRY: DevEnvManagerBootstrap = {
         'PEP 668 "externally-managed-environment" blocks system-wide pip install by default on Debian 12+ / ' +
         'Ubuntu 23.04+ / Fedora 38+ / Arch / openSUSE / Homebrew Python. Prefer a venv, pipx, or uv over ' +
         'pip install directly — `--break-system-packages` is a last resort, never the default suggestion.',
+};
+
+const PIPX_ENTRY: DevEnvManagerBootstrap = {
+    managerId: 'pipx',
+    managerLabel: 'pipx',
+    builtIntoOS: false,
+    availableOn: ['macos', 'windows', 'linux'],
+    installTool: 'pipx install <package>   # e.g. pipx install httpie',
+    verify: 'pipx --version',
+    update: 'pipx upgrade-all',
+    remove: 'pipx uninstall <package>',
+    notes:
+        'Installs each CLI app into its own isolated virtualenv while linking just the entry-point script onto ' +
+        'PATH — the recommended way to install Python-packaged CLI tools without the PEP 668 ' +
+        '"externally-managed-environment" friction pip hits (see the pip entry above). Install pipx itself via ' +
+        'brew install pipx (macOS), apt/dnf install pipx or pacman -S python-pipx / zypper install python3-pipx ' +
+        '(Linux — package name varies by distro), or python -m pip install --user pipx; python -m pipx ' +
+        'ensurepath (Windows, no official winget/Chocolatey package).',
 };
 
 const COREPACK_ENTRY: DevEnvManagerBootstrap = {
@@ -286,6 +304,7 @@ const PYTHON: DevEnvCategoryData = {
                 versionSwitch: 'pyenv global 3.13.2\npyenv local 3.13.2\npyenv shell 3.13.2',
             },
             PIP_ENTRY,
+            PIPX_ENTRY,
         ],
         windows: [
             {
@@ -321,6 +340,7 @@ const PYTHON: DevEnvCategoryData = {
                     'no pyenv virtualenv support.',
             },
             PIP_ENTRY,
+            PIPX_ENTRY,
         ],
         linux: [
             {
@@ -356,6 +376,7 @@ const PYTHON: DevEnvCategoryData = {
                 versionSwitch: 'pyenv global 3.13.2\npyenv local 3.13.2\npyenv shell 3.13.2',
             },
             PIP_ENTRY,
+            PIPX_ENTRY,
         ],
     },
 };
@@ -556,6 +577,124 @@ const GO: DevEnvCategoryData = {
                     'Leap 16.0 has no official go package in its default repos — this OBS repo path is ' +
                     'version-pinned to 16.0 and must be revisited when the catalog is next updated for a newer ' +
                     'Leap release. Never run a bare "zypper dup" on Leap — that command is for Tumbleweed only.',
+            },
+        ],
+    },
+};
+
+const RUST: DevEnvCategoryData = {
+    category: 'rust',
+    label: 'Rust',
+    description:
+        'Install the Rust toolchain (rustc, cargo) via rustup, the toolchain-official installer and version manager.',
+    managersByOS: {
+        macos: [
+            {
+                managerId: 'rustup',
+                managerLabel: 'rustup',
+                builtIntoOS: false,
+                availableOn: ['macos'],
+                installManager: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                installTool: 'cargo install <crate>   # e.g. cargo install ripgrep',
+                configure:
+                    'source "$HOME/.cargo/env"   # the installer appends this to your shell profile automatically',
+                verify: 'rustc --version\ncargo --version',
+                update: 'rustup update',
+                remove: 'rustup self uninstall',
+                versionSwitch:
+                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                notes: 'Also installable via brew install rust, but that path does not include rustup — no toolchain/version switching without it.',
+            },
+        ],
+        windows: [
+            {
+                managerId: 'rustup',
+                managerLabel: 'rustup-init.exe',
+                builtIntoOS: false,
+                availableOn: ['windows'],
+                installManager:
+                    'winget install --id Rustlang.Rustup -e   # or download rustup-init.exe from https://rustup.rs directly',
+                installTool: 'cargo install <crate>   # e.g. cargo install ripgrep',
+                configure:
+                    'Requires the Microsoft C++ Build Tools (the installer prompts for these on first run if missing).',
+                verify: 'rustc --version\ncargo --version',
+                update: 'rustup update',
+                remove: 'rustup self uninstall',
+                versionSwitch:
+                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                notes: 'Alternates: choco install rust -y, scoop install main/rustup.',
+            },
+        ],
+        linux: [
+            {
+                managerId: 'rustup',
+                managerLabel: 'rustup',
+                builtIntoOS: false,
+                availableOn: ['linux'],
+                installManager: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+                installTool: 'cargo install <crate>   # e.g. cargo install ripgrep',
+                configure:
+                    'source "$HOME/.cargo/env"   # the installer appends this to your shell profile automatically',
+                verify: 'rustc --version\ncargo --version',
+                update: 'rustup update',
+                remove: 'rustup self uninstall',
+                versionSwitch:
+                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                notes:
+                    'Distro rustc/cargo packages (apt/dnf/pacman/zypper) typically lag the upstream release and ' +
+                    'do not include rustup — prefer this installer when you need a current or pinned version.',
+            },
+        ],
+    },
+    linuxDistroOverrides: {
+        debian: [
+            {
+                managerId: 'apt',
+                managerLabel: 'apt',
+                builtIntoOS: true,
+                availableOn: ['linux'],
+                installTool: 'sudo apt-get install -y rustc cargo',
+                verify: 'rustc --version\ncargo --version',
+                update: 'sudo apt-get update && sudo apt-get install --only-upgrade -y rustc cargo',
+                remove: 'sudo apt-get remove -y rustc cargo',
+                notes: 'No rustup, no version switching — the rustup entry above is preferred for active development.',
+            },
+        ],
+        fedora: [
+            {
+                managerId: 'dnf',
+                managerLabel: 'dnf',
+                builtIntoOS: true,
+                availableOn: ['linux'],
+                installTool: 'sudo dnf install -y rust cargo',
+                verify: 'rustc --version\ncargo --version',
+                update: 'sudo dnf upgrade -y rust cargo',
+                remove: 'sudo dnf remove -y rust cargo',
+            },
+        ],
+        arch: [
+            {
+                managerId: 'pacman',
+                managerLabel: 'pacman',
+                builtIntoOS: true,
+                availableOn: ['linux'],
+                installTool: 'sudo pacman -S --noconfirm rust',
+                verify: 'rustc --version\ncargo --version',
+                update: 'sudo pacman -Syu',
+                remove: 'sudo pacman -Rs rust',
+                notes: 'Official [extra] repo package tracks upstream fairly closely, but still no rustup toolchain switching.',
+            },
+        ],
+        suse: [
+            {
+                managerId: 'zypper',
+                managerLabel: 'zypper',
+                builtIntoOS: true,
+                availableOn: ['linux'],
+                installTool: 'sudo zypper install -y rust cargo',
+                verify: 'rustc --version\ncargo --version',
+                update: 'sudo zypper update rust cargo',
+                remove: 'sudo zypper remove rust cargo',
             },
         ],
     },
@@ -784,6 +923,7 @@ export const DEV_ENV_CATALOG: Record<DevEnvCategory, DevEnvCategoryData> = {
     java: JAVA,
     python: PYTHON,
     go: GO,
+    rust: RUST,
     nodejs: NODEJS,
     bun: BUN,
 };

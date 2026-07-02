@@ -1,6 +1,6 @@
 import { DEV_ENV_CATALOG, DevEnvCategory, DevEnvManagerBootstrap, DevEnvOS } from '@/common/dev-env-catalog';
 
-const CATEGORIES: DevEnvCategory[] = ['java', 'python', 'go', 'nodejs', 'bun'];
+const CATEGORIES: DevEnvCategory[] = ['java', 'python', 'go', 'rust', 'nodejs', 'bun'];
 const OSES: DevEnvOS[] = ['macos', 'windows', 'linux'];
 
 function allEntriesFor(os: DevEnvOS, data: (typeof DEV_ENV_CATALOG)[DevEnvCategory]): DevEnvManagerBootstrap[] {
@@ -23,7 +23,7 @@ function findByManagerId(managerId: string): DevEnvManagerBootstrap[] {
 }
 
 describe('DEV_ENV_CATALOG integrity', () => {
-    it('has exactly the 5 expected category keys, each self-consistent', () => {
+    it('has exactly the 6 expected category keys, each self-consistent', () => {
         expect(new Set(Object.keys(DEV_ENV_CATALOG))).toEqual(new Set(CATEGORIES));
         for (const category of CATEGORIES) {
             expect(DEV_ENV_CATALOG[category].category).toBe(category);
@@ -127,5 +127,32 @@ describe('DEV_ENV_CATALOG integrity', () => {
     it('Bun has no winget entry anywhere', () => {
         const allBun = OSES.flatMap((os) => allEntriesFor(os, DEV_ENV_CATALOG.bun));
         expect(allBun.some((e) => e.managerId === 'winget')).toBe(false);
+    });
+
+    it('Rust has a rustup entry on every OS, each verifying via cargo/rustc', () => {
+        for (const os of OSES) {
+            const entries = DEV_ENV_CATALOG.rust.managersByOS[os];
+            const rustup = entries.find((e) => e.managerId === 'rustup');
+            expect(rustup).toBeDefined();
+            expect(rustup!.verify).toContain('cargo --version');
+        }
+    });
+
+    it('Rust Linux distro overrides have no rustup duplicate and no version switching (distro packages only)', () => {
+        for (const distro of ['debian', 'fedora', 'arch', 'suse'] as const) {
+            const overrideEntries = DEV_ENV_CATALOG.rust.linuxDistroOverrides?.[distro] ?? [];
+            expect(overrideEntries.some((e) => e.managerId === 'rustup')).toBe(false);
+            expect(overrideEntries.every((e) => e.versionSwitch === undefined)).toBe(true);
+        }
+    });
+
+    it('Python has a pipx entry on every OS with no official Windows package manager', () => {
+        for (const os of OSES) {
+            const pipx = DEV_ENV_CATALOG.python.managersByOS[os].find((e) => e.managerId === 'pipx');
+            expect(pipx).toBeDefined();
+            expect(pipx!.verify).toBe('pipx --version');
+        }
+        const windowsPipx = DEV_ENV_CATALOG.python.managersByOS.windows.find((e) => e.managerId === 'pipx');
+        expect(windowsPipx!.notes).toContain('no official winget/Chocolatey package');
     });
 });
