@@ -2,6 +2,7 @@ import type { CatalogApp } from '@/common/apps-catalog-types';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
     buildCombinedScript,
+    buildManagerWideScript,
     buildPerAppScripts,
     getCommand,
     resolveManager,
@@ -1453,4 +1454,110 @@ describe('buildPerAppScripts repoSetup', () => {
             }
         },
     );
+});
+
+// ─── buildManagerWideScript ────────────────────────────────────────────────────
+
+describe('buildManagerWideScript', () => {
+    it('macOS: emits brew and mas update-all commands wrapped in run_task, in order', () => {
+        const script = buildManagerWideScript(['brew', 'mas'], 'update', { platform: 'macos' }, false);
+        expect(script).toContain('#!/usr/bin/env bash');
+        expect(script).toContain('brew update && brew upgrade --greedy');
+        expect(script).toContain('mas upgrade');
+        expect(script.indexOf('brew update')).toBeLessThan(script.indexOf('mas upgrade'));
+        expect(script).toContain('run_task "update Homebrew" _maint_1_update');
+        expect(script).toContain('run_task "update Mac App Store (mas)" _maint_2_update');
+    });
+
+    it('Windows: emits winget/choco/scoop update-all commands via try/catch', () => {
+        const script = buildManagerWideScript(['winget', 'choco', 'scoop'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('$ok=0;$fail=0');
+        expect(script).toContain('winget upgrade --all --include-unknown');
+        expect(script).toContain('choco upgrade chocolatey -y; choco upgrade all -y');
+        expect(script).toContain('scoop update; scoop update *');
+    });
+
+    it('Debian: emits apt/flatpak/snap update-all commands', () => {
+        const script = buildManagerWideScript(
+            ['apt', 'flatpak', 'snap'],
+            'update',
+            { platform: 'linux', linuxDistro: 'debian' },
+            false,
+        );
+        expect(script).toContain('sudo apt update && sudo apt full-upgrade -y');
+        expect(script).toContain('flatpak update -y');
+        expect(script).toContain('sudo snap refresh');
+    });
+
+    it('Fedora: emits the dnf update-all command', () => {
+        const script = buildManagerWideScript(['dnf'], 'update', { platform: 'linux', linuxDistro: 'fedora' }, false);
+        expect(script).toContain('sudo dnf upgrade --refresh -y');
+    });
+
+    it('Arch: emits the full pacman -Syu sync-upgrade, never a bare sync', () => {
+        const script = buildManagerWideScript(['pacman'], 'update', { platform: 'linux', linuxDistro: 'arch' }, false);
+        expect(script).toContain('sudo pacman -Syu');
+        expect(script).not.toContain('sudo pacman -Sy\n');
+    });
+
+    it('openSUSE: emits the self-detecting Tumbleweed/Leap zypper conditional wrapped in a function', () => {
+        const script = buildManagerWideScript(['zypper'], 'update', { platform: 'linux', linuxDistro: 'suse' }, false);
+        expect(script).toContain('grep -qi tumbleweed');
+        expect(script).toContain('sudo zypper dup');
+        expect(script).toContain('sudo zypper refresh && sudo zypper update');
+        expect(script).toMatch(
+            /_maint_1_update\(\) \{\n.*grep -qi tumbleweed[\s\S]*?\n\}\nrun_task "update zypper" _maint_1_update/,
+        );
+    });
+
+    it('skips a manager with no entry for the given platform, with a comment, not a throw', () => {
+        expect(() => buildManagerWideScript(['pacman'], 'update', { platform: 'windows' }, false)).not.toThrow();
+        const script = buildManagerWideScript(['pacman'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('# pacman: no update command available — skipped');
+    });
+
+    it('includeCleanup: false omits cleanup commands even when the manager has one', () => {
+        const script = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
+        expect(script).not.toContain('brew autoremove');
+    });
+
+    it('includeCleanup: true appends the cleanup task immediately after the update task', () => {
+        const script = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, true);
+        expect(script).toContain('brew autoremove && brew cleanup -s');
+        expect(script.indexOf('_maint_1_update')).toBeLessThan(script.indexOf('_maint_1_cleanup'));
+        expect(script).toContain('run_task "cleanup Homebrew" _maint_1_cleanup');
+    });
+
+    it('empty managers array returns a no-op script, not a crash', () => {
+        const script = buildManagerWideScript([], 'update', { platform: 'macos' }, false);
+        expect(script).toContain('# No package managers selected — nothing to do.');
+        expect(script).toContain('✔ $SUCCESS ok / ✖ $FAILED failed');
+        expect(script).not.toContain('brew');
+    });
+
+    it('Windows winget selection surfaces the requiresExplicitUpgrade limitation as a comment', () => {
+        const script = buildManagerWideScript(['winget'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('requiresExplicitUpgrade');
+    });
+
+    it('throws when platform is linux and linuxDistro is not provided', () => {
+        expect(() => buildManagerWideScript(['apt'], 'update', { platform: 'linux' }, false)).toThrow(
+            'linuxDistro is required when platform is linux',
+        );
+    });
+
+    it('multi-step && chained commands are fully contained inside the generated function body', () => {
+        const script = buildManagerWideScript(['apt'], 'update', { platform: 'linux', linuxDistro: 'debian' }, false);
+        const fnMatch = script.match(/_maint_1_update\(\) \{\n([\s\S]*?)\n\}/);
+        expect(fnMatch).not.toBeNull();
+        expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
+    });
+
+    it('action=upgrade reads the same updateAllCommand as action=update (single combined field)', () => {
+        const updateScript = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
+        const upgradeScript = buildManagerWideScript(['brew'], 'upgrade', { platform: 'macos' }, false);
+        expect(upgradeScript).toContain('brew update && brew upgrade --greedy');
+        expect(updateScript).toContain('# UPDATE — manager-wide maintenance');
+        expect(upgradeScript).toContain('# UPGRADE — manager-wide maintenance');
+    });
 });
