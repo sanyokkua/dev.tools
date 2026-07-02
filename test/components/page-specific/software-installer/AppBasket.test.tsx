@@ -14,6 +14,7 @@ function buildProps(
         prefMode: 'preferred' as const,
         selectedApps: {},
         selectedVersions: {},
+        updateScope: 'selected-apps' as const,
         onRemove: jest.fn(),
         onOverride: jest.fn(),
         onVersionSelect: jest.fn(),

@@ -134,11 +134,19 @@ const IndexPage = (): React.JSX.Element => {
     return (
         <div className="installer-page">
             <ToolAbout routeKey="software-installer">
-                Generate <strong>install / update / upgrade / remove</strong> scripts for a catalog of{' '}
-                {APPS_CATALOG.apps.length} apps across macOS, Windows and Linux. Pick a platform (and Linux distro),
-                choose preferred package managers, select apps (with per-app method override and multi-version JDKs),
-                then build a single resilient script per action or bare one-line commands per app — copy or download.
-                The catalog and scripts are generated client-side; nothing is installed by this tool.
+                {'Generate '}
+                <strong>install / update / upgrade / remove</strong>
+                {' scripts for a catalog of ' +
+                    `${APPS_CATALOG.apps.length} apps` +
+                    ' across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package ' +
+                    'managers, select apps (with per-app method override and multi-version JDKs), then build a ' +
+                    'single resilient script per action or bare one-line commands per app — copy or download. If ' +
+                    "your selection needs a package manager that isn't native to the OS (Homebrew, npm, cargo, " +
+                    'Flatpak, …), a '}
+                <strong>Setup managers</strong>
+                {' tab generates a bootstrap script for it too — run that first, then restart your terminal before ' +
+                    'running Install. The catalog and scripts are generated client-side; nothing is installed by ' +
+                    'this tool.'}
             </ToolAbout>
             {/* Sticky summary */}
             <section className="installer-summary" aria-label="Selection summary">
