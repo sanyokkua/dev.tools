@@ -1,5 +1,10 @@
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from './apps-catalog-types';
 
+// Managers technically present in the catalog data but not offered as a selectable
+// preference anywhere in the Software Installer UI (e.g. `mas` requires an interactive
+// App Store sign-in and has no scriptable install path for third-party apps).
+export const HIDDEN_MANAGERS: CatalogManager[] = ['mas'];
+
 export const MANAGER_LABEL: Partial<Record<CatalogManager, string>> = {
     brew: 'Homebrew',
     mas: 'Mac App Store',

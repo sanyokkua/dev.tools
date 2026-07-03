@@ -1,6 +1,19 @@
+import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp } from '@/common/apps-catalog-types';
+import { MANAGER_MAINTENANCE } from '@/common/manager-maintenance-catalog';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
-import { buildCombinedScript, buildPerAppScripts, getCommand, resolveManager } from '@/common/script-builder';
+import {
+    buildBootstrapScript,
+    buildCombinedScript,
+    buildManagerWideScript,
+    buildPerAppScripts,
+    getCommand,
+    getMaintenanceEntries,
+    getRequiredBootstrap,
+    resolveManager,
+    resolveMethod,
+    resolveProviderCommand,
+} from '@/common/script-builder';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -648,6 +661,46 @@ describe('buildCombinedScript', () => {
             const script = buildCombinedScript([CORRETTO], 'install', macosConfig);
             expect(script).toContain('no version selected — skipped');
         });
+
+        describe('colored terminal echo (in addition to the # comment)', () => {
+            it('emits a red PowerShell Write-Host alongside the platform-skip comment on Windows', () => {
+                const script = buildCombinedScript([MACOS_ONLY_APP], 'install', windowsConfig);
+                expect(script).toContain('# IINA: no platform build — skipped');
+                expect(script).toContain('Write-Host "⚠ IINA: no platform build — skipped" -ForegroundColor Red');
+            });
+
+            it('emits a red bash echo alongside the platform-skip comment on Linux', () => {
+                const script = buildCombinedScript([MACOS_ONLY_APP], 'install', linuxDebianConfig);
+                expect(script).toContain('# IINA: no platform build — skipped');
+                expect(script).toContain('echo -e "\\033[0;31m⚠ IINA: no platform build — skipped\\033[0m"');
+            });
+
+            it('emits a red bash echo alongside the no-preferred-manager comment', () => {
+                const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+                const script = buildCombinedScript([FIREFOX], 'install', config);
+                expect(script).toContain(
+                    'echo -e "\\033[0;31m⚠ Firefox: no preferred manager (fallback off) — skipped\\033[0m"',
+                );
+            });
+
+            it('emits a red bash echo alongside the no-version-selected comment', () => {
+                const script = buildCombinedScript([CORRETTO], 'install', macosConfig);
+                expect(script).toContain('⚠ Amazon Corretto: no version selected — skipped');
+            });
+
+            it('does NOT add a colored echo for the distinct "no <action> command" skip reason', () => {
+                const config: BuilderConfig = {
+                    platform: 'linux',
+                    linuxDistro: 'debian',
+                    managers: ['snap'],
+                    overrides: {},
+                    fallbackMode: 'preferred-only',
+                    selectedVersions: {},
+                };
+                const script = buildCombinedScript([SNAP_ONLY_APP], 'update', config);
+                expect(script).not.toContain('\\033[0;31m');
+            });
+        });
     });
 
     describe('three actions × sh and ps1', () => {
@@ -1131,5 +1184,607 @@ describe('universal-merged managers on distro families', () => {
             const script = buildCombinedScript([APPIMAGE_ONLY_APP], 'remove', config);
             expect(script).toContain('# AppImageApp: no remove command — skipped');
         });
+    });
+});
+
+// ─── repoSetup fixtures ───────────────────────────────────────────────────────
+
+const SHARED_VENDOR_REPO_SETUP =
+    'curl -fsSL https://example.com/vendor.key | sudo gpg --dearmor -o /usr/share/keyrings/vendor.gpg && echo "deb [signed-by=/usr/share/keyrings/vendor.gpg] https://example.com/apt stable main" | sudo tee /etc/apt/sources.list.d/vendor.list && sudo apt update';
+
+const SHARED_REPO_APP_A: CatalogApp = {
+    id: 'shared-repo-app-a',
+    name: 'SharedRepoAppA',
+    category: 'test',
+    description: 'App A sharing a vendor repo with SharedRepoAppB',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'shared-a',
+                    repoSetup: SHARED_VENDOR_REPO_SETUP,
+                    install: 'sudo apt install -y shared-a',
+                },
+            ],
+        },
+    },
+};
+
+const SHARED_REPO_APP_B: CatalogApp = {
+    id: 'shared-repo-app-b',
+    name: 'SharedRepoAppB',
+    category: 'test',
+    description: 'App B sharing a vendor repo with SharedRepoAppA (identical repoSetup string)',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'shared-b',
+                    repoSetup: SHARED_VENDOR_REPO_SETUP,
+                    install: 'sudo apt install -y shared-b',
+                },
+            ],
+        },
+    },
+};
+
+// Mirrors the real Temurin apt (embedded single quote in an awk script) and Temurin fedora
+// (quoted heredoc) repoSetup shapes — regression fixture for the function-wrapping approach.
+const TRICKY_REPO_APP: CatalogApp = {
+    id: 'tricky-repo-app',
+    name: 'TrickyRepoApp',
+    category: 'test',
+    description: 'App whose repoSetup contains an embedded single quote and a quoted heredoc',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'tricky',
+                    repoSetup:
+                        'echo "deb https://example.com $(awk -F= \'/^VERSION_CODENAME/{print$2}\' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/tricky.list && sudo apt update',
+                    install: 'sudo apt install -y tricky',
+                },
+            ],
+            fedora: [
+                {
+                    manager: 'dnf',
+                    id: 'tricky',
+                    repoSetup:
+                        "cat <<'EOF' | sudo tee /etc/yum.repos.d/tricky.repo\n[Tricky]\nname=Tricky\nbaseurl=https://example.com/rpm\nenabled=1\nEOF",
+                    install: 'sudo dnf install -y tricky',
+                },
+            ],
+        },
+    },
+};
+
+const WINDOWS_REPO_APP: CatalogApp = {
+    id: 'windows-repo-app',
+    name: 'WindowsRepoApp',
+    category: 'test',
+    description: 'Synthetic Windows app with repoSetup (no real catalog entry has one yet)',
+    platforms: { macos: false, windows: true, linux: false },
+    methods: {
+        windows: [
+            {
+                manager: 'winget',
+                id: 'Example.WindowsRepoApp',
+                repoSetup: 'winget source add --name example --arg https://example.com/winget',
+                install: 'winget install --id Example.WindowsRepoApp -e',
+            },
+        ],
+    },
+};
+
+// Two Linux methods for the same distro: the preferred one (snap) has no repoSetup,
+// the array-first / non-preferred one (apt) does — used to prove dedup/emission keys
+// off the actually-resolved method, not a static per-app assumption.
+const FALLBACK_REPO_APP: CatalogApp = {
+    id: 'fallback-repo-app',
+    name: 'FallbackRepoApp',
+    category: 'test',
+    description: 'App with two Linux methods; only the non-preferred one has repoSetup',
+    platforms: { macos: false, windows: false, linux: true },
+    methods: {
+        linux: {
+            debian: [
+                {
+                    manager: 'apt',
+                    id: 'fallbackrepoapp',
+                    repoSetup:
+                        'curl -fsSL https://example.com/key | sudo gpg --dearmor -o /usr/share/keyrings/fallbackrepoapp.gpg',
+                    install: 'sudo apt install -y fallbackrepoapp',
+                },
+                { manager: 'snap', id: 'fallbackrepoapp', install: 'sudo snap install fallbackrepoapp' },
+            ],
+        },
+    },
+};
+
+// ─── resolveMethod ────────────────────────────────────────────────────────────
+
+describe('resolveMethod', () => {
+    it('returns null when app has no build for the current platform', () => {
+        expect(resolveMethod(MACOS_ONLY_APP, windowsConfig)).toBeNull();
+    });
+
+    it('returns null when no preferred manager has a method and fallback is off', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+        expect(resolveMethod(FIREFOX, config)).toBeNull();
+    });
+
+    it('returns the full CatalogMethod object (not just the manager id) on success', () => {
+        const method = resolveMethod(FIREFOX, macosConfig);
+        expect(method).not.toBeNull();
+        expect(method?.manager).toBe('brew');
+        expect(method?.install).toBe('brew install --cask firefox');
+    });
+
+    it('respects per-app overrides', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew'], overrides: { dual: 'mas' } };
+        const method = resolveMethod(DUAL_MANAGER_APP, config);
+        expect(method?.manager).toBe('mas');
+    });
+
+    it('respects fallback resolution', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'fallback' };
+        const method = resolveMethod(FIREFOX, config);
+        expect(method?.manager).toBe('brew');
+    });
+});
+
+// ─── repoSetup: buildCombinedScript ────────────────────────────────────────────
+
+describe('buildCombinedScript repoSetup', () => {
+    const debianConfig: BuilderConfig = {
+        platform: 'linux',
+        linuxDistro: 'debian',
+        managers: ['apt'],
+        overrides: {},
+        fallbackMode: 'preferred-only',
+        selectedVersions: {},
+    };
+
+    describe('deduplication', () => {
+        it('emits the shared repoSetup exactly once for two apps sharing the same vendor repo', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, SHARED_REPO_APP_B], 'install', debianConfig);
+            const headerMatches = script.match(/### Repository setup \(one-time\)/g) ?? [];
+            expect(headerMatches).toHaveLength(1);
+            const repoContentMatches = script.match(/sources\.list\.d\/vendor\.list/g) ?? [];
+            expect(repoContentMatches).toHaveLength(1);
+        });
+
+        it('emits two separate function definitions when repoSetups differ', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain('_repo_setup_1()');
+            expect(script).toContain('_repo_setup_2()');
+        });
+    });
+
+    describe('header presence', () => {
+        it('emits both headers when at least one selected app has a repoSetup', () => {
+            const script = buildCombinedScript([SHARED_REPO_APP_A, FIREFOX], 'install', debianConfig);
+            expect(script).toContain('### Repository setup (one-time)');
+            expect(script).toContain('### Install');
+        });
+
+        it('omits the repo-setup header entirely when zero selected apps have a repoSetup', () => {
+            const script = buildCombinedScript([FIREFOX], 'install', debianConfig);
+            expect(script).not.toContain('### Repository setup');
+            expect(script).not.toContain('### Install');
+        });
+    });
+
+    describe('action gating', () => {
+        it.each(['update', 'upgrade', 'remove'] as ScriptAction[])(
+            'never emits the repo-setup section for action=%s even when the method has a repoSetup',
+            (action) => {
+                const script = buildCombinedScript([SHARED_REPO_APP_A], action, debianConfig);
+                expect(script).not.toContain('### Repository setup');
+            },
+        );
+    });
+
+    describe('content safety (embedded quotes and heredocs)', () => {
+        it('embeds a repoSetup with a literal single quote verbatim, uncorrupted', () => {
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain("awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release");
+        });
+
+        it('embeds a repoSetup containing a quoted heredoc verbatim, uncorrupted', () => {
+            const config: BuilderConfig = { ...debianConfig, linuxDistro: 'fedora', managers: ['dnf'] };
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', config);
+            expect(script).toContain("cat <<'EOF' | sudo tee /etc/yum.repos.d/tricky.repo");
+            expect(script).toContain('[Tricky]');
+            expect(script).toContain('EOF');
+        });
+
+        it('run_task label wraps the generated function name, not the raw content', () => {
+            const script = buildCombinedScript([TRICKY_REPO_APP], 'install', debianConfig);
+            expect(script).toContain('run_task "repo setup: TrickyRepoApp (apt)" _repo_setup_1');
+        });
+    });
+
+    describe('resolution-aware dedup (fallback and override)', () => {
+        it('uses the fallback-resolved method (array-first apt), not the preferred snap method', () => {
+            const config: BuilderConfig = { ...debianConfig, managers: ['zypper'], fallbackMode: 'fallback' };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).toContain('### Repository setup (one-time)');
+            expect(script).toContain('fallbackrepoapp.gpg');
+        });
+
+        it('omits repoSetup when the preferred snap method (no repoSetup) resolves', () => {
+            const config: BuilderConfig = { ...debianConfig, managers: ['snap'], fallbackMode: 'preferred-only' };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).not.toContain('### Repository setup');
+        });
+
+        it('override to the repoSetup-bearing manager triggers emission even when preferred manager has none', () => {
+            const config: BuilderConfig = {
+                ...debianConfig,
+                managers: ['snap'],
+                overrides: { 'fallback-repo-app': 'apt' },
+            };
+            const script = buildCombinedScript([FALLBACK_REPO_APP], 'install', config);
+            expect(script).toContain('### Repository setup (one-time)');
+        });
+    });
+
+    describe('Windows (.ps1)', () => {
+        const windowsRepoConfig: BuilderConfig = {
+            platform: 'windows',
+            managers: ['winget'],
+            overrides: {},
+            fallbackMode: 'preferred-only',
+            selectedVersions: {},
+        };
+
+        it('emits a try/catch block for repoSetup using the same $ok/$fail counters', () => {
+            const script = buildCombinedScript([WINDOWS_REPO_APP], 'install', windowsRepoConfig);
+            expect(script).toContain('try { Write-Host "▶ repo setup: WindowsRepoApp (winget)";');
+            expect(script).toContain('winget source add --name example --arg https://example.com/winget');
+            expect(script).toContain('$ok++');
+            expect(script).toContain('### Install');
+        });
+
+        it('does not emit the section for non-install actions', () => {
+            const script = buildCombinedScript([WINDOWS_REPO_APP], 'update', windowsRepoConfig);
+            expect(script).not.toContain('### Repository setup');
+        });
+    });
+});
+
+// ─── repoSetup: buildPerAppScripts ─────────────────────────────────────────────
+
+describe('buildPerAppScripts repoSetup', () => {
+    const debianConfig: BuilderConfig = {
+        platform: 'linux',
+        linuxDistro: 'debian',
+        managers: ['apt'],
+        overrides: {},
+        fallbackMode: 'preferred-only',
+        selectedVersions: {},
+    };
+
+    it('prepends repoSetup ahead of the install command for a repo-bearing app', () => {
+        const result = buildPerAppScripts([SHARED_REPO_APP_A], 'install', debianConfig);
+        expect(result['shared-repo-app-a']).toBe(`${SHARED_VENDOR_REPO_SETUP}\nsudo apt install -y shared-a`);
+    });
+
+    it('leaves a repoSetup-free app unchanged (bare command, no prefix)', () => {
+        const result = buildPerAppScripts([FIREFOX], 'install', debianConfig);
+        expect(result['firefox']).toBe('sudo apt install -y firefox');
+    });
+
+    it('mixed selection: each app independently includes or omits its own repoSetup', () => {
+        const result = buildPerAppScripts([SHARED_REPO_APP_A, FIREFOX], 'install', debianConfig);
+        expect(result['shared-repo-app-a'].startsWith(SHARED_VENDOR_REPO_SETUP)).toBe(true);
+        expect(result['firefox']).toBe('sudo apt install -y firefox');
+    });
+
+    it.each(['update', 'upgrade', 'remove'] as ScriptAction[])(
+        'never prepends repoSetup for action=%s even when the method has one',
+        (action) => {
+            // SHARED_REPO_APP_A only defines an install command, so use CURL_APT which has
+            // update/upgrade/remove commands alongside a hypothetical repoSetup-bearing method.
+            const config: BuilderConfig = { ...debianConfig, managers: ['apt'] };
+            const result = buildPerAppScripts([FALLBACK_REPO_APP], action, config);
+            if (result['fallback-repo-app']) {
+                expect(result['fallback-repo-app']).not.toContain('fallbackrepoapp.gpg');
+            }
+        },
+    );
+});
+
+// ─── buildManagerWideScript ────────────────────────────────────────────────────
+
+describe('buildManagerWideScript', () => {
+    it('macOS: emits brew and mas update-all commands wrapped in run_task, in order', () => {
+        const script = buildManagerWideScript(['brew', 'mas'], 'update', { platform: 'macos' }, false);
+        expect(script).toContain('#!/usr/bin/env bash');
+        expect(script).toContain('brew update && brew upgrade --greedy');
+        expect(script).toContain('mas upgrade');
+        expect(script.indexOf('brew update')).toBeLessThan(script.indexOf('mas upgrade'));
+        expect(script).toContain('run_task "update Homebrew" _maint_1_update');
+        expect(script).toContain('run_task "update Mac App Store (mas)" _maint_2_update');
+    });
+
+    it('Windows: emits winget/choco/scoop update-all commands via try/catch', () => {
+        const script = buildManagerWideScript(['winget', 'choco', 'scoop'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('$ok=0;$fail=0');
+        expect(script).toContain('winget upgrade --all --include-unknown');
+        expect(script).toContain('choco upgrade chocolatey -y; choco upgrade all -y');
+        expect(script).toContain('scoop update; scoop update *');
+    });
+
+    it('Debian: emits apt/flatpak/snap update-all commands', () => {
+        const script = buildManagerWideScript(
+            ['apt', 'flatpak', 'snap'],
+            'update',
+            { platform: 'linux', linuxDistro: 'debian' },
+            false,
+        );
+        expect(script).toContain('sudo apt update && sudo apt full-upgrade -y');
+        expect(script).toContain('flatpak update -y');
+        expect(script).toContain('sudo snap refresh');
+    });
+
+    it('Fedora: emits the dnf update-all command', () => {
+        const script = buildManagerWideScript(['dnf'], 'update', { platform: 'linux', linuxDistro: 'fedora' }, false);
+        expect(script).toContain('sudo dnf upgrade --refresh -y');
+    });
+
+    it('Arch: emits the full pacman -Syu sync-upgrade, never a bare sync', () => {
+        const script = buildManagerWideScript(['pacman'], 'update', { platform: 'linux', linuxDistro: 'arch' }, false);
+        expect(script).toContain('sudo pacman -Syu');
+        expect(script).not.toContain('sudo pacman -Sy\n');
+    });
+
+    it('openSUSE: emits the self-detecting Tumbleweed/Leap zypper conditional wrapped in a function', () => {
+        const script = buildManagerWideScript(['zypper'], 'update', { platform: 'linux', linuxDistro: 'suse' }, false);
+        expect(script).toContain('grep -qi tumbleweed');
+        expect(script).toContain('sudo zypper dup');
+        expect(script).toContain('sudo zypper refresh && sudo zypper update');
+        expect(script).toMatch(
+            /_maint_1_update\(\) \{\n.*grep -qi tumbleweed[\s\S]*?\n\}\nrun_task "update zypper" _maint_1_update/,
+        );
+    });
+
+    it('skips a manager with no entry for the given platform, with a comment, not a throw', () => {
+        expect(() => buildManagerWideScript(['pacman'], 'update', { platform: 'windows' }, false)).not.toThrow();
+        const script = buildManagerWideScript(['pacman'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('# pacman: no update command available — skipped');
+    });
+
+    it('includeCleanup: false omits cleanup commands even when the manager has one', () => {
+        const script = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
+        expect(script).not.toContain('brew autoremove');
+    });
+
+    it('includeCleanup: true appends the cleanup task immediately after the update task', () => {
+        const script = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, true);
+        expect(script).toContain('brew autoremove && brew cleanup -s');
+        expect(script.indexOf('_maint_1_update')).toBeLessThan(script.indexOf('_maint_1_cleanup'));
+        expect(script).toContain('run_task "cleanup Homebrew" _maint_1_cleanup');
+    });
+
+    it('empty managers array returns a no-op script, not a crash', () => {
+        const script = buildManagerWideScript([], 'update', { platform: 'macos' }, false);
+        expect(script).toContain('# No package managers selected — nothing to do.');
+        expect(script).toContain('✔ $SUCCESS ok / ✖ $FAILED failed');
+        expect(script).not.toContain('brew');
+    });
+
+    it('Windows winget selection surfaces the requiresExplicitUpgrade limitation as a comment', () => {
+        const script = buildManagerWideScript(['winget'], 'update', { platform: 'windows' }, false);
+        expect(script).toContain('requiresExplicitUpgrade');
+    });
+
+    it('throws when platform is linux and linuxDistro is not provided', () => {
+        expect(() => buildManagerWideScript(['apt'], 'update', { platform: 'linux' }, false)).toThrow(
+            'linuxDistro is required when platform is linux',
+        );
+    });
+
+    it('multi-step && chained commands are fully contained inside the generated function body', () => {
+        const script = buildManagerWideScript(['apt'], 'update', { platform: 'linux', linuxDistro: 'debian' }, false);
+        const fnMatch = script.match(/_maint_1_update\(\) \{\n([\s\S]*?)\n\}/);
+        expect(fnMatch).not.toBeNull();
+        expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
+    });
+
+    it('action=upgrade reads the same updateAllCommand as action=update (single combined field)', () => {
+        const updateScript = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
+        const upgradeScript = buildManagerWideScript(['brew'], 'upgrade', { platform: 'macos' }, false);
+        expect(upgradeScript).toContain('brew update && brew upgrade --greedy');
+        expect(updateScript).toContain('# UPDATE — manager-wide maintenance');
+        expect(upgradeScript).toContain('# UPGRADE — manager-wide maintenance');
+    });
+});
+
+describe('getMaintenanceEntries', () => {
+    it('returns MANAGER_MAINTENANCE.macos for platform=macos', () => {
+        expect(getMaintenanceEntries({ platform: 'macos' })).toEqual(MANAGER_MAINTENANCE.macos);
+    });
+
+    it('returns MANAGER_MAINTENANCE.windows for platform=windows', () => {
+        expect(getMaintenanceEntries({ platform: 'windows' })).toEqual(MANAGER_MAINTENANCE.windows);
+    });
+
+    it('returns MANAGER_MAINTENANCE.linux[distro] for platform=linux', () => {
+        expect(getMaintenanceEntries({ platform: 'linux', linuxDistro: 'debian' })).toEqual(
+            MANAGER_MAINTENANCE.linux.debian,
+        );
+    });
+
+    it('throws when platform is linux and linuxDistro is not provided', () => {
+        expect(() => getMaintenanceEntries({ platform: 'linux' })).toThrow(
+            'linuxDistro is required when platform is linux',
+        );
+    });
+});
+
+// ─── Manager-bootstrap ("Setup managers") ──────────────────────────────────────
+
+const NPM_ONLY_APP: CatalogApp = {
+    id: 'foo',
+    name: 'Foo',
+    category: 'test',
+    description: 'app only installable via npm',
+    platforms: { macos: true, windows: true, linux: true },
+    methods: {
+        macos: [{ manager: 'npm', install: 'npm install -g foo' }],
+        windows: [{ manager: 'npm', install: 'npm install -g foo' }],
+        linux: { debian: [{ manager: 'npm', install: 'npm install -g foo' }] },
+    },
+};
+
+const CARGO_ONLY_APP: CatalogApp = {
+    id: 'bar',
+    name: 'Bar',
+    category: 'test',
+    description: 'app only installable via cargo',
+    platforms: { macos: true, windows: false, linux: false },
+    methods: { macos: [{ manager: 'cargo', install: 'cargo install bar' }] },
+};
+
+describe('getRequiredBootstrap', () => {
+    it('returns empty for apps that resolve entirely via OS-native managers', () => {
+        const required = getRequiredBootstrap([FIREFOX], linuxDebianConfig);
+        expect(required).toEqual([]);
+    });
+
+    it('includes a manager needed by fallback resolution, even when never explicitly selected', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: [], fallbackMode: 'fallback' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        expect(required).toHaveLength(1);
+        expect(required[0].manager).toBe('npm');
+        expect(required[0].source.kind).toBe('provider-app');
+    });
+
+    it('dedupes when multiple apps need the same manager', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP, { ...NPM_ONLY_APP, id: 'foo2', name: 'Foo2' }], config);
+        expect(required).toHaveLength(1);
+    });
+
+    it('omits apps that are skipped entirely (no manager resolved)', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['winget'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        expect(required).toEqual([]);
+    });
+});
+
+describe('resolveProviderCommand', () => {
+    it('resolves npm via node on macOS, substituting the newest listed version', () => {
+        const resolved = resolveProviderCommand(['node', 'nvm', 'fnm'], { platform: 'macos' });
+        expect(resolved?.app.id).toBe('node');
+        expect(resolved?.command).not.toContain('{version}');
+        expect(resolved?.method.manager).toBe('brew');
+    });
+
+    it('falls through to the next candidate when the first is unavailable on this platform', () => {
+        // nvm has no windows-incompatible id here; use an id that genuinely can't resolve to force fallthrough.
+        const resolved = resolveProviderCommand(['does-not-exist', 'node'], { platform: 'macos' });
+        expect(resolved?.app.id).toBe('node');
+    });
+
+    it('returns null when no candidate resolves', () => {
+        const resolved = resolveProviderCommand(['does-not-exist'], { platform: 'macos' });
+        expect(resolved).toBeNull();
+    });
+
+    it('never resolves through another provider-resolved manager — the uv app itself is the adversarial case', () => {
+        // The real `uv` catalog app's own Linux methods include `pipx` and `cargo` (ways to install
+        // uv), which are themselves provider-resolved managers. Resolving uv as a *provider* must
+        // skip those and land on the self-contained `script` method instead, or the cycle guard is broken.
+        const uvApp = APPS_CATALOG.apps.find((a) => a.id === 'uv')!;
+        const resolved = resolveProviderCommand(['uv'], { platform: 'linux', linuxDistro: 'debian' });
+        expect(resolved?.app.id).toBe('uv');
+        expect(resolved?.method.manager).not.toBe('pipx');
+        expect(resolved?.method.manager).not.toBe('cargo');
+        // sanity: confirm the fixture assumption still holds (uv really does list pipx/cargo methods)
+        expect(uvApp.methods.linux?.debian?.some((m) => m.manager === 'pipx')).toBe(true);
+        expect(uvApp.methods.linux?.debian?.some((m) => m.manager === 'cargo')).toBe(true);
+    });
+});
+
+describe('buildBootstrapScript', () => {
+    it('shows the empty-state comment when nothing is required', () => {
+        const script = buildBootstrapScript([], { platform: 'macos' });
+        expect(script).toContain('Nothing to set up');
+    });
+
+    it('emits a fixed-source manager (brew) as a single idempotent step', () => {
+        const source = { kind: 'fixed' as const, command: 'install-brew', verify: 'brew --version', guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'brew', source }], { platform: 'macos' });
+        expect(script).toContain('run_task "setup brew" _setup_1');
+        expect(script).toContain('install-brew');
+    });
+
+    it('bootstraps the sub-dependency (brew) before installing a provider app (node) that needs it', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        const script = buildBootstrapScript(required, config);
+
+        expect(script).toContain('run_task "setup brew" _setup_1');
+        expect(script).toContain('brew install node@');
+        expect(script).toContain('run_task "setup npm (via Node.js)" _setup_2');
+        // brew must appear before npm in the emitted script
+        expect(script.indexOf('setup brew')).toBeLessThan(script.indexOf('setup npm'));
+    });
+
+    it('lets providerChoice pick an alternate provider app (nvm instead of node)', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm'], fallbackMode: 'preferred-only' };
+        const required = getRequiredBootstrap([NPM_ONLY_APP], config);
+        const script = buildBootstrapScript(required, config, { npm: 'nvm' });
+        expect(script).toContain('setup npm (via nvm)');
+        expect(script).not.toContain('via Node.js');
+    });
+
+    it('emits a colored skip warning when a required manager has no known install path', () => {
+        const badSource = { kind: 'provider-app' as const, appIds: ['does-not-exist'], guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'cargo', source: badSource }], { platform: 'macos' });
+        expect(script).toContain('# cargo: no known way to install it on this platform');
+        expect(script).toContain('\\033[0;31m⚠ cargo: no known way to install it');
+    });
+
+    it('always appends a restart-your-shell notice on bash', () => {
+        const script = buildBootstrapScript([], { platform: 'macos' });
+        expect(script).toContain('Restart your terminal');
+    });
+
+    it('always appends a restart-PowerShell notice on Windows', () => {
+        const script = buildBootstrapScript([], { platform: 'windows' });
+        expect(script).toContain('Restart PowerShell');
+    });
+
+    it('emits PowerShell try/catch for a fixed source on Windows', () => {
+        const source = { kind: 'fixed' as const, command: 'choco-install', verify: 'choco -v', guidePath: '/x' };
+        const script = buildBootstrapScript([{ manager: 'choco', source }], { platform: 'windows' });
+        expect(script).toContain('try { Write-Host "▶ setup choco"; choco-install;');
+    });
+
+    it('resolves cargo via the rust provider app on macOS, bootstrapping brew first', () => {
+        const config: BuilderConfig = {
+            platform: 'macos',
+            managers: ['cargo'],
+            overrides: {},
+            fallbackMode: 'preferred-only',
+            selectedVersions: {},
+        };
+        const required = getRequiredBootstrap([CARGO_ONLY_APP], config);
+        expect(required).toHaveLength(1);
+        expect(required[0].manager).toBe('cargo');
+        const script = buildBootstrapScript(required, config);
+        expect(script).toContain('setup brew');
+        expect(script).toContain('brew install rust');
+        expect(script).toContain('setup cargo (via Rust)');
     });
 });

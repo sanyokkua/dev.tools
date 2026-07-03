@@ -292,6 +292,13 @@
     min-width: 0;
 }
 
+.installer-basket-card__name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
 .installer-basket-card__name {
     font-weight: 600;
     font-size: 13px;
@@ -366,6 +373,10 @@
     }
 }
 
+.installer-override-dim {
+    opacity: 0.4;
+}
+
 .installer-basket-card__versions {
     display: flex;
     flex-direction: column;
@@ -419,6 +430,15 @@
     padding: var(--s2) 0;
 }
 
+.installer-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: 13px;
+    margin: var(--s2) 0;
+    cursor: pointer;
+}
+
 @media (max-width: 900px) {
     .installer-output-controls {
         flex-direction: column;
@@ -431,6 +451,51 @@
     color: var(--muted);
     margin: 0;
     padding: var(--s1) 0;
+}
+
+// ─── Manager-bootstrap ("Setup managers" tab + page banner) ──────────────────
+
+.installer-bootstrap-banner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s3);
+    background: var(--warning-container);
+    color: var(--warning-container-color-on);
+    border-radius: var(--r-md);
+    padding: var(--s3) var(--s4);
+    font-size: 13px;
+    line-height: 1.5;
+
+    span {
+        flex: 1;
+        min-width: 220px;
+    }
+}
+
+.installer-bootstrap-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    margin-bottom: var(--s3);
+}
+
+.installer-bootstrap-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s3);
+    background: var(--card-2);
+    border: 1px solid var(--outline-soft);
+    border-radius: var(--r-md);
+    padding: var(--s2) var(--s3);
+}
+
+.installer-bootstrap-row__name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--on-surface);
+    min-width: 100px;
 }
 
 .app-site-link {

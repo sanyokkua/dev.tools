@@ -19,7 +19,7 @@ export const MAC_OS_CREATE_ZPROFILE = 'cd ~ && touch .zprofile';
  * This constant represents a shell command that appends the Homebrew shell environment to the user's profile.
  * The command ensures that Homebrew is initialized in new shell sessions, making its binaries available in the PATH.
  */
-export const MAC_OS_BREW_ADD_TO_PROFILE = `echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/ok/.zprofile`;
+export const MAC_OS_BREW_ADD_TO_PROFILE = `echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile`;
 /**
  * A command to verify the installation of Homebrew on macOS systems.
  * This command runs `brew doctor`, which checks for potential issues in the Homebrew installation and environment.

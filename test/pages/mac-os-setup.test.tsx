@@ -42,4 +42,10 @@ describe('macOS Setup page', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Platform scripts' }));
         expect(screen.getAllByText(/Apple Silicon VRAM Manager/i).length).toBeGreaterThan(0);
     });
+
+    it('renders the brew PATH snippet with a portable ~/.zprofile path, not a hardcoded /Users/ path', () => {
+        const { container } = renderPage();
+        expect(container.textContent).toContain('~/.zprofile');
+        expect(container.textContent).not.toContain('/Users/');
+    });
 });

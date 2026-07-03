@@ -1,6 +1,6 @@
 # dev.tools
 
-> Browser-based developer utilities — 23 tools for text manipulation, code editing, JWT/Cron/QR generation,
+> Browser-based developer utilities — 24 tools for text manipulation, code editing, JWT/Cron/QR generation,
 > software installer scripting, and AI tooling. Fully client-side, installable as a PWA, works offline.
 
 🔗 **[Live App](https://sanyokkua.github.io/dev.tools/)**
@@ -32,13 +32,14 @@
 
 ### Install & Setup
 
-| Tool                                                                           | Description                                                                                        |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| [Software Installer](https://sanyokkua.github.io/dev.tools/software-installer) | Generate install / update / upgrade / remove scripts for 148 apps across macOS, Windows, and Linux |
-| [macOS Setup](https://sanyokkua.github.io/dev.tools/mac-os-setup)              | Homebrew, shell PATH, env vars, and Apple Silicon VRAM manager                                     |
-| [Windows Setup](https://sanyokkua.github.io/dev.tools/windows-setup)           | winget, Chocolatey, and Scoop setup                                                                |
-| [Linux Setup](https://sanyokkua.github.io/dev.tools/linux-setup)               | apt / dnf / pacman / zypper + Flatpak and Snap                                                     |
-| [Git Cheat-sheet](https://sanyokkua.github.io/dev.tools/git-cheat-sheet)       | SSH, GPG, and identity setup — interactive or step-by-step guide                                   |
+| Tool                                                                                 | Description                                                                                        |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [Software Installer](https://sanyokkua.github.io/dev.tools/software-installer)       | Generate install / update / upgrade / remove scripts for 153 apps across macOS, Windows, and Linux |
+| [macOS Setup](https://sanyokkua.github.io/dev.tools/mac-os-setup)                    | Homebrew, shell PATH, env vars, and Apple Silicon VRAM manager                                     |
+| [Windows Setup](https://sanyokkua.github.io/dev.tools/windows-setup)                 | winget, Chocolatey, and Scoop setup                                                                |
+| [Linux Setup](https://sanyokkua.github.io/dev.tools/linux-setup)                     | apt / dnf / pacman / zypper + Flatpak and Snap                                                     |
+| [Git Cheat-sheet](https://sanyokkua.github.io/dev.tools/git-cheat-sheet)             | SSH, GPG, and identity setup — interactive or step-by-step guide                                   |
+| [Dev Environment Setup](https://sanyokkua.github.io/dev.tools/dev-environment-setup) | Install / configure / verify / update / remove instructions for language and package managers      |
 
 ### AI
 
@@ -87,7 +88,7 @@ npm run dev          # http://localhost:3000
 
 ```bash
 npm run verify       # format → lint → unit tests with coverage
-npm run verify:ui    # live-Chrome: 24 routes × 3 widths × 2 themes + smoke tests
+npm run verify:ui    # live-Chrome: 25 routes × 3 widths × 2 themes + smoke tests
 ```
 
 ### Build

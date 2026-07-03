@@ -6,7 +6,7 @@ jest.mock('mermaid', () => ({
 import { parseMermaid, renderMermaid } from '@/common/mermaid';
 import mermaidDefault from 'mermaid';
 
-const mm = mermaidDefault as { initialize: jest.Mock; parse: jest.Mock; render: jest.Mock };
+const mm = mermaidDefault as unknown as { initialize: jest.Mock; parse: jest.Mock; render: jest.Mock };
 
 beforeEach(() => {
     jest.clearAllMocks();

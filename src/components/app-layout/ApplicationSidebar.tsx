@@ -35,6 +35,7 @@ const navGroups: NavGroup[] = [
             { itemName: 'Windows Setup', itemLink: '/windows-setup', icon: '⊞' },
             { itemName: 'Linux Setup', itemLink: '/linux-setup', icon: '🐧' },
             { itemName: 'Git Cheat-sheet', itemLink: '/git-cheat-sheet', icon: '⎇' },
+            { itemName: 'Dev Environment Setup', itemLink: '/dev-environment-setup', icon: '🧰' },
         ],
     },
     {

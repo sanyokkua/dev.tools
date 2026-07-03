@@ -14,6 +14,7 @@ function buildProps(
         prefMode: 'preferred' as const,
         selectedApps: {},
         selectedVersions: {},
+        updateScope: 'selected-apps' as const,
         onRemove: jest.fn(),
         onOverride: jest.fn(),
         onVersionSelect: jest.fn(),
@@ -111,5 +112,69 @@ describe('AppBasket', () => {
         );
         fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
         expect(onClear).toHaveBeenCalled();
+    });
+
+    // Test 7: Temurin on Linux/Debian via apt has a repoSetup — badge should render
+    it('shows the "requires repo" badge for Temurin on Linux/Debian via apt', () => {
+        render(
+            <AppBasket
+                {...buildProps({
+                    platform: 'linux',
+                    linuxDistro: 'debian',
+                    selectedManagers: ['apt'],
+                    prefMode: 'preferred',
+                    selectedApps: { temurin: null },
+                    selectedVersions: { temurin: ['21'] },
+                })}
+            />,
+        );
+        expect(screen.getByTestId('repo-badge-temurin')).toBeInTheDocument();
+        expect(screen.getByTestId('repo-badge-temurin')).toHaveTextContent('requires repo');
+    });
+
+    // Test 8: git has no repoSetup anywhere — badge should be absent
+    it('does not show the "requires repo" badge for git (no repoSetup)', () => {
+        render(
+            <AppBasket
+                {...buildProps({
+                    platform: 'macos',
+                    selectedManagers: ['brew'],
+                    prefMode: 'preferred',
+                    selectedApps: { git: null },
+                })}
+            />,
+        );
+        expect(screen.queryByTestId('repo-badge-git')).not.toBeInTheDocument();
+    });
+
+    // Test 9: badge re-evaluates live when the resolved method changes (platform swap here
+    // stands in for any config change, including a per-app override switching managers)
+    it('removes the badge on rerender once the resolved method has no repoSetup', () => {
+        const { rerender } = render(
+            <AppBasket
+                {...buildProps({
+                    platform: 'linux',
+                    linuxDistro: 'debian',
+                    selectedManagers: ['apt'],
+                    prefMode: 'preferred',
+                    selectedApps: { temurin: null },
+                    selectedVersions: { temurin: ['21'] },
+                })}
+            />,
+        );
+        expect(screen.getByTestId('repo-badge-temurin')).toBeInTheDocument();
+
+        rerender(
+            <AppBasket
+                {...buildProps({
+                    platform: 'macos',
+                    selectedManagers: ['brew'],
+                    prefMode: 'preferred',
+                    selectedApps: { temurin: null },
+                    selectedVersions: { temurin: ['21'] },
+                })}
+            />,
+        );
+        expect(screen.queryByTestId('repo-badge-temurin')).not.toBeInTheDocument();
     });
 });

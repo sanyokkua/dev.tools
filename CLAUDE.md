@@ -13,7 +13,8 @@ npm run lint:fix      # Run ESLint with auto-fix
 npm run test          # Jest with coverage
 npm run format        # Format with Prettier
 npm run check:format  # Check formatting without writing
-npm run verify        # Full pipeline: format → lint → test
+npm run check:paths   # Guard against hardcoded personal-machine paths (e.g. /Users/<name>)
+npm run verify        # Full pipeline: format → lint → check:paths → test
 npm run clean         # Remove build artifacts
 npm run build:prompts  # Validate TS catalog modules + emit manifest.generated.ts / loaders.generated.ts
 npm run verify:smoke  # Playwright interaction smoke tests only (28+ flows); requires dev server
