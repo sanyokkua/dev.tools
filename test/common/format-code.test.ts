@@ -12,8 +12,8 @@ import { formatCode, isFormattable } from '@/common/format-code';
 import prettierStandalone from 'prettier/standalone';
 import * as sqlFormatter from 'sql-formatter';
 
-const prettierMock = prettierStandalone as { format: jest.Mock };
-const sqlMock = sqlFormatter as { format: jest.Mock };
+const prettierMock = prettierStandalone as unknown as { format: jest.Mock };
+const sqlMock = sqlFormatter as unknown as { format: jest.Mock };
 
 beforeEach(() => {
     jest.clearAllMocks();

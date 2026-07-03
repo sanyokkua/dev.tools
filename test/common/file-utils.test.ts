@@ -190,14 +190,19 @@ describe('createFileReadPromise', () => {
     });
 
     it('rejects when FileReader errors', async () => {
-        const mockReader = {
-            onload: null as ((e: ProgressEvent<FileReader>) => void) | null,
-            onerror: null as (() => void) | null,
-            readAsText: jest.fn(function (this: typeof mockReader) {
+        interface MockFileReader {
+            onload: ((e: ProgressEvent<FileReader>) => void) | null;
+            onerror: (() => void) | null;
+            readAsText: jest.Mock;
+        }
+        const mockReader: MockFileReader = {
+            onload: null,
+            onerror: null,
+            readAsText: jest.fn(function (this: MockFileReader) {
                 setTimeout(() => this.onerror?.(), 0);
             }),
         };
-        jest.spyOn(globalThis, 'FileReader').mockImplementation(() => mockReader);
+        jest.spyOn(globalThis, 'FileReader').mockImplementation(() => mockReader as unknown as FileReader);
 
         await expect(createFileReadPromise(new File(['x'], 'x.txt'))).rejects.toThrow('Failed to read file');
         (globalThis.FileReader as jest.MockedClass<typeof FileReader>).mockRestore();
