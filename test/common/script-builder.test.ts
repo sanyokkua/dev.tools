@@ -1,5 +1,5 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
-import type { CatalogApp } from '@/common/apps-catalog-types';
+import type { CatalogApp, CatalogManager } from '@/common/apps-catalog-types';
 import { MANAGER_MAINTENANCE } from '@/common/manager-maintenance-catalog';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
@@ -564,19 +564,79 @@ describe('buildCombinedScript', () => {
             expect(script).toContain('echo "✔ $SUCCESS ok / ✖ $FAILED failed"');
         });
 
-        it('emits run_task line for install action', () => {
+        it('emits run_task line for install action, command wrapped in a generated function', () => {
             const script = buildCombinedScript([FIREFOX], 'install', macosConfig);
-            expect(script).toContain('run_task "install Firefox (brew)" brew install --cask firefox');
+            expect(script).toContain('_task_1() {\nbrew install --cask firefox\n}');
+            expect(script).toContain('run_task "install Firefox (brew)" _task_1');
         });
 
-        it('emits run_task line for update action', () => {
+        it('emits run_task line for update action, command wrapped in a generated function', () => {
             const script = buildCombinedScript([FIREFOX], 'update', macosConfig);
-            expect(script).toContain('run_task "update Firefox (brew)" brew upgrade --cask firefox');
+            expect(script).toContain('_task_1() {\nbrew upgrade --cask firefox\n}');
+            expect(script).toContain('run_task "update Firefox (brew)" _task_1');
         });
 
-        it('emits run_task line for remove action', () => {
+        it('emits run_task line for remove action, command wrapped in a generated function', () => {
             const script = buildCombinedScript([FIREFOX], 'remove', macosConfig);
-            expect(script).toContain('run_task "remove Firefox (brew)" brew uninstall --cask firefox');
+            expect(script).toContain('_task_1() {\nbrew uninstall --cask firefox\n}');
+            expect(script).toContain('run_task "remove Firefox (brew)" _task_1');
+        });
+
+        it('wraps a curl-pipe-bash install command so run_task cannot pipe its own echo into a trailing bash', () => {
+            const app: CatalogApp = {
+                ...FIREFOX,
+                id: 'nvm',
+                name: 'nvm',
+                methods: {
+                    macos: [
+                        {
+                            manager: 'script',
+                            install: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash',
+                        },
+                    ],
+                },
+            };
+            const config = { ...macosConfig, managers: ['script' as CatalogManager] };
+            const script = buildCombinedScript([app], 'install', config);
+            expect(script).toContain(
+                '_task_1() {\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash\n}',
+            );
+            expect(script).toContain('run_task "install nvm (script)" _task_1');
+            // The label text must never appear directly on a line piped to a bare interpreter.
+            expect(script).not.toMatch(/run_task "install nvm \(script\)" curl/);
+        });
+
+        it('wraps an &&-chained install command (e.g. apt repo setup + install) as a single function', () => {
+            const app: CatalogApp = {
+                ...FIREFOX,
+                id: 'chained-app',
+                name: 'ChainedApp',
+                methods: { macos: [{ manager: 'brew', install: 'brew update && brew install --cask chained-app' }] },
+            };
+            const script = buildCombinedScript([app], 'install', macosConfig);
+            expect(script).toContain('_task_1() {\nbrew update && brew install --cask chained-app\n}');
+            expect(script).toContain('run_task "install ChainedApp (brew)" _task_1');
+        });
+
+        it('wraps an install command containing a heredoc (e.g. apt/dnf repo-file registration) as a single function', () => {
+            const heredocInstall =
+                "sudo tee /etc/yum.repos.d/heredoc-app.repo > /dev/null <<'EOF'\n" +
+                '[heredoc-app]\n' +
+                'name=heredoc-app\n' +
+                'baseurl=https://example.com/rpm\n' +
+                'enabled=1\n' +
+                'gpgcheck=1\n' +
+                'EOF\n' +
+                'sudo dnf install -y heredoc-app';
+            const app: CatalogApp = {
+                ...FIREFOX,
+                id: 'heredoc-app',
+                name: 'HeredocApp',
+                methods: { macos: [{ manager: 'brew', install: heredocInstall }] },
+            };
+            const script = buildCombinedScript([app], 'install', macosConfig);
+            expect(script).toContain(`_task_1() {\n${heredocInstall}\n}`);
+            expect(script).toContain('run_task "install HeredocApp (brew)" _task_1');
         });
     });
 

@@ -180,6 +180,12 @@ function emitRepoSetupSection(lines: string[], apps: CatalogApp[], config: Build
  * Builds a single combined script (all apps in one file).
  * macOS/Linux → bash (.sh); Windows → PowerShell (.ps1).
  * Skipped apps and missing-command apps emit inline comment lines.
+ * bash: each per-app command is wrapped in a generated shell function (`_task_N`) before being
+ * invoked via `run_task`, same convention as emitRepoSetupSection/buildManagerWideScript/
+ * buildBootstrapScript — required because catalog commands can contain shell operators (`|`,
+ * `&&`, `;`) that would otherwise be parsed at the `run_task` invocation's statement level
+ * instead of scoped to the command (e.g. `run_task "label" curl URL | bash` pipes run_task's
+ * own echo output into the trailing `bash`, not just curl's).
  */
 export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, config: BuilderConfig): string {
     const lines: string[] = [];
@@ -201,6 +207,7 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
         emitRepoSetupSection(lines, apps, config, isWindows);
     }
 
+    let taskIndex = 0;
     for (const app of apps) {
         const manager = resolveManager(app, config);
         if (!manager) {
@@ -228,7 +235,14 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
                         `try { Write-Host "▶ ${action} ${app.name} ${v} (${manager})"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} ${v} failed: $_"; $fail++ }`,
                     );
                 } else {
-                    lines.push(`run_task "${action} ${app.name} ${v} (${manager})" ${cmd}`);
+                    taskIndex += 1;
+                    const fnName = `_task_${taskIndex}`;
+                    lines.push(
+                        `${fnName}() {`,
+                        cmd,
+                        '}',
+                        `run_task "${action} ${app.name} ${v} (${manager})" ${fnName}`,
+                    );
                 }
             }
         } else {
@@ -243,7 +257,9 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
                     `try { Write-Host "▶ ${action} ${app.name}"; ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${app.name} failed: $_"; $fail++ }`,
                 );
             } else {
-                lines.push(`run_task "${action} ${app.name} (${manager})" ${cmd}`);
+                taskIndex += 1;
+                const fnName = `_task_${taskIndex}`;
+                lines.push(`${fnName}() {`, cmd, '}', `run_task "${action} ${app.name} (${manager})" ${fnName}`);
             }
         }
     }
