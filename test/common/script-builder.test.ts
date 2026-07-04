@@ -617,6 +617,27 @@ describe('buildCombinedScript', () => {
             expect(script).toContain('_task_1() {\nbrew update && brew install --cask chained-app\n}');
             expect(script).toContain('run_task "install ChainedApp (brew)" _task_1');
         });
+
+        it('wraps an install command containing a heredoc (e.g. apt/dnf repo-file registration) as a single function', () => {
+            const heredocInstall =
+                "sudo tee /etc/yum.repos.d/heredoc-app.repo > /dev/null <<'EOF'\n" +
+                '[heredoc-app]\n' +
+                'name=heredoc-app\n' +
+                'baseurl=https://example.com/rpm\n' +
+                'enabled=1\n' +
+                'gpgcheck=1\n' +
+                'EOF\n' +
+                'sudo dnf install -y heredoc-app';
+            const app: CatalogApp = {
+                ...FIREFOX,
+                id: 'heredoc-app',
+                name: 'HeredocApp',
+                methods: { macos: [{ manager: 'brew', install: heredocInstall }] },
+            };
+            const script = buildCombinedScript([app], 'install', macosConfig);
+            expect(script).toContain(`_task_1() {\n${heredocInstall}\n}`);
+            expect(script).toContain('run_task "install HeredocApp (brew)" _task_1');
+        });
     });
 
     describe('.ps1 format (Windows)', () => {
