@@ -176,4 +176,71 @@ describe('AppCatalog — bulk-add buttons', () => {
             expect(onToggle).not.toHaveBeenCalled();
         });
     });
+
+    describe('info button / modal', () => {
+        it('renders an info button per visible row', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+            expect(screen.getByTestId('app-info-iterm2')).toBeInTheDocument();
+        });
+
+        it('opening it shows the app name, category, description, site link, and notes', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+
+            fireEvent.click(screen.getByTestId('app-info-iterm2'));
+
+            const modal = screen.getByTestId('app-info-modal-iterm2');
+            expect(document.querySelector('.modal-title')).toHaveTextContent('iTerm2');
+            expect(modal).toHaveTextContent('System Utilities');
+            expect(modal).toHaveTextContent("Terminal emulator as alternative to Apple's Terminal app");
+            expect(modal).toHaveTextContent(
+                'macOS only — no Windows or Linux build (use Windows Terminal on Windows).',
+            );
+            expect(screen.getByRole('link', { name: /Visit official site/ })).toHaveAttribute(
+                'href',
+                'https://iterm2.com',
+            );
+        });
+
+        it('clicking the info button does not toggle the row selection', () => {
+            const { onToggle } = renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+
+            fireEvent.click(screen.getByTestId('app-info-iterm2'));
+
+            expect(onToggle).not.toHaveBeenCalled();
+        });
+
+        it('closes via the header close button', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+            fireEvent.click(screen.getByTestId('app-info-iterm2'));
+            expect(screen.getByTestId('app-info-modal-iterm2')).toBeInTheDocument();
+
+            fireEvent.click(document.querySelector('.modal-close-button')!);
+
+            expect(screen.queryByTestId('app-info-modal-iterm2')).not.toBeInTheDocument();
+        });
+
+        it('closes via the Escape key', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+            fireEvent.click(screen.getByTestId('app-info-iterm2'));
+
+            fireEvent.keyDown(window, { key: 'Escape' });
+
+            expect(screen.queryByTestId('app-info-modal-iterm2')).not.toBeInTheDocument();
+        });
+
+        it('closes via a backdrop click', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });
+            fireEvent.click(screen.getByTestId('app-info-iterm2'));
+
+            fireEvent.click(document.querySelector('.modal-backdrop')!);
+
+            expect(screen.queryByTestId('app-info-modal-iterm2')).not.toBeInTheDocument();
+        });
+    });
 });

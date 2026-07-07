@@ -1,6 +1,7 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { filterCatalog, getAvailableManagers, getCategories } from '@/common/catalog-utils';
+import Modal from '@/controls/Modal';
 import React, { useCallback, useMemo, useState } from 'react';
 
 interface AppCatalogProps {
@@ -25,6 +26,7 @@ const AppCatalog = ({
 }: AppCatalogProps): React.JSX.Element => {
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const [inspectedApp, setInspectedApp] = useState<CatalogApp | null>(null);
 
     const categories = useMemo(() => getCategories(APPS_CATALOG.apps), []);
 
@@ -101,6 +103,7 @@ const AppCatalog = ({
                             <th>App</th>
                             <th>Category</th>
                             <th>Availability</th>
+                            <th>Info</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,11 +160,48 @@ const AppCatalog = ({
                                         ))}
                                     </div>
                                 </td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        className="btn ghost sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setInspectedApp(app);
+                                        }}
+                                        aria-label={`View info for ${app.name}`}
+                                        data-testid={`app-info-${app.id}`}
+                                    >
+                                        ℹ
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+
+            <Modal
+                isOpen={inspectedApp !== null}
+                onClose={() => setInspectedApp(null)}
+                title={inspectedApp?.name ?? ''}
+            >
+                {inspectedApp && (
+                    <div data-testid={`app-info-modal-${inspectedApp.id}`}>
+                        <p>
+                            <strong>Category:</strong> {inspectedApp.category}
+                        </p>
+                        <p>{inspectedApp.description}</p>
+                        {inspectedApp.site && (
+                            <p>
+                                <a href={inspectedApp.site} target="_blank" rel="noopener noreferrer">
+                                    Visit official site ↗
+                                </a>
+                            </p>
+                        )}
+                        {inspectedApp.notes && <p className="info-note">{inspectedApp.notes}</p>}
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };

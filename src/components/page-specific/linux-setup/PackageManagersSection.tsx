@@ -128,6 +128,24 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
                 />
                 <CodeSnippet headerText="bash — verify" content={LINUX_BREW_VERIFY} language="bash" />
             </div>
+
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">5</span> Manually installed tools (Maven, Gradle, etc.)
+                </div>
+                <p>
+                    For tools with no distro package (e.g. Maven, Gradle) extract the downloaded archive to{' '}
+                    <code>/opt/&lt;tool&gt;</code> for a system-wide install, or <code>~/.local/opt</code> plus a
+                    symlink in <code>~/.local/bin</code> (already on <code>PATH</code> on modern Ubuntu 16.04+) for a
+                    single-user install.
+                </p>
+                <p className="info-note">
+                    Example: <code>/opt/apache-maven-3.9.16</code>, <code>/opt/gradle/gradle-9.6.1</code>. Wire the
+                    resulting PATH/HOME variables using the mechanism already covered in this page&apos;s{' '}
+                    <strong>Environment variables</strong> tab — see the Dev Environment Setup page&apos;s Maven/Gradle
+                    categories for the full manual install walkthrough.
+                </p>
+            </div>
         </section>
     );
 };

@@ -45,6 +45,13 @@ describe('Linux Setup page', () => {
         expect(screen.getAllByText(/Reload the shell profile/i).length).toBeGreaterThan(0);
     });
 
+    it('Environment variables section covers /etc/environment and systemd services', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Environment variables' }));
+        expect(screen.getAllByText(/\/etc\/environment/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/systemd services/i).length).toBeGreaterThan(0);
+    });
+
     it('Debian / Ubuntu distro button has aria-pressed true by default', () => {
         renderPage();
         expect(screen.getByRole('button', { name: 'Debian / Ubuntu' })).toHaveAttribute('aria-pressed', 'true');
@@ -58,5 +65,10 @@ describe('Linux Setup page', () => {
     it('Snap section is visible on the default Debian distro', () => {
         renderPage();
         expect(screen.getByText(/snapd/i)).toBeInTheDocument();
+    });
+
+    it('Package managers tab shows manual-install guidance for tools like Maven/Gradle', () => {
+        renderPage();
+        expect(screen.getByText(/Manually installed tools/i)).toBeInTheDocument();
     });
 });

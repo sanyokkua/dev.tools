@@ -127,6 +127,23 @@ const PackageManagersSection: React.FC = () => {
                     />
                 </div>
             )}
+
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">3</span> Where to install manually downloaded tools
+                </div>
+                <p>
+                    For tools with no winget/Chocolatey/Scoop package (e.g. Maven, Gradle) extract the downloaded
+                    archive to a space-free folder such as <code>C:\Tools\&lt;tool&gt;</code> — avoid{' '}
+                    <code>C:\Program Files\...</code>, whose space breaks some build tools/scripts.
+                </p>
+                <p className="info-note">
+                    Example: <code>C:\Tools\apache-maven-3.9.16</code>, <code>C:\Tools\gradle\gradle-9.6.1</code>. Wire{' '}
+                    <code>MAVEN_HOME</code>/<code>GRADLE_HOME</code> and PATH using the mechanism already covered in
+                    this page&apos;s <strong>Environment variables</strong> tab — see the Dev Environment Setup
+                    page&apos;s Maven/Gradle categories for the full manual install walkthrough.
+                </p>
+            </div>
         </section>
     );
 };

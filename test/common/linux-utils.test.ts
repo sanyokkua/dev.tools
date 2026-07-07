@@ -9,9 +9,15 @@ import {
     LINUX_DNF_UPDATE,
     LINUX_DNF_VERIFY,
     LINUX_ENV_ADD_TO_PATH,
+    LINUX_ENV_ETC_ENVIRONMENT,
     LINUX_ENV_EXPORT_EXAMPLE,
     LINUX_ENV_JAVA_HOME,
+    LINUX_ENV_PERSIST_USER_PROFILE,
+    LINUX_ENV_PROFILE_D,
     LINUX_ENV_RELOAD,
+    LINUX_ENV_SYSTEMD_SERVICE,
+    LINUX_ENV_SYSTEMD_USER,
+    LINUX_ENV_VERIFY,
     LINUX_FLATPAK_FLATHUB,
     LINUX_FLATPAK_INSTALL_APT,
     LINUX_FLATPAK_INSTALL_DNF,
@@ -56,9 +62,15 @@ describe('linux-utils constants', () => {
         ['LINUX_BREW_PATH', LINUX_BREW_PATH],
         ['LINUX_BREW_VERIFY', LINUX_BREW_VERIFY],
         ['LINUX_ENV_EXPORT_EXAMPLE', LINUX_ENV_EXPORT_EXAMPLE],
+        ['LINUX_ENV_PERSIST_USER_PROFILE', LINUX_ENV_PERSIST_USER_PROFILE],
         ['LINUX_ENV_ADD_TO_PATH', LINUX_ENV_ADD_TO_PATH],
         ['LINUX_ENV_JAVA_HOME', LINUX_ENV_JAVA_HOME],
         ['LINUX_ENV_RELOAD', LINUX_ENV_RELOAD],
+        ['LINUX_ENV_ETC_ENVIRONMENT', LINUX_ENV_ETC_ENVIRONMENT],
+        ['LINUX_ENV_PROFILE_D', LINUX_ENV_PROFILE_D],
+        ['LINUX_ENV_SYSTEMD_USER', LINUX_ENV_SYSTEMD_USER],
+        ['LINUX_ENV_SYSTEMD_SERVICE', LINUX_ENV_SYSTEMD_SERVICE],
+        ['LINUX_ENV_VERIFY', LINUX_ENV_VERIFY],
     ])('%s is a non-empty string', (_name, value) => {
         expect(typeof value).toBe('string');
         expect(value.length).toBeGreaterThan(0);
@@ -78,5 +90,28 @@ describe('linux-utils constants', () => {
 
     it('LINUX_ENV_ADD_TO_PATH contains PATH', () => {
         expect(LINUX_ENV_ADD_TO_PATH).toContain('PATH');
+    });
+
+    it('LINUX_ENV_ETC_ENVIRONMENT contains /etc/environment and no export syntax', () => {
+        expect(LINUX_ENV_ETC_ENVIRONMENT).toContain('/etc/environment');
+        expect(LINUX_ENV_ETC_ENVIRONMENT).not.toContain('export ');
+    });
+
+    it('LINUX_ENV_PROFILE_D contains profile.d and export', () => {
+        expect(LINUX_ENV_PROFILE_D).toContain('profile.d');
+        expect(LINUX_ENV_PROFILE_D).toContain('export');
+    });
+
+    it('LINUX_ENV_SYSTEMD_USER contains environment.d', () => {
+        expect(LINUX_ENV_SYSTEMD_USER).toContain('environment.d');
+    });
+
+    it('LINUX_ENV_SYSTEMD_SERVICE contains Environment= and systemctl', () => {
+        expect(LINUX_ENV_SYSTEMD_SERVICE).toContain('Environment=');
+        expect(LINUX_ENV_SYSTEMD_SERVICE).toContain('systemctl');
+    });
+
+    it('LINUX_ENV_VERIFY contains printenv', () => {
+        expect(LINUX_ENV_VERIFY).toContain('printenv');
     });
 });
