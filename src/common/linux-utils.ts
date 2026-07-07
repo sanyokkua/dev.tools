@@ -47,9 +47,48 @@ export const LINUX_BREW_PATH =
     `eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"`;
 export const LINUX_BREW_VERIFY = `brew --version`;
 
-// Environment variables
+// Environment variables — terminal & shell profile (reaches terminal sessions only, not GUI apps)
 export const LINUX_ENV_EXPORT_EXAMPLE = `export MY_VAR="value"`;
+export const LINUX_ENV_PERSIST_USER_PROFILE =
+    `echo 'export MY_VAR="value"' >> ~/.bashrc\n` + `# or for zsh:\n` + `echo 'export MY_VAR="value"' >> ~/.zshrc`;
 export const LINUX_ENV_ADD_TO_PATH = `export PATH="$HOME/.local/bin:$PATH"`;
 export const LINUX_ENV_JAVA_HOME =
     `export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"\n` + `export PATH="$JAVA_HOME/bin:$PATH"`;
 export const LINUX_ENV_RELOAD = `source ~/.bashrc\n` + `# or for zsh:\n` + `source ~/.zshrc`;
+
+// Environment variables — system-wide, all users (reaches login shells; not systemd services)
+export const LINUX_ENV_ETC_ENVIRONMENT =
+    `# /etc/environment — strict KEY=VALUE, one per line, NO export, NO shell syntax\n` +
+    `sudo tee -a /etc/environment <<'EOF'\n` +
+    `JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"\n` +
+    `EOF`;
+export const LINUX_ENV_PROFILE_D =
+    `sudo tee /etc/profile.d/custom-env.sh <<'EOF'\n` +
+    `export MYAPP_HOME="/opt/myapp"\n` +
+    `export PATH="$PATH:/opt/myapp/bin"\n` +
+    `EOF\n` +
+    `sudo chmod +x /etc/profile.d/custom-env.sh`;
+
+// Environment variables — GUI / Wayland session (systemd ≥ 233, per-user)
+export const LINUX_ENV_SYSTEMD_USER =
+    `mkdir -p ~/.config/environment.d\n` +
+    `cat <<'EOF' > ~/.config/environment.d/myvars.conf\n` +
+    `MYVAR=myvalue\n` +
+    `EOF\n` +
+    `# log out and back in to apply`;
+
+// Environment variables — systemd services (do NOT inherit shell/profile files)
+export const LINUX_ENV_SYSTEMD_SERVICE =
+    `sudo systemctl edit myapp.service\n` +
+    `# add to the override file that opens:\n` +
+    `# [Service]\n` +
+    `# Environment=APP_ENV=production\n` +
+    `# EnvironmentFile=/etc/myapp/environment\n` +
+    `sudo systemctl daemon-reload\n` +
+    `sudo systemctl restart myapp`;
+
+// Environment variables — verification
+export const LINUX_ENV_VERIFY =
+    `printenv MY_VAR\n` +
+    `# confirm PAM loads /etc/environment for your login path:\n` +
+    `grep pam_env /etc/pam.d/common-session`;

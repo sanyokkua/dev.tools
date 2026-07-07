@@ -160,7 +160,7 @@
     display: grid;
     grid-template-columns: 1fr 380px;
     gap: var(--s4);
-    align-items: start;
+    align-items: stretch;
 }
 
 .installer-search-bar {
@@ -239,6 +239,13 @@
 
 // Basket
 
+.installer-basket-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
 .installer-basket-header {
     display: flex;
     align-items: center;
@@ -257,7 +264,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--s2);
-    max-height: 360px;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
 }
 
@@ -266,6 +274,10 @@
     color: var(--muted);
     padding: var(--s2) 0;
     line-height: 1.5;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
 }
 
 .installer-basket-card {
@@ -397,8 +409,18 @@
         grid-template-columns: 1fr;
     }
 
+    .installer-basket-panel {
+        height: auto;
+    }
+
     .installer-basket-list {
+        flex: 0 1 auto;
         max-height: none;
+    }
+
+    .installer-basket-empty {
+        flex: 0 1 auto;
+        display: block;
     }
 }
 

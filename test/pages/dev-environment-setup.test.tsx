@@ -15,10 +15,12 @@ function renderPage(): ReturnType<typeof render> {
 }
 
 describe('Dev Environment Setup page', () => {
-    it('renders the category segmented control with 5 options, Java pressed by default', () => {
+    it('renders the category segmented control with 7 options, Java pressed by default', () => {
         renderPage();
         const grp = screen.getByRole('group', { name: 'Category' });
         expect(within(grp).getByText('Java (JDK)')).toBeInTheDocument();
+        expect(within(grp).getByText('Maven')).toBeInTheDocument();
+        expect(within(grp).getByText('Gradle')).toBeInTheDocument();
         expect(within(grp).getByText('Python')).toBeInTheDocument();
         expect(within(grp).getByText('Go')).toBeInTheDocument();
         expect(within(grp).getByText('Node.js')).toBeInTheDocument();
@@ -72,6 +74,48 @@ describe('Dev Environment Setup page', () => {
         const grp = screen.getByRole('group', { name: 'Package / version managers' });
         expect(within(grp).queryByText('jenv')).not.toBeInTheDocument();
         expect(within(grp).getByText('Manual JAVA_HOME (PowerShell)')).toBeInTheDocument();
+    });
+
+    it('Go/macOS Homebrew configure step adds $(go env GOPATH)/bin to PATH', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Go'));
+        fireEvent.click(screen.getByText('Homebrew'));
+        expect(screen.getAllByText(/go env GOPATH/).length).toBeGreaterThan(0);
+    });
+
+    it('Maven shows only Manual and Automated install script chips (no package manager) on every OS', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Maven'));
+        for (const os of ['macOS', 'Windows', 'Linux']) {
+            if (os !== 'macOS') fireEvent.click(screen.getByText(os));
+            const grp = screen.getByRole('group', { name: 'Package / version managers' });
+            expect(within(grp).getByText(/^Manual/)).toBeInTheDocument();
+            expect(within(grp).getByText(/^Automated install script/)).toBeInTheDocument();
+            expect(
+                within(grp).queryByText(/winget|Homebrew|apt|dnf|pacman|zypper|Chocolatey|Scoop/),
+            ).not.toBeInTheDocument();
+        }
+    });
+
+    it('Maven manual entry never assigns M2_HOME', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Maven'));
+        fireEvent.click(screen.getByText(/^Manual/));
+        expect(screen.queryByText(/M2_HOME=/)).not.toBeInTheDocument();
+    });
+
+    it('Gradle shows only Manual and Automated install script chips (no package manager) on every OS', () => {
+        renderPage();
+        fireEvent.click(screen.getByText('Gradle'));
+        for (const os of ['macOS', 'Windows', 'Linux']) {
+            if (os !== 'macOS') fireEvent.click(screen.getByText(os));
+            const grp = screen.getByRole('group', { name: 'Package / version managers' });
+            expect(within(grp).getByText(/^Manual/)).toBeInTheDocument();
+            expect(within(grp).getByText(/^Automated install script/)).toBeInTheDocument();
+            expect(
+                within(grp).queryByText(/winget|Homebrew|apt|dnf|pacman|zypper|Chocolatey|Scoop/),
+            ).not.toBeInTheDocument();
+        }
     });
 
     it('Node.js on Windows: selecting nvm-windows surfaces its caveat notes', () => {

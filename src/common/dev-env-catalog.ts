@@ -1,6 +1,6 @@
 import { WINDOWS_ENV_SET_VARIABLE, WINDOWS_ENV_VIEW_VARIABLE, WINDOWS_SCOOP_INSTALL } from './windows-utils';
 
-export type DevEnvCategory = 'java' | 'python' | 'go' | 'rust' | 'nodejs' | 'bun';
+export type DevEnvCategory = 'java' | 'maven' | 'gradle' | 'python' | 'go' | 'rust' | 'nodejs' | 'bun';
 export type DevEnvOS = 'macos' | 'windows' | 'linux';
 export type DevEnvLinuxDistro = 'debian' | 'fedora' | 'arch' | 'suse';
 
@@ -270,6 +270,433 @@ const JAVA: DevEnvCategoryData = {
     },
 };
 
+// Maven and Gradle are deliberately manual-install-only in this catalog (no brew/choco/scoop/apt/dnf/pacman/
+// zypper entries) — see SDKMAN! above (already installs both: `sdk install maven` / `sdk install gradle`) for
+// a version-manager alternative instead.
+
+const MAVEN_MANUAL_MACOS: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download)',
+    builtIntoOS: false,
+    availableOn: ['macos'],
+    installTool:
+        'curl -fLO https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz\n' +
+        'curl -fLO https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz.sha512\n' +
+        'shasum -a 512 apache-maven-3.9.16-bin.tar.gz   # compare the printed hash against the .sha512 file below\n' +
+        'cat apache-maven-3.9.16-bin.tar.gz.sha512\n' +
+        'sudo mkdir -p /opt\n' +
+        'sudo tar -xzf apache-maven-3.9.16-bin.tar.gz -C /opt   # or mkdir -p ~/.dev_tools for a single-user, no-sudo install',
+    configure:
+        `echo 'export MAVEN_HOME=/opt/apache-maven-3.9.16' >> ~/.zprofile\n` +
+        `echo 'export PATH="$PATH:$MAVEN_HOME/bin"' >> ~/.zprofile   # ~/.zprofile, not ~/.zshenv — /etc/zprofile's path_helper reorders PATH set there\n` +
+        'source ~/.zprofile',
+    verify: 'mvn -v',
+    update:
+        'Download the newer version tarball, extract it to a new /opt/apache-maven-<version> folder, then update ' +
+        'MAVEN_HOME in ~/.zprofile to point at it (old versions can be kept side by side).',
+    remove: 'sudo rm -rf /opt/apache-maven-3.9.16   # then remove the MAVEN_HOME/PATH lines from ~/.zprofile',
+    notes:
+        'Needs JDK 8+. Only bin needs to be on PATH — MAVEN_HOME itself is optional, kept here only as a ' +
+        'convenience for IDEs/scripts that read it. Never set M2_HOME: it was deprecated in Maven 3.5.0 and is ' +
+        'unsupported today. For automatic multi-version management instead of a pinned manual install, see ' +
+        'SDKMAN! above (sdk install maven).',
+};
+
+const MAVEN_MANUAL_LINUX: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download)',
+    builtIntoOS: false,
+    availableOn: ['linux'],
+    installTool:
+        'curl -fLO https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz\n' +
+        'curl -fLO https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz.sha512\n' +
+        'echo "$(cat apache-maven-3.9.16-bin.tar.gz.sha512)  apache-maven-3.9.16-bin.tar.gz" | sha512sum --check -\n' +
+        'sudo mkdir -p /opt\n' +
+        'sudo tar -xzf apache-maven-3.9.16-bin.tar.gz -C /opt   # or mkdir -p ~/.local/opt for a single-user, no-sudo install',
+    configure:
+        `echo 'export MAVEN_HOME=/opt/apache-maven-3.9.16' >> ~/.bashrc   # per-terminal; single-user: use $HOME/.local/opt/apache-maven-3.9.16 instead\n` +
+        `echo 'export PATH="$PATH:$MAVEN_HOME/bin"' >> ~/.bashrc\n` +
+        'source ~/.bashrc\n' +
+        '# For login shells, also add the same two lines to ~/.profile (Debian/Ubuntu) or ~/.bash_profile (Fedora/RHEL)\n' +
+        '# For all users, drop them in /etc/profile.d/maven.sh instead',
+    verify: 'mvn -v',
+    update:
+        'Download the newer version tarball, extract it to a new /opt/apache-maven-<version> (or ~/.local/opt/...) ' +
+        'folder, then update MAVEN_HOME wherever you set it above.',
+    remove:
+        'sudo rm -rf /opt/apache-maven-3.9.16   # then remove the MAVEN_HOME/PATH lines from ~/.bashrc (and ' +
+        '~/.profile / ~/.bash_profile / /etc/profile.d if added there too)',
+    notes:
+        'Needs JDK 8+. Only bin needs to be on PATH — MAVEN_HOME itself is optional, kept here only as a ' +
+        'convenience for IDEs/scripts that read it. Never set M2_HOME: it was deprecated in Maven 3.5.0 and is ' +
+        'unsupported today. For automatic multi-version management instead of a pinned manual install, see ' +
+        'SDKMAN! above (sdk install maven).',
+};
+
+const MAVEN_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
+    managerId: 'automated-script',
+    managerLabel: 'Automated install script (bash/zsh)',
+    builtIntoOS: false,
+    availableOn: ['macos', 'linux'],
+    installTool:
+        '#!/usr/bin/env bash\n' +
+        'set -euo pipefail\n' +
+        '\n' +
+        'MAVEN_VERSION="3.9.16"\n' +
+        'INSTALL_ROOT="/opt/apache-maven"                 # or "$HOME/.local/opt/apache-maven" for single user\n' +
+        'TAR="apache-maven-${MAVEN_VERSION}-bin.tar.gz"\n' +
+        'URL="https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/${TAR}"\n' +
+        'SHA512_URL="https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/${TAR}.sha512"\n' +
+        '\n' +
+        'tmp="$(mktemp -d)"; trap \'rm -rf "$tmp"\' EXIT\n' +
+        'echo "Downloading $URL ..."\n' +
+        'curl -fL "$URL" -o "$tmp/$TAR"\n' +
+        '\n' +
+        'echo "Downloading official SHA-512 checksum ..."\n' +
+        'curl -fL "$SHA512_URL" -o "$tmp/$TAR.sha512"\n' +
+        '\n' +
+        'echo "Verifying SHA-512 ..."\n' +
+        "expected=\"$(tr -d '[:space:]' < \"$tmp/$TAR.sha512\" | tr '[:upper:]' '[:lower:]')\"\n" +
+        'if command -v sha512sum >/dev/null; then\n' +
+        '  actual="$(sha512sum "$tmp/$TAR" | awk \'{print $1}\')"\n' +
+        'else\n' +
+        '  actual="$(shasum -a 512 "$tmp/$TAR" | awk \'{print $1}\')"   # macOS\n' +
+        'fi\n' +
+        '[ "$expected" = "$actual" ] || { echo "Checksum mismatch! expected $expected got $actual"; exit 1; }\n' +
+        '\n' +
+        'echo "Installing to ${INSTALL_ROOT}/apache-maven-${MAVEN_VERSION} ..."\n' +
+        'SUDO=""; [ -w "$(dirname "$INSTALL_ROOT")" ] || SUDO="sudo"\n' +
+        '$SUDO mkdir -p "$INSTALL_ROOT"\n' +
+        '$SUDO tar -xzf "$tmp/$TAR" -C "$INSTALL_ROOT"\n' +
+        '\n' +
+        'RC="$HOME/.bashrc"; [ "$(uname)" = "Darwin" ] && RC="$HOME/.zprofile"\n' +
+        'MARK="# >>> maven install >>>"\n' +
+        'if ! grep -qF "$MARK" "$RC" 2>/dev/null; then\n' +
+        '  {\n' +
+        '    echo "$MARK"\n' +
+        '    echo "export MAVEN_HOME=\\"$INSTALL_ROOT/apache-maven-${MAVEN_VERSION}\\""\n' +
+        '    echo \'export PATH="$MAVEN_HOME/bin:$PATH"\'\n' +
+        '    echo "# <<< maven install <<<"\n' +
+        '  } >> "$RC"\n' +
+        '  echo "Updated $RC"\n' +
+        'fi\n' +
+        '\n' +
+        'export MAVEN_HOME="$INSTALL_ROOT/apache-maven-${MAVEN_VERSION}"; export PATH="$MAVEN_HOME/bin:$PATH"\n' +
+        'mvn -v && echo "Maven ${MAVEN_VERSION} installed. Open a new shell or \'source $RC\'."',
+    verify: 'mvn -v',
+    update:
+        'Bump MAVEN_VERSION at the top of the script and re-run it — it installs into a new versioned folder and ' +
+        'rewrites the marked MAVEN_HOME/PATH block in your shell rc file. Safe/idempotent to re-run.',
+    remove:
+        'sudo rm -rf /opt/apache-maven   # or rm -rf ~/.local/opt/apache-maven for a single-user install; then ' +
+        'remove the "# >>> maven install >>>" ... "# <<< maven install <<<" block from ~/.zprofile or ~/.bashrc',
+    notes:
+        'Does everything the manual entry does in one step: download, checksum, extract, and MAVEN_HOME/PATH ' +
+        'wiring — never sets M2_HOME (deprecated/unsupported since Maven 3.5.0). Prefer SDKMAN! above instead if ' +
+        'you want easy multi-version switching rather than a single pinned install.',
+};
+
+const MAVEN_MANUAL_WINDOWS: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download, PowerShell)',
+    builtIntoOS: false,
+    availableOn: ['windows'],
+    installTool:
+        'Invoke-WebRequest -Uri https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip -OutFile "$env:TEMP\\apache-maven-3.9.16-bin.zip"\n' +
+        'Invoke-WebRequest -Uri https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip.sha512 -OutFile "$env:TEMP\\apache-maven-3.9.16-bin.zip.sha512"\n' +
+        '(Get-FileHash "$env:TEMP\\apache-maven-3.9.16-bin.zip" -Algorithm SHA512).Hash.ToLower()   # compare against the contents of the .sha512 file above\n' +
+        'New-Item -ItemType Directory -Force -Path C:\\Tools | Out-Null\n' +
+        'Expand-Archive -Path "$env:TEMP\\apache-maven-3.9.16-bin.zip" -DestinationPath C:\\Tools -Force',
+    configure:
+        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", "C:\\Tools\\apache-maven-3.9.16", "User")\n' +
+        '$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n' +
+        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\apache-maven-3.9.16\\bin", "User")',
+    verify: 'mvn -v',
+    update:
+        'Download the newer version zip, extract it next to the old one under C:\\Tools, then update the ' +
+        'MAVEN_HOME value above to point at the new folder.',
+    remove:
+        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $null, "User")\n' +
+        'Remove-Item -Recurse -Force C:\\Tools\\apache-maven-3.9.16',
+    notes:
+        'Needs JDK 8+. MAVEN_HOME is optional (kept here for IDEs/scripts) — only %MAVEN_HOME%\\bin needs to be ' +
+        'on PATH. Never set M2_HOME; it is deprecated/unsupported since Maven 3.5.0. Avoid installing under ' +
+        '"C:\\Program Files\\..." — the space in that path breaks some build tools/scripts; C:\\Tools avoids that ' +
+        'entirely. For automatic multi-version management, see SDKMAN! above — Windows only via WSL.',
+};
+
+const MAVEN_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
+    managerId: 'automated-script',
+    managerLabel: 'Automated install script (PowerShell)',
+    builtIntoOS: false,
+    availableOn: ['windows'],
+    installTool:
+        '#Requires -Version 5.1\n' +
+        '$ErrorActionPreference = "Stop"\n' +
+        '$Version   = "3.9.16"\n' +
+        '$Root      = "C:\\Tools\\apache-maven"\n' +
+        '$Zip       = "$env:TEMP\\apache-maven-$Version-bin.zip"\n' +
+        '$Url       = "https://dlcdn.apache.org/maven/maven-3/$Version/binaries/apache-maven-$Version-bin.zip"\n' +
+        '$Sha512Url = "https://downloads.apache.org/maven/maven-3/$Version/binaries/apache-maven-$Version-bin.zip.sha512"\n' +
+        '\n' +
+        'Write-Host "Downloading $Url ..."\n' +
+        'Invoke-WebRequest -Uri $Url -OutFile $Zip\n' +
+        '\n' +
+        'Write-Host "Downloading official SHA-512 checksum ..."\n' +
+        '$expected = (Invoke-WebRequest -Uri $Sha512Url -UseBasicParsing).Content.Trim().ToLower()\n' +
+        '\n' +
+        'Write-Host "Verifying checksum ..."\n' +
+        '$actual = (Get-FileHash $Zip -Algorithm SHA512).Hash.ToLower()\n' +
+        'if ($actual -ne $expected) { throw "Checksum mismatch! expected $expected got $actual" }\n' +
+        '\n' +
+        'Write-Host "Extracting ..."\n' +
+        'New-Item -ItemType Directory -Force -Path $Root | Out-Null\n' +
+        'Expand-Archive -Path $Zip -DestinationPath $Root -Force\n' +
+        '$MavenHome = "$Root\\apache-maven-$Version"\n' +
+        '\n' +
+        'Write-Host "Setting environment variables (User scope) ..."\n' +
+        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $MavenHome, "User")\n' +
+        '$p = [Environment]::GetEnvironmentVariable("Path","User")\n' +
+        '$bin = "$MavenHome\\bin"\n' +
+        'if ($p -notlike "*$bin*") {\n' +
+        '  [Environment]::SetEnvironmentVariable("Path", ($p.TrimEnd(\';\') + ";" + $bin), "User")\n' +
+        '}\n' +
+        'Write-Host "Done. Open a NEW terminal and run: mvn -v"',
+    verify: 'mvn -v',
+    update:
+        'Bump $Version at the top of the script and re-run it — it installs into a new ' +
+        'C:\\Tools\\apache-maven\\apache-maven-<version> folder and repoints MAVEN_HOME/PATH at it.',
+    remove:
+        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $null, "User")\n' +
+        'Remove-Item -Recurse -Force C:\\Tools\\apache-maven',
+    notes:
+        'Does everything the manual entry does in one step, PowerShell 5.1+ compatible. Never sets M2_HOME. ' +
+        'Prefer SDKMAN! inside WSL above instead if you want easy multi-version switching.',
+};
+
+const MAVEN: DevEnvCategoryData = {
+    category: 'maven',
+    label: 'Maven',
+    description:
+        'Manually install Apache Maven from the official Apache binary distribution — download, verify the ' +
+        'checksum, extract to a recommended folder, and wire MAVEN_HOME/PATH by hand. Package-manager installs ' +
+        '(brew/choco/scoop/apt/dnf/pacman/zypper) are intentionally out of scope here — see SDKMAN! in the Java ' +
+        'category for automatic multi-version management instead.',
+    managersByOS: {
+        macos: [MAVEN_MANUAL_MACOS, MAVEN_AUTOMATED_UNIX],
+        windows: [MAVEN_MANUAL_WINDOWS, MAVEN_AUTOMATED_WINDOWS],
+        linux: [MAVEN_MANUAL_LINUX, MAVEN_AUTOMATED_UNIX],
+    },
+};
+
+const GRADLE_MANUAL_MACOS: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download)',
+    builtIntoOS: false,
+    availableOn: ['macos'],
+    installTool:
+        'curl -fLO https://services.gradle.org/distributions/gradle-9.6.1-bin.zip\n' +
+        'echo "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14  gradle-9.6.1-bin.zip" | shasum -a 256 --check -\n' +
+        'sudo mkdir -p /opt/gradle\n' +
+        'sudo unzip -q gradle-9.6.1-bin.zip -d /opt/gradle       # or ~/.dev_tools/gradle for a single-user, no-sudo install\n' +
+        'sudo ln -sfn /opt/gradle/gradle-9.6.1 /opt/gradle/latest   # optional "latest" symlink — repoint it on future upgrades instead of editing GRADLE_HOME',
+    configure:
+        `echo 'export GRADLE_HOME=/opt/gradle/latest' >> ~/.zprofile\n` +
+        `echo 'export PATH="$PATH:$GRADLE_HOME/bin"' >> ~/.zprofile   # ~/.zprofile, not ~/.zshenv — /etc/zprofile's path_helper reorders PATH set there\n` +
+        'source ~/.zprofile',
+    verify: 'gradle -v',
+    update:
+        'Download the newer bin.zip, unzip it next to the old version, then repoint the symlink: sudo ln -sfn ' +
+        '/opt/gradle/gradle-<new-version> /opt/gradle/latest — GRADLE_HOME never needs to change.',
+    remove: 'sudo rm -rf /opt/gradle   # then remove the GRADLE_HOME/PATH lines from ~/.zprofile',
+    notes:
+        'Needs JDK 17+. Unlike Maven, GRADLE_HOME is the documented/recommended indirection here — pairing it ' +
+        'with a versioned install dir and a "latest" symlink makes upgrades a one-line symlink repoint instead of ' +
+        'editing your shell profile every time. For automatic multi-version management instead, see SDKMAN! in ' +
+        'the Java category (sdk install gradle).',
+};
+
+const GRADLE_MANUAL_LINUX: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download)',
+    builtIntoOS: false,
+    availableOn: ['linux'],
+    installTool:
+        'curl -fLO https://services.gradle.org/distributions/gradle-9.6.1-bin.zip\n' +
+        'echo "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14  gradle-9.6.1-bin.zip" | sha256sum --check -\n' +
+        'sudo mkdir -p /opt/gradle\n' +
+        'sudo unzip -q gradle-9.6.1-bin.zip -d /opt/gradle       # or ~/.local/opt/gradle (mkdir -p first) for a single-user, no-sudo install\n' +
+        'sudo ln -sfn /opt/gradle/gradle-9.6.1 /opt/gradle/latest   # optional "latest" symlink',
+    configure:
+        `echo 'export GRADLE_HOME=/opt/gradle/latest' >> ~/.bashrc   # per-terminal; single-user: use $HOME/.local/opt/gradle/latest instead\n` +
+        `echo 'export PATH="$PATH:$GRADLE_HOME/bin"' >> ~/.bashrc\n` +
+        'source ~/.bashrc\n' +
+        '# For login shells, also add the same two lines to ~/.profile (Debian/Ubuntu) or ~/.bash_profile (Fedora/RHEL)\n' +
+        '# For all users, drop them in /etc/profile.d/gradle.sh instead',
+    verify: 'gradle -v',
+    update:
+        'Download the newer bin.zip, unzip it next to the old version, then repoint the symlink: sudo ln -sfn ' +
+        '/opt/gradle/gradle-<new-version> /opt/gradle/latest — GRADLE_HOME never needs to change.',
+    remove:
+        'sudo rm -rf /opt/gradle   # then remove the GRADLE_HOME/PATH lines from ~/.bashrc (and ~/.profile / ' +
+        '~/.bash_profile / /etc/profile.d if added there too)',
+    notes:
+        'Needs JDK 17+. Unlike Maven, GRADLE_HOME is the documented/recommended indirection here — pairing it ' +
+        'with a versioned install dir and a "latest" symlink makes upgrades a one-line symlink repoint instead of ' +
+        'editing shell rc files every time. For automatic multi-version management instead, see SDKMAN! in the ' +
+        'Java category (sdk install gradle).',
+};
+
+const GRADLE_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
+    managerId: 'automated-script',
+    managerLabel: 'Automated install script (bash/zsh)',
+    builtIntoOS: false,
+    availableOn: ['macos', 'linux'],
+    installTool:
+        '#!/usr/bin/env bash\n' +
+        'set -euo pipefail\n' +
+        '\n' +
+        'GRADLE_VERSION="9.6.1"\n' +
+        'GRADLE_SHA256="9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14"\n' +
+        'INSTALL_ROOT="/opt/gradle"                 # or "$HOME/.local/opt/gradle" for single user\n' +
+        'ZIP="gradle-${GRADLE_VERSION}-bin.zip"\n' +
+        'URL="https://services.gradle.org/distributions/${ZIP}"\n' +
+        '\n' +
+        'command -v unzip >/dev/null || { echo "unzip required"; exit 1; }\n' +
+        '\n' +
+        'tmp="$(mktemp -d)"; trap \'rm -rf "$tmp"\' EXIT\n' +
+        'echo "Downloading $URL ..."\n' +
+        'curl -fL "$URL" -o "$tmp/$ZIP"\n' +
+        '\n' +
+        'echo "Verifying SHA-256 ..."\n' +
+        'if command -v sha256sum >/dev/null; then\n' +
+        '  echo "${GRADLE_SHA256}  $tmp/$ZIP" | sha256sum --check -\n' +
+        'else\n' +
+        '  echo "${GRADLE_SHA256}  $tmp/$ZIP" | shasum -a 256 --check -   # macOS\n' +
+        'fi\n' +
+        '\n' +
+        'echo "Installing to ${INSTALL_ROOT}/gradle-${GRADLE_VERSION} ..."\n' +
+        'SUDO=""; [ -w "$(dirname "$INSTALL_ROOT")" ] || SUDO="sudo"\n' +
+        '$SUDO mkdir -p "$INSTALL_ROOT"\n' +
+        '$SUDO unzip -q -o "$tmp/$ZIP" -d "$INSTALL_ROOT"\n' +
+        '$SUDO ln -sfn "$INSTALL_ROOT/gradle-${GRADLE_VERSION}" "$INSTALL_ROOT/latest"\n' +
+        '\n' +
+        'RC="$HOME/.bashrc"; [ "$(uname)" = "Darwin" ] && RC="$HOME/.zprofile"\n' +
+        'MARK="# >>> gradle install >>>"\n' +
+        'if ! grep -qF "$MARK" "$RC" 2>/dev/null; then\n' +
+        '  {\n' +
+        '    echo "$MARK"\n' +
+        '    echo "export GRADLE_HOME=\\"$INSTALL_ROOT/latest\\""\n' +
+        '    echo \'export PATH="$GRADLE_HOME/bin:$PATH"\'\n' +
+        '    echo "# <<< gradle install <<<"\n' +
+        '  } >> "$RC"\n' +
+        '  echo "Updated $RC"\n' +
+        'fi\n' +
+        '\n' +
+        'export GRADLE_HOME="$INSTALL_ROOT/latest"; export PATH="$GRADLE_HOME/bin:$PATH"\n' +
+        'gradle -v && echo "Gradle ${GRADLE_VERSION} installed. Open a new shell or \'source $RC\'."',
+    verify: 'gradle -v',
+    update:
+        'Bump GRADLE_VERSION/GRADLE_SHA256 at the top of the script and re-run it — it installs into a new ' +
+        'versioned folder and repoints the "latest" symlink; GRADLE_HOME (which points at "latest") never needs ' +
+        'to change. Safe/idempotent to re-run.',
+    remove:
+        'sudo rm -rf /opt/gradle   # or rm -rf ~/.local/opt/gradle for a single-user install; then remove the ' +
+        '"# >>> gradle install >>>" ... "# <<< gradle install <<<" block from ~/.zprofile or ~/.bashrc',
+    notes:
+        'Does everything the manual entry does in one step, including the versioned-dir + "latest" symlink ' +
+        'pattern for GRADLE_HOME. Prefer SDKMAN! (Java category) instead if you want easy multi-version switching ' +
+        'rather than a single pinned install.',
+};
+
+const GRADLE_MANUAL_WINDOWS: DevEnvManagerBootstrap = {
+    managerId: 'manual',
+    managerLabel: 'Manual (binary download, PowerShell)',
+    builtIntoOS: false,
+    availableOn: ['windows'],
+    installTool:
+        'Invoke-WebRequest -Uri https://services.gradle.org/distributions/gradle-9.6.1-bin.zip -OutFile "$env:TEMP\\gradle-9.6.1-bin.zip"\n' +
+        '(Get-FileHash "$env:TEMP\\gradle-9.6.1-bin.zip" -Algorithm SHA256).Hash.ToLower()   # compare against 9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14\n' +
+        'New-Item -ItemType Directory -Force -Path C:\\Tools\\gradle | Out-Null\n' +
+        'Expand-Archive -Path "$env:TEMP\\gradle-9.6.1-bin.zip" -DestinationPath C:\\Tools\\gradle -Force',
+    configure:
+        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", "C:\\Tools\\gradle\\gradle-9.6.1", "User")\n' +
+        '$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n' +
+        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\gradle\\gradle-9.6.1\\bin", "User")',
+    verify: 'gradle -v',
+    update:
+        'Download the newer bin.zip, extract it next to the old one under C:\\Tools\\gradle, then update the ' +
+        'GRADLE_HOME value above to point at the new folder.',
+    remove:
+        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $null, "User")\n' +
+        'Remove-Item -Recurse -Force C:\\Tools\\gradle',
+    notes:
+        'Needs JDK 17+. Avoid installing under "C:\\Program Files\\..." — the space in that path breaks some ' +
+        'build tools/scripts; C:\\Tools is space-free. For automatic multi-version management, see SDKMAN! (Java ' +
+        'category) — Windows only via WSL.',
+};
+
+const GRADLE_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
+    managerId: 'automated-script',
+    managerLabel: 'Automated install script (PowerShell)',
+    builtIntoOS: false,
+    availableOn: ['windows'],
+    installTool:
+        '#Requires -Version 5.1\n' +
+        '$ErrorActionPreference = "Stop"\n' +
+        '$Version = "9.6.1"\n' +
+        '$Sha256  = "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14"\n' +
+        '$Root    = "C:\\Tools\\gradle"\n' +
+        '$Zip     = "$env:TEMP\\gradle-$Version-bin.zip"\n' +
+        '$Url     = "https://services.gradle.org/distributions/gradle-$Version-bin.zip"\n' +
+        '\n' +
+        'Write-Host "Downloading $Url ..."\n' +
+        'Invoke-WebRequest -Uri $Url -OutFile $Zip\n' +
+        '\n' +
+        'Write-Host "Verifying checksum ..."\n' +
+        '$actual = (Get-FileHash $Zip -Algorithm SHA256).Hash.ToLower()\n' +
+        'if ($actual -ne $Sha256) { throw "Checksum mismatch! expected $Sha256 got $actual" }\n' +
+        '\n' +
+        'Write-Host "Extracting ..."\n' +
+        'New-Item -ItemType Directory -Force -Path $Root | Out-Null\n' +
+        'Expand-Archive -Path $Zip -DestinationPath $Root -Force\n' +
+        '$GradleHome = "$Root\\gradle-$Version"\n' +
+        '\n' +
+        'Write-Host "Setting environment variables (User scope) ..."\n' +
+        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $GradleHome, "User")\n' +
+        '$p = [Environment]::GetEnvironmentVariable("Path","User")\n' +
+        '$bin = "$GradleHome\\bin"\n' +
+        'if ($p -notlike "*$bin*") {\n' +
+        '  [Environment]::SetEnvironmentVariable("Path", ($p.TrimEnd(\';\') + ";" + $bin), "User")\n' +
+        '}\n' +
+        'Write-Host "Done. Open a NEW terminal and run: gradle -v"',
+    verify: 'gradle -v',
+    update:
+        'Bump $Version/$Sha256 at the top of the script and re-run it — it installs into a new ' +
+        'C:\\Tools\\gradle\\gradle-<version> folder and repoints GRADLE_HOME/PATH at it.',
+    remove:
+        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $null, "User")\n' +
+        'Remove-Item -Recurse -Force C:\\Tools\\gradle',
+    notes:
+        'Does everything the manual entry does in one step, PowerShell 5.1+ compatible. Prefer SDKMAN! inside WSL ' +
+        '(Java category) instead if you want easy multi-version switching.',
+};
+
+const GRADLE: DevEnvCategoryData = {
+    category: 'gradle',
+    label: 'Gradle',
+    description:
+        'Manually install Gradle from the official binary-only ("-bin") distribution — download, verify the ' +
+        'checksum, extract to a recommended folder, and wire GRADLE_HOME/PATH via a versioned-dir + "latest" ' +
+        'symlink pattern for easy upgrades. Package-manager installs (brew/choco/scoop/apt/dnf/pacman/zypper) are ' +
+        'intentionally out of scope here — see SDKMAN! in the Java category for automatic multi-version management.',
+    managersByOS: {
+        macos: [GRADLE_MANUAL_MACOS, GRADLE_AUTOMATED_UNIX],
+        windows: [GRADLE_MANUAL_WINDOWS, GRADLE_AUTOMATED_WINDOWS],
+        linux: [GRADLE_MANUAL_LINUX, GRADLE_AUTOMATED_UNIX],
+    },
+};
+
 const PYTHON: DevEnvCategoryData = {
     category: 'python',
     label: 'Python',
@@ -381,6 +808,17 @@ const PYTHON: DevEnvCategoryData = {
     },
 };
 
+// go install places compiled binaries in $(go env GOPATH)/bin (defaults to ~/go/bin) — never added to PATH
+// automatically by any installer/package manager below, yet many tools need it (e.g. Wails' own docs: "Check
+// ~/go/bin is in your PATH"). Every Go entry adds one of these.
+const GO_BIN_PATH_MACOS =
+    'export PATH="$PATH:$(go env GOPATH)/bin"   # defaults to ~/go/bin — required for tools installed via "go install" (wails, air, golangci-lint, ...)';
+const GO_BIN_PATH_LINUX = GO_BIN_PATH_MACOS; // identical line; only the target rc file differs, chosen per entry
+const GO_BIN_PATH_WINDOWS =
+    '$gobin = "$(go env GOPATH)\\bin"   # defaults to %USERPROFILE%\\go\\bin\n' +
+    '$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n' +
+    'if ($current -notlike "*$gobin*") { [Environment]::SetEnvironmentVariable("PATH", "$current;$gobin", "User") }';
+
 const GO: DevEnvCategoryData = {
     category: 'go',
     label: 'Go',
@@ -395,6 +833,7 @@ const GO: DevEnvCategoryData = {
                 availableOn: ['macos'],
                 installTool:
                     'Download the macOS .pkg from https://go.dev/dl/ and run it — installs to /usr/local/go and updates PATH automatically.',
+                configure: GO_BIN_PATH_MACOS,
                 verify: 'go version',
                 update: 'Download and run the newer .pkg — it replaces the previous install in place.',
                 remove: 'sudo rm -rf /usr/local/go "$HOME/go"',
@@ -408,6 +847,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['macos'],
                 installTool: 'brew install go',
+                configure: GO_BIN_PATH_MACOS,
                 verify: 'go version',
                 update: 'brew upgrade go',
                 remove: 'brew uninstall go',
@@ -423,7 +863,8 @@ const GO: DevEnvCategoryData = {
                 configure:
                     `echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.zshrc\n` +
                     `echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.zshrc\n` +
-                    `echo 'eval "$(goenv init -)"' >> ~/.zshrc   # place near the end, it manipulates PATH`,
+                    `echo 'eval "$(goenv init -)"' >> ~/.zshrc   # place near the end, it manipulates PATH\n` +
+                    `echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc   # defaults to ~/go/bin — required for tools installed via "go install" (wails, air, golangci-lint, ...)`,
                 verify: 'goenv --version',
                 update: 'brew upgrade goenv',
                 remove: 'brew uninstall goenv   # then remove the three profile lines above',
@@ -441,6 +882,7 @@ const GO: DevEnvCategoryData = {
                 availableOn: ['windows'],
                 installTool:
                     'Download the .msi from https://go.dev/dl/ and run it — installs to C:\\Program Files\\Go and updates PATH automatically.',
+                configure: GO_BIN_PATH_WINDOWS,
                 verify: 'go version',
                 update: 'Download and run the newer .msi.',
                 remove: 'Uninstall via "Add or Remove Programs", or delete C:\\Program Files\\Go manually.',
@@ -453,6 +895,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['windows'],
                 installTool: 'winget install --id GoLang.Go -e',
+                configure: GO_BIN_PATH_WINDOWS,
                 verify: 'go version',
                 update: 'winget upgrade --id GoLang.Go -e',
                 remove: 'winget uninstall --id GoLang.Go -e',
@@ -469,7 +912,7 @@ const GO: DevEnvCategoryData = {
                 availableOn: ['linux'],
                 installTool:
                     'sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf goX.Y.Z.linux-amd64.tar.gz   # download the tarball from https://go.dev/dl/ first',
-                configure: 'export PATH=$PATH:/usr/local/go/bin   # add to ~/.bashrc or ~/.zshrc',
+                configure: 'export PATH=$PATH:/usr/local/go/bin   # add to ~/.bashrc or ~/.zshrc\n' + GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'Repeat the rm+tar steps above with a newer tarball.',
                 remove: 'sudo rm -rf /usr/local/go',
@@ -486,7 +929,8 @@ const GO: DevEnvCategoryData = {
                 configure:
                     `echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bashrc\n` +
                     `echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.bashrc\n` +
-                    `echo 'eval "$(goenv init -)"' >> ~/.bashrc   # place near the end, it manipulates PATH`,
+                    `echo 'eval "$(goenv init -)"' >> ~/.bashrc   # place near the end, it manipulates PATH\n` +
+                    `echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc   # defaults to ~/go/bin — required for tools installed via "go install" (wails, air, golangci-lint, ...)`,
                 verify: 'goenv --version',
                 update: 'cd ~/.goenv && git pull',
                 remove: 'rm -rf ~/.goenv   # then remove the three profile lines above',
@@ -505,6 +949,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['linux'],
                 installTool: 'sudo apt install -y golang-go',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo apt upgrade',
                 remove: 'sudo apt remove -y golang-go',
@@ -519,6 +964,7 @@ const GO: DevEnvCategoryData = {
                 availableOn: ['linux'],
                 repoSetup: 'sudo add-apt-repository -y ppa:longsleep/golang-backports && sudo apt update',
                 installTool: 'sudo apt install -y golang-go',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo apt update && sudo apt install --only-upgrade -y golang-go',
                 remove: 'sudo add-apt-repository --remove ppa:longsleep/golang-backports',
@@ -532,6 +978,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['linux'],
                 installTool: 'sudo dnf install -y golang',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo dnf upgrade -y golang',
                 remove: 'sudo dnf remove -y golang',
@@ -544,6 +991,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['linux'],
                 installTool: 'sudo pacman -S go',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo pacman -Syu',
                 remove: 'sudo pacman -Rs go',
@@ -557,6 +1005,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['linux'],
                 installTool: 'sudo zypper install go',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo zypper dup',
                 remove: 'sudo zypper remove go',
@@ -570,6 +1019,7 @@ const GO: DevEnvCategoryData = {
                 repoSetup:
                     'sudo zypper addrepo https://download.opensuse.org/repositories/devel:languages:go/16.0/devel:languages:go.repo && sudo zypper refresh',
                 installTool: 'sudo zypper install go',
+                configure: GO_BIN_PATH_LINUX,
                 verify: 'go version',
                 update: 'sudo zypper update go',
                 remove: 'sudo zypper remove go',
@@ -921,6 +1371,8 @@ const BUN: DevEnvCategoryData = {
 
 export const DEV_ENV_CATALOG: Record<DevEnvCategory, DevEnvCategoryData> = {
     java: JAVA,
+    maven: MAVEN,
+    gradle: GRADLE,
     python: PYTHON,
     go: GO,
     rust: RUST,

@@ -79,7 +79,7 @@ const AppBasket = ({
     const count = selectedList.length;
 
     return (
-        <div data-testid="app-basket">
+        <div className="installer-basket-panel" data-testid="app-basket">
             <div className="installer-basket-header">
                 <span>
                     Selected{' '}

@@ -21,7 +21,7 @@ const Step: React.FC<StepProps> = ({ n, title, description, snippets }) => (
         <div className="steplabel">
             <span className="n">{n}</span> {title}
         </div>
-        <p>{description}</p>
+        <div className="steptext">{description}</div>
         {snippets.map((s) => (
             <CodeSnippet key={s.header} headerText={s.header} content={s.content} language="bash" />
         ))}
@@ -66,6 +66,25 @@ const BrewInstallSteps: React.FC = () => (
             title="Update & Maintenance"
             description="Keep everything up-to-date and clean."
             snippets={[{ header: 'Update & Upgrade', content: MAC_OS_BREW_UPDATE_UPGRADE }]}
+        />
+
+        <Step
+            n={5}
+            title="Where to put manually installed tools"
+            description={
+                <>
+                    For tools with no Homebrew formula (e.g. Maven, Gradle) extract the downloaded archive to{' '}
+                    <code>/opt/&lt;tool&gt;</code> for a system-wide install, or <code>~/.dev_tools</code> /{' '}
+                    <code>~/tools</code> for a single-user install (no sudo required).
+                    <p className="info-note" style={{ marginTop: 8 }}>
+                        Example: <code>/opt/apache-maven-3.9.16</code>, <code>/opt/gradle/gradle-9.6.1</code>. Wire the
+                        resulting PATH/HOME variables using the mechanism already covered in the{' '}
+                        <strong>Environment variables</strong> tab above — see the Dev Environment Setup page&apos;s
+                        Maven/Gradle categories for the full manual install walkthrough.
+                    </p>
+                </>
+            }
+            snippets={[]}
         />
     </section>
 );
