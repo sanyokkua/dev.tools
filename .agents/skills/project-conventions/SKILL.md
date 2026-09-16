@@ -84,7 +84,8 @@ All tool factory functions (`createXxxUtils()`, `createXxxUtilList()`) live in `
 }
 ```
 
-PostToolUse hook auto-runs Prettier on every edit — do not fight the formatter.
+Keep formatting consistent with the repository's Prettier configuration; run the configured
+formatter or check before handing off changes.
 
 ## Comments
 

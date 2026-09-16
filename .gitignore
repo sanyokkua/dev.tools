@@ -63,3 +63,4 @@ src/common/prompts/loaders.generated.ts
 /public/worker-*.js
 /public/swe-worker-*.js
 /public/fallback-*.js
+.serena/
