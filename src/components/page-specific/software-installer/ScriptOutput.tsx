@@ -1,11 +1,12 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { HIDDEN_MANAGERS, MANAGER_LABEL } from '@/common/catalog-utils';
-import type { BuilderConfig, RequiredBootstrap, ScriptAction } from '@/common/script-builder';
+import type { BuilderConfig, MaintenancePlan, RequiredBootstrap, ScriptAction } from '@/common/script-builder';
 import {
     buildBootstrapScript,
     buildCombinedScript,
-    buildManagerWideScript,
+    buildMaintenancePlan,
+    buildMaintenanceScript,
     buildPerAppScripts,
     getMaintenanceEntries,
     getRequiredBootstrap,
@@ -16,8 +17,8 @@ import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 
 type PrefMode = 'preferred' | 'fallback';
-type Scope = 'combined' | 'per-app' | 'system-wide';
-export type UpdateScope = 'selected-apps' | 'all-installed';
+type Scope = 'combined' | 'per-app';
+export type UpdateScope = 'selected-apps' | 'batch';
 type OutputTab = 'setup' | ScriptAction;
 
 function providerAppLabel(appId: string): string {
@@ -46,12 +47,11 @@ const ACTION_OPTIONS: SegmentedOption[] = [
 const SCOPE_OPTIONS: SegmentedOption[] = [
     { value: 'combined', label: 'Single combined' },
     { value: 'per-app', label: 'One per app' },
-    { value: 'system-wide', label: 'System-wide maintenance' },
 ];
 
 const UPDATE_SCOPE_OPTIONS: SegmentedOption[] = [
     { value: 'selected-apps', label: 'Selected apps only' },
-    { value: 'all-installed', label: 'Everything this manager manages' },
+    { value: 'batch', label: 'Batch maintenance' },
 ];
 
 function getSkipReason(app: CatalogApp, config: BuilderConfig): string {
@@ -83,12 +83,33 @@ const ScriptOutput = ({
     const [action, setAction] = useState<OutputTab>('install');
     const [scope, setScope] = useState<Scope>('combined');
     const [includeCleanup, setIncludeCleanup] = useState<boolean>(true);
-    const [maintenanceManagers, setMaintenanceManagers] = useState<CatalogManager[]>([]);
+    const [batchManagers, setBatchManagers] = useState<CatalogManager[]>([]);
     const [providerChoice, setProviderChoice] = useState<Partial<Record<CatalogManager, string>>>({});
 
     useEffect(() => {
-        setMaintenanceManagers([]);
+        setBatchManagers([]);
     }, [platform, linuxDistro]);
+
+    const maintenanceEntries = useMemo(
+        () =>
+            getMaintenanceEntries({ platform, linuxDistro }).filter(
+                (entry) => !HIDDEN_MANAGERS.includes(entry.manager),
+            ),
+        [platform, linuxDistro],
+    );
+
+    const maintenanceAction = action === 'update' || action === 'upgrade' ? action : null;
+    const batchManagerEntries = useMemo(
+        () =>
+            maintenanceAction ? maintenanceEntries.filter((entry) => Boolean(entry.operations[maintenanceAction])) : [],
+        [maintenanceAction, maintenanceEntries],
+    );
+
+    // Batch choices are scoped to the active target and action. The separate platform/distro
+    // reset above keeps a user's deselection intact while they edit manager preferences.
+    useEffect(() => {
+        if (maintenanceAction) setBatchManagers(batchManagerEntries.map((entry) => entry.manager));
+    }, [maintenanceAction, batchManagerEntries]);
 
     const config = useMemo<BuilderConfig>(
         () => ({
@@ -106,9 +127,11 @@ const ScriptOutput = ({
 
     const selectedList = useMemo(() => APPS_CATALOG.apps.filter((a) => a.id in selectedApps), [selectedApps]);
 
+    const hasBatchSelection = updateScope === 'batch';
+    const isBatchMode = maintenanceAction !== null && hasBatchSelection;
     const requiredBootstrap: RequiredBootstrap[] = useMemo(
-        () => getRequiredBootstrap(selectedList, config),
-        [selectedList, config],
+        () => getRequiredBootstrap(selectedList, config, hasBatchSelection ? batchManagers : []),
+        [selectedList, config, hasBatchSelection, batchManagers],
     );
 
     const bootstrapScript = useMemo(
@@ -116,68 +139,81 @@ const ScriptOutput = ({
         [requiredBootstrap, config, providerChoice],
     );
 
-    const maintenanceEntries = useMemo(
-        () => getMaintenanceEntries(config).filter((e) => !HIDDEN_MANAGERS.includes(e.manager)),
-        [config],
-    );
-
-    function toggleMaintenanceManager(mgr: CatalogManager): void {
-        setMaintenanceManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
+    function toggleBatchManager(mgr: CatalogManager): void {
+        setBatchManagers((prev) => (prev.includes(mgr) ? prev.filter((m) => m !== mgr) : [...prev, mgr]));
     }
 
-    const showUpdateScope = (action === 'update' || action === 'upgrade') && scope !== 'system-wide';
-    const managerWideActionValid = action === 'update' || action === 'upgrade';
-    const isManagerWideMode = scope === 'system-wide' || (updateScope === 'all-installed' && managerWideActionValid);
-    const managerWideManagers = scope === 'system-wide' ? maintenanceManagers : selectedManagers;
-    const showCleanupCheckbox = scope === 'system-wide' || updateScope === 'all-installed';
-
-    const isEmpty = isManagerWideMode ? managerWideManagers.length === 0 : selectedList.length === 0;
+    const showUpdateScope = maintenanceAction !== null;
+    const showScope = !isBatchMode;
+    const showCleanupCheckbox = isBatchMode;
     const ext = platform === 'windows' ? 'ps1' : 'sh';
+
+    const maintenancePlan: MaintenancePlan | null = useMemo(() => {
+        if (!maintenanceAction) return null;
+        return buildMaintenancePlan(selectedList, maintenanceAction, config, {
+            strategy: isBatchMode ? 'batch' : 'one-by-one',
+            batchManagers: isBatchMode ? batchManagers : [],
+            includeCleanup: isBatchMode && includeCleanup,
+        });
+    }, [selectedList, maintenanceAction, config, isBatchMode, batchManagers, includeCleanup]);
+
+    const actionPerAppScripts = useMemo(() => {
+        if (action === 'setup' || (maintenanceAction && maintenancePlan)) return {};
+        return buildPerAppScripts(selectedList, action, config);
+    }, [action, maintenanceAction, maintenancePlan, selectedList, config]);
+
+    const maintenancePerAppScripts = useMemo(() => {
+        if (!maintenancePlan || isBatchMode || scope !== 'per-app') return {};
+        const result: Record<string, string> = {};
+        for (const task of maintenancePlan.tasks) {
+            if (task.kind !== 'app' || !task.appId) continue;
+            result[task.appId] = [...(result[task.appId] ? [result[task.appId]] : []), ...task.steps].join('\n');
+        }
+        return result;
+    }, [maintenancePlan, isBatchMode, scope]);
+
+    const perAppScripts = maintenancePlan ? maintenancePerAppScripts : actionPerAppScripts;
+    const hasExecutableOutput = maintenancePlan ? maintenancePlan.tasks.length > 0 : selectedList.length > 0;
+    const isEmpty = !hasExecutableOutput;
 
     const filename = useMemo(() => {
         if (action === 'setup') return `setup-managers.${ext}`;
-        if (isManagerWideMode) return `${action}-maintenance.${ext}`;
+        if (isBatchMode) return `${action}-maintenance.${ext}`;
         return scope === 'per-app' ? `${action}-scripts.${ext}` : `${action}.${ext}`;
-    }, [action, isManagerWideMode, scope, ext]);
+    }, [action, isBatchMode, scope, ext]);
 
     const scriptContent = useMemo(() => {
         if (action === 'setup') return '';
-        if (isManagerWideMode) {
-            if (!managerWideActionValid || managerWideManagers.length === 0) return '';
-            return buildManagerWideScript(managerWideManagers, action, config, includeCleanup);
+        if (maintenancePlan) {
+            return buildMaintenanceScript(
+                maintenancePlan,
+                config,
+                isBatchMode ? 'batch maintenance' : 'selected-app maintenance',
+            );
         }
         if (selectedList.length === 0 || scope === 'per-app') return '';
         return buildCombinedScript(selectedList, action, config);
-    }, [
-        action,
-        isManagerWideMode,
-        managerWideActionValid,
-        managerWideManagers,
-        config,
-        includeCleanup,
-        selectedList,
-        scope,
-    ]);
-
-    const perAppScripts = useMemo(() => {
-        if (action === 'setup' || isManagerWideMode || scope !== 'per-app' || selectedList.length === 0) return null;
-        return buildPerAppScripts(selectedList, action, config);
-    }, [action, isManagerWideMode, scope, selectedList, config]);
+    }, [action, maintenancePlan, isBatchMode, config, selectedList, scope, actionPerAppScripts]);
 
     const language = platform === 'windows' ? 'powershell' : 'bash';
 
     const emptyMessage = useMemo(() => {
-        if (scope === 'system-wide' && !managerWideActionValid) {
-            return 'System-wide maintenance only supports Update and Upgrade — select one of those actions above.';
+        if (isBatchMode && batchManagers.length === 0) {
+            return 'Select at least one batch package manager to generate a maintenance script.';
         }
-        if (isManagerWideMode) {
-            return 'Select at least one package manager above to generate a maintenance script.';
+        if (selectedList.length > 0) {
+            return 'No executable command is available for the current selection.';
         }
         return 'Select at least one app in Step 3 to generate a script.';
-    }, [scope, managerWideActionValid, isManagerWideMode]);
+    }, [isBatchMode, batchManagers.length, selectedList.length]);
 
     return (
         <div className="installer-output">
+            {isBatchMode && (
+                <p className="installer-maintenance-warning" data-testid="batch-maintenance-warning">
+                    Batch maintenance updates software outside the selected app basket.
+                </p>
+            )}
             {action !== 'setup' && requiredBootstrap.length > 0 && (
                 <div className="installer-bootstrap-banner" data-testid="bootstrap-banner">
                     <span>
@@ -204,15 +240,17 @@ const ScriptOutput = ({
                 </div>
                 {action !== 'setup' && (
                     <>
-                        <div className="installer-output-control-group">
-                            <span className="installer-mgr-subheading">Scope</span>
-                            <SegmentedControl
-                                options={SCOPE_OPTIONS}
-                                value={scope}
-                                onChange={(v) => setScope(v as Scope)}
-                                aria-label="Script scope"
-                            />
-                        </div>
+                        {showScope && (
+                            <div className="installer-output-control-group">
+                                <span className="installer-mgr-subheading">Scope</span>
+                                <SegmentedControl
+                                    options={SCOPE_OPTIONS}
+                                    value={scope}
+                                    onChange={(v) => setScope(v as Scope)}
+                                    aria-label="Script scope"
+                                />
+                            </div>
+                        )}
                         {showUpdateScope && (
                             <div className="installer-output-control-group">
                                 <span className="installer-mgr-subheading">Update scope</span>
@@ -224,27 +262,41 @@ const ScriptOutput = ({
                                 />
                             </div>
                         )}
-                        {scope === 'system-wide' && (
+                        {isBatchMode && (
                             <div className="installer-output-control-group">
-                                <span className="installer-mgr-subheading">Package managers</span>
+                                <span className="installer-mgr-subheading">Batch package managers</span>
                                 <div
                                     className="installer-chip-row"
-                                    data-testid="maintenance-mgr-chips"
+                                    data-testid="batch-maintenance-managers"
                                     role="group"
-                                    aria-label="System-wide maintenance managers"
+                                    aria-label="Batch maintenance managers"
                                 >
-                                    {maintenanceEntries.map((entry) => (
+                                    {batchManagerEntries.map((entry) => (
                                         <button
                                             key={entry.manager}
                                             type="button"
-                                            className={`chip${maintenanceManagers.includes(entry.manager) ? ' on' : ''}`}
-                                            aria-pressed={maintenanceManagers.includes(entry.manager)}
-                                            onClick={() => toggleMaintenanceManager(entry.manager)}
+                                            className={`chip${batchManagers.includes(entry.manager) ? ' on' : ''}`}
+                                            aria-pressed={batchManagers.includes(entry.manager)}
+                                            onClick={() => toggleBatchManager(entry.manager)}
                                         >
                                             {entry.label}
                                         </button>
                                     ))}
                                 </div>
+                                {batchManagerEntries.length === 0 && (
+                                    <p className="installer-hint">No batch manager is available for this target.</p>
+                                )}
+                                {batchManagerEntries.some((entry) => entry.notes) && (
+                                    <ul className="installer-maintenance-notes">
+                                        {batchManagerEntries
+                                            .filter((entry) => entry.notes)
+                                            .map((entry) => (
+                                                <li key={entry.manager}>
+                                                    {entry.label}: {entry.notes}
+                                                </li>
+                                            ))}
+                                    </ul>
+                                )}
                             </div>
                         )}
                         {showCleanupCheckbox && (
@@ -263,6 +315,19 @@ const ScriptOutput = ({
                     </>
                 )}
             </div>
+
+            {maintenancePlan && maintenancePlan.skipped.length > 0 && (
+                <div className="installer-maintenance-skips" data-testid="maintenance-skips">
+                    <span className="installer-mgr-subheading">Skipped apps</span>
+                    <ul>
+                        {maintenancePlan.skipped.map(({ appId, reason }) => (
+                            <li key={appId}>
+                                {APPS_CATALOG.apps.find((app) => app.id === appId)?.name ?? appId}: {reason}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             {action === 'setup' ? (
                 <div data-testid="output-setup">
@@ -328,10 +393,13 @@ const ScriptOutput = ({
                     <span data-testid="output-filename" style={{ display: 'none' }}>
                         {filename}
                     </span>
-                    {!isManagerWideMode && scope === 'per-app' && perAppScripts ? (
+                    {!isBatchMode && scope === 'per-app' && perAppScripts ? (
                         <div data-testid="output-per-app">
                             {selectedList.map((app) => {
                                 const script = perAppScripts[app.id];
+                                const maintenanceSkip = maintenancePlan?.skipped.find(
+                                    (skipped) => skipped.appId === app.id,
+                                );
                                 return script ? (
                                     <CodeSnippet
                                         key={app.id}
@@ -342,7 +410,7 @@ const ScriptOutput = ({
                                     />
                                 ) : (
                                     <p key={app.id} className="installer-per-app-skip">
-                                        {app.name}: {getSkipReason(app, config)} — skipped
+                                        {app.name}: {maintenanceSkip?.reason ?? getSkipReason(app, config)} — skipped
                                     </p>
                                 );
                             })}

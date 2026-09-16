@@ -452,6 +452,31 @@
     padding: var(--s2) 0;
 }
 
+.installer-maintenance-warning,
+.installer-maintenance-skips {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    padding: var(--s2) var(--s3);
+    border-radius: var(--r-md);
+    background: var(--warning-container);
+    color: var(--warning-container-color-on);
+}
+
+.installer-maintenance-skips {
+    ul {
+        margin: var(--s1) 0 0;
+        padding-left: var(--s4);
+    }
+}
+
+.installer-maintenance-notes {
+    margin: var(--s1) 0 0;
+    padding-left: var(--s4);
+    font-size: 12px;
+    color: var(--on-surface-variant);
+}
+
 .installer-checkbox-row {
     display: flex;
     align-items: center;

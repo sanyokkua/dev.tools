@@ -814,7 +814,7 @@ describe('Software Installer — ToolAbout live app count (Task 4)', () => {
 });
 
 describe('Software Installer — Update scope dims per-app override (Task 4)', () => {
-    it('dims and disables the per-app Method select when "Everything this manager manages" is chosen', () => {
+    it('dims and disables the per-app Method select when "Batch maintenance" is chosen', () => {
         renderPage();
         fireEvent.click(screen.getByText('Homebrew'));
         fireEvent.click(screen.getByLabelText('Select Firefox'));
@@ -823,9 +823,7 @@ describe('Software Installer — Update scope dims per-app override (Task 4)', (
         expect(methodSelect).not.toBeDisabled();
 
         fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
-        fireEvent.click(
-            within(screen.getByRole('group', { name: 'Update scope' })).getByText('Everything this manager manages'),
-        );
+        fireEvent.click(within(screen.getByRole('group', { name: 'Update scope' })).getByText('Batch maintenance'));
 
         expect(methodSelect).toBeDisabled();
         expect(methodSelect.closest('.installer-basket-card__field')).toHaveClass('installer-override-dim');
@@ -836,9 +834,7 @@ describe('Software Installer — Update scope dims per-app override (Task 4)', (
         fireEvent.click(screen.getByText('Homebrew'));
         fireEvent.click(screen.getByLabelText('Select Firefox'));
         fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
-        fireEvent.click(
-            within(screen.getByRole('group', { name: 'Update scope' })).getByText('Everything this manager manages'),
-        );
+        fireEvent.click(within(screen.getByRole('group', { name: 'Update scope' })).getByText('Batch maintenance'));
 
         const methodSelect = screen.getByLabelText('Install method for Firefox') as HTMLSelectElement;
         expect(methodSelect).toBeDisabled();
