@@ -214,7 +214,7 @@ Work with dates two ways: **Timestamp ↔ date** (Unix seconds/ms ↔ formatted 
 
 ## Software Installer
 
-Generate **install / update / upgrade / remove** scripts for a catalog of 155 apps across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred package managers, select apps (with per-app method override and multi-version JDKs), then build a single resilient script per action or bare one-line commands per app — copy or download. If the selection needs a package manager that isn't native to the OS, a **Setup managers** tab generates a bootstrap script for it (fixed commands for Homebrew/Chocolatey/Scoop/Flatpak/Snap, or the resolved install command of a provider app for npm/go/uv/cargo/pipx). The catalog and scripts are generated client-side; nothing is installed by this tool.
+Generate executable **install / update / upgrade / remove** scripts from the current catalog across macOS, Windows and Linux. Pick a platform (and Linux distro), choose preferred managers, select apps (with per-app method override and multi-version JDKs), then choose one-by-one selected-app maintenance or **Batch maintenance** for the selected managers. Batch mode updates the managers' complete installed scope and adds selected-app exceptions for non-batch managers; cleanup runs last. If the selection needs a package manager that isn't native to the OS, a **Setup managers** tab generates a bootstrap script for it. The catalog and scripts are generated client-side; nothing is installed by this tool.
 
 **Technical**
 
@@ -231,7 +231,7 @@ Generate **install / update / upgrade / remove** scripts for a catalog of 155 ap
 ```mermaid
 graph LR
     C[apps-catalog.json\n572 KB] --> CU[catalog-utils.ts\nfilter + resolve]
-    CU --> SB[script-builder.ts\nbuildCombined / buildIndividual / buildBootstrap]
+    CU --> SB[script-builder.ts\nselected-app + maintenance planners]
     MB[manager-bootstrap-catalog.ts\nfixed + provider-app sources] --> SB
     SB --> O[Shell script output\nCopy / Download]
 ```

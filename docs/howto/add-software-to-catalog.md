@@ -15,7 +15,7 @@
 | File                                      | Purpose                                                                                                     |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `src/common/catalog-utils.ts`             | Filters and resolves the catalog at runtime                                                                 |
-| `src/common/script-builder.ts`            | `buildCombined()` / `buildIndividual()` — turns resolved methods into shell scripts                         |
+| `src/common/script-builder.ts`            | Resolves methods and builds selected-app or batch maintenance scripts                                       |
 | `src/common/manager-bootstrap-catalog.ts` | Maps each non-OS-native `CatalogManager` to how it gets bootstrapped (the "Setup managers" tab) — see below |
 | `src/pages/software-installer/`           | UI — consumes `APPS_CATALOG` via `catalog-utils.ts`                                                         |
 
@@ -58,7 +58,7 @@ export interface CatalogApp {
     platforms: { macos: boolean; windows: boolean; linux: boolean };
     methods: { macos?: CatalogMethod[]; windows?: CatalogMethod[]; linux?: LinuxMethods };
     notes?: string;
-    verifyBeforeEmit?: boolean;
+    platformNotes?: Partial<Record<CatalogPlatform, string>>;
     parameterized?: boolean;
     versions?: string[];
 }
@@ -118,9 +118,30 @@ Add a JSON object to the `apps` array in `src/common/apps-catalog.json`. Minimum
 
 - `site` — official website URL.
 - `notes` — shown to the user in the UI.
-- `verifyBeforeEmit: true` — inserts a version-check command before the install command in generated scripts.
+- `platformNotes` — factual OS, distro, architecture, or minimum-version constraints shown in the UI.
 - `parameterized: true` — enables version selection in the UI.
 - `versions: ["1.0", "2.0"]` — list of selectable versions when `parameterized` is true.
+
+Every catalog method must be executable. Do not add prose such as “download this installer” or
+URL-only values. Use a complete shell, PowerShell, package-manager, or language-package command.
+If no stable executable installer exists for a platform, omit that platform method and set its
+platform flag to `false`.
+
+`platformNotes` is informational only. Use it for factual minimum OS versions, architectures, or
+distro limitations; it must not become a substitute for an executable method. A method's
+`install`, `repoSetup`, `update`, `upgrade`, `remove`, and `verify` values are all validated as
+commands when present. Parameterized apps must use `{version}` only with `parameterized: true` and
+must provide a non-empty, duplicate-free `versions` list.
+
+The catalog does not retain GUI-only or manual-only routes. This includes direct downloads,
+AppImage, `.deb`, `.rpm`, `.pkg`, and `.msi` entries without a complete stable command and
+required permissions. Keep the app/platform only when the command can be executed reliably.
+
+For maintenance, package-manager-wide operations belong in
+`src/common/manager-maintenance-catalog.ts`. App-level update commands should match the manager:
+use package-specific reinstall/upgrade commands for npm, uv, pipx, Cargo, Go, and script
+installers. Do not add project initialization commands such as `openspec init`, `serena init`, or
+`specify init`.
 
 ---
 
@@ -176,6 +197,7 @@ they were added), add one first, following the normal "Add an app" steps above, 
 
 ## Verification
 
-1. `npm run build` — confirms the JSON parses and there are no TypeScript errors.
-2. `npm run verify:ui` — navigate to the Software Installer page, search for the app, confirm the generated commands appear correctly.
-3. `npm run verify` — full lint + test pipeline.
+1. `npm run test:fast` — runs structural catalog and script-builder tests, including `validateCatalog`.
+2. `npm run build` — confirms the JSON parses and there are no TypeScript errors.
+3. `npm run verify:ui` — navigate to the Software Installer page, search for the app, and confirm the generated commands appear correctly.
+4. `npm run verify` — full format, lint, path, and test pipeline.

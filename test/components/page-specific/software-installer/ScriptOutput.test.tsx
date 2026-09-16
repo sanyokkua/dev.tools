@@ -73,12 +73,12 @@ describe('ScriptOutput', () => {
         expect(outputCode.textContent).toContain('brew upgrade git');
     });
 
-    // Test 5: Scope selector renders all 3 options
-    it('renders all 3 scope buttons (Single combined, One per app, System-wide maintenance)', () => {
+    // Test 5: Scope selector renders per-app/combined options; global maintenance has its own strategy control.
+    it('renders the two selected-app scope buttons', () => {
         renderWithToaster(<ScriptOutput {...gitOnMacosProps()} />);
         expect(screen.getByRole('button', { name: 'Single combined' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'One per app' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'System-wide maintenance' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'System-wide maintenance' })).not.toBeInTheDocument();
     });
 
     // Test 6: Switching scope to "One per app" shows per-app structure
@@ -109,87 +109,101 @@ describe('ScriptOutput', () => {
         expect(screen.getByRole('group', { name: 'Update scope' })).toBeInTheDocument();
     });
 
-    it('hides the Update scope control when Scope is System-wide maintenance, even with Update selected', () => {
-        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} />);
+    it('hides selected-app scope controls when Batch maintenance is selected', () => {
+        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="batch" />);
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
-        fireEvent.click(screen.getByRole('button', { name: 'System-wide maintenance' }));
-        expect(screen.queryByRole('group', { name: 'Update scope' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('group', { name: 'Script scope' })).not.toBeInTheDocument();
+        expect(screen.getByRole('group', { name: 'Batch maintenance managers' })).toBeInTheDocument();
     });
 
-    // ─── Task 4: System-wide maintenance scope ─────────────────────────────────
+    // ─── Task 4: Batch maintenance strategy ────────────────────────────────────
 
-    it('shows the empty state and no code block when System-wide scope has zero managers picked', () => {
-        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} />);
+    it('shows the empty state and no code block when Batch maintenance has no apps or managers picked', () => {
+        renderWithToaster(
+            <ScriptOutput
+                {...gitOnMacosProps()}
+                selectedApps={{}}
+                selectedManagers={[]}
+                prefMode="preferred"
+                updateScope="batch"
+            />,
+        );
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
-        fireEvent.click(screen.getByRole('button', { name: 'System-wide maintenance' }));
+        const mgrGroup = screen.getByRole('group', { name: 'Batch maintenance managers' });
+        fireEvent.click(within(mgrGroup).getByText('Homebrew'));
 
         expect(screen.getByTestId('output-empty')).toBeInTheDocument();
         expect(screen.queryByTestId('output-code')).not.toBeInTheDocument();
     });
 
-    it('produces a manager-wide script matching buildManagerWideScript output shape after picking a manager', () => {
-        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} />);
+    it('produces a batch script after selecting the Batch maintenance strategy', () => {
+        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="batch" />);
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
-        fireEvent.click(screen.getByRole('button', { name: 'System-wide maintenance' }));
 
-        const mgrGroup = screen.getByRole('group', { name: 'System-wide maintenance managers' });
-        fireEvent.click(within(mgrGroup).getByText('Homebrew'));
+        const mgrGroup = screen.getByRole('group', { name: 'Batch maintenance managers' });
+        expect(within(mgrGroup).getByText('Homebrew').closest('button')).toHaveAttribute('aria-pressed', 'true');
 
         const outputCode = screen.getByTestId('output-code');
-        expect(outputCode.textContent).toContain('manager-wide maintenance');
+        expect(outputCode.textContent).toContain('batch maintenance');
         expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
+        expect(screen.getByTestId('batch-maintenance-warning')).toHaveTextContent(
+            'updates software outside the selected app basket',
+        );
     });
 
-    it('shows a guidance message when System-wide scope is selected with Action=Install', () => {
+    it('does not show Batch maintenance for Install', () => {
         renderWithToaster(<ScriptOutput {...gitOnMacosProps()} />);
-        fireEvent.click(screen.getByRole('button', { name: 'System-wide maintenance' }));
-
-        expect(screen.getByTestId('output-empty').textContent).toContain('only supports Update and Upgrade');
+        expect(screen.queryByRole('button', { name: 'Batch maintenance' })).not.toBeInTheDocument();
     });
 
-    // ─── Task 4: "Everything this manager manages" update scope ───────────────
+    // ─── Task 4: batch update scope ────────────────────────────────────────────
 
-    it('calls buildManagerWideScript (not buildCombinedScript) when updateScope is all-installed', () => {
-        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="all-installed" />);
+    it('uses batch maintenance when updateScope is batch', () => {
+        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="batch" />);
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
 
         const outputCode = screen.getByTestId('output-code');
-        expect(outputCode.textContent).toContain('manager-wide maintenance');
+        expect(outputCode.textContent).toContain('batch maintenance');
         expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
         expect(outputCode.textContent).not.toContain('brew upgrade git');
     });
 
-    it('shows the cleanup checkbox whenever manager-wide generation is possible', () => {
-        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="all-installed" />);
+    it('shows the cleanup checkbox whenever batch generation is possible', () => {
+        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="batch" />);
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
         expect(screen.getByRole('checkbox', { name: 'Include cleanup commands' })).toBeInTheDocument();
     });
 
     // ─── Task 4: edge-case visibility (winget limitation, rolling-release rule) ─
 
-    it('surfaces the winget requiresExplicitUpgrade limitation in the DOM for Windows manager-wide output', () => {
+    it('surfaces the winget requiresExplicitUpgrade limitation in the DOM for Windows batch output', () => {
         renderWithToaster(
             <ScriptOutput
                 {...gitOnMacosProps()}
                 platform="windows"
                 selectedManagers={['winget']}
-                updateScope="all-installed"
+                updateScope="batch"
             />,
         );
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
 
-        expect(screen.getByTestId('output-code').textContent).toContain('requiresExplicitUpgrade');
+        expect(screen.getByText(/requiresExplicitUpgrade/)).toBeInTheDocument();
     });
 
-    it('surfaces the openSUSE rolling-release guard in the DOM for System-wide scope', () => {
+    it('surfaces the openSUSE rolling-release guard in the DOM for Batch maintenance', () => {
         renderWithToaster(
-            <ScriptOutput {...gitOnMacosProps()} platform="linux" linuxDistro="suse" selectedManagers={[]} />,
+            <ScriptOutput
+                {...gitOnMacosProps()}
+                platform="linux"
+                linuxDistro="suse"
+                selectedManagers={[]}
+                updateScope="batch"
+            />,
         );
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
-        fireEvent.click(screen.getByRole('button', { name: 'System-wide maintenance' }));
 
-        const mgrGroup = screen.getByRole('group', { name: 'System-wide maintenance managers' });
-        fireEvent.click(within(mgrGroup).getByText('zypper'));
+        const mgrGroup = screen.getByRole('group', { name: 'Batch maintenance managers' });
+        expect(within(mgrGroup).getByText('zypper').closest('button')).toHaveAttribute('aria-pressed', 'true');
 
         const text = screen.getByTestId('output-code').textContent ?? '';
         expect(text).toContain('tumbleweed');

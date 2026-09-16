@@ -194,9 +194,7 @@ describe('AppCatalog — bulk-add buttons', () => {
             expect(document.querySelector('.modal-title')).toHaveTextContent('iTerm2');
             expect(modal).toHaveTextContent('System Utilities');
             expect(modal).toHaveTextContent("Terminal emulator as alternative to Apple's Terminal app");
-            expect(modal).toHaveTextContent(
-                'macOS only — no Windows or Linux build (use Windows Terminal on Windows).',
-            );
+            expect(modal).toHaveTextContent('macOS only; no Windows or Linux build is catalogued.');
             expect(screen.getByRole('link', { name: /Visit official site/ })).toHaveAttribute(
                 'href',
                 'https://iterm2.com',
@@ -210,6 +208,17 @@ describe('AppCatalog — bulk-add buttons', () => {
             fireEvent.click(screen.getByTestId('app-info-iterm2'));
 
             expect(onToggle).not.toHaveBeenCalled();
+        });
+
+        it('shows factual platform requirements in the info panel when catalogued', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'chatgpt' } });
+            fireEvent.click(screen.getByTestId('app-info-chatgpt'));
+
+            const modal = screen.getByTestId('app-info-modal-chatgpt');
+            expect(modal).toHaveTextContent('Platform requirements');
+            expect(modal).toHaveTextContent('macOS');
+            expect(modal).toHaveTextContent('Homebrew cask requires macOS 13 or newer');
         });
 
         it('closes via the header close button', () => {

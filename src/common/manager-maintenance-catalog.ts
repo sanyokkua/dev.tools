@@ -1,11 +1,17 @@
 import type { CatalogManager, LinuxDistro } from './apps-catalog-types';
 
+export type MaintenanceAction = 'update' | 'upgrade';
+
+export interface MaintenanceCommand {
+    steps: readonly string[];
+}
+
 export interface ManagerMaintenanceEntry {
     manager: CatalogManager;
     label: string;
-    updateAllCommand?: string;
+    operations: Partial<Record<MaintenanceAction, MaintenanceCommand>>;
+    cleanup?: MaintenanceCommand;
     listOutdatedCommand?: string;
-    cleanupCommand?: string;
     rebootCheckCommand?: string;
     notes?: string;
 }
@@ -19,40 +25,52 @@ export const MANAGER_MAINTENANCE: {
         {
             manager: 'brew',
             label: 'Homebrew',
-            updateAllCommand: 'brew update && brew upgrade --greedy',
+            operations: {
+                update: { steps: ['brew update', 'brew upgrade --greedy'] },
+                upgrade: { steps: ['brew update', 'brew upgrade --greedy'] },
+            },
             listOutdatedCommand: 'brew outdated',
-            cleanupCommand: 'brew autoremove && brew cleanup -s',
-            notes: '--greedy is required to include casks marked auto_updates/version:latest, otherwise they are silently skipped.',
+            cleanup: { steps: ['brew autoremove', 'brew cleanup -s'] },
+            notes: '--greedy includes casks marked auto_updates or version:latest.',
         },
         {
             manager: 'mas',
             label: 'Mac App Store (mas)',
-            updateAllCommand: 'mas upgrade',
+            operations: { update: { steps: ['mas upgrade'] }, upgrade: { steps: ['mas upgrade'] } },
             listOutdatedCommand: 'mas outdated',
-            notes: 'mas signin does not work on modern macOS — you must already be signed into the App Store GUI.',
+            notes: 'App Store authentication is managed by macOS.',
         },
     ],
     windows: [
         {
             manager: 'winget',
             label: 'winget',
-            updateAllCommand: 'winget upgrade --all --include-unknown',
+            operations: {
+                update: { steps: ['winget upgrade --all --include-unknown --include-pinned'] },
+                upgrade: { steps: ['winget upgrade --all --include-unknown --include-pinned'] },
+            },
             listOutdatedCommand: 'winget upgrade',
-            notes: 'winget upgrade --all skips apps with requiresExplicitUpgrade set (e.g. VS Code, Edge WebView2) and pinned apps — --include-pinned overrides pinning only, not the explicit-upgrade exclusion.',
+            notes: 'Some packages with requiresExplicitUpgrade remain outside winget bulk upgrades.',
         },
         {
             manager: 'choco',
             label: 'Chocolatey',
-            updateAllCommand: 'choco upgrade chocolatey -y; choco upgrade all -y',
+            operations: {
+                update: { steps: ['choco upgrade chocolatey -y', 'choco upgrade all -y'] },
+                upgrade: { steps: ['choco upgrade chocolatey -y', 'choco upgrade all -y'] },
+            },
             listOutdatedCommand: 'choco outdated',
-            notes: 'No built-in orphan-cleanup analog to apt autoremove.',
+            notes: 'Chocolatey has no apt-style orphan cleanup operation.',
         },
         {
             manager: 'scoop',
             label: 'Scoop',
-            updateAllCommand: 'scoop update; scoop update *',
+            operations: {
+                update: { steps: ['scoop update', 'scoop update *'] },
+                upgrade: { steps: ['scoop update', 'scoop update *'] },
+            },
             listOutdatedCommand: 'scoop status',
-            cleanupCommand: 'scoop cleanup *; scoop cache rm *',
+            cleanup: { steps: ['scoop cleanup *', 'scoop cache rm *'] },
         },
     ],
     linux: {
@@ -60,94 +78,115 @@ export const MANAGER_MAINTENANCE: {
             {
                 manager: 'apt',
                 label: 'apt',
-                updateAllCommand: 'sudo apt update && sudo apt full-upgrade -y',
+                operations: {
+                    update: { steps: ['sudo apt update', 'sudo apt full-upgrade -y'] },
+                    upgrade: { steps: ['sudo apt update', 'sudo apt full-upgrade -y'] },
+                },
                 listOutdatedCommand: 'apt list --upgradable',
-                cleanupCommand: 'sudo apt autoremove -y && sudo apt autoclean',
+                cleanup: { steps: ['sudo apt autoremove -y', 'sudo apt autoclean'] },
                 rebootCheckCommand: '[ -f /var/run/reboot-required ]',
             },
             {
                 manager: 'flatpak',
                 label: 'Flatpak',
-                updateAllCommand: 'flatpak update -y',
-                cleanupCommand: 'flatpak uninstall --unused -y',
-                notes: 'Cleanup does not always remove old GPU-vendor runtimes — check `flatpak list | grep -i nvidia` manually if disk usage seems off.',
+                operations: { update: { steps: ['flatpak update -y'] }, upgrade: { steps: ['flatpak update -y'] } },
+                cleanup: { steps: ['flatpak uninstall --unused -y'] },
+                notes: 'Flatpak cleanup removes unused runtimes and extensions.',
             },
             {
                 manager: 'snap',
                 label: 'Snap',
-                updateAllCommand: 'sudo snap refresh',
-                notes: "No single-command cleanup — list disabled revisions with `snap list --all | awk '/disabled/{print $1, $3}'` then remove each manually, or reduce retention with `sudo snap set system refresh.retain=2`.",
+                operations: { update: { steps: ['sudo snap refresh'] }, upgrade: { steps: ['sudo snap refresh'] } },
+                notes: 'Snap has no general-purpose cleanup operation.',
             },
         ],
         fedora: [
             {
                 manager: 'dnf',
                 label: 'dnf',
-                updateAllCommand: 'sudo dnf upgrade --refresh -y',
+                operations: {
+                    update: { steps: ['sudo dnf upgrade --refresh -y'] },
+                    upgrade: { steps: ['sudo dnf upgrade --refresh -y'] },
+                },
                 listOutdatedCommand: 'dnf check-update',
-                cleanupCommand: 'sudo dnf autoremove -y && sudo dnf clean all',
+                cleanup: { steps: ['sudo dnf autoremove -y && sudo dnf clean all'] },
                 rebootCheckCommand: 'dnf needs-restarting -r',
             },
             {
                 manager: 'flatpak',
                 label: 'Flatpak',
-                updateAllCommand: 'flatpak update -y',
-                cleanupCommand: 'flatpak uninstall --unused -y',
-                notes: 'Cleanup does not always remove old GPU-vendor runtimes — check `flatpak list | grep -i nvidia` manually if disk usage seems off.',
+                operations: { update: { steps: ['flatpak update -y'] }, upgrade: { steps: ['flatpak update -y'] } },
+                cleanup: { steps: ['flatpak uninstall --unused -y'] },
+                notes: 'Flatpak cleanup removes unused runtimes and extensions.',
             },
             {
                 manager: 'snap',
                 label: 'Snap',
-                updateAllCommand: 'sudo snap refresh',
-                notes: "No single-command cleanup — list disabled revisions with `snap list --all | awk '/disabled/{print $1, $3}'` then remove each manually, or reduce retention with `sudo snap set system refresh.retain=2`.",
+                operations: { update: { steps: ['sudo snap refresh'] }, upgrade: { steps: ['sudo snap refresh'] } },
+                notes: 'Snap has no general-purpose cleanup operation.',
             },
         ],
         arch: [
             {
                 manager: 'pacman',
                 label: 'pacman',
-                updateAllCommand: 'sudo pacman -Syu',
+                operations: { update: { steps: ['sudo pacman -Syu'] }, upgrade: { steps: ['sudo pacman -Syu'] } },
                 listOutdatedCommand: 'pacman -Qu',
-                cleanupCommand: 'sudo pacman -Rns $(pacman -Qdtq); sudo pacman -Sc',
-                notes: 'Never split into pacman -Sy alone — partial upgrades are a known way to break an Arch system; always the full -Syu.',
+                cleanup: {
+                    steps: [
+                        'orphans=$(pacman -Qdtq); if [ -n "$orphans" ]; then sudo pacman -Rns $orphans; fi',
+                        'sudo pacman -Sc',
+                    ],
+                },
+                notes: 'The full -Syu operation prevents partial Arch upgrades.',
             },
             {
                 manager: 'flatpak',
                 label: 'Flatpak',
-                updateAllCommand: 'flatpak update -y',
-                cleanupCommand: 'flatpak uninstall --unused -y',
-                notes: 'Cleanup does not always remove old GPU-vendor runtimes — check `flatpak list | grep -i nvidia` manually if disk usage seems off.',
+                operations: { update: { steps: ['flatpak update -y'] }, upgrade: { steps: ['flatpak update -y'] } },
+                cleanup: { steps: ['flatpak uninstall --unused -y'] },
+                notes: 'Flatpak cleanup removes unused runtimes and extensions.',
             },
             {
                 manager: 'snap',
                 label: 'Snap',
-                updateAllCommand: 'sudo snap refresh',
-                notes: "No single-command cleanup — list disabled revisions with `snap list --all | awk '/disabled/{print $1, $3}'` then remove each manually, or reduce retention with `sudo snap set system refresh.retain=2`.",
+                operations: { update: { steps: ['sudo snap refresh'] }, upgrade: { steps: ['sudo snap refresh'] } },
+                notes: 'Snap has no general-purpose cleanup operation.',
             },
         ],
         suse: [
             {
                 manager: 'zypper',
                 label: 'zypper',
-                updateAllCommand:
-                    'if grep -qi tumbleweed /etc/os-release; then sudo zypper dup; else sudo zypper refresh && sudo zypper update; fi',
+                operations: {
+                    update: {
+                        steps: [
+                            'if grep -qi tumbleweed /etc/os-release; then sudo zypper dup; else sudo zypper refresh && sudo zypper update; fi',
+                        ],
+                    },
+                    upgrade: {
+                        steps: [
+                            'if grep -qi tumbleweed /etc/os-release; then sudo zypper dup; else sudo zypper refresh && sudo zypper update; fi',
+                        ],
+                    },
+                },
                 listOutdatedCommand: 'zypper list-updates',
-                cleanupCommand: 'sudo zypper clean --all && sudo zypper purge-kernels',
+                cleanup: { steps: ['sudo zypper clean --all && sudo zypper purge-kernels'] },
                 rebootCheckCommand: 'zypper needs-rebooting',
-                notes: 'Detects Tumbleweed (rolling) vs Leap (point-release) via /etc/os-release at run time and uses the correct command for each — never runs a split refresh+upgrade on Tumbleweed.',
+                notes: 'The command detects Tumbleweed versus Leap at runtime.',
             },
             {
                 manager: 'flatpak',
                 label: 'Flatpak',
-                updateAllCommand: 'flatpak update -y',
-                cleanupCommand: 'flatpak uninstall --unused -y',
-                notes: 'Cleanup does not always remove old GPU-vendor runtimes — check `flatpak list | grep -i nvidia` manually if disk usage seems off.',
+                operations: { update: { steps: ['flatpak update -y'] }, upgrade: { steps: ['flatpak update -y'] } },
+                cleanup: { steps: ['flatpak uninstall --unused -y'] },
+                notes: 'Flatpak cleanup removes unused runtimes and extensions.',
             },
             {
                 manager: 'snap',
                 label: 'Snap',
-                updateAllCommand: 'sudo snap refresh',
-                notes: "No single-command cleanup — list disabled revisions with `snap list --all | awk '/disabled/{print $1, $3}'` then remove each manually, or reduce retention with `sudo snap set system refresh.retain=2`.",
+                operations: { update: { steps: ['sudo snap refresh'] }, upgrade: { steps: ['sudo snap refresh'] } },
+                notes: 'Snap has no general-purpose cleanup operation.',
             },
         ],
     },

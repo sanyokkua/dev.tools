@@ -59,7 +59,7 @@ const AppBasket = ({
     onVersionSelect,
     onClear,
 }: AppBasketProps): React.JSX.Element => {
-    const overrideDisabled = updateScope === 'all-installed';
+    const overrideDisabled = updateScope === 'batch';
     const config: BuilderConfig = useMemo(
         () => ({
             platform,
@@ -169,8 +169,7 @@ const AppBasket = ({
                                         </div>
                                         {overrideDisabled && (
                                             <p className="installer-hint">
-                                                Ignored — &quot;Everything this manager manages&quot; is selected in
-                                                Output below.
+                                                Ignored — &quot;Batch maintenance&quot; is selected in Output below.
                                             </p>
                                         )}
                                     </>

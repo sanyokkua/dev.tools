@@ -41,6 +41,7 @@ const IndexPage = (): React.JSX.Element => {
     const [selectedApps, setSelectedApps] = useState<Record<string, CatalogManager | null>>({});
     const [selectedVersions, setSelectedVersions] = useState<Record<string, string[]>>({});
     const [updateScope, setUpdateScope] = useState<UpdateScope>('selected-apps');
+    const [canBuildScripts, setCanBuildScripts] = useState(false);
 
     useEffect(() => {
         setPageTitle('Software Installer');
@@ -48,6 +49,7 @@ const IndexPage = (): React.JSX.Element => {
 
     useEffect(() => {
         setSelectedManagers([]);
+        setCanBuildScripts(false);
     }, [platform, linuxDistro]);
 
     const platformManagers = useMemo<CatalogManager[]>(() => {
@@ -165,7 +167,7 @@ const IndexPage = (): React.JSX.Element => {
                 <button
                     className="btn primary"
                     style={{ marginLeft: 'auto' }}
-                    disabled={selectedAppCount === 0}
+                    disabled={!canBuildScripts}
                     onClick={() => outputRef.current?.scrollIntoView({ behavior: 'smooth' })}
                 >
                     ⚙ Build Scripts
@@ -303,6 +305,7 @@ const IndexPage = (): React.JSX.Element => {
                     selectedVersions={selectedVersions}
                     updateScope={updateScope}
                     onUpdateScopeChange={setUpdateScope}
+                    onPlanAvailabilityChange={setCanBuildScripts}
                 />
             </div>
         </div>

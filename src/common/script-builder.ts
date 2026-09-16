@@ -1,13 +1,42 @@
 import { APPS_CATALOG } from './apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogMethod, CatalogPlatform, LinuxDistro } from './apps-catalog-types';
 import { getBootstrapSource, PROVIDER_RESOLVED_MANAGERS, type BootstrapSource } from './manager-bootstrap-catalog';
-import { MANAGER_MAINTENANCE, type ManagerMaintenanceEntry } from './manager-maintenance-catalog';
+import {
+    MANAGER_MAINTENANCE,
+    type MaintenanceAction,
+    type ManagerMaintenanceEntry,
+} from './manager-maintenance-catalog';
+export type { MaintenanceAction } from './manager-maintenance-catalog';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
 export type ScriptAction = 'install' | 'update' | 'upgrade' | 'remove';
 
 export type FallbackMode = 'preferred-only' | 'fallback';
+
+export type UpdateStrategy = 'one-by-one' | 'batch';
+
+export interface MaintenanceTask {
+    kind: 'batch' | 'app' | 'cleanup';
+    manager: CatalogManager;
+    label: string;
+    steps: readonly string[];
+    appId?: string;
+    version?: string;
+}
+
+export interface MaintenancePlan {
+    action: MaintenanceAction;
+    strategy: UpdateStrategy;
+    tasks: readonly MaintenanceTask[];
+    skipped: readonly { appId: string; reason: string }[];
+}
+
+export interface MaintenancePlanOptions {
+    strategy?: UpdateStrategy;
+    batchManagers?: readonly CatalogManager[];
+    includeCleanup?: boolean;
+}
 
 export interface BuilderConfig {
     platform: CatalogPlatform;
@@ -109,6 +138,25 @@ export function getCommand(method: CatalogMethod, action: ScriptAction, version?
     }
     if (!raw) return null;
     return version === undefined ? raw : raw.replaceAll('{version}', version);
+}
+
+function getMaintenanceAppCommand(
+    method: CatalogMethod,
+    manager: CatalogManager,
+    action: MaintenanceAction,
+    version?: string,
+): string | null {
+    const command = getCommand(method, action, version);
+    if (!command) return null;
+    if (manager !== 'apt' || !method.id) return command;
+
+    const packageId = version === undefined ? method.id : method.id.replaceAll('{version}', version);
+    // Direct .deb installers may use apt as their resolver label but must re-run the vendor
+    // endpoint; only native apt commands can be normalized to a named package upgrade.
+    if (/\b(?:apt|apt-get)\b/.test(command)) {
+        return `sudo apt-get install --only-upgrade -y ${packageId}`;
+    }
+    return command;
 }
 
 // ─── Internal skip-reason helper ──────────────────────────────────────────────
@@ -310,7 +358,7 @@ export function buildPerAppScripts(
     return result;
 }
 
-// ─── Manager-wide maintenance script builder ──────────────────────────────────
+// ─── Maintenance planner and script builder ──────────────────────────────────
 
 export function getMaintenanceEntries(
     config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
@@ -327,75 +375,223 @@ export function getMaintenanceEntries(
     return MANAGER_MAINTENANCE.windows;
 }
 
+function maintenanceSkipReason(app: CatalogApp, action: MaintenanceAction, config: BuilderConfig): string {
+    if (!app.platforms[config.platform]) return 'unsupported platform';
+    if (app.parameterized && !config.selectedVersions[app.id]?.length) return 'no version selected';
+
+    const methods = getMethodsForPlatform(app, config);
+    if (!methods || methods.length === 0) return 'unsupported platform or distro';
+    if (!resolveManager(app, config)) {
+        return config.fallbackMode === 'fallback' ? 'no executable method' : 'no preferred manager';
+    }
+    return `no ${action} command`;
+}
+
+function uniqueManagers(managers: readonly CatalogManager[]): CatalogManager[] {
+    return [...new Set(managers)];
+}
+
+function normalizeMaintenanceOptions(
+    optionsOrStrategy: MaintenancePlanOptions | UpdateStrategy | undefined,
+    legacyBatchManagers: readonly CatalogManager[] | undefined,
+    legacyIncludeCleanup: boolean | undefined,
+): Required<Pick<MaintenancePlanOptions, 'strategy' | 'batchManagers' | 'includeCleanup'>> {
+    if (typeof optionsOrStrategy === 'string') {
+        return {
+            strategy: optionsOrStrategy,
+            batchManagers: legacyBatchManagers ?? [],
+            includeCleanup: legacyIncludeCleanup ?? true,
+        };
+    }
+    return {
+        strategy: optionsOrStrategy?.strategy ?? 'one-by-one',
+        batchManagers: optionsOrStrategy?.batchManagers ?? [],
+        includeCleanup: optionsOrStrategy?.includeCleanup ?? true,
+    };
+}
+
 /**
- * Builds a manager-wide maintenance script ("update everything this manager manages")
- * independent of any specific apps array — looks up each selected manager's update-all
- * (and, if requested, cleanup) command in MANAGER_MAINTENANCE for the given platform/distro.
- * macOS/Linux → bash (.sh); Windows → PowerShell (.ps1).
- * bash: every command is wrapped in a generated shell function before being invoked via
- * run_task — this is required (not merely stylistic) because some entries contain multi-
- * statement control flow (e.g. openSUSE's Tumbleweed/Leap detection), which would break if
- * spliced directly onto the run_task invocation line the way simple per-app commands are.
+ * Creates the pure maintenance task plan. In batch mode, selected batch managers are emitted
+ * once and selected apps are emitted only when their resolved manager is outside that batch set.
+ * The planner never starts work or performs network calls.
  */
-export function buildManagerWideScript(
-    managers: CatalogManager[],
-    action: 'update' | 'upgrade',
+export function buildMaintenancePlan(
+    apps: CatalogApp[],
+    action: MaintenanceAction,
+    config: BuilderConfig,
+    optionsOrStrategy: MaintenancePlanOptions | UpdateStrategy = { strategy: 'one-by-one' },
+    legacyBatchManagers?: readonly CatalogManager[],
+    legacyIncludeCleanup?: boolean,
+): MaintenancePlan {
+    const options = normalizeMaintenanceOptions(optionsOrStrategy, legacyBatchManagers, legacyIncludeCleanup);
+    const tasks: MaintenanceTask[] = [];
+    const skipped: { appId: string; reason: string }[] = [];
+    const entries = getMaintenanceEntries(config);
+    const batchManagers = uniqueManagers(options.batchManagers);
+    const batchedManagers = new Set<CatalogManager>();
+
+    if (options.strategy === 'batch') {
+        for (const manager of batchManagers) {
+            const entry = entries.find((candidate) => candidate.manager === manager);
+            const operation = entry?.operations[action];
+            if (!entry || !operation || operation.steps.length === 0) continue;
+            tasks.push({ kind: 'batch', manager, label: entry.label, steps: operation.steps });
+            batchedManagers.add(manager);
+        }
+    }
+
+    for (const app of apps) {
+        const manager = resolveManager(app, config);
+        if (!manager) {
+            skipped.push({ appId: app.id, reason: maintenanceSkipReason(app, action, config) });
+            continue;
+        }
+
+        if (options.strategy === 'batch' && batchedManagers.has(manager)) continue;
+
+        const method = resolveMethod(app, config);
+        if (!method) {
+            skipped.push({ appId: app.id, reason: 'no executable method' });
+            continue;
+        }
+
+        const versions: (string | undefined)[] = app.parameterized
+            ? (config.selectedVersions[app.id] ?? [])
+            : [undefined];
+        let emitted = 0;
+        let missingCommand = false;
+        for (const version of versions) {
+            const command = getMaintenanceAppCommand(method, manager, action, version);
+            if (!command) {
+                missingCommand = true;
+                continue;
+            }
+            tasks.push({
+                kind: 'app',
+                manager,
+                label: version === undefined ? app.name : `${app.name} ${version}`,
+                steps: [command],
+                appId: app.id,
+                ...(version === undefined ? {} : { version }),
+            });
+            emitted += 1;
+        }
+
+        if (emitted === 0) {
+            skipped.push({ appId: app.id, reason: `no ${action} command` });
+        } else if (missingCommand) {
+            skipped.push({ appId: app.id, reason: `no ${action} command for one or more selected versions` });
+        }
+    }
+
+    if (options.strategy === 'batch' && options.includeCleanup) {
+        for (const manager of batchManagers) {
+            if (!batchedManagers.has(manager)) continue;
+            const entry = entries.find((candidate) => candidate.manager === manager);
+            if (!entry?.cleanup || entry.cleanup.steps.length === 0) continue;
+            tasks.push({ kind: 'cleanup', manager, label: entry.label, steps: entry.cleanup.steps });
+        }
+    }
+
+    return { action, strategy: options.strategy, tasks, skipped };
+}
+
+function escapePowerShellText(value: string): string {
+    return value.replaceAll('`', '``').replaceAll('"', '`"').replaceAll('$', '`$');
+}
+
+function escapeBashText(value: string): string {
+    return value.replaceAll('"', '\\"');
+}
+
+function renderBashSteps(steps: readonly string[]): string {
+    return steps.join(' && ');
+}
+
+function renderPowerShellSteps(steps: readonly string[]): string {
+    // Multi-command operations are represented as separate steps so the generated script stays
+    // compatible with Windows PowerShell 5.1; each native command gets an explicit exit check.
+    return steps.map((step) => `${step}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" };`).join(' ');
+}
+
+/**
+ * Renders a maintenance plan as one executable script. Bash tasks are joined with `&&`; native
+ * PowerShell commands are checked after every step and terminating errors are caught per task.
+ */
+export function buildMaintenanceScript(
+    plan: MaintenancePlan,
     config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
-    includeCleanup: boolean,
+    title = 'batch maintenance',
 ): string {
     const lines: string[] = [];
     const isWindows = config.platform === 'windows';
-    const label = action.toUpperCase();
+    const label = plan.action.toUpperCase();
 
     if (isWindows) {
-        lines.push(`# ${label} — manager-wide maintenance (PowerShell)`, '$ok=0;$fail=0');
+        lines.push(`# ${label} — ${title} (PowerShell)`, '$ErrorActionPreference = "Stop"', '$ok=0;$fail=0');
     } else {
         lines.push(
             '#!/usr/bin/env bash',
-            `# ${label} — manager-wide maintenance, generated by dev.tools`,
+            `# ${label} — ${title}, generated by dev.tools`,
             'set -uo pipefail; SUCCESS=0; FAILED=0',
             'run_task(){ echo "▶ $1"; shift; if "$@"; then SUCCESS=$((SUCCESS+1)); else FAILED=$((FAILED+1)); fi; }',
         );
     }
 
-    const entries = getMaintenanceEntries(config);
-
-    if (managers.length === 0) {
-        lines.push('# No package managers selected — nothing to do.');
+    if (plan.tasks.length === 0) {
+        lines.push(
+            plan.strategy === 'batch'
+                ? '# No package managers selected — nothing to do.'
+                : '# No maintenance tasks selected.',
+        );
     }
 
-    let fnIndex = 0;
-    for (const manager of managers) {
-        const entry = entries.find((e) => e.manager === manager);
-        if (!entry?.updateAllCommand) {
-            lines.push(`# ${manager}: no ${action} command available — skipped`);
+    const batchOrdinals = new Map<CatalogManager, number>();
+    let batchIndex = 0;
+    let appIndex = 0;
+    for (const task of plan.tasks) {
+        if (task.kind === 'batch') {
+            batchIndex += 1;
+            batchOrdinals.set(task.manager, batchIndex);
+        }
+    }
+
+    for (const task of plan.tasks) {
+        const taskLabel =
+            task.kind === 'cleanup'
+                ? `cleanup ${task.label}`
+                : task.kind === 'app'
+                  ? `${plan.action} ${task.label} (${task.manager})`
+                  : `${plan.action} ${task.label}`;
+
+        if (isWindows) {
+            const command = renderPowerShellSteps(task.steps);
+            const escaped = escapePowerShellText(taskLabel);
+            lines.push(
+                `try { Write-Host "▶ ${escaped}"; ${command}; $ok++ } catch { Write-Host "✖ ${escaped} failed: $_"; $fail++ }`,
+            );
             continue;
         }
 
-        if (entry.notes) {
-            lines.push(`# ${manager}: ${entry.notes}`);
-        }
-
-        fnIndex += 1;
-        if (isWindows) {
-            lines.push(
-                `try { Write-Host "▶ ${action} ${entry.label}"; ${entry.updateAllCommand}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${entry.label} failed: $_"; $fail++ }`,
-            );
+        let functionName: string;
+        if (task.kind === 'batch') {
+            functionName = `_maint_${batchOrdinals.get(task.manager) ?? ++batchIndex}_update`;
+        } else if (task.kind === 'cleanup') {
+            functionName = `_maint_${batchOrdinals.get(task.manager) ?? ++batchIndex}_cleanup`;
         } else {
-            const fnName = `_maint_${fnIndex}_update`;
-            lines.push(`${fnName}() {`, entry.updateAllCommand, '}', `run_task "${action} ${entry.label}" ${fnName}`);
+            appIndex += 1;
+            functionName = `_maint_app_${appIndex}`;
         }
+        lines.push(
+            `${functionName}() {`,
+            renderBashSteps(task.steps),
+            '}',
+            `run_task "${escapeBashText(taskLabel)}" ${functionName}`,
+        );
+    }
 
-        if (includeCleanup && entry.cleanupCommand) {
-            if (isWindows) {
-                lines.push(
-                    `try { Write-Host "▶ cleanup ${entry.label}"; ${entry.cleanupCommand}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ cleanup ${entry.label} failed: $_"; $fail++ }`,
-                );
-            } else {
-                const fnName = `_maint_${fnIndex}_cleanup`;
-                lines.push(`${fnName}() {`, entry.cleanupCommand, '}', `run_task "cleanup ${entry.label}" ${fnName}`);
-            }
-        }
+    for (const { appId, reason } of plan.skipped) {
+        lines.push(`# skipped ${appId}: ${reason}`);
     }
 
     lines.push('');
@@ -406,6 +602,43 @@ export function buildManagerWideScript(
     }
 
     return lines.join('\n');
+}
+
+/**
+ * Compatibility wrapper for callers that still request manager-wide maintenance directly.
+ * It delegates to the planner, so old callers inherit action-specific operations and cleanup
+ * ordering without needing to construct a full selected-app list.
+ */
+export function buildManagerWideScript(
+    managers: CatalogManager[],
+    action: MaintenanceAction,
+    config: Pick<BuilderConfig, 'platform' | 'linuxDistro'>,
+    includeCleanup: boolean,
+): string {
+    const plannerConfig: BuilderConfig = {
+        platform: config.platform,
+        linuxDistro: config.linuxDistro,
+        managers,
+        overrides: {},
+        fallbackMode: 'preferred-only',
+        selectedVersions: {},
+    };
+    const plan = buildMaintenancePlan([], action, plannerConfig, {
+        strategy: 'batch',
+        batchManagers: managers,
+        includeCleanup,
+    });
+    const missingManagers = uniqueManagers(managers).filter(
+        (manager) => !plan.tasks.some((task) => task.kind === 'batch' && task.manager === manager),
+    );
+    const script = buildMaintenanceScript(plan, config, 'manager-wide maintenance');
+    if (missingManagers.length === 0) return script;
+    const marker = '\n\n';
+    const insertion = missingManagers
+        .map((manager) => `# ${manager}: no ${action} command available — skipped`)
+        .join('\n');
+    const index = script.lastIndexOf(marker);
+    return index === -1 ? `${script}\n${insertion}` : `${script.slice(0, index)}\n${insertion}${script.slice(index)}`;
 }
 
 // ─── Manager-bootstrap ("Setup managers") script builder ──────────────────────
@@ -419,19 +652,33 @@ export interface RequiredBootstrap {
  * Resolves each app's manager (same rule as install/update/etc — including fallback-picked
  * managers the user never explicitly selected) and keeps the distinct ones that actually need
  * bootstrapping, in first-seen order. Managers with no MANAGER_BOOTSTRAP entry for this
- * platform/distro (OS-native managers, or ones this catalog doesn't model) are omitted.
+ * platform/distro (OS-native managers, or ones this catalog doesn't model) are omitted. The
+ * optional batch manager list is considered after app resolution so global-maintenance choices
+ * are bootstrapped even when the selected app basket is empty.
  */
-export function getRequiredBootstrap(apps: CatalogApp[], config: BuilderConfig): RequiredBootstrap[] {
+export function getRequiredBootstrap(
+    apps: CatalogApp[],
+    config: BuilderConfig,
+    batchManagers: readonly CatalogManager[] = [],
+): RequiredBootstrap[] {
     const seen = new Set<CatalogManager>();
     const result: RequiredBootstrap[] = [];
-    for (const app of apps) {
-        const manager = resolveManager(app, config);
-        if (!manager || seen.has(manager)) continue;
+    const addManager = (manager: CatalogManager | null): void => {
+        if (!manager || seen.has(manager)) return;
         const source = getBootstrapSource(manager, config.platform, config.linuxDistro);
-        if (!source) continue;
+        if (!source) return;
         seen.add(manager);
         result.push({ manager, source });
+    };
+
+    for (const app of apps) {
+        const manager = resolveManager(app, config);
+        addManager(manager);
     }
+    for (const manager of batchManagers) {
+        addManager(manager);
+    }
+
     return result;
 }
 
@@ -477,9 +724,8 @@ export function resolveProviderCommand(
 
 /**
  * Builds the "Setup managers" script: bootstraps every manager in `required`, either via its
- * fixed (already fact-checked) command or by installing the resolved provider app, then always
- * ends with a colored notice that a new shell session is needed before running Install — PATH/
- * profile changes made here are not visible in the current one.
+ * fixed (already fact-checked) command or by installing the resolved provider app. Shell-session
+ * guidance stays in the UI; generated scripts contain executable steps and skip comments only.
  * macOS/Linux → bash (.sh); Windows → PowerShell (.ps1).
  */
 export function buildBootstrapScript(
@@ -533,7 +779,7 @@ export function buildBootstrapScript(
         const orderedIds = chosenId ? [chosenId, ...source.appIds.filter((id) => id !== chosenId)] : source.appIds;
         const resolved = resolveProviderCommand(orderedIds, config);
         if (!resolved) {
-            const message = `${manager}: no known way to install it on this platform — install it manually first`;
+            const message = `${manager}: no executable setup route for this platform — skipped`;
             lines.push(`# ${message}`);
             lines.push(
                 isWindows
@@ -570,14 +816,8 @@ export function buildBootstrapScript(
     lines.push('');
     if (isWindows) {
         lines.push('Write-Host "✔ $ok ok / ✖ $fail failed"');
-        lines.push(
-            'Write-Host "`n⚠ Restart PowerShell (open a new window) before running Install — new PATH entries are not visible in this session." -ForegroundColor Red',
-        );
     } else {
         lines.push('echo "✔ $SUCCESS ok / ✖ $FAILED failed"');
-        lines.push(
-            'echo -e "\\n\\033[0;31m⚠ Restart your terminal (or run: source ~/.zshrc / source ~/.bashrc) before running Install — new PATH entries are not visible in this session.\\033[0m"',
-        );
     }
 
     return lines.join('\n');

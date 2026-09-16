@@ -46,7 +46,7 @@ export interface CatalogApp {
     platforms: { macos: boolean; windows: boolean; linux: boolean };
     methods: { macos?: CatalogMethod[]; windows?: CatalogMethod[]; linux?: LinuxMethods };
     notes?: string;
-    verifyBeforeEmit?: boolean;
+    platformNotes?: Partial<Record<CatalogPlatform, string>>;
     parameterized?: boolean;
     versions?: string[];
 }

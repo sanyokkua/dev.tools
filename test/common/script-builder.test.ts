@@ -5,6 +5,8 @@ import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
     buildBootstrapScript,
     buildCombinedScript,
+    buildMaintenancePlan,
+    buildMaintenanceScript,
     buildManagerWideScript,
     buildPerAppScripts,
     getCommand,
@@ -1562,6 +1564,148 @@ describe('buildPerAppScripts repoSetup', () => {
     );
 });
 
+describe('buildMaintenancePlan', () => {
+    const makeMacApp = (id: string, manager: CatalogManager, update: string): CatalogApp => ({
+        id,
+        name: id,
+        category: 'test',
+        description: 'test app',
+        platforms: { macos: true, windows: false, linux: false },
+        methods: { macos: [{ manager, id, install: `install-${id}`, update, upgrade: update }] },
+    });
+
+    it('runs each selected batch manager once and places cleanup after app exceptions', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['mas', 'brew'] };
+        const plan = buildMaintenancePlan([FIREFOX, DUAL_MANAGER_APP], 'update', config, {
+            strategy: 'batch',
+            batchManagers: ['brew'],
+            includeCleanup: true,
+        });
+
+        expect(plan.strategy).toBe('batch');
+        expect(plan.tasks.map((task) => task.kind)).toEqual(['batch', 'app', 'cleanup']);
+        expect(plan.tasks[0]).toMatchObject({ kind: 'batch', manager: 'brew', label: 'Homebrew' });
+        expect(plan.tasks[1]).toMatchObject({ kind: 'app', manager: 'mas', appId: 'dual' });
+        expect(plan.tasks[2]).toMatchObject({ kind: 'cleanup', manager: 'brew', label: 'Homebrew' });
+        expect(plan.tasks.filter((task) => task.manager === 'brew')).toHaveLength(2);
+        expect(plan.tasks[2].steps).toEqual(['brew autoremove', 'brew cleanup -s']);
+    });
+
+    it('allows a batch plan with no selected apps', () => {
+        const plan = buildMaintenancePlan([], 'upgrade', macosConfig, {
+            strategy: 'batch',
+            batchManagers: ['brew'],
+            includeCleanup: false,
+        });
+
+        expect(plan.tasks).toHaveLength(1);
+        expect(plan.tasks[0]).toMatchObject({ kind: 'batch', manager: 'brew' });
+        expect(plan.tasks[0].steps).toEqual(['brew update', 'brew upgrade --greedy']);
+        expect(plan.skipped).toEqual([]);
+    });
+
+    it('preserves one-by-one resolution, overrides, and selected versions', () => {
+        const overrideConfig: BuilderConfig = { ...macosConfig, managers: ['brew', 'mas'], overrides: { dual: 'mas' } };
+        const overridePlan = buildMaintenancePlan([DUAL_MANAGER_APP], 'update', overrideConfig, {
+            strategy: 'one-by-one',
+        });
+        expect(overridePlan.tasks[0]).toMatchObject({ kind: 'app', manager: 'mas', appId: 'dual' });
+
+        const versionConfig: BuilderConfig = { ...macosConfig, selectedVersions: { corretto: ['17'] } };
+        const versionPlan = buildMaintenancePlan([CORRETTO], 'update', versionConfig, { strategy: 'one-by-one' });
+        expect(versionPlan.tasks[0]).toMatchObject({ kind: 'app', manager: 'brew', appId: 'corretto', version: '17' });
+        expect(versionPlan.tasks[0].steps).toEqual(['brew upgrade --cask corretto@17']);
+    });
+
+    it('reports platform, version, and missing-command skip reasons', () => {
+        const noVersionConfig: BuilderConfig = { ...windowsConfig, selectedVersions: {} };
+        const plan = buildMaintenancePlan([MACOS_ONLY_APP, CORRETTO, SNAP_ONLY_APP], 'update', noVersionConfig, {
+            strategy: 'one-by-one',
+        });
+
+        expect(plan.tasks).toEqual([]);
+        expect(plan.skipped).toEqual([
+            { appId: 'iina', reason: 'unsupported platform' },
+            { appId: 'corretto', reason: 'no version selected' },
+            { appId: 'snap-only', reason: 'unsupported platform' },
+        ]);
+
+        const missingCommand = buildMaintenancePlan(
+            [SNAP_ONLY_APP],
+            'update',
+            {
+                platform: 'linux',
+                linuxDistro: 'debian',
+                managers: ['snap'],
+                overrides: {},
+                fallbackMode: 'preferred-only',
+                selectedVersions: {},
+            },
+            { strategy: 'one-by-one' },
+        );
+        expect(missingCommand.skipped).toEqual([{ appId: 'snap-only', reason: 'no update command' }]);
+    });
+
+    it('uses package-specific commands for non-batch managers', () => {
+        const apps = [
+            makeMacApp('npm-app', 'npm', 'npm install -g npm-app@latest'),
+            makeMacApp('uv-app', 'uv', 'uv tool upgrade uv-app'),
+            makeMacApp('cargo-app', 'cargo', 'cargo install --force cargo-app'),
+            makeMacApp('go-app', 'go', 'go install example.com/go-app@latest'),
+            makeMacApp('script-app', 'script', 'curl -fsSL https://example.com/install.sh | sh'),
+        ];
+        const config: BuilderConfig = { ...macosConfig, managers: ['npm', 'uv', 'cargo', 'go', 'script'] };
+        const plan = buildMaintenancePlan(apps, 'update', config, { strategy: 'one-by-one' });
+
+        expect(plan.tasks.map((task) => task.steps[0])).toEqual([
+            'npm install -g npm-app@latest',
+            'uv tool upgrade uv-app',
+            'cargo install --force cargo-app',
+            'go install example.com/go-app@latest',
+            'curl -fsSL https://example.com/install.sh | sh',
+        ]);
+        expect(plan.tasks.map((task) => task.manager)).toEqual(['npm', 'uv', 'cargo', 'go', 'script']);
+    });
+
+    it('uses apt-get only-upgrade for named apt packages without replacing direct installers', () => {
+        const aptPlan = buildMaintenancePlan([CURL_APT], 'update', linuxDebianConfig, { strategy: 'one-by-one' });
+        expect(aptPlan.tasks[0].steps).toEqual(['sudo apt-get install --only-upgrade -y curl']);
+
+        const directApt = makeMacApp('direct-apt', 'apt', 'curl -fsSL https://example.com/app.deb -o /tmp/app.deb');
+        const directPlan = buildMaintenancePlan(
+            [directApt],
+            'update',
+            { ...macosConfig, managers: ['apt'] },
+            { strategy: 'one-by-one' },
+        );
+        expect(directPlan.tasks[0].steps).toEqual(['curl -fsSL https://example.com/app.deb -o /tmp/app.deb']);
+    });
+
+    it('renders each step inside failure-safe shell functions and PowerShell try/catch blocks', () => {
+        const macPlan = buildMaintenancePlan([FIREFOX], 'update', macosConfig, {
+            strategy: 'batch',
+            batchManagers: ['brew'],
+            includeCleanup: true,
+        });
+        const macScript = buildMaintenanceScript(macPlan, { platform: 'macos' });
+        expect(macScript).toContain('_maint_1_update() {\nbrew update && brew upgrade --greedy\n}');
+        expect(macScript).toContain('run_task "update Homebrew" _maint_1_update');
+        expect(macScript).toContain('run_task "cleanup Homebrew" _maint_1_cleanup');
+        expect(macScript).not.toMatch(/(^|\n)\s*[^#].*&\s*$/m);
+
+        const windowsPlannerConfig: BuilderConfig = { ...windowsConfig, managers: ['winget'] };
+        const windowsPlan = buildMaintenancePlan([], 'update', windowsPlannerConfig, {
+            strategy: 'batch',
+            batchManagers: ['winget'],
+            includeCleanup: false,
+        });
+        const windowsScript = buildMaintenanceScript(windowsPlan, { platform: 'windows' });
+        expect(windowsScript).toContain('$ErrorActionPreference = "Stop"');
+        expect(windowsScript).toContain('winget upgrade --all --include-unknown --include-pinned');
+        expect(windowsScript).toContain('try { Write-Host "▶ update winget"');
+    });
+});
+
 // ─── buildManagerWideScript ────────────────────────────────────────────────────
 
 describe('buildManagerWideScript', () => {
@@ -1579,8 +1723,10 @@ describe('buildManagerWideScript', () => {
         const script = buildManagerWideScript(['winget', 'choco', 'scoop'], 'update', { platform: 'windows' }, false);
         expect(script).toContain('$ok=0;$fail=0');
         expect(script).toContain('winget upgrade --all --include-unknown');
-        expect(script).toContain('choco upgrade chocolatey -y; choco upgrade all -y');
-        expect(script).toContain('scoop update; scoop update *');
+        expect(script).toContain('choco upgrade chocolatey -y;');
+        expect(script).toContain('choco upgrade all -y;');
+        expect(script).toContain('scoop update;');
+        expect(script).toContain('scoop update *;');
     });
 
     it('Debian: emits apt/flatpak/snap update-all commands', () => {
@@ -1641,9 +1787,9 @@ describe('buildManagerWideScript', () => {
         expect(script).not.toContain('brew');
     });
 
-    it('Windows winget selection surfaces the requiresExplicitUpgrade limitation as a comment', () => {
+    it('does not emit manager notes as shell prose', () => {
         const script = buildManagerWideScript(['winget'], 'update', { platform: 'windows' }, false);
-        expect(script).toContain('requiresExplicitUpgrade');
+        expect(script).not.toContain('requiresExplicitUpgrade');
     });
 
     it('throws when platform is linux and linuxDistro is not provided', () => {
@@ -1659,7 +1805,7 @@ describe('buildManagerWideScript', () => {
         expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
     });
 
-    it('action=upgrade reads the same updateAllCommand as action=update (single combined field)', () => {
+    it('action=upgrade uses the manager upgrade operation', () => {
         const updateScript = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
         const upgradeScript = buildManagerWideScript(['brew'], 'upgrade', { platform: 'macos' }, false);
         expect(upgradeScript).toContain('brew update && brew upgrade --greedy');
@@ -1739,6 +1885,20 @@ describe('getRequiredBootstrap', () => {
         const required = getRequiredBootstrap([NPM_ONLY_APP], config);
         expect(required).toEqual([]);
     });
+
+    it('includes selected batch managers even when no selected app resolves through them', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: [] };
+        const required = getRequiredBootstrap([], config, ['brew']);
+        expect(required).toHaveLength(1);
+        expect(required[0].manager).toBe('brew');
+        expect(required[0].source.kind).toBe('fixed');
+    });
+
+    it('deduplicates a selected batch manager already required by an app', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew'] };
+        const required = getRequiredBootstrap([FIREFOX], config, ['brew']);
+        expect(required.filter((entry) => entry.manager === 'brew')).toHaveLength(1);
+    });
 });
 
 describe('resolveProviderCommand', () => {
@@ -1811,18 +1971,19 @@ describe('buildBootstrapScript', () => {
     it('emits a colored skip warning when a required manager has no known install path', () => {
         const badSource = { kind: 'provider-app' as const, appIds: ['does-not-exist'], guidePath: '/x' };
         const script = buildBootstrapScript([{ manager: 'cargo', source: badSource }], { platform: 'macos' });
-        expect(script).toContain('# cargo: no known way to install it on this platform');
-        expect(script).toContain('\\033[0;31m⚠ cargo: no known way to install it');
+        expect(script).toContain('# cargo: no executable setup route for this platform — skipped');
+        expect(script).toContain('\\033[0;31m⚠ cargo: no executable setup route for this platform — skipped');
     });
 
-    it('always appends a restart-your-shell notice on bash', () => {
+    it('does not append manual shell-session instructions to bash output', () => {
         const script = buildBootstrapScript([], { platform: 'macos' });
-        expect(script).toContain('Restart your terminal');
+        expect(script).not.toContain('source ~/.');
+        expect(script).not.toContain('Restart your terminal');
     });
 
-    it('always appends a restart-PowerShell notice on Windows', () => {
+    it('does not append manual shell-session instructions to PowerShell output', () => {
         const script = buildBootstrapScript([], { platform: 'windows' });
-        expect(script).toContain('Restart PowerShell');
+        expect(script).not.toContain('Restart PowerShell');
     });
 
     it('emits PowerShell try/catch for a fixed source on Windows', () => {
