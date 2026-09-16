@@ -1,7 +1,7 @@
 {
     "$schema": "./apps.schema.md",
-    "version": "2026-06-11",
-    "generatedFrom": "catalog/apps/*.md",
+    "version": "2026-09-16",
+    "generatedFrom": "manual catalog audit",
     "platforms": ["macos", "windows", "linux"],
     "linuxDistros": ["debian", "fedora", "arch", "suse"],
     "managers": {
@@ -806,7 +806,7 @@
             "category": "browsers",
             "description": "Privacy-focused Firefox-based web browser",
             "site": "https://www.waterfox.net/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -2646,7 +2646,7 @@
             "category": "code-editors",
             "description": "Insiders/preview build of VSCodium",
             "site": "https://vscodium.com/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -2671,7 +2671,7 @@
             "category": "code-editors",
             "description": "AI-first code editor (VS Code fork) by Anysphere",
             "site": "https://cursor.com/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -2701,39 +2701,9 @@
                         "remove": "scoop uninstall cursor"
                     }
                 ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the official AppImage from https://cursor.com/download, chmod +x and run; it self-updates in place.",
-                            "verify": "./cursor-*.AppImage --version"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the official AppImage from https://cursor.com/download, chmod +x and run; it self-updates in place.",
-                            "verify": "./cursor-*.AppImage --version"
-                        }
-                    ],
-                    "arch": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the official AppImage from https://cursor.com/download, chmod +x and run; it self-updates in place.",
-                            "verify": "./cursor-*.AppImage --version"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the official AppImage from https://cursor.com/download, chmod +x and run; it self-updates in place.",
-                            "verify": "./cursor-*.AppImage --version"
-                        }
-                    ]
-                }
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
-            "notes": "Proprietary AI editor built on VS Code; Linux ships as an AppImage. No maintained Chocolatey package.",
-            "verifyBeforeEmit": true
+            "notes": "Proprietary AI editor built on VS Code; Linux ships as an AppImage. No maintained Chocolatey package."
         },
         {
             "id": "zed",
@@ -2835,7 +2805,7 @@
             "category": "code-editors",
             "description": "Google's agentic AI IDE (agent-first development platform)",
             "site": "https://antigravity.google/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -2849,35 +2819,10 @@
                         "upgrade": "brew upgrade --greedy --cask antigravity"
                     }
                 ],
-                "windows": [
-                    {
-                        "manager": "installer",
-                        "install": "download the x64/ARM64 installer from https://antigravity.google/download"
-                    }
-                ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "apt",
-                            "id": "antigravity",
-                            "install": "add Google's Antigravity apt repo + key per https://antigravity.google/download, then sudo apt install antigravity",
-                            "update": "sudo apt update && sudo apt install --only-upgrade -y antigravity",
-                            "remove": "sudo apt remove -y antigravity"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "dnf",
-                            "id": "antigravity",
-                            "install": "add Google's Antigravity dnf repo per https://antigravity.google/download, then sudo dnf install antigravity",
-                            "update": "sudo dnf upgrade -y antigravity",
-                            "remove": "sudo dnf remove -y antigravity"
-                        }
-                    ]
-                }
+                "windows": [],
+                "linux": { "debian": [], "fedora": [] }
             },
-            "notes": "Free AI IDE from Google (GA 2026). Requires a personal Google account and Chrome.",
-            "verifyBeforeEmit": true
+            "notes": "Free AI IDE from Google (GA 2026). Requires a personal Google account and Chrome."
         },
         {
             "id": "antigravity-ide",
@@ -2885,7 +2830,7 @@
             "category": "code-editors",
             "description": "Antigravity IDE desktop build (separate brew cask)",
             "site": "https://antigravity.google/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": true },
             "methods": {
                 "macos": [
                     {
@@ -2899,7 +2844,7 @@
                         "upgrade": "brew upgrade --greedy --cask antigravity-ide"
                     }
                 ],
-                "windows": [{ "manager": "installer", "install": "download from https://antigravity.google/download" }],
+                "windows": [],
                 "linux": {
                     "debian": [
                         {
@@ -2921,8 +2866,7 @@
                     ]
                 }
             },
-            "notes": "Sibling brew cask to antigravity for the same Google product; new product, confirm IDs at install time.",
-            "verifyBeforeEmit": true
+            "notes": "Sibling brew cask to antigravity for the same Google product; new product, confirm IDs at install time."
         },
         {
             "id": "devin-desktop",
@@ -2930,7 +2874,7 @@
             "category": "code-editors",
             "description": "Agentic IDE / agent command center by Cognition (successor to Windsurf)",
             "site": "https://devin.ai/desktop",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -2944,41 +2888,10 @@
                         "upgrade": "brew upgrade --greedy --cask devin-desktop@next"
                     }
                 ],
-                "windows": [
-                    {
-                        "manager": "installer",
-                        "install": "download the Windows installer from https://devin.ai/download"
-                    }
-                ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (AppImage / archive) from https://devin.ai/download"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (AppImage / archive) from https://devin.ai/download"
-                        }
-                    ],
-                    "arch": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (AppImage / archive) from https://devin.ai/download"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (AppImage / archive) from https://devin.ai/download"
-                        }
-                    ]
-                }
+                "windows": [],
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
-            "notes": "Cognition's rebranded Windsurf IDE; shipping brew cask is devin-desktop@next (beta). Proprietary; requires sign-in.",
-            "verifyBeforeEmit": true
+            "notes": "Cognition's rebranded Windsurf IDE; shipping brew cask is devin-desktop@next (beta). Proprietary; requires sign-in."
         },
         {
             "id": "kiro",
@@ -2986,7 +2899,7 @@
             "category": "code-editors",
             "description": "AWS agentic, spec-driven IDE (VS Code-based)",
             "site": "https://kiro.dev/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -3009,35 +2922,9 @@
                         "remove": "winget uninstall --id Amazon.Kiro -e"
                     }
                 ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (.deb/.tar.gz/AppImage) from https://kiro.dev/downloads/"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (.deb/.tar.gz/AppImage) from https://kiro.dev/downloads/"
-                        }
-                    ],
-                    "arch": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (.deb/.tar.gz/AppImage) from https://kiro.dev/downloads/"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "appimage",
-                            "install": "download the Linux build (.deb/.tar.gz/AppImage) from https://kiro.dev/downloads/"
-                        }
-                    ]
-                }
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
-            "notes": "AWS agentic IDE; no AWS account required to download. winget id Amazon.Kiro should be confirmed (new product).",
-            "verifyBeforeEmit": true
+            "notes": "AWS agentic IDE; no AWS account required to download. winget id Amazon.Kiro should be confirmed (new product)."
         },
         {
             "id": "sublime-text",
@@ -3848,7 +3735,7 @@
             "category": "ide-extensions",
             "description": "Spring Tools 4 — Spring/Spring Boot tooling for the Eclipse IDE (a.k.a. Spring Tool Suite)",
             "site": "https://spring.io/tools/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -3865,8 +3752,7 @@
                 "windows": [],
                 "linux": {}
             },
-            "notes": "Eclipse plugin / bundled STS distribution; all OS package managers are N/A. brew cask token unconfirmed against Homebrew registry.",
-            "verifyBeforeEmit": true
+            "notes": "Eclipse plugin / bundled STS distribution; all OS package managers are N/A. brew cask token unconfirmed against Homebrew registry."
         },
         {
             "id": "claude-code",
@@ -4015,11 +3901,6 @@
                         "remove": "brew uninstall --cask claude",
                         "verify": "open -a \"Claude\"",
                         "upgrade": "brew upgrade --greedy --cask claude"
-                    },
-                    {
-                        "manager": "installer",
-                        "install": "Direct download (.dmg): https://claude.com/download",
-                        "verify": "open -a \"Claude\""
                     }
                 ],
                 "windows": [
@@ -4029,11 +3910,6 @@
                         "install": "winget install --id Anthropic.Claude -e",
                         "update": "winget upgrade --id Anthropic.Claude -e",
                         "remove": "winget uninstall --id Anthropic.Claude -e",
-                        "verify": "winget list --id Anthropic.Claude"
-                    },
-                    {
-                        "manager": "installer",
-                        "install": "Direct download (.exe): https://claude.com/download",
                         "verify": "winget list --id Anthropic.Claude"
                     }
                 ]
@@ -4167,7 +4043,7 @@
             "category": "AI Coding Tools",
             "description": "OpenAI Codex desktop application (GUI workspace for Codex)",
             "site": "https://developers.openai.com/codex/app",
-            "platforms": { "macos": true, "windows": true, "linux": false },
+            "platforms": { "macos": true, "windows": false, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -4179,19 +4055,9 @@
                         "remove": "brew uninstall --cask codex-app",
                         "verify": "open -a \"Codex\"",
                         "upgrade": "brew upgrade --greedy --cask codex-app"
-                    },
-                    {
-                        "manager": "installer",
-                        "install": "Direct download (.dmg): https://developers.openai.com/codex/app",
-                        "verify": "open -a \"Codex\""
                     }
                 ],
-                "windows": [
-                    {
-                        "manager": "installer",
-                        "install": "Direct download (.exe): https://developers.openai.com/codex/app"
-                    }
-                ]
+                "windows": []
             },
             "notes": "Proprietary desktop app, separate from the Codex CLI. macOS + Windows only."
         },
@@ -4559,8 +4425,7 @@
                     ]
                 }
             },
-            "notes": "Open source (Apache-2.0). Python 3.12+. Windows is partial (works but not primary target).",
-            "verifyBeforeEmit": true
+            "notes": "Open source (Apache-2.0). Python 3.12+. Windows is partial (works but not primary target)."
         },
         {
             "id": "opencode",
@@ -4715,8 +4580,7 @@
                         "remove": "brew uninstall --cask opencode-desktop",
                         "verify": "open -a \"OpenCode\"",
                         "upgrade": "brew upgrade --greedy --cask opencode-desktop"
-                    },
-                    { "manager": "installer", "install": "Direct download (.dmg): https://opencode.ai/download" }
+                    }
                 ],
                 "windows": [
                     {
@@ -4725,8 +4589,7 @@
                         "install": "scoop bucket add extras; scoop install extras/opencode-desktop",
                         "update": "scoop update opencode-desktop",
                         "remove": "scoop uninstall opencode-desktop"
-                    },
-                    { "manager": "installer", "install": "Direct download (.exe / x64): https://opencode.ai/download" }
+                    }
                 ],
                 "linux": {
                     "debian": [
@@ -4734,10 +4597,6 @@
                             "manager": "apt",
                             "install": "sudo dpkg -i opencode-desktop_*.deb; sudo apt-get install -f",
                             "remove": "sudo apt-get remove opencode-desktop"
-                        },
-                        {
-                            "manager": "installer",
-                            "install": "Direct .deb / .rpm from https://opencode.ai/download or GitHub releases"
                         }
                     ],
                     "fedora": [
@@ -4745,24 +4604,10 @@
                             "manager": "dnf",
                             "install": "sudo dnf install ./opencode-desktop-*.rpm",
                             "remove": "sudo dnf remove opencode-desktop"
-                        },
-                        {
-                            "manager": "installer",
-                            "install": "Direct .deb / .rpm from https://opencode.ai/download or GitHub releases"
                         }
                     ],
-                    "arch": [
-                        {
-                            "manager": "installer",
-                            "install": "Direct .deb / .rpm from https://opencode.ai/download or GitHub releases"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "installer",
-                            "install": "Direct .deb / .rpm from https://opencode.ai/download or GitHub releases"
-                        }
-                    ]
+                    "arch": [],
+                    "suse": []
                 }
             },
             "notes": "Open source; desktop app is in beta. No Flatpak/Snap; Linux is .deb/.rpm only."
@@ -4800,22 +4645,12 @@
                             "verify": "kiro-cli --version"
                         },
                         {
-                            "manager": "appimage",
-                            "install": "download https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.appimage, chmod +x kiro-cli.appimage, run ./kiro-cli.appimage",
-                            "verify": "kiro-cli --version"
-                        },
-                        {
                             "manager": "script",
                             "install": "curl --proto '=https' --tlsv1.2 -sSf 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' -o kirocli.zip && unzip kirocli.zip && ./kirocli/install.sh",
                             "verify": "kiro-cli --version"
                         }
                     ],
                     "fedora": [
-                        {
-                            "manager": "appimage",
-                            "install": "download https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.appimage, chmod +x kiro-cli.appimage, run ./kiro-cli.appimage",
-                            "verify": "kiro-cli --version"
-                        },
                         {
                             "manager": "script",
                             "install": "curl --proto '=https' --tlsv1.2 -sSf 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' -o kirocli.zip && unzip kirocli.zip && ./kirocli/install.sh",
@@ -4824,22 +4659,12 @@
                     ],
                     "arch": [
                         {
-                            "manager": "appimage",
-                            "install": "download https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.appimage, chmod +x kiro-cli.appimage, run ./kiro-cli.appimage",
-                            "verify": "kiro-cli --version"
-                        },
-                        {
                             "manager": "script",
                             "install": "curl --proto '=https' --tlsv1.2 -sSf 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' -o kirocli.zip && unzip kirocli.zip && ./kirocli/install.sh",
                             "verify": "kiro-cli --version"
                         }
                     ],
                     "suse": [
-                        {
-                            "manager": "appimage",
-                            "install": "download https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.appimage, chmod +x kiro-cli.appimage, run ./kiro-cli.appimage",
-                            "verify": "kiro-cli --version"
-                        },
                         {
                             "manager": "script",
                             "install": "curl --proto '=https' --tlsv1.2 -sSf 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' -o kirocli.zip && unzip kirocli.zip && ./kirocli/install.sh",
@@ -4848,8 +4673,7 @@
                     ]
                 }
             },
-            "notes": "AWS product. No official Homebrew package despite brewType CASK; use vendor scripts. Windows requires Windows 11.",
-            "verifyBeforeEmit": true
+            "notes": "AWS product. No official Homebrew package despite brewType CASK; use vendor scripts. Windows requires Windows 11."
         },
         {
             "id": "aider",
@@ -4996,7 +4820,7 @@
             "category": "AI Coding Tools",
             "description": "Block's open-source, extensible AI agent (Goose) — CLI",
             "site": "https://block.github.io/goose/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": true },
             "methods": {
                 "macos": [
                     {
@@ -5015,13 +4839,7 @@
                         "verify": "goose --version"
                     }
                 ],
-                "windows": [
-                    {
-                        "manager": "script",
-                        "install": "Run the official install script inside WSL: curl -fsSL https://github.com/block/goose/releases/download/stable/download_cli.sh | bash",
-                        "verify": "goose --version"
-                    }
-                ],
+                "windows": [],
                 "linux": {
                     "debian": [
                         {
@@ -5145,8 +4963,7 @@
                     ]
                 }
             },
-            "notes": "Very new (2026) Go-based TUI; successor to Gemini CLI. Binary is agy. No confirmed Homebrew/winget/npm package.",
-            "verifyBeforeEmit": true
+            "notes": "Very new (2026) Go-based TUI; successor to Gemini CLI. Binary is agy. No confirmed Homebrew/winget/npm package."
         },
         {
             "id": "cursor-cli",
@@ -5212,8 +5029,7 @@
                     ]
                 }
             },
-            "notes": "Proprietary; CLI is in beta. Binary is cursor-agent. Native Windows install via WSL/Git Bash.",
-            "verifyBeforeEmit": true
+            "notes": "Proprietary; CLI is in beta. Binary is cursor-agent. Native Windows install via WSL/Git Bash."
         },
         {
             "id": "devin-cli",
@@ -5272,8 +5088,7 @@
                     ]
                 }
             },
-            "notes": "Proprietary (Cognition AI), released April 2026. No confirmed Homebrew/winget/npm/pip package; vendor scripts only.",
-            "verifyBeforeEmit": true
+            "notes": "Proprietary (Cognition AI), released April 2026. No confirmed Homebrew/winget/npm/pip package; vendor scripts only."
         },
         {
             "id": "iina",
@@ -5295,7 +5110,8 @@
                         "upgrade": "brew upgrade --greedy --cask iina"
                     },
                     { "manager": "installer", "install": "https://iina.io (direct .dmg)", "verify": "open -a IINA" }
-                ]
+                ],
+                "windows": []
             },
             "notes": "macOS only — no Windows or Linux build."
         },
@@ -5571,8 +5387,7 @@
                         "remove": "brew uninstall --cask jellyfin",
                         "verify": "jellyfin --version",
                         "upgrade": "brew upgrade --greedy --cask jellyfin"
-                    },
-                    { "manager": "installer", "install": "https://jellyfin.org/downloads" }
+                    }
                 ],
                 "windows": [
                     {
@@ -5873,7 +5688,8 @@
                             "verify": "audacious --version"
                         }
                     ]
-                }
+                },
+                "macos": []
             },
             "notes": "Open source. No official macOS build; no published winget package."
         },
@@ -6351,8 +6167,7 @@
                         "update": "winget upgrade --id SoftMaker.FreeOffice.2024 -e",
                         "remove": "winget uninstall --id SoftMaker.FreeOffice.2024 -e",
                         "verify": "winget list --id SoftMaker.FreeOffice.2024 -e"
-                    },
-                    { "manager": "installer", "install": "https://www.freeoffice.com/en/download" }
+                    }
                 ],
                 "linux": {
                     "debian": [
@@ -6442,13 +6257,6 @@
                 "linux": {
                     "debian": [
                         {
-                            "manager": "apt",
-                            "install": "download .deb from https://www.wps.com/download then sudo apt install -y ./wps-office_*.deb",
-                            "update": "re-download newer .deb and sudo apt install -y ./wps-office_*.deb",
-                            "remove": "sudo apt remove -y wps-office",
-                            "verify": "wps --version"
-                        },
-                        {
                             "manager": "flatpak",
                             "id": "com.wps.Office",
                             "install": "flatpak install -y flathub com.wps.Office",
@@ -6465,12 +6273,6 @@
                         }
                     ],
                     "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "download .rpm from https://www.wps.com/download then sudo dnf install -y ./wps-office-*.rpm",
-                            "update": "re-download newer .rpm and sudo dnf install -y ./wps-office-*.rpm",
-                            "remove": "sudo dnf remove -y wps-office"
-                        },
                         {
                             "manager": "flatpak",
                             "id": "com.wps.Office",
@@ -6559,7 +6361,8 @@
                         "manager": "installer",
                         "install": "official installer / portable .exe from https://www.sumatrapdfreader.org/download-free-pdf-viewer"
                     }
-                ]
+                ],
+                "macos": []
             },
             "notes": "Free, open-source (GPLv3). Windows only — no macOS/Linux build (Wine only)."
         },
@@ -6734,12 +6537,6 @@
                 "linux": {
                     "debian": [
                         {
-                            "manager": "apt",
-                            "install": "download .deb from https://github.com/upscayl/upscayl/releases then sudo apt install -y ./upscayl-*.deb",
-                            "update": "re-download newer .deb and sudo apt install -y ./upscayl-*.deb",
-                            "remove": "sudo apt remove -y upscayl"
-                        },
-                        {
                             "manager": "flatpak",
                             "id": "org.upscayl.Upscayl",
                             "install": "flatpak install -y flathub org.upscayl.Upscayl",
@@ -6753,12 +6550,6 @@
                         }
                     ],
                     "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "download .rpm from https://github.com/upscayl/upscayl/releases then sudo dnf install -y ./upscayl-*.rpm",
-                            "update": "re-download newer .rpm and sudo dnf install -y ./upscayl-*.rpm",
-                            "remove": "sudo dnf remove -y upscayl"
-                        },
                         {
                             "manager": "flatpak",
                             "id": "org.upscayl.Upscayl",
@@ -6828,7 +6619,8 @@
                         "install": "https://github.com/MochiDiffusion/MochiDiffusion/releases (direct .dmg)",
                         "verify": "open -a \"Mochi Diffusion\""
                     }
-                ]
+                ],
+                "windows": []
             },
             "notes": "macOS only — uses Apple Core ML; best on Apple Silicon. No Windows or Linux build."
         },
@@ -6856,7 +6648,8 @@
                         "install": "https://diffusionbee.com (direct .dmg)",
                         "verify": "open -a DiffusionBee"
                     }
-                ]
+                ],
+                "windows": []
             },
             "notes": "macOS only — no supported Windows or Linux build. Optimized for Apple Silicon."
         },
@@ -6885,10 +6678,10 @@
                         "install": "mas install 6444050820",
                         "verify": "open -a \"Draw Things\""
                     }
-                ]
+                ],
+                "windows": []
             },
-            "notes": "macOS / iOS only — distributed primarily via the App Store. Confirm MAS id before scripting.",
-            "verifyBeforeEmit": true
+            "notes": "macOS / iOS only — distributed primarily via the App Store. Confirm MAS id before scripting."
         },
         {
             "id": "pcsx2",
@@ -8111,8 +7904,7 @@
                     ]
                 }
             },
-            "notes": "The winget id chmln.sd should be confirmed against the registry before generation if exact-id matching is strict.",
-            "verifyBeforeEmit": true
+            "notes": "The winget id chmln.sd should be confirmed against the registry before generation if exact-id matching is strict."
         },
         {
             "id": "ripgrep",
@@ -8799,8 +8591,7 @@
                     ]
                 }
             },
-            "notes": "Not in winget/choco/scoop/apt/dnf; install via Homebrew tap, install.sh, GitHub releases, or cargo --git (bare crate name rtk may pull an unrelated crate). Younger project — verify tap name and release assets before generation.",
-            "verifyBeforeEmit": true
+            "notes": "Not in winget/choco/scoop/apt/dnf; install via Homebrew tap, install.sh, GitHub releases, or cargo --git (bare crate name rtk may pull an unrelated crate). Younger project — verify tap name and release assets before generation."
         },
         {
             "id": "awscli",
@@ -10050,7 +9841,7 @@
             "category": "Virtualization & Containers",
             "description": "App to build and share containerized applications and microservices",
             "site": "https://www.docker.com/products/docker-desktop/",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -10082,28 +9873,7 @@
                         "verify": "docker --version"
                     }
                 ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "apt",
-                            "install": "download `docker-desktop-<arch>.deb` from https://docs.docker.com/desktop/setup/install/linux/ then `sudo apt install -y ./docker-desktop-*.deb`",
-                            "update": "download the newer `.deb` and re-run `sudo apt install -y ./docker-desktop-*.deb`",
-                            "remove": "sudo apt remove -y docker-desktop",
-                            "verify": "docker --version"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "download `docker-desktop-<arch>.rpm` from https://docs.docker.com/desktop/setup/install/linux/ then `sudo dnf install -y ./docker-desktop-*.rpm`",
-                            "update": "download the newer `.rpm` and re-run `sudo dnf install -y ./docker-desktop-*.rpm`",
-                            "remove": "sudo dnf remove -y docker-desktop",
-                            "verify": "docker --version"
-                        }
-                    ],
-                    "arch": [],
-                    "suse": []
-                }
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
             "notes": "Proprietary (subscription required for larger orgs). Bundles the Docker Engine, CLI, Compose v2, and a GUI. On Linux it runs the engine inside a managed VM."
         },
@@ -10497,13 +10267,6 @@
                     ],
                     "fedora": [
                         {
-                            "manager": "dnf",
-                            "install": "download the official `.rpm` from https://dbeaver.io/download/ then `sudo dnf install -y ./dbeaver-ce-*.rpm`",
-                            "update": "download the newer `.rpm` and re-run `sudo dnf install -y ./dbeaver-ce-*.rpm`",
-                            "remove": "sudo dnf remove -y dbeaver-ce",
-                            "verify": "dbeaver -version"
-                        },
-                        {
                             "manager": "flatpak",
                             "id": "io.dbeaver.DBeaverCommunity",
                             "install": "flatpak install -y flathub io.dbeaver.DBeaverCommunity",
@@ -10684,12 +10447,6 @@
                 "linux": {
                     "debian": [
                         {
-                            "manager": "apt",
-                            "install": "download `drawio-amd64-<ver>.deb` from https://github.com/jgraph/drawio-desktop/releases then `sudo apt install -y ./drawio-*.deb`",
-                            "update": "download the newer `.deb` and re-run `sudo apt install -y ./drawio-*.deb`",
-                            "remove": "sudo apt remove -y drawio"
-                        },
-                        {
                             "manager": "flatpak",
                             "id": "com.jgraph.drawio.desktop",
                             "install": "flatpak install -y flathub com.jgraph.drawio.desktop",
@@ -10706,12 +10463,6 @@
                         }
                     ],
                     "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "download `drawio-x86_64-<ver>.rpm` from https://github.com/jgraph/drawio-desktop/releases then `sudo dnf install -y ./drawio-*.rpm`",
-                            "update": "download the newer `.rpm` and re-run `sudo dnf install -y ./drawio-*.rpm`",
-                            "remove": "sudo dnf remove -y drawio"
-                        },
                         {
                             "manager": "flatpak",
                             "id": "com.jgraph.drawio.desktop",
@@ -10772,7 +10523,7 @@
             "category": "Diagram & Data Tools",
             "description": "Desktop application for viewing and analyzing tabular data",
             "site": "https://www.tadviewer.com",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -10792,26 +10543,7 @@
                         "install": "GitHub releases (.exe installer) https://github.com/antonycourtney/tad/releases"
                     }
                 ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "apt",
-                            "install": "download `tad_<ver>_amd64.deb` from https://github.com/antonycourtney/tad/releases then `sudo apt install -y ./tad_*.deb`",
-                            "update": "download the newer `.deb` and re-run `sudo apt install -y ./tad_*.deb`",
-                            "remove": "sudo apt remove -y tad"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "download the official `.rpm` from https://github.com/antonycourtney/tad/releases then `sudo dnf install -y ./tad-*.rpm`",
-                            "update": "download the newer `.rpm` and re-run `sudo dnf install -y ./tad-*.rpm`",
-                            "remove": "sudo dnf remove -y tad"
-                        }
-                    ],
-                    "arch": [],
-                    "suse": []
-                }
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
             "notes": "MIT-licensed Electron app (antonycourtney/tad); views CSV, Parquet, SQLite and DuckDB files. No winget/Chocolatey/Scoop/Flathub/Snap packages — install from GitHub releases or the Homebrew cask. Arch has the community AUR package `tad-bin`. Download the build matching your CPU architecture."
         },
@@ -10904,8 +10636,7 @@
                     ]
                 }
             },
-            "notes": "Freemium. Linux install is two-step: install Proton's `protonvpn-stable-release` repo package, then `proton-vpn-gnome-desktop`. The version numbers in the repo-package URLs change over time — pull the current value from https://protonvpn.com/support/official-linux-vpn/. The Flathub entry `com.protonvpn.www` is community-maintained, not an official Proton release.",
-            "verifyBeforeEmit": true
+            "notes": "Freemium. Linux install is two-step: install Proton's `protonvpn-stable-release` repo package, then `proton-vpn-gnome-desktop`. The version numbers in the repo-package URLs change over time — pull the current value from https://protonvpn.com/support/official-linux-vpn/. The Flathub entry `com.protonvpn.www` is community-maintained, not an official Proton release."
         },
         {
             "id": "lm-studio",
@@ -10913,7 +10644,7 @@
             "category": "LLM Platforms",
             "description": "Discover, download, and run local LLMs",
             "site": "https://lmstudio.ai",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": true, "linux": false },
             "methods": {
                 "macos": [
                     {
@@ -10937,36 +10668,7 @@
                         "verify": "winget list --id ElementLabs.LMStudio"
                     }
                 ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "appimage",
-                            "install": "Download the AppImage from https://lmstudio.ai/download (x86_64), then `chmod +x LM-Studio-*.AppImage && ./LM-Studio-*.AppImage`. The app self-updates in place. Remove by deleting the AppImage.",
-                            "verify": "./LM-Studio-*.AppImage --version"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "appimage",
-                            "install": "Download the AppImage from https://lmstudio.ai/download (x86_64), then `chmod +x LM-Studio-*.AppImage && ./LM-Studio-*.AppImage`. The app self-updates in place. Remove by deleting the AppImage.",
-                            "verify": "./LM-Studio-*.AppImage --version"
-                        }
-                    ],
-                    "arch": [
-                        {
-                            "manager": "appimage",
-                            "install": "Download the AppImage from https://lmstudio.ai/download (x86_64), then `chmod +x LM-Studio-*.AppImage && ./LM-Studio-*.AppImage`. The app self-updates in place. Remove by deleting the AppImage.",
-                            "verify": "./LM-Studio-*.AppImage --version"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "appimage",
-                            "install": "Download the AppImage from https://lmstudio.ai/download (x86_64), then `chmod +x LM-Studio-*.AppImage && ./LM-Studio-*.AppImage`. The app self-updates in place. Remove by deleting the AppImage.",
-                            "verify": "./LM-Studio-*.AppImage --version"
-                        }
-                    ]
-                }
+                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
             "notes": "Proprietary, free for personal use. macOS build is Apple-Silicon only (no Intel build). Linux is x86_64 AppImage only — no apt/dnf/flatpak/snap and no ARM Linux build. Bundles a `lms` command-line helper (enable with `lms bootstrap`). A `ElementLabs.LMStudio.Portable` winget id also exists for the portable build. libfuse2 may be required for AppImages on some distros."
         },
@@ -11549,8 +11251,7 @@
                     ]
                 }
             },
-            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`. No documented Fedora install path exists for this vendor — use the generic TAR.GZ archive, or prefer Temurin/Corretto/Zulu on Fedora, all of which have genuine dnf repos there. The apt bootstrap (packages-microsoft-prod.deb) is validated only for Ubuntu 18.04/20.04/22.04/24.04 and Debian 10–12; other versions should use the generic TAR.GZ archive instead. The openSUSE/SLES zypper `update` step will interactively prompt to accept the new repo's signing key. Arch has no vendor-specific method here — Microsoft's OpenJDK build is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install.",
-            "verifyBeforeEmit": true
+            "notes": "No Java 8 build exists — only 11/17/21/25 (Microsoft is the exception that lacks 8). Best for Azure / legacy 17/21 workloads. Scoop's manifest schema is `microsoft{version}-jdk` (NOT `microsoft-openjdk…`). Java 25 build confirmed 2026-06-11, but verify availability for very fresh PSU releases before generating. SDKMAN!: `sdk install java {version}.x.y-ms`. No documented Fedora install path exists for this vendor — use the generic TAR.GZ archive, or prefer Temurin/Corretto/Zulu on Fedora, all of which have genuine dnf repos there. The apt bootstrap (packages-microsoft-prod.deb) is validated only for Ubuntu 18.04/20.04/22.04/24.04 and Debian 10–12; other versions should use the generic TAR.GZ archive instead. The openSUSE/SLES zypper `update` step will interactively prompt to accept the new repo's signing key. Arch has no vendor-specific method here — Microsoft's OpenJDK build is only available via community AUR builds (occasional breakage); prefer the official `jdk{version}-openjdk` package + `archlinux-java` (Arch does not use `update-alternatives` for Java) for a reliably maintained install."
         },
         {
             "id": "zulu",

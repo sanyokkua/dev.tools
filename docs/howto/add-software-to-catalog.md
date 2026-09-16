@@ -58,7 +58,7 @@ export interface CatalogApp {
     platforms: { macos: boolean; windows: boolean; linux: boolean };
     methods: { macos?: CatalogMethod[]; windows?: CatalogMethod[]; linux?: LinuxMethods };
     notes?: string;
-    verifyBeforeEmit?: boolean;
+    platformNotes?: Partial<Record<CatalogPlatform, string>>;
     parameterized?: boolean;
     versions?: string[];
 }
@@ -118,9 +118,14 @@ Add a JSON object to the `apps` array in `src/common/apps-catalog.json`. Minimum
 
 - `site` — official website URL.
 - `notes` — shown to the user in the UI.
-- `verifyBeforeEmit: true` — inserts a version-check command before the install command in generated scripts.
+- `platformNotes` — factual OS, distro, architecture, or minimum-version constraints shown in the UI.
 - `parameterized: true` — enables version selection in the UI.
 - `versions: ["1.0", "2.0"]` — list of selectable versions when `parameterized` is true.
+
+Every catalog method must be executable. Do not add prose such as “download this installer” or
+URL-only values. Use a complete shell, PowerShell, package-manager, or language-package command.
+If no stable executable installer exists for a platform, omit that platform method and set its
+platform flag to `false`.
 
 ---
 

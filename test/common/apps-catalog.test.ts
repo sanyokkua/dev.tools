@@ -1,6 +1,14 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
+import { validateCatalog } from '@/common/catalog-utils';
 
 describe('APPS_CATALOG integrity', () => {
+    const allMethods = () =>
+        APPS_CATALOG.apps.flatMap((app) => [
+            ...(app.methods.macos ?? []),
+            ...(app.methods.windows ?? []),
+            ...Object.values(app.methods.linux ?? {}).flatMap((methods) => methods ?? []),
+        ]);
+
     it('loads and has exactly 155 apps', () => {
         expect(APPS_CATALOG.apps).toHaveLength(155);
     });
@@ -25,20 +33,31 @@ describe('APPS_CATALOG integrity', () => {
     });
 
     it('every method across all platforms has a non-empty install string', () => {
+        for (const method of allMethods()) {
+            expect(method.install).toBeTruthy();
+        }
+    });
+
+    it('contains executable commands only, never manual installation prose', () => {
+        const prosePattern =
+            /^(download|re-download|manually|manual|direct\b|install the|open the|visit |see |follow |run the official|use the generic|add .* per |register the|from https?:\/\/)/i;
+        for (const method of allMethods()) {
+            for (const field of ['repoSetup', 'install', 'update', 'upgrade', 'remove', 'verify'] as const) {
+                const value = method[field];
+                if (!value) continue;
+                expect(value).not.toMatch(prosePattern);
+                expect(value.trim()).not.toMatch(/^https?:\/\/\S+$/i);
+            }
+        }
+    });
+
+    it('passes the structural catalog validator', () => {
+        expect(validateCatalog(APPS_CATALOG)).toEqual([]);
+    });
+
+    it('does not carry the unused verifyBeforeEmit flag', () => {
         for (const app of APPS_CATALOG.apps) {
-            for (const method of app.methods.macos ?? []) {
-                expect(method.install).toBeTruthy();
-            }
-            for (const method of app.methods.windows ?? []) {
-                expect(method.install).toBeTruthy();
-            }
-            if (app.methods.linux) {
-                for (const methods of Object.values(app.methods.linux)) {
-                    for (const method of methods ?? []) {
-                        expect(method.install).toBeTruthy();
-                    }
-                }
-            }
+            expect(app).not.toHaveProperty('verifyBeforeEmit');
         }
     });
 
@@ -52,15 +71,13 @@ describe('APPS_CATALOG integrity', () => {
 
     it('platform flags are consistent with methods presence', () => {
         for (const app of APPS_CATALOG.apps) {
-            if (app.platforms.macos) {
-                expect(app.methods.macos).toBeDefined();
-            }
-            if (app.platforms.windows) {
-                expect(app.methods.windows).toBeDefined();
-            }
-            if (app.platforms.linux) {
-                expect(app.methods.linux).toBeDefined();
-            }
+            const macosAvailable = (app.methods.macos ?? []).length > 0;
+            const windowsAvailable = (app.methods.windows ?? []).length > 0;
+            const linuxAvailable = Object.values(app.methods.linux ?? {}).some((methods) => (methods ?? []).length > 0);
+
+            expect(app.platforms.macos).toBe(macosAvailable);
+            expect(app.platforms.windows).toBe(windowsAvailable);
+            expect(app.platforms.linux).toBe(linuxAvailable);
         }
     });
 
