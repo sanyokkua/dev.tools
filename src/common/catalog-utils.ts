@@ -158,7 +158,7 @@ export function validateCatalog(catalog: AppsCatalog): string[] {
             }
             for (const field of COMMAND_FIELDS) {
                 const value = method[field];
-                if (field === 'install' && !isExecutableCommand(value)) {
+                if (field === 'install' && (value === undefined || !isExecutableCommand(value))) {
                     issues.push(`${app.id}/${method.manager}: install is not an executable command`);
                 } else if (value !== undefined && !isExecutableCommand(value)) {
                     issues.push(`${app.id}/${method.manager}: ${field} is not an executable command`);
