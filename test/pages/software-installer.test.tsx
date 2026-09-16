@@ -256,10 +256,26 @@ describe('Software Installer — Step 3: App catalog', () => {
         expect(screen.getByRole('button', { name: /Build Scripts/i })).toBeDisabled();
     });
 
-    it('Build Scripts button enables when at least one app is selected', () => {
+    it('Build Scripts button enables when an app has an executable method', () => {
         renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
         fireEvent.click(screen.getByLabelText('Select Firefox'));
         expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
+    });
+
+    it('batch maintenance builds with no selected apps and follows manager deselection', () => {
+        renderPage();
+        fireEvent.click(within(screen.getByRole('group', { name: 'Script action' })).getByText('Update'));
+        fireEvent.click(within(screen.getByRole('group', { name: 'Update scope' })).getByText('Batch maintenance'));
+
+        expect(screen.getByTestId('output-code')).toBeInTheDocument();
+        expect(screen.getByTestId('output-code').textContent).toContain('brew update && brew upgrade --greedy');
+        expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
+
+        const batchManagers = screen.getByRole('group', { name: 'Batch maintenance managers' });
+        fireEvent.click(within(batchManagers).getByText('Homebrew'));
+        expect(screen.queryByTestId('output-code')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Build Scripts/i })).toBeDisabled();
     });
 
     it('deselecting an app from catalog removes it from basket', () => {
@@ -537,6 +553,7 @@ describe('Software Installer — Step 4: Output', () => {
 
     it('Build Scripts button is enabled when apps are selected', () => {
         renderPage();
+        fireEvent.click(screen.getByText('Homebrew'));
         fireEvent.click(screen.getByLabelText('Select Firefox'));
         expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
     });

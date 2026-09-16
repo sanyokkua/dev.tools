@@ -198,6 +198,18 @@ const AppCatalog = ({
                                 </a>
                             </p>
                         )}
+                        {inspectedApp.platformNotes && Object.keys(inspectedApp.platformNotes).length > 0 && (
+                            <div className="info-note">
+                                <strong>Platform requirements:</strong>
+                                <ul>
+                                    {Object.entries(inspectedApp.platformNotes).map(([platform, note]) => (
+                                        <li key={platform}>
+                                            {PLATFORM_TITLE[platform as CatalogPlatform]}: {note}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                         {inspectedApp.notes && <p className="info-note">{inspectedApp.notes}</p>}
                     </div>
                 )}

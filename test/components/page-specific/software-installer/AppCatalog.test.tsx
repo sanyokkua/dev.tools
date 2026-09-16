@@ -210,6 +210,17 @@ describe('AppCatalog — bulk-add buttons', () => {
             expect(onToggle).not.toHaveBeenCalled();
         });
 
+        it('shows factual platform requirements in the info panel when catalogued', () => {
+            renderCatalog({ platform: 'macos' });
+            fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'chatgpt' } });
+            fireEvent.click(screen.getByTestId('app-info-chatgpt'));
+
+            const modal = screen.getByTestId('app-info-modal-chatgpt');
+            expect(modal).toHaveTextContent('Platform requirements');
+            expect(modal).toHaveTextContent('macOS');
+            expect(modal).toHaveTextContent('Homebrew cask requires macOS 13 or newer');
+        });
+
         it('closes via the header close button', () => {
             renderCatalog({ platform: 'macos' });
             fireEvent.change(screen.getByPlaceholderText('Search apps…'), { target: { value: 'iterm' } });

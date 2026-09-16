@@ -34,6 +34,7 @@ export interface ScriptOutputProps {
     selectedVersions: Record<string, string[]>;
     updateScope: UpdateScope;
     onUpdateScopeChange: (scope: UpdateScope) => void;
+    onPlanAvailabilityChange?: (available: boolean) => void;
 }
 
 const ACTION_OPTIONS: SegmentedOption[] = [
@@ -79,6 +80,7 @@ const ScriptOutput = ({
     selectedVersions,
     updateScope,
     onUpdateScopeChange,
+    onPlanAvailabilityChange,
 }: ScriptOutputProps): React.JSX.Element => {
     const [action, setAction] = useState<OutputTab>('install');
     const [scope, setScope] = useState<Scope>('combined');
@@ -173,8 +175,17 @@ const ScriptOutput = ({
     }, [maintenancePlan, isBatchMode, scope]);
 
     const perAppScripts = maintenancePlan ? maintenancePerAppScripts : actionPerAppScripts;
-    const hasExecutableOutput = maintenancePlan ? maintenancePlan.tasks.length > 0 : selectedList.length > 0;
-    const isEmpty = !hasExecutableOutput;
+    const canBuildScripts = maintenancePlan
+        ? maintenancePlan.tasks.length > 0
+        : action === 'setup'
+          ? requiredBootstrap.length > 0
+          : Object.keys(actionPerAppScripts).length > 0;
+    const hasVisibleOutput = maintenancePlan ? maintenancePlan.tasks.length > 0 : selectedList.length > 0;
+    const isEmpty = !hasVisibleOutput;
+
+    useEffect(() => {
+        onPlanAvailabilityChange?.(canBuildScripts);
+    }, [canBuildScripts, onPlanAvailabilityChange]);
 
     const filename = useMemo(() => {
         if (action === 'setup') return `setup-managers.${ext}`;

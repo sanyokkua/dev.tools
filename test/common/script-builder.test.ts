@@ -1805,7 +1805,7 @@ describe('buildManagerWideScript', () => {
         expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
     });
 
-    it('action=upgrade reads the same updateAllCommand as action=update (single combined field)', () => {
+    it('action=upgrade uses the manager upgrade operation', () => {
         const updateScript = buildManagerWideScript(['brew'], 'update', { platform: 'macos' }, false);
         const upgradeScript = buildManagerWideScript(['brew'], 'upgrade', { platform: 'macos' }, false);
         expect(upgradeScript).toContain('brew update && brew upgrade --greedy');

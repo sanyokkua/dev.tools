@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased] — 2026-09-16
+
+### Software Installer
+
+- Refreshed the executable app catalog: removed the retired `codex-app`, added ChatGPT, GitHub CLI, OpenSpec, Serena, Spec Kit, current AI-agent tooling, and the requested Homebrew casks.
+- Kept Gemini CLI and Antigravity CLI as separate products, corrected platform/distro availability, split Jellyfin products, and removed manual-only installer routes.
+- Added structural catalog validation for duplicate IDs, managers, platform methods, parameterized versions, and executable command fields.
+- Added one-by-one maintenance planning plus package-manager-aware batch maintenance with selected-manager updates, non-batch app exceptions, and ordered cleanup.
+
 ## [2.0.0] — 2026-06-24
 
 ### New tools
