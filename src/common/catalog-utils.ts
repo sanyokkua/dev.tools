@@ -88,11 +88,18 @@ const VALID_MANAGERS = new Set<CatalogManager>([
 
 const COMMAND_FIELDS = ['repoSetup', 'install', 'update', 'upgrade', 'remove', 'verify'] as const;
 const PROSE_PREFIX =
-    /^(download|re-download|manual(?:ly)?|direct\b|install the|open the|visit |see |follow |run the official|use the generic|add .* per |register the|from https?:\/\/)/i;
+    /^(download|re-download|manual(?:ly)?|direct\b|install the|open the|visit |see |follow |run the official|use the generic|add .* per |register the|from https?:\/\/|github releases\b|official installer\b|delete\b|https?:\/\/)/i;
+const PROSE_CONTENT =
+    /\b(?:static (?:build|tar)|then run|direct \.(?:dmg|exe|pkg|deb|rpm)|\.AppImage\s*[—-]|release(?:s)?\s*\([^)]*\)|chmod \+x[^\n]*then)\b/i;
 
 function isExecutableCommand(value: string): boolean {
     const trimmed = value.trim();
-    return trimmed.length > 0 && !PROSE_PREFIX.test(trimmed) && !/^https?:\/\/\S+$/i.test(trimmed);
+    return (
+        trimmed.length > 0 &&
+        !PROSE_PREFIX.test(trimmed) &&
+        !PROSE_CONTENT.test(trimmed) &&
+        !/\[-D[A-Z_]+=.*\]/.test(trimmed)
+    );
 }
 
 function getAllMethods(app: CatalogApp): CatalogMethod[] {
@@ -119,7 +126,7 @@ export function validateCatalog(catalog: AppsCatalog): string[] {
         if (ids.has(app.id)) issues.push(`duplicate app id: ${app.id}`);
         ids.add(app.id);
 
-        const platformMethods = {
+        const platformMethods: Record<CatalogPlatform, CatalogMethod[]> = {
             macos: app.methods.macos ?? [],
             windows: app.methods.windows ?? [],
             linux: Object.values(app.methods.linux ?? {}).flatMap((methods) => methods ?? []),
@@ -131,11 +138,18 @@ export function validateCatalog(catalog: AppsCatalog): string[] {
             }
         }
 
+        if (Object.values(platformMethods).every((methods) => methods.length === 0)) {
+            issues.push(`${app.id}: no executable methods`);
+        }
+
         if (app.parameterized && (!app.versions || app.versions.length === 0)) {
             issues.push(`${app.id}: parameterized app has no versions`);
         }
         if (!app.parameterized && app.versions) {
             issues.push(`${app.id}: versions are present without parameterized=true`);
+        }
+        if (app.parameterized && app.versions && new Set(app.versions).size !== app.versions.length) {
+            issues.push(`${app.id}: parameterized app has duplicate versions`);
         }
 
         for (const method of getAllMethods(app)) {
@@ -144,8 +158,13 @@ export function validateCatalog(catalog: AppsCatalog): string[] {
             }
             for (const field of COMMAND_FIELDS) {
                 const value = method[field];
-                if (value && !isExecutableCommand(value)) {
+                if (field === 'install' && !isExecutableCommand(value)) {
+                    issues.push(`${app.id}/${method.manager}: install is not an executable command`);
+                } else if (value !== undefined && !isExecutableCommand(value)) {
                     issues.push(`${app.id}/${method.manager}: ${field} is not an executable command`);
+                }
+                if (!app.parameterized && value?.includes('{version}')) {
+                    issues.push(`${app.id}/${method.manager}: ${field} uses {version} without parameterized=true`);
                 }
             }
         }

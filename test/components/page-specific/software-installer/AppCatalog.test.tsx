@@ -194,9 +194,7 @@ describe('AppCatalog — bulk-add buttons', () => {
             expect(document.querySelector('.modal-title')).toHaveTextContent('iTerm2');
             expect(modal).toHaveTextContent('System Utilities');
             expect(modal).toHaveTextContent("Terminal emulator as alternative to Apple's Terminal app");
-            expect(modal).toHaveTextContent(
-                'macOS only — no Windows or Linux build (use Windows Terminal on Windows).',
-            );
+            expect(modal).toHaveTextContent('macOS only; no Windows or Linux build is catalogued.');
             expect(screen.getByRole('link', { name: /Visit official site/ })).toHaveAttribute(
                 'href',
                 'https://iterm2.com',
