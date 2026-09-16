@@ -4,7 +4,7 @@
 // and captures before/after screenshots. Called automatically by npm run verify:ui
 // after the static responsive checks in verify-ui.mjs.
 //
-// Flows covered: Software Installer (basic + multi-JDK + system-wide maintenance),
+// Flows covered: Software Installer (basic + multi-JDK + batch maintenance),
 // Dev Environment Setup, Terminal Utils, Hashing,
 // Converting (number-base + data-format + Markdown table), Git Cheat Sheet,
 // Markdown + Mermaid (valid + invalid), Prompts Collection (AutoTextarea),
@@ -118,25 +118,33 @@ await runSmoke('installer-multi-jdk', async (page) => {
     await page.screenshot({ path: `${OUT}/smoke__installer_multi_jdk__after.png` });
 });
 
-// ── 1c. Software Installer — system-wide maintenance mode ────────────────────
-await runSmoke('installer-system-wide', async (page) => {
+// ── 1c. Software Installer — batch maintenance mode ──────────────────────────
+await runSmoke('installer-batch-maintenance', async (page) => {
     await page.goto(BASE + '/software-installer', { waitUntil: 'networkidle' });
 
-    // System-wide maintenance only supports Update / Upgrade actions
+    // Batch maintenance is available for Update / Upgrade actions.
     await page.locator('[aria-label="Script action"] button', { hasText: 'Update' }).click();
 
-    // Switch scope to System-wide maintenance
-    await page.locator('[aria-label="Script scope"] button', { hasText: 'System-wide maintenance' }).click();
+    // Switch to the visible batch strategy.
+    await page.locator('[aria-label="Update scope"] button', { hasText: 'Batch maintenance' }).click();
 
-    // Select a package manager chip
-    await page.waitForSelector('[data-testid="maintenance-mgr-chips"] button', { timeout: 5000 });
-    await page.locator('[data-testid="maintenance-mgr-chips"] button').first().click();
+    // Homebrew is preselected for the macOS target.
+    await page.waitForSelector('[data-testid="batch-maintenance-managers"] button', { timeout: 5000 });
+    const manager = page.locator('[data-testid="batch-maintenance-managers"] button').first();
+    if ((await manager.getAttribute('aria-pressed')) !== 'true') {
+        await manager.click();
+    }
 
     await page.waitForSelector('[data-testid="output-code"]', { timeout: 5000 });
     const text = await page.locator('[data-testid="output-code"]').innerText();
-    if (!text.trim()) throw new Error('output-code is empty in system-wide maintenance mode');
+    if (!text.includes('brew update && brew upgrade --greedy')) {
+        throw new Error('Homebrew batch command is missing from batch maintenance output');
+    }
+    if (!(await page.locator('[data-testid="batch-maintenance-warning"]').isVisible())) {
+        throw new Error('Batch maintenance scope warning is not visible');
+    }
 
-    await page.screenshot({ path: `${OUT}/smoke__installer_system_wide__after.png` });
+    await page.screenshot({ path: `${OUT}/smoke__installer_batch_maintenance__after.png` });
 });
 
 // ── 2. Terminal Utils ─────────────────────────────────────────────────────────
