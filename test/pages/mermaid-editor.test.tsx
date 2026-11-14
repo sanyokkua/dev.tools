@@ -46,6 +46,7 @@ jest.mock('../../src/components/elements/mermaid/MermaidBlock', () => ({
 }));
 
 jest.mock('../../src/common/mermaid', () => ({
+    toXmlSvg: jest.requireActual('../../src/common/mermaid').toXmlSvg,
     renderMermaid: jest.fn().mockResolvedValue('<svg><text>mock</text></svg>'),
     parseMermaid: jest.fn().mockResolvedValue(undefined),
 }));
@@ -164,6 +165,82 @@ describe('Mermaid Editor page', () => {
             expect(clickMock).toHaveBeenCalled();
         });
 
+        jest.restoreAllMocks();
+    });
+
+    it('Export SVG writes well-formed XML for foreignObject labels with <br> and &nbsp;', async () => {
+        const { renderMermaid } = await import('../../src/common/mermaid');
+        (renderMermaid as jest.Mock).mockResolvedValueOnce(
+            '<svg xmlns="http://www.w3.org/2000/svg"><foreignObject><div xmlns="http://www.w3.org/1999/xhtml">A<br>B&nbsp;ü</div></foreignObject></svg>',
+        );
+        let blob: Blob | undefined;
+        global.URL.createObjectURL = jest.fn((b: Blob) => {
+            blob = b;
+            return 'blob:mock';
+        });
+        global.URL.revokeObjectURL = jest.fn();
+        const origCreateElement = document.createElement.bind(document);
+        jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+            const el = origCreateElement(tag);
+            if (tag === 'a') el.click = jest.fn();
+            return el;
+        });
+
+        renderPage();
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: 'Export SVG' }));
+        });
+        await waitFor(() => expect(blob).toBeDefined());
+        jest.restoreAllMocks();
+
+        const text = await new Promise<string>((resolve) => {
+            const r = new FileReader();
+            r.onload = () => resolve(String(r.result));
+            r.readAsText(blob as Blob);
+        });
+        expect(text.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
+        const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+        expect(doc.querySelector('parsererror')).toBeNull();
+        expect(doc.documentElement.localName).toBe('svg');
+    });
+
+    it('Export PNG shows an export-failure toast (not a syntax error) when toBlob throws', async () => {
+        const { renderMermaid } = await import('../../src/common/mermaid');
+        (renderMermaid as jest.Mock).mockResolvedValueOnce('<svg viewBox="0 0 10 10"><text>x</text></svg>');
+        class FakeImage {
+            naturalWidth = 10;
+            naturalHeight = 10;
+            onload: (() => void) | null = null;
+            onerror: (() => void) | null = null;
+            set src(_: string) {
+                setTimeout(() => this.onload?.(), 0);
+            }
+        }
+        const origImage = global.Image;
+        (global as unknown as { Image: unknown }).Image = FakeImage;
+        const origCreateElement = document.createElement.bind(document);
+        jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+            if (tag === 'canvas') {
+                return {
+                    width: 0,
+                    height: 0,
+                    getContext: () => ({ fillRect: jest.fn(), drawImage: jest.fn(), fillStyle: '' }),
+                    toBlob: () => {
+                        throw new DOMException('tainted', 'SecurityError');
+                    },
+                } as unknown as HTMLCanvasElement;
+            }
+            return origCreateElement(tag);
+        });
+
+        renderPage();
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: 'Export PNG' }));
+        });
+        expect(await screen.findByText(/PNG export failed — could not generate the image/)).toBeInTheDocument();
+        expect(screen.queryByText(/fix syntax errors/)).not.toBeInTheDocument();
+
+        (global as unknown as { Image: unknown }).Image = origImage;
         jest.restoreAllMocks();
     });
 });
