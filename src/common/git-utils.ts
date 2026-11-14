@@ -93,7 +93,7 @@ export const GH_INSTALL_DEBIAN = `(type -p wget >/dev/null || (sudo apt update &
     && sudo apt update \\
     && sudo apt install gh -y`;
 export const GH_INSTALL_FEDORA =
-    'sudo dnf install dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo && sudo dnf install gh --repo gh-cli';
+    'sudo dnf install dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo && sudo dnf install gh';
 export const GH_INSTALL: Record<OSType, string> = {
     macos: GH_INSTALL_MACOS,
     linux: GH_INSTALL_DEBIAN,
