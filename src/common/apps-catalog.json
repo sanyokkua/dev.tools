@@ -15,7 +15,7 @@
         },
         "dev": ["npm", "uv", "pipx", "cargo", "go"]
     },
-    "appCount": 159,
+    "appCount": 170,
     "apps": [
         {
             "id": "firefox",
@@ -12932,6 +12932,939 @@
                 }
             },
             "notes": "Open-source (MIT). The persistent CLI package is `specify-cli`; the catalog does not generate project initialization commands. Extensions are added per project with `specify extension add <name> --from <zip>`, and `npx modern-web-guidance@latest install` adds web guidance. Neither is installed by this catalog."
+        },
+        {
+            "id": "krokiet",
+            "name": "Czkawka / Krokiet",
+            "category": "System Utilities",
+            "description": "Finds duplicate, empty, similar and broken files; Krokiet is the modern GUI.",
+            "site": "https://github.com/qarmin/czkawka",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "czkawka",
+                        "kind": "formula",
+                        "install": "brew install czkawka",
+                        "update": "brew upgrade czkawka",
+                        "remove": "brew uninstall czkawka"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "krokiet",
+                        "install": "cargo install krokiet --locked",
+                        "update": "cargo install --force krokiet --locked",
+                        "upgrade": "cargo install --force krokiet --locked",
+                        "remove": "cargo uninstall krokiet"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "qarmin.krokiet",
+                        "install": "winget install --id qarmin.krokiet -e",
+                        "update": "winget upgrade --id qarmin.krokiet -e",
+                        "remove": "winget uninstall --id qarmin.krokiet -e"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "extras/krokiet",
+                        "install": "scoop bucket add extras; scoop install extras/krokiet",
+                        "update": "scoop update krokiet",
+                        "remove": "scoop uninstall krokiet"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "krokiet",
+                        "install": "cargo install krokiet --locked",
+                        "update": "cargo install --force krokiet --locked",
+                        "upgrade": "cargo install --force krokiet --locked",
+                        "remove": "cargo uninstall krokiet"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "flatpak",
+                            "id": "com.github.qarmin.czkawka",
+                            "install": "flatpak install -y flathub com.github.qarmin.czkawka",
+                            "update": "flatpak update -y com.github.qarmin.czkawka",
+                            "remove": "flatpak uninstall -y com.github.qarmin.czkawka"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "krokiet",
+                            "install": "cargo install krokiet --locked",
+                            "update": "cargo install --force krokiet --locked",
+                            "upgrade": "cargo install --force krokiet --locked",
+                            "remove": "cargo uninstall krokiet"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "flatpak",
+                            "id": "com.github.qarmin.czkawka",
+                            "install": "flatpak install -y flathub com.github.qarmin.czkawka",
+                            "update": "flatpak update -y com.github.qarmin.czkawka",
+                            "remove": "flatpak uninstall -y com.github.qarmin.czkawka"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "krokiet",
+                            "install": "cargo install krokiet --locked",
+                            "update": "cargo install --force krokiet --locked",
+                            "upgrade": "cargo install --force krokiet --locked",
+                            "remove": "cargo uninstall krokiet"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "flatpak",
+                            "id": "com.github.qarmin.czkawka",
+                            "install": "flatpak install -y flathub com.github.qarmin.czkawka",
+                            "update": "flatpak update -y com.github.qarmin.czkawka",
+                            "remove": "flatpak uninstall -y com.github.qarmin.czkawka"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "krokiet",
+                            "install": "cargo install krokiet --locked",
+                            "update": "cargo install --force krokiet --locked",
+                            "upgrade": "cargo install --force krokiet --locked",
+                            "remove": "cargo uninstall krokiet"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "flatpak",
+                            "id": "com.github.qarmin.czkawka",
+                            "install": "flatpak install -y flathub com.github.qarmin.czkawka",
+                            "update": "flatpak update -y com.github.qarmin.czkawka",
+                            "remove": "flatpak uninstall -y com.github.qarmin.czkawka"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "krokiet",
+                            "install": "cargo install krokiet --locked",
+                            "update": "cargo install --force krokiet --locked",
+                            "upgrade": "cargo install --force krokiet --locked",
+                            "remove": "cargo uninstall krokiet"
+                        }
+                    ]
+                }
+            },
+            "notes": "Open source (MIT). The Homebrew formula installs Krokiet, Czkawka GUI and the CLI. The Flathub app is the GTK Czkawka GUI."
+        },
+        {
+            "id": "colima",
+            "name": "Colima",
+            "category": "Virtualization & Containers",
+            "description": "Container runtimes on macOS and Linux with minimal setup (Docker, containerd, Kubernetes).",
+            "site": "https://github.com/abiosoft/colima",
+            "platforms": { "macos": true, "windows": false, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "colima",
+                        "kind": "formula",
+                        "install": "brew install colima",
+                        "update": "brew upgrade colima",
+                        "remove": "brew uninstall colima",
+                        "verify": "colima version"
+                    },
+                    {
+                        "manager": "script",
+                        "install": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                        "update": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                        "upgrade": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                        "remove": "sudo rm -f /usr/local/bin/colima",
+                        "verify": "colima version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "brew",
+                            "id": "colima",
+                            "kind": "formula",
+                            "install": "brew install colima",
+                            "update": "brew upgrade colima",
+                            "remove": "brew uninstall colima",
+                            "verify": "colima version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "update": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "upgrade": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "remove": "sudo rm -f /usr/local/bin/colima",
+                            "verify": "colima version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "brew",
+                            "id": "colima",
+                            "kind": "formula",
+                            "install": "brew install colima",
+                            "update": "brew upgrade colima",
+                            "remove": "brew uninstall colima",
+                            "verify": "colima version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "update": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "upgrade": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "remove": "sudo rm -f /usr/local/bin/colima",
+                            "verify": "colima version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "brew",
+                            "id": "colima",
+                            "kind": "formula",
+                            "install": "brew install colima",
+                            "update": "brew upgrade colima",
+                            "remove": "brew uninstall colima",
+                            "verify": "colima version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "update": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "upgrade": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "remove": "sudo rm -f /usr/local/bin/colima",
+                            "verify": "colima version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "brew",
+                            "id": "colima",
+                            "kind": "formula",
+                            "install": "brew install colima",
+                            "update": "brew upgrade colima",
+                            "remove": "brew uninstall colima",
+                            "verify": "colima version"
+                        },
+                        {
+                            "manager": "script",
+                            "install": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "update": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "upgrade": "curl -fLo colima-$(uname)-$(uname -m) https://github.com/abiosoft/colima/releases/latest/download/colima-$(uname)-$(uname -m) && sudo install colima-$(uname)-$(uname -m) /usr/local/bin/colima",
+                            "remove": "sudo rm -f /usr/local/bin/colima",
+                            "verify": "colima version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Open source (MIT). Needs the Docker CLI client (docker) to talk to the runtime; Linux also needs QEMU. Start it with `colima start`."
+        },
+        {
+            "id": "zizmor",
+            "name": "zizmor",
+            "category": "Developer Utilities",
+            "description": "Static analysis for GitHub Actions workflows.",
+            "site": "https://docs.zizmor.sh",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "zizmor",
+                        "kind": "formula",
+                        "install": "brew install zizmor",
+                        "update": "brew upgrade zizmor",
+                        "remove": "brew uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "uv",
+                        "id": "zizmor",
+                        "install": "uv tool install zizmor",
+                        "update": "uv tool upgrade zizmor",
+                        "upgrade": "uv tool upgrade zizmor",
+                        "remove": "uv tool uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "pipx",
+                        "id": "zizmor",
+                        "install": "pipx install zizmor",
+                        "update": "pipx upgrade zizmor",
+                        "upgrade": "pipx upgrade zizmor",
+                        "remove": "pipx uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "zizmor",
+                        "install": "cargo install zizmor --locked",
+                        "update": "cargo install --force zizmor --locked",
+                        "upgrade": "cargo install --force zizmor --locked",
+                        "remove": "cargo uninstall zizmor",
+                        "verify": "zizmor --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "zizmor.zizmor",
+                        "install": "winget install --id zizmor.zizmor -e",
+                        "update": "winget upgrade --id zizmor.zizmor -e",
+                        "remove": "winget uninstall --id zizmor.zizmor -e",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "zizmor",
+                        "install": "scoop install zizmor",
+                        "update": "scoop update zizmor",
+                        "remove": "scoop uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "uv",
+                        "id": "zizmor",
+                        "install": "uv tool install zizmor",
+                        "update": "uv tool upgrade zizmor",
+                        "upgrade": "uv tool upgrade zizmor",
+                        "remove": "uv tool uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "pipx",
+                        "id": "zizmor",
+                        "install": "pipx install zizmor",
+                        "update": "pipx upgrade zizmor",
+                        "upgrade": "pipx upgrade zizmor",
+                        "remove": "pipx uninstall zizmor",
+                        "verify": "zizmor --version"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "zizmor",
+                        "install": "cargo install zizmor --locked",
+                        "update": "cargo install --force zizmor --locked",
+                        "upgrade": "cargo install --force zizmor --locked",
+                        "remove": "cargo uninstall zizmor",
+                        "verify": "zizmor --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "uv",
+                            "id": "zizmor",
+                            "install": "uv tool install zizmor",
+                            "update": "uv tool upgrade zizmor",
+                            "upgrade": "uv tool upgrade zizmor",
+                            "remove": "uv tool uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "pipx",
+                            "id": "zizmor",
+                            "install": "pipx install zizmor",
+                            "update": "pipx upgrade zizmor",
+                            "upgrade": "pipx upgrade zizmor",
+                            "remove": "pipx uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "zizmor",
+                            "install": "cargo install zizmor --locked",
+                            "update": "cargo install --force zizmor --locked",
+                            "upgrade": "cargo install --force zizmor --locked",
+                            "remove": "cargo uninstall zizmor",
+                            "verify": "zizmor --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "uv",
+                            "id": "zizmor",
+                            "install": "uv tool install zizmor",
+                            "update": "uv tool upgrade zizmor",
+                            "upgrade": "uv tool upgrade zizmor",
+                            "remove": "uv tool uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "pipx",
+                            "id": "zizmor",
+                            "install": "pipx install zizmor",
+                            "update": "pipx upgrade zizmor",
+                            "upgrade": "pipx upgrade zizmor",
+                            "remove": "pipx uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "zizmor",
+                            "install": "cargo install zizmor --locked",
+                            "update": "cargo install --force zizmor --locked",
+                            "upgrade": "cargo install --force zizmor --locked",
+                            "remove": "cargo uninstall zizmor",
+                            "verify": "zizmor --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "zizmor",
+                            "install": "sudo pacman -S --needed --noconfirm zizmor",
+                            "update": "sudo pacman -S --noconfirm zizmor",
+                            "remove": "sudo pacman -Rns --noconfirm zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "uv",
+                            "id": "zizmor",
+                            "install": "uv tool install zizmor",
+                            "update": "uv tool upgrade zizmor",
+                            "upgrade": "uv tool upgrade zizmor",
+                            "remove": "uv tool uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "pipx",
+                            "id": "zizmor",
+                            "install": "pipx install zizmor",
+                            "update": "pipx upgrade zizmor",
+                            "upgrade": "pipx upgrade zizmor",
+                            "remove": "pipx uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "zizmor",
+                            "install": "cargo install zizmor --locked",
+                            "update": "cargo install --force zizmor --locked",
+                            "upgrade": "cargo install --force zizmor --locked",
+                            "remove": "cargo uninstall zizmor",
+                            "verify": "zizmor --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "uv",
+                            "id": "zizmor",
+                            "install": "uv tool install zizmor",
+                            "update": "uv tool upgrade zizmor",
+                            "upgrade": "uv tool upgrade zizmor",
+                            "remove": "uv tool uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "pipx",
+                            "id": "zizmor",
+                            "install": "pipx install zizmor",
+                            "update": "pipx upgrade zizmor",
+                            "upgrade": "pipx upgrade zizmor",
+                            "remove": "pipx uninstall zizmor",
+                            "verify": "zizmor --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "zizmor",
+                            "install": "cargo install zizmor --locked",
+                            "update": "cargo install --force zizmor --locked",
+                            "upgrade": "cargo install --force zizmor --locked",
+                            "remove": "cargo uninstall zizmor",
+                            "verify": "zizmor --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Open source (MIT)."
+        },
+        {
+            "id": "actionlint",
+            "name": "actionlint",
+            "category": "Developer Utilities",
+            "description": "Static checker for GitHub Actions workflow files.",
+            "site": "https://github.com/rhysd/actionlint",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "actionlint",
+                        "kind": "formula",
+                        "install": "brew install actionlint",
+                        "update": "brew upgrade actionlint",
+                        "remove": "brew uninstall actionlint",
+                        "verify": "actionlint -version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "rhysd.actionlint",
+                        "install": "winget install --id rhysd.actionlint -e",
+                        "update": "winget upgrade --id rhysd.actionlint -e",
+                        "remove": "winget uninstall --id rhysd.actionlint -e",
+                        "verify": "actionlint -version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "actionlint",
+                        "install": "scoop install actionlint",
+                        "update": "scoop update actionlint",
+                        "remove": "scoop uninstall actionlint",
+                        "verify": "actionlint -version"
+                    }
+                ],
+                "linux": {
+                    "debian": [],
+                    "fedora": [],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "actionlint",
+                            "install": "sudo pacman -S --needed --noconfirm actionlint",
+                            "update": "sudo pacman -S --noconfirm actionlint",
+                            "remove": "sudo pacman -Rns --noconfirm actionlint",
+                            "verify": "actionlint -version"
+                        }
+                    ],
+                    "suse": []
+                }
+            },
+            "notes": "Open source (MIT)."
+        },
+        {
+            "id": "just",
+            "name": "just",
+            "category": "Developer Utilities",
+            "description": "Command runner that saves and runs project-specific commands from a justfile.",
+            "site": "https://just.systems",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "just",
+                        "kind": "formula",
+                        "install": "brew install just",
+                        "update": "brew upgrade just",
+                        "remove": "brew uninstall just",
+                        "verify": "just --version"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "just",
+                        "install": "cargo install just",
+                        "update": "cargo install --force just",
+                        "upgrade": "cargo install --force just",
+                        "remove": "cargo uninstall just",
+                        "verify": "just --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "Casey.Just",
+                        "install": "winget install --id Casey.Just -e",
+                        "update": "winget upgrade --id Casey.Just -e",
+                        "remove": "winget uninstall --id Casey.Just -e",
+                        "verify": "just --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "just",
+                        "install": "scoop install just",
+                        "update": "scoop update just",
+                        "remove": "scoop uninstall just",
+                        "verify": "just --version"
+                    },
+                    {
+                        "manager": "cargo",
+                        "id": "just",
+                        "install": "cargo install just",
+                        "update": "cargo install --force just",
+                        "upgrade": "cargo install --force just",
+                        "remove": "cargo uninstall just",
+                        "verify": "just --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "cargo",
+                            "id": "just",
+                            "install": "cargo install just",
+                            "update": "cargo install --force just",
+                            "upgrade": "cargo install --force just",
+                            "remove": "cargo uninstall just",
+                            "verify": "just --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "dnf",
+                            "id": "just",
+                            "install": "sudo dnf install -y just",
+                            "update": "sudo dnf upgrade -y just",
+                            "remove": "sudo dnf remove -y just",
+                            "verify": "just --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "just",
+                            "install": "cargo install just",
+                            "update": "cargo install --force just",
+                            "upgrade": "cargo install --force just",
+                            "remove": "cargo uninstall just",
+                            "verify": "just --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "just",
+                            "install": "sudo pacman -S --needed --noconfirm just",
+                            "update": "sudo pacman -S --noconfirm just",
+                            "remove": "sudo pacman -Rns --noconfirm just",
+                            "verify": "just --version"
+                        },
+                        {
+                            "manager": "cargo",
+                            "id": "just",
+                            "install": "cargo install just",
+                            "update": "cargo install --force just",
+                            "upgrade": "cargo install --force just",
+                            "remove": "cargo uninstall just",
+                            "verify": "just --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "cargo",
+                            "id": "just",
+                            "install": "cargo install just",
+                            "update": "cargo install --force just",
+                            "upgrade": "cargo install --force just",
+                            "remove": "cargo uninstall just",
+                            "verify": "just --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Open source (CC0)."
+        },
+        {
+            "id": "shellcheck",
+            "name": "ShellCheck",
+            "category": "Developer Utilities",
+            "description": "Static analysis tool that finds bugs and pitfalls in shell scripts.",
+            "site": "https://www.shellcheck.net",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "shellcheck",
+                        "kind": "formula",
+                        "install": "brew install shellcheck",
+                        "update": "brew upgrade shellcheck",
+                        "remove": "brew uninstall shellcheck",
+                        "verify": "shellcheck --version"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "winget",
+                        "id": "koalaman.shellcheck",
+                        "install": "winget install --id koalaman.shellcheck -e",
+                        "update": "winget upgrade --id koalaman.shellcheck -e",
+                        "remove": "winget uninstall --id koalaman.shellcheck -e",
+                        "verify": "shellcheck --version"
+                    },
+                    {
+                        "manager": "scoop",
+                        "id": "shellcheck",
+                        "install": "scoop install shellcheck",
+                        "update": "scoop update shellcheck",
+                        "remove": "scoop uninstall shellcheck",
+                        "verify": "shellcheck --version"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "apt",
+                            "id": "shellcheck",
+                            "install": "sudo apt update && sudo apt install -y shellcheck",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y shellcheck",
+                            "remove": "sudo apt remove -y shellcheck",
+                            "verify": "shellcheck --version"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "dnf",
+                            "id": "ShellCheck",
+                            "install": "sudo dnf install -y ShellCheck",
+                            "update": "sudo dnf upgrade -y ShellCheck",
+                            "remove": "sudo dnf remove -y ShellCheck",
+                            "verify": "shellcheck --version"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "shellcheck",
+                            "install": "sudo pacman -S --needed --noconfirm shellcheck",
+                            "update": "sudo pacman -S --noconfirm shellcheck",
+                            "remove": "sudo pacman -Rns --noconfirm shellcheck",
+                            "verify": "shellcheck --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "ShellCheck",
+                            "install": "sudo zypper install -y ShellCheck",
+                            "update": "sudo zypper update -y ShellCheck",
+                            "remove": "sudo zypper remove -y ShellCheck",
+                            "verify": "shellcheck --version"
+                        }
+                    ]
+                }
+            },
+            "notes": "Open source (GPL-3.0). The Fedora and openSUSE package name is capitalized."
+        },
+        {
+            "id": "sonar-scanner",
+            "name": "SonarScanner",
+            "category": "Developer Utilities",
+            "description": "Command-line scanner that sends code analysis to SonarQube or SonarCloud.",
+            "site": "https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/scanners/sonarscanner/",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "sonar-scanner",
+                        "kind": "formula",
+                        "install": "brew install sonar-scanner",
+                        "update": "brew upgrade sonar-scanner",
+                        "remove": "brew uninstall sonar-scanner",
+                        "verify": "sonar-scanner --version"
+                    },
+                    {
+                        "manager": "npm",
+                        "id": "@sonar/scan",
+                        "install": "npm install -g @sonar/scan@latest",
+                        "update": "npm install -g @sonar/scan@latest",
+                        "upgrade": "npm install -g @sonar/scan@latest",
+                        "remove": "npm uninstall -g @sonar/scan"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "npm",
+                        "id": "@sonar/scan",
+                        "install": "npm install -g @sonar/scan@latest",
+                        "update": "npm install -g @sonar/scan@latest",
+                        "upgrade": "npm install -g @sonar/scan@latest",
+                        "remove": "npm uninstall -g @sonar/scan"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "npm",
+                            "id": "@sonar/scan",
+                            "install": "npm install -g @sonar/scan@latest",
+                            "update": "npm install -g @sonar/scan@latest",
+                            "upgrade": "npm install -g @sonar/scan@latest",
+                            "remove": "npm uninstall -g @sonar/scan"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "npm",
+                            "id": "@sonar/scan",
+                            "install": "npm install -g @sonar/scan@latest",
+                            "update": "npm install -g @sonar/scan@latest",
+                            "upgrade": "npm install -g @sonar/scan@latest",
+                            "remove": "npm uninstall -g @sonar/scan"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "npm",
+                            "id": "@sonar/scan",
+                            "install": "npm install -g @sonar/scan@latest",
+                            "update": "npm install -g @sonar/scan@latest",
+                            "upgrade": "npm install -g @sonar/scan@latest",
+                            "remove": "npm uninstall -g @sonar/scan"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "npm",
+                            "id": "@sonar/scan",
+                            "install": "npm install -g @sonar/scan@latest",
+                            "update": "npm install -g @sonar/scan@latest",
+                            "upgrade": "npm install -g @sonar/scan@latest",
+                            "remove": "npm uninstall -g @sonar/scan"
+                        }
+                    ]
+                }
+            },
+            "notes": "The npm package @sonar/scan provides the `sonar-scanner-npm` command and is meant for JavaScript projects. The Homebrew formula installs the standalone `sonar-scanner`."
+        },
+        {
+            "id": "porting-kit",
+            "name": "Porting Kit",
+            "category": "Gaming",
+            "description": "Installs and runs Windows games on macOS through managed Wine wrappers.",
+            "site": "https://www.portingkit.com",
+            "platforms": { "macos": true, "windows": false, "linux": false },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "porting-kit",
+                        "kind": "cask",
+                        "install": "brew install --cask porting-kit",
+                        "update": "brew upgrade --cask porting-kit",
+                        "upgrade": "brew upgrade --greedy --cask porting-kit",
+                        "remove": "brew uninstall --cask porting-kit"
+                    }
+                ],
+                "linux": {}
+            },
+            "notes": "Proprietary freeware for macOS."
+        },
+        {
+            "id": "fbreader",
+            "name": "FBReader",
+            "category": "Document Editors",
+            "description": "E-book reader supporting EPUB, FB2 and other formats.",
+            "site": "https://fbreader.org",
+            "platforms": { "macos": true, "windows": false, "linux": false },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "fbreader",
+                        "kind": "cask",
+                        "install": "brew install --cask fbreader",
+                        "update": "brew upgrade --cask fbreader",
+                        "upgrade": "brew upgrade --greedy --cask fbreader",
+                        "remove": "brew uninstall --cask fbreader"
+                    }
+                ],
+                "linux": {}
+            },
+            "notes": "Proprietary freeware for macOS."
+        },
+        {
+            "id": "font-monaspace",
+            "name": "Monaspace",
+            "category": "Fonts",
+            "description": "GitHub Next superfamily of five monospaced fonts designed to work together.",
+            "site": "https://monaspace.githubnext.com",
+            "platforms": { "macos": true, "windows": false, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "font-monaspace",
+                        "kind": "cask",
+                        "install": "brew install --cask font-monaspace",
+                        "update": "brew upgrade --cask font-monaspace",
+                        "upgrade": "brew upgrade --greedy --cask font-monaspace",
+                        "remove": "brew uninstall --cask font-monaspace"
+                    }
+                ],
+                "linux": {
+                    "debian": [],
+                    "fedora": [],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "otf-monaspace",
+                            "install": "sudo pacman -S --needed --noconfirm otf-monaspace",
+                            "update": "sudo pacman -S --noconfirm otf-monaspace",
+                            "remove": "sudo pacman -Rns --noconfirm otf-monaspace"
+                        }
+                    ],
+                    "suse": []
+                }
+            },
+            "notes": "Open font (SIL OFL)."
+        },
+        {
+            "id": "font-jetbrains-mono",
+            "name": "JetBrains Mono",
+            "category": "Fonts",
+            "description": "Monospaced typeface for developers with increased letter height and ligatures.",
+            "site": "https://www.jetbrains.com/lp/mono/",
+            "platforms": { "macos": true, "windows": true, "linux": true },
+            "methods": {
+                "macos": [
+                    {
+                        "manager": "brew",
+                        "id": "font-jetbrains-mono",
+                        "kind": "cask",
+                        "install": "brew install --cask font-jetbrains-mono",
+                        "update": "brew upgrade --cask font-jetbrains-mono",
+                        "upgrade": "brew upgrade --greedy --cask font-jetbrains-mono",
+                        "remove": "brew uninstall --cask font-jetbrains-mono"
+                    }
+                ],
+                "windows": [
+                    {
+                        "manager": "choco",
+                        "id": "jetbrainsmono",
+                        "install": "choco install jetbrainsmono -y",
+                        "update": "choco upgrade jetbrainsmono -y",
+                        "remove": "choco uninstall jetbrainsmono -y"
+                    }
+                ],
+                "linux": {
+                    "debian": [
+                        {
+                            "manager": "apt",
+                            "id": "fonts-jetbrains-mono",
+                            "install": "sudo apt update && sudo apt install -y fonts-jetbrains-mono",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y fonts-jetbrains-mono",
+                            "remove": "sudo apt remove -y fonts-jetbrains-mono"
+                        }
+                    ],
+                    "fedora": [
+                        {
+                            "manager": "dnf",
+                            "id": "jetbrains-mono-fonts",
+                            "install": "sudo dnf install -y jetbrains-mono-fonts",
+                            "update": "sudo dnf upgrade -y jetbrains-mono-fonts",
+                            "remove": "sudo dnf remove -y jetbrains-mono-fonts"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "ttf-jetbrains-mono",
+                            "install": "sudo pacman -S --needed --noconfirm ttf-jetbrains-mono",
+                            "update": "sudo pacman -S --noconfirm ttf-jetbrains-mono",
+                            "remove": "sudo pacman -Rns --noconfirm ttf-jetbrains-mono"
+                        }
+                    ],
+                    "suse": []
+                }
+            },
+            "notes": "Open font (SIL OFL)."
         }
     ]
 }

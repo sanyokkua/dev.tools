@@ -443,6 +443,39 @@ describe('APPS_CATALOG integrity', () => {
             expect(JSON.stringify(find('nvm'))).toContain('v0.41.0');
         });
 
+        it('contains the newly added apps with their expected methods', () => {
+            const ids = [
+                'krokiet',
+                'colima',
+                'zizmor',
+                'actionlint',
+                'just',
+                'shellcheck',
+                'sonar-scanner',
+                'porting-kit',
+                'fbreader',
+                'font-monaspace',
+                'font-jetbrains-mono',
+            ];
+            for (const id of ids) expect(find(id)).toBeDefined();
+
+            const wingetOf = (id: string) => find(id)?.methods.windows?.find((m) => m.manager === 'winget')?.id;
+            expect(wingetOf('shellcheck')).toBe('koalaman.shellcheck');
+            expect(wingetOf('just')).toBe('Casey.Just');
+            expect(wingetOf('actionlint')).toBe('rhysd.actionlint');
+            expect(wingetOf('zizmor')).toBe('zizmor.zizmor');
+            expect(wingetOf('krokiet')).toBe('qarmin.krokiet');
+
+            expect(find('porting-kit')?.platforms).toEqual({ macos: true, windows: false, linux: false });
+            expect(find('colima')?.platforms.windows).toBe(false);
+            expect(find('shellcheck')?.methods.linux?.fedora?.[0]?.install).toBe('sudo dnf install -y ShellCheck');
+        });
+
+        it('groups the two fonts in a Fonts category', () => {
+            expect(find('font-monaspace')?.category).toBe('Fonts');
+            expect(find('font-jetbrains-mono')?.category).toBe('Fonts');
+        });
+
         it('keeps the Ollama winget package on the desktop app only', () => {
             expect(find('ollama')?.methods.windows ?? []).toHaveLength(0);
             expect(find('ollama-app')?.methods.windows?.[0]?.id).toBe('Ollama.Ollama');
