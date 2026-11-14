@@ -28,7 +28,6 @@ export interface DevEnvCategoryData {
     linuxDistroOverrides?: Partial<Record<DevEnvLinuxDistro, DevEnvManagerBootstrap[]>>;
 }
 
-// Data-modeling note for whoever wires this into the UI (Task 9 of the implementation plan):
 // `managersByOS.linux` always holds a complete, valid, distro-agnostic list on its own (tools whose
 // install command doesn't vary by distro). `linuxDistroOverrides[distro]` only ADDS distro-specific
 // package-manager entries on top of that generic list — it is not a replacement for it. A distro with
@@ -41,13 +40,15 @@ const SDKMAN_ENTRY: DevEnvManagerBootstrap = {
     availableOn: ['macos', 'linux'],
     installManager:
         'curl -s "https://get.sdkman.io" | bash   # source ~/.sdkman/bin/sdkman-init.sh at the END of your shell rc — SDKMAN requires this position',
-    installTool: 'sdk install java 21.0.4-tem   # suffixes: -tem / -amzn / -zulu / -ms / -oracle / -graalce',
+    installTool:
+        'sdk install java   # installs the default vendor build — run "sdk list java" to see every vendor/version identifier',
     verify: 'sdk version',
     update: 'sdk selfupdate   # updates SDKMAN itself; sdk upgrade updates installed candidates',
     remove: 'rm -rf ~/.sdkman   # then remove the SDKMAN init line from your shell profile',
     versionSwitch:
-        'sdk use java 21.0.4-tem     # shell-local\n' +
-        'sdk default java 21.0.4-tem # permanent\n' +
+        'sdk list java                       # find an identifier, e.g. 25.0.1-tem (suffixes: -tem / -amzn / -zulu / -ms / -oracle / -graalce)\n' +
+        'sdk use java <identifier>           # shell-local\n' +
+        'sdk default java <identifier>       # permanent\n' +
         '# SDKMAN manages Maven/Gradle/Kotlin the same way',
     notes:
         'Windows only via WSL — this catalog does not model WSL as a distinct OS, so no separate Windows ' +
@@ -125,11 +126,11 @@ const JAVA: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['macos'],
                 installTool:
-                    'brew install --cask temurin@21   # swap vendor: corretto / microsoft-openjdk / zulu; version: @8 / @11 / @17 / @21 / @25',
-                configure: `echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc`,
+                    'brew install --cask temurin@25   # swap vendor: corretto / microsoft-openjdk / zulu; version: @8 / @11 / @17 / @21 / @25',
+                configure: `echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zshrc`,
                 verify: '/usr/libexec/java_home -V\njava -version',
-                update: 'brew upgrade --cask temurin@21',
-                remove: 'brew uninstall --cask temurin@21',
+                update: 'brew upgrade --cask temurin@25',
+                remove: 'brew uninstall --cask temurin@25',
                 versionSwitch:
                     'Install additional versioned casks (e.g. temurin@17) side by side, then switch JAVA_HOME ' +
                     'manually — or use jenv/SDKMAN! below to manage multiple JDKs without hand-editing JAVA_HOME.',
@@ -148,13 +149,13 @@ const JAVA: DevEnvCategoryData = {
                     `echo 'eval "$(jenv init -)"' >> ~/.zshrc\n` +
                     'exec $SHELL -l',
                 installTool:
-                    'jenv add /Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home   # install a JDK first (see the Homebrew cask entry above)\n' +
+                    'jenv add /Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home   # install a JDK first (see the Homebrew cask entry above)\n' +
                     'jenv versions',
                 verify: 'jenv doctor   # expect: [OK] Jenv is correctly loaded',
                 update: 'brew upgrade jenv',
                 remove: 'brew uninstall jenv   # then remove the two shell-init lines above',
                 versionSwitch:
-                    'jenv global 21.0   # default everywhere\n' +
+                    'jenv global 25.0   # default everywhere\n' +
                     'jenv local 17.0    # per-project, writes .java-version\n' +
                     'jenv shell 11.0    # current shell only\n' +
                     'jenv enable-plugin export\n' +
@@ -172,16 +173,16 @@ const JAVA: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['windows'],
                 installTool:
-                    'winget install -e --id EclipseAdoptium.Temurin.21.JDK   # note: Microsoft.OpenJDK.21 has no ".JDK" suffix, unlike other vendors',
-                configure: `${WINDOWS_ENV_SET_VARIABLE}\n[Environment]::SetEnvironmentVariable("PATH", "$([Environment]::GetEnvironmentVariable('PATH','User'));C:\\Program Files\\Eclipse Adoptium\\jdk-21\\bin", "User")`,
+                    'winget install -e --id EclipseAdoptium.Temurin.25.JDK   # note: Microsoft.OpenJDK.25 has no ".JDK" suffix, unlike other vendors',
+                configure: `${WINDOWS_ENV_SET_VARIABLE}\n[Environment]::SetEnvironmentVariable("PATH", "$([Environment]::GetEnvironmentVariable('PATH','User'));$([Environment]::GetEnvironmentVariable('JAVA_HOME','User'))\\bin", "User")`,
                 verify: 'java -version',
-                update: 'winget upgrade --id EclipseAdoptium.Temurin.21.JDK -e',
-                remove: 'winget uninstall --id EclipseAdoptium.Temurin.21.JDK -e',
+                update: 'winget upgrade --id EclipseAdoptium.Temurin.25.JDK -e',
+                remove: 'winget uninstall --id EclipseAdoptium.Temurin.25.JDK -e',
                 versionSwitch:
                     'Install another versioned winget package (e.g. EclipseAdoptium.Temurin.17.JDK) side by ' +
                     'side, then repeat the JAVA_HOME step above for whichever version should be active — ' +
                     'Windows has no jenv equivalent, see the manual JAVA_HOME entry below for an alternative.',
-                notes: 'Alternates: choco install temurin21 -y, or scoop bucket add java; scoop install java/temurin21-jdk.',
+                notes: 'Alternates: choco install temurin25 -y, or scoop bucket add java; scoop install java/temurin25-jdk.',
             },
             {
                 managerId: 'manual-javahome',
@@ -189,13 +190,13 @@ const JAVA: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['windows'],
                 installTool: WINDOWS_ENV_SET_VARIABLE,
-                configure: `$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Program Files\\Eclipse Adoptium\\jdk-21\\bin", "User")`,
+                configure: `$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n[Environment]::SetEnvironmentVariable("PATH", "$current;$([Environment]::GetEnvironmentVariable('JAVA_HOME','User'))\\bin", "User")`,
                 verify: `${WINDOWS_ENV_VIEW_VARIABLE}\njava -version`,
                 update: 'Re-run the SetEnvironmentVariable command above with the new JDK path after installing it via winget/choco/scoop.',
                 remove: '[Environment]::SetEnvironmentVariable("JAVA_HOME", $null, "User")',
                 versionSwitch:
                     'No jenv on Windows. In order of reliability: SDKMAN! inside WSL, then Scoop ' +
-                    '(scoop install temurin17-jdk temurin21-jdk + scoop reset <pkg>), then this manual ' +
+                    '(scoop install temurin17-jdk temurin25-jdk + scoop reset <pkg>), then this manual ' +
                     'JAVA_HOME/PATH approach, then IDE-level JDK binding.',
                 notes: 'This is the fallback path when no version manager is available on Windows — prefer SDKMAN!-in-WSL or Scoop above when possible.',
             },
@@ -212,13 +213,13 @@ const JAVA: DevEnvCategoryData = {
                     `echo 'eval "$(jenv init -)"' >> ~/.bashrc\n` +
                     'exec $SHELL -l',
                 installTool:
-                    'jenv add /usr/lib/jvm/temurin-21-jdk   # install a JDK first via your distro package manager below\n' +
+                    'jenv add /usr/lib/jvm/temurin-25-jdk   # install a JDK first via your distro package manager below\n' +
                     'jenv versions',
                 verify: 'jenv doctor   # expect: [OK] Jenv is correctly loaded',
                 update: 'git -C ~/.jenv pull',
                 remove: 'rm -rf ~/.jenv   # then remove the two shell-init lines above',
                 versionSwitch:
-                    'jenv global 21.0   # default everywhere\n' +
+                    'jenv global 25.0   # default everywhere\n' +
                     'jenv local 17.0    # per-project, writes .java-version\n' +
                     'jenv shell 11.0    # current shell only\n' +
                     'jenv enable-plugin export\n' +
@@ -238,10 +239,10 @@ const JAVA: DevEnvCategoryData = {
                 builtIntoOS: true,
                 availableOn: ['linux'],
                 repoSetup: `sudo apt install -y wget apt-transport-https gpg && wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null && echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list && sudo apt update`,
-                installTool: 'sudo apt install -y temurin-21-jdk   # package name varies by vendor',
+                installTool: 'sudo apt install -y temurin-25-jdk   # package name varies by vendor',
                 verify: 'java -version',
-                update: 'sudo apt update && sudo apt install --only-upgrade -y temurin-21-jdk',
-                remove: 'sudo apt remove -y temurin-21-jdk',
+                update: 'sudo apt update && sudo apt install --only-upgrade -y temurin-25-jdk',
+                remove: 'sudo apt remove -y temurin-25-jdk',
                 versionSwitch: 'sudo update-alternatives --config java   # also run for javac',
                 notes:
                     'Each vendor needs its own GPG key + repo file — this shows Temurin as the representative ' +
@@ -255,12 +256,12 @@ const JAVA: DevEnvCategoryData = {
                 managerLabel: 'pacman (distro-native OpenJDK)',
                 builtIntoOS: true,
                 availableOn: ['linux'],
-                installTool: 'sudo pacman -S jdk21-openjdk',
+                installTool: 'sudo pacman -S jdk25-openjdk',
                 verify: 'java -version',
                 update: 'sudo pacman -Syu',
-                remove: 'sudo pacman -Rns jdk21-openjdk',
+                remove: 'sudo pacman -Rns jdk25-openjdk',
                 versionSwitch:
-                    'sudo archlinux-java set java-21-openjdk   # Arch does not use update-alternatives for Java',
+                    'sudo archlinux-java set java-25-openjdk   # Arch does not use update-alternatives for Java',
                 notes:
                     "This is Arch's officially-supported Java path. Vendor builds (Temurin/Corretto/MS-OpenJDK/" +
                     'Zulu) are AUR-only on Arch and occasionally break — prefer this native package unless you ' +
@@ -273,6 +274,36 @@ const JAVA: DevEnvCategoryData = {
 // Maven and Gradle are deliberately manual-install-only in this catalog (no brew/choco/scoop/apt/dnf/pacman/
 // zypper entries) — see SDKMAN! above (already installs both: `sdk install maven` / `sdk install gradle`) for
 // a version-manager alternative instead.
+//
+// Their scripts contain the VERSION_PLACEHOLDER token, replaced with the user-chosen version by applyVersion().
+// Downloads are intentionally not checksum-verified.
+
+export const DEFAULT_MAVEN_VERSION = '3.10.0';
+export const DEFAULT_GRADLE_VERSION = '9.9.1';
+export const VERSION_PLACEHOLDER = '{{VERSION}}';
+export const VERSION_PATTERN = /^\d+\.\d+(\.\d+)?(-[\w.-]+)?$/;
+
+/** Categories whose scripts carry VERSION_PLACEHOLDER, mapped to their default version. */
+export const VERSIONED_CATEGORY_DEFAULTS: Partial<Record<DevEnvCategory, string>> = {
+    maven: DEFAULT_MAVEN_VERSION,
+    gradle: DEFAULT_GRADLE_VERSION,
+};
+
+/** Returns the trimmed input when it is a valid version, otherwise the fallback. */
+export function resolveVersion(input: string, fallback: string): string {
+    const trimmed = input.trim();
+    return VERSION_PATTERN.test(trimmed) ? trimmed : fallback;
+}
+
+/** Substitutes VERSION_PLACEHOLDER in a script with the given version. */
+export function applyVersion(text: string, version: string): string {
+    return text.split(VERSION_PLACEHOLDER).join(version);
+}
+
+const MAVEN_URL_BASH =
+    'https://archive.apache.org/dist/maven/maven-${MAVEN_VERSION%%.*}/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz';
+const MAVEN_URL_POWERSHELL =
+    "https://archive.apache.org/dist/maven/maven-$($Version.Split('.')[0])/$Version/binaries/apache-maven-$Version-bin.zip";
 
 const MAVEN_MANUAL_MACOS: DevEnvManagerBootstrap = {
     managerId: 'manual',
@@ -280,21 +311,21 @@ const MAVEN_MANUAL_MACOS: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['macos'],
     installTool:
-        'curl -fLO https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz\n' +
-        'curl -fLO https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz.sha512\n' +
-        'shasum -a 512 apache-maven-3.9.16-bin.tar.gz   # compare the printed hash against the .sha512 file below\n' +
-        'cat apache-maven-3.9.16-bin.tar.gz.sha512\n' +
-        'sudo mkdir -p /opt\n' +
-        'sudo tar -xzf apache-maven-3.9.16-bin.tar.gz -C /opt   # or mkdir -p ~/.dev_tools for a single-user, no-sudo install',
+        `MAVEN_VERSION="${VERSION_PLACEHOLDER}"\n` +
+        `curl -fLO "${MAVEN_URL_BASH}"\n` +
+        'sudo mkdir -p /opt/apache-maven   # or mkdir -p ~/.dev_tools/apache-maven for a single-user, no-sudo install\n' +
+        'sudo tar -xzf "apache-maven-${MAVEN_VERSION}-bin.tar.gz" -C /opt/apache-maven\n' +
+        'sudo ln -sfn "/opt/apache-maven/apache-maven-${MAVEN_VERSION}" /opt/apache-maven/latest   # "latest" symlink — repoint it on future upgrades instead of editing MAVEN_HOME',
     configure:
-        `echo 'export MAVEN_HOME=/opt/apache-maven-3.9.16' >> ~/.zprofile\n` +
+        `echo 'export MAVEN_HOME=/opt/apache-maven/latest' >> ~/.zprofile\n` +
         `echo 'export PATH="$PATH:$MAVEN_HOME/bin"' >> ~/.zprofile   # ~/.zprofile, not ~/.zshenv — /etc/zprofile's path_helper reorders PATH set there\n` +
         'source ~/.zprofile',
     verify: 'mvn -v',
     update:
-        'Download the newer version tarball, extract it to a new /opt/apache-maven-<version> folder, then update ' +
-        'MAVEN_HOME in ~/.zprofile to point at it (old versions can be kept side by side).',
-    remove: 'sudo rm -rf /opt/apache-maven-3.9.16   # then remove the MAVEN_HOME/PATH lines from ~/.zprofile',
+        'Download the newer version tarball, extract it next to the old one under /opt/apache-maven, then repoint ' +
+        'the symlink: sudo ln -sfn /opt/apache-maven/apache-maven-<new-version> /opt/apache-maven/latest — ' +
+        'MAVEN_HOME never needs to change.',
+    remove: 'sudo rm -rf /opt/apache-maven   # then remove the MAVEN_HOME/PATH lines from ~/.zprofile',
     notes:
         'Needs JDK 8+. Only bin needs to be on PATH — MAVEN_HOME itself is optional, kept here only as a ' +
         'convenience for IDEs/scripts that read it. Never set M2_HOME: it was deprecated in Maven 3.5.0 and is ' +
@@ -308,23 +339,24 @@ const MAVEN_MANUAL_LINUX: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['linux'],
     installTool:
-        'curl -fLO https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz\n' +
-        'curl -fLO https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz.sha512\n' +
-        'echo "$(cat apache-maven-3.9.16-bin.tar.gz.sha512)  apache-maven-3.9.16-bin.tar.gz" | sha512sum --check -\n' +
-        'sudo mkdir -p /opt\n' +
-        'sudo tar -xzf apache-maven-3.9.16-bin.tar.gz -C /opt   # or mkdir -p ~/.local/opt for a single-user, no-sudo install',
+        `MAVEN_VERSION="${VERSION_PLACEHOLDER}"\n` +
+        `curl -fLO "${MAVEN_URL_BASH}"\n` +
+        'sudo mkdir -p /opt/apache-maven   # or mkdir -p ~/.local/opt/apache-maven for a single-user, no-sudo install\n' +
+        'sudo tar -xzf "apache-maven-${MAVEN_VERSION}-bin.tar.gz" -C /opt/apache-maven\n' +
+        'sudo ln -sfn "/opt/apache-maven/apache-maven-${MAVEN_VERSION}" /opt/apache-maven/latest   # "latest" symlink',
     configure:
-        `echo 'export MAVEN_HOME=/opt/apache-maven-3.9.16' >> ~/.bashrc   # per-terminal; single-user: use $HOME/.local/opt/apache-maven-3.9.16 instead\n` +
+        `echo 'export MAVEN_HOME=/opt/apache-maven/latest' >> ~/.bashrc   # per-terminal; single-user: use $HOME/.local/opt/apache-maven/latest instead\n` +
         `echo 'export PATH="$PATH:$MAVEN_HOME/bin"' >> ~/.bashrc\n` +
         'source ~/.bashrc\n' +
         '# For login shells, also add the same two lines to ~/.profile (Debian/Ubuntu) or ~/.bash_profile (Fedora/RHEL)\n' +
         '# For all users, drop them in /etc/profile.d/maven.sh instead',
     verify: 'mvn -v',
     update:
-        'Download the newer version tarball, extract it to a new /opt/apache-maven-<version> (or ~/.local/opt/...) ' +
-        'folder, then update MAVEN_HOME wherever you set it above.',
+        'Download the newer version tarball, extract it next to the old one under /opt/apache-maven (or ' +
+        '~/.local/opt/apache-maven), then repoint the symlink: sudo ln -sfn /opt/apache-maven/apache-maven-<new-version> ' +
+        '/opt/apache-maven/latest — MAVEN_HOME never needs to change.',
     remove:
-        'sudo rm -rf /opt/apache-maven-3.9.16   # then remove the MAVEN_HOME/PATH lines from ~/.bashrc (and ' +
+        'sudo rm -rf /opt/apache-maven   # then remove the MAVEN_HOME/PATH lines from ~/.bashrc (and ' +
         '~/.profile / ~/.bash_profile / /etc/profile.d if added there too)',
     notes:
         'Needs JDK 8+. Only bin needs to be on PATH — MAVEN_HOME itself is optional, kept here only as a ' +
@@ -342,58 +374,47 @@ const MAVEN_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
         '#!/usr/bin/env bash\n' +
         'set -euo pipefail\n' +
         '\n' +
-        'MAVEN_VERSION="3.9.16"\n' +
+        `MAVEN_VERSION="${VERSION_PLACEHOLDER}"\n` +
         'INSTALL_ROOT="/opt/apache-maven"                 # or "$HOME/.local/opt/apache-maven" for single user\n' +
         'TAR="apache-maven-${MAVEN_VERSION}-bin.tar.gz"\n' +
-        'URL="https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/${TAR}"\n' +
-        'SHA512_URL="https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/${TAR}.sha512"\n' +
+        `URL="${MAVEN_URL_BASH.replace('apache-maven-${MAVEN_VERSION}-bin.tar.gz', '${TAR}')}"\n` +
         '\n' +
         'tmp="$(mktemp -d)"; trap \'rm -rf "$tmp"\' EXIT\n' +
         'echo "Downloading $URL ..."\n' +
         'curl -fL "$URL" -o "$tmp/$TAR"\n' +
         '\n' +
-        'echo "Downloading official SHA-512 checksum ..."\n' +
-        'curl -fL "$SHA512_URL" -o "$tmp/$TAR.sha512"\n' +
-        '\n' +
-        'echo "Verifying SHA-512 ..."\n' +
-        "expected=\"$(tr -d '[:space:]' < \"$tmp/$TAR.sha512\" | tr '[:upper:]' '[:lower:]')\"\n" +
-        'if command -v sha512sum >/dev/null; then\n' +
-        '  actual="$(sha512sum "$tmp/$TAR" | awk \'{print $1}\')"\n' +
-        'else\n' +
-        '  actual="$(shasum -a 512 "$tmp/$TAR" | awk \'{print $1}\')"   # macOS\n' +
-        'fi\n' +
-        '[ "$expected" = "$actual" ] || { echo "Checksum mismatch! expected $expected got $actual"; exit 1; }\n' +
-        '\n' +
         'echo "Installing to ${INSTALL_ROOT}/apache-maven-${MAVEN_VERSION} ..."\n' +
         'SUDO=""; [ -w "$(dirname "$INSTALL_ROOT")" ] || SUDO="sudo"\n' +
         '$SUDO mkdir -p "$INSTALL_ROOT"\n' +
         '$SUDO tar -xzf "$tmp/$TAR" -C "$INSTALL_ROOT"\n' +
+        '$SUDO ln -sfn "$INSTALL_ROOT/apache-maven-${MAVEN_VERSION}" "$INSTALL_ROOT/latest"\n' +
         '\n' +
         'RC="$HOME/.bashrc"; [ "$(uname)" = "Darwin" ] && RC="$HOME/.zprofile"\n' +
         'MARK="# >>> maven install >>>"\n' +
         'if ! grep -qF "$MARK" "$RC" 2>/dev/null; then\n' +
         '  {\n' +
         '    echo "$MARK"\n' +
-        '    echo "export MAVEN_HOME=\\"$INSTALL_ROOT/apache-maven-${MAVEN_VERSION}\\""\n' +
+        '    echo "export MAVEN_HOME=\\"$INSTALL_ROOT/latest\\""\n' +
         '    echo \'export PATH="$MAVEN_HOME/bin:$PATH"\'\n' +
         '    echo "# <<< maven install <<<"\n' +
         '  } >> "$RC"\n' +
         '  echo "Updated $RC"\n' +
         'fi\n' +
         '\n' +
-        'export MAVEN_HOME="$INSTALL_ROOT/apache-maven-${MAVEN_VERSION}"; export PATH="$MAVEN_HOME/bin:$PATH"\n' +
+        'export MAVEN_HOME="$INSTALL_ROOT/latest"; export PATH="$MAVEN_HOME/bin:$PATH"\n' +
         'mvn -v && echo "Maven ${MAVEN_VERSION} installed. Open a new shell or \'source $RC\'."',
     verify: 'mvn -v',
     update:
-        'Bump MAVEN_VERSION at the top of the script and re-run it — it installs into a new versioned folder and ' +
-        'rewrites the marked MAVEN_HOME/PATH block in your shell rc file. Safe/idempotent to re-run.',
+        'Change MAVEN_VERSION at the top of the script and re-run it — it installs into a new versioned folder and ' +
+        'repoints the "latest" symlink; MAVEN_HOME (which points at "latest") never needs to change. ' +
+        'Safe/idempotent to re-run.',
     remove:
         'sudo rm -rf /opt/apache-maven   # or rm -rf ~/.local/opt/apache-maven for a single-user install; then ' +
         'remove the "# >>> maven install >>>" ... "# <<< maven install <<<" block from ~/.zprofile or ~/.bashrc',
     notes:
-        'Does everything the manual entry does in one step: download, checksum, extract, and MAVEN_HOME/PATH ' +
-        'wiring — never sets M2_HOME (deprecated/unsupported since Maven 3.5.0). Prefer SDKMAN! above instead if ' +
-        'you want easy multi-version switching rather than a single pinned install.',
+        'Does everything the manual entry does in one step: download, extract, and MAVEN_HOME/PATH wiring via a ' +
+        'versioned-dir + "latest" symlink — never sets M2_HOME (deprecated/unsupported since Maven 3.5.0). Prefer ' +
+        'SDKMAN! above instead if you want easy multi-version switching rather than a single pinned install.',
 };
 
 const MAVEN_MANUAL_WINDOWS: DevEnvManagerBootstrap = {
@@ -402,22 +423,23 @@ const MAVEN_MANUAL_WINDOWS: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['windows'],
     installTool:
-        'Invoke-WebRequest -Uri https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip -OutFile "$env:TEMP\\apache-maven-3.9.16-bin.zip"\n' +
-        'Invoke-WebRequest -Uri https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip.sha512 -OutFile "$env:TEMP\\apache-maven-3.9.16-bin.zip.sha512"\n' +
-        '(Get-FileHash "$env:TEMP\\apache-maven-3.9.16-bin.zip" -Algorithm SHA512).Hash.ToLower()   # compare against the contents of the .sha512 file above\n' +
+        `$Version = "${VERSION_PLACEHOLDER}"\n` +
+        `Invoke-WebRequest -Uri "${MAVEN_URL_POWERSHELL}" -OutFile "$env:TEMP\\apache-maven-$Version-bin.zip"\n` +
+        'Expand-Archive -Path "$env:TEMP\\apache-maven-$Version-bin.zip" -DestinationPath "$env:TEMP\\apache-maven-$Version" -Force\n' +
         'New-Item -ItemType Directory -Force -Path C:\\Tools | Out-Null\n' +
-        'Expand-Archive -Path "$env:TEMP\\apache-maven-3.9.16-bin.zip" -DestinationPath C:\\Tools -Force',
+        'if (Test-Path C:\\Tools\\apache-maven) { Remove-Item -Recurse -Force C:\\Tools\\apache-maven }   # stable folder, replaced on every install\n' +
+        'Move-Item "$env:TEMP\\apache-maven-$Version\\apache-maven-$Version" C:\\Tools\\apache-maven',
     configure:
-        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", "C:\\Tools\\apache-maven-3.9.16", "User")\n' +
+        '[Environment]::SetEnvironmentVariable("MAVEN_HOME", "C:\\Tools\\apache-maven", "User")\n' +
         '$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n' +
-        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\apache-maven-3.9.16\\bin", "User")',
+        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\apache-maven\\bin", "User")',
     verify: 'mvn -v',
     update:
-        'Download the newer version zip, extract it next to the old one under C:\\Tools, then update the ' +
-        'MAVEN_HOME value above to point at the new folder.',
+        'Re-run the install step with the newer version — it replaces C:\\Tools\\apache-maven in place, so ' +
+        'MAVEN_HOME and PATH never need to change.',
     remove:
         '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $null, "User")\n' +
-        'Remove-Item -Recurse -Force C:\\Tools\\apache-maven-3.9.16',
+        'Remove-Item -Recurse -Force C:\\Tools\\apache-maven',
     notes:
         'Needs JDK 8+. MAVEN_HOME is optional (kept here for IDEs/scripts) — only %MAVEN_HOME%\\bin needs to be ' +
         'on PATH. Never set M2_HOME; it is deprecated/unsupported since Maven 3.5.0. Avoid installing under ' +
@@ -433,26 +455,24 @@ const MAVEN_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
     installTool:
         '#Requires -Version 5.1\n' +
         '$ErrorActionPreference = "Stop"\n' +
-        '$Version   = "3.9.16"\n' +
-        '$Root      = "C:\\Tools\\apache-maven"\n' +
+        `$Version   = "${VERSION_PLACEHOLDER}"\n` +
+        "$Major     = $Version.Split('.')[0]\n" +
+        '$Root      = "C:\\Tools"\n' +
+        '$MavenHome = "$Root\\apache-maven"   # stable folder, replaced on every install\n' +
         '$Zip       = "$env:TEMP\\apache-maven-$Version-bin.zip"\n' +
-        '$Url       = "https://dlcdn.apache.org/maven/maven-3/$Version/binaries/apache-maven-$Version-bin.zip"\n' +
-        '$Sha512Url = "https://downloads.apache.org/maven/maven-3/$Version/binaries/apache-maven-$Version-bin.zip.sha512"\n' +
+        '$Tmp       = "$env:TEMP\\apache-maven-$Version"\n' +
+        '$Url       = "https://archive.apache.org/dist/maven/maven-$Major/$Version/binaries/apache-maven-$Version-bin.zip"\n' +
         '\n' +
         'Write-Host "Downloading $Url ..."\n' +
         'Invoke-WebRequest -Uri $Url -OutFile $Zip\n' +
         '\n' +
-        'Write-Host "Downloading official SHA-512 checksum ..."\n' +
-        '$expected = (Invoke-WebRequest -Uri $Sha512Url -UseBasicParsing).Content.Trim().ToLower()\n' +
-        '\n' +
-        'Write-Host "Verifying checksum ..."\n' +
-        '$actual = (Get-FileHash $Zip -Algorithm SHA512).Hash.ToLower()\n' +
-        'if ($actual -ne $expected) { throw "Checksum mismatch! expected $expected got $actual" }\n' +
-        '\n' +
         'Write-Host "Extracting ..."\n' +
+        'if (Test-Path $Tmp) { Remove-Item -Recurse -Force $Tmp }\n' +
+        'Expand-Archive -Path $Zip -DestinationPath $Tmp -Force\n' +
         'New-Item -ItemType Directory -Force -Path $Root | Out-Null\n' +
-        'Expand-Archive -Path $Zip -DestinationPath $Root -Force\n' +
-        '$MavenHome = "$Root\\apache-maven-$Version"\n' +
+        'if (Test-Path $MavenHome) { Remove-Item -Recurse -Force $MavenHome }\n' +
+        'Move-Item "$Tmp\\apache-maven-$Version" $MavenHome\n' +
+        'Remove-Item -Recurse -Force $Tmp, $Zip\n' +
         '\n' +
         'Write-Host "Setting environment variables (User scope) ..."\n' +
         '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $MavenHome, "User")\n' +
@@ -464,8 +484,8 @@ const MAVEN_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
         'Write-Host "Done. Open a NEW terminal and run: mvn -v"',
     verify: 'mvn -v',
     update:
-        'Bump $Version at the top of the script and re-run it — it installs into a new ' +
-        'C:\\Tools\\apache-maven\\apache-maven-<version> folder and repoints MAVEN_HOME/PATH at it.',
+        'Change $Version at the top of the script and re-run it — it replaces C:\\Tools\\apache-maven with the new ' +
+        'version, so MAVEN_HOME/PATH never need to change.',
     remove:
         '[Environment]::SetEnvironmentVariable("MAVEN_HOME", $null, "User")\n' +
         'Remove-Item -Recurse -Force C:\\Tools\\apache-maven',
@@ -478,8 +498,8 @@ const MAVEN: DevEnvCategoryData = {
     category: 'maven',
     label: 'Maven',
     description:
-        'Manually install Apache Maven from the official Apache binary distribution — download, verify the ' +
-        'checksum, extract to a recommended folder, and wire MAVEN_HOME/PATH by hand. Package-manager installs ' +
+        'Manually install Apache Maven from the official Apache binary distribution — download, extract to a ' +
+        'recommended folder, and wire MAVEN_HOME/PATH by hand. Package-manager installs ' +
         '(brew/choco/scoop/apt/dnf/pacman/zypper) are intentionally out of scope here — see SDKMAN! in the Java ' +
         'category for automatic multi-version management instead.',
     managersByOS: {
@@ -495,11 +515,11 @@ const GRADLE_MANUAL_MACOS: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['macos'],
     installTool:
-        'curl -fLO https://services.gradle.org/distributions/gradle-9.6.1-bin.zip\n' +
-        'echo "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14  gradle-9.6.1-bin.zip" | shasum -a 256 --check -\n' +
+        `GRADLE_VERSION="${VERSION_PLACEHOLDER}"\n` +
+        'curl -fLO "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"\n' +
         'sudo mkdir -p /opt/gradle\n' +
-        'sudo unzip -q gradle-9.6.1-bin.zip -d /opt/gradle       # or ~/.dev_tools/gradle for a single-user, no-sudo install\n' +
-        'sudo ln -sfn /opt/gradle/gradle-9.6.1 /opt/gradle/latest   # optional "latest" symlink — repoint it on future upgrades instead of editing GRADLE_HOME',
+        'sudo unzip -q "gradle-${GRADLE_VERSION}-bin.zip" -d /opt/gradle       # or ~/.dev_tools/gradle for a single-user, no-sudo install\n' +
+        'sudo ln -sfn "/opt/gradle/gradle-${GRADLE_VERSION}" /opt/gradle/latest   # optional "latest" symlink — repoint it on future upgrades instead of editing GRADLE_HOME',
     configure:
         `echo 'export GRADLE_HOME=/opt/gradle/latest' >> ~/.zprofile\n` +
         `echo 'export PATH="$PATH:$GRADLE_HOME/bin"' >> ~/.zprofile   # ~/.zprofile, not ~/.zshenv — /etc/zprofile's path_helper reorders PATH set there\n` +
@@ -522,11 +542,11 @@ const GRADLE_MANUAL_LINUX: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['linux'],
     installTool:
-        'curl -fLO https://services.gradle.org/distributions/gradle-9.6.1-bin.zip\n' +
-        'echo "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14  gradle-9.6.1-bin.zip" | sha256sum --check -\n' +
+        `GRADLE_VERSION="${VERSION_PLACEHOLDER}"\n` +
+        'curl -fLO "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"\n' +
         'sudo mkdir -p /opt/gradle\n' +
-        'sudo unzip -q gradle-9.6.1-bin.zip -d /opt/gradle       # or ~/.local/opt/gradle (mkdir -p first) for a single-user, no-sudo install\n' +
-        'sudo ln -sfn /opt/gradle/gradle-9.6.1 /opt/gradle/latest   # optional "latest" symlink',
+        'sudo unzip -q "gradle-${GRADLE_VERSION}-bin.zip" -d /opt/gradle       # or ~/.local/opt/gradle (mkdir -p first) for a single-user, no-sudo install\n' +
+        'sudo ln -sfn "/opt/gradle/gradle-${GRADLE_VERSION}" /opt/gradle/latest   # optional "latest" symlink',
     configure:
         `echo 'export GRADLE_HOME=/opt/gradle/latest' >> ~/.bashrc   # per-terminal; single-user: use $HOME/.local/opt/gradle/latest instead\n` +
         `echo 'export PATH="$PATH:$GRADLE_HOME/bin"' >> ~/.bashrc\n` +
@@ -556,8 +576,7 @@ const GRADLE_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
         '#!/usr/bin/env bash\n' +
         'set -euo pipefail\n' +
         '\n' +
-        'GRADLE_VERSION="9.6.1"\n' +
-        'GRADLE_SHA256="9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14"\n' +
+        `GRADLE_VERSION="${VERSION_PLACEHOLDER}"\n` +
         'INSTALL_ROOT="/opt/gradle"                 # or "$HOME/.local/opt/gradle" for single user\n' +
         'ZIP="gradle-${GRADLE_VERSION}-bin.zip"\n' +
         'URL="https://services.gradle.org/distributions/${ZIP}"\n' +
@@ -567,13 +586,6 @@ const GRADLE_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
         'tmp="$(mktemp -d)"; trap \'rm -rf "$tmp"\' EXIT\n' +
         'echo "Downloading $URL ..."\n' +
         'curl -fL "$URL" -o "$tmp/$ZIP"\n' +
-        '\n' +
-        'echo "Verifying SHA-256 ..."\n' +
-        'if command -v sha256sum >/dev/null; then\n' +
-        '  echo "${GRADLE_SHA256}  $tmp/$ZIP" | sha256sum --check -\n' +
-        'else\n' +
-        '  echo "${GRADLE_SHA256}  $tmp/$ZIP" | shasum -a 256 --check -   # macOS\n' +
-        'fi\n' +
         '\n' +
         'echo "Installing to ${INSTALL_ROOT}/gradle-${GRADLE_VERSION} ..."\n' +
         'SUDO=""; [ -w "$(dirname "$INSTALL_ROOT")" ] || SUDO="sudo"\n' +
@@ -597,7 +609,7 @@ const GRADLE_AUTOMATED_UNIX: DevEnvManagerBootstrap = {
         'gradle -v && echo "Gradle ${GRADLE_VERSION} installed. Open a new shell or \'source $RC\'."',
     verify: 'gradle -v',
     update:
-        'Bump GRADLE_VERSION/GRADLE_SHA256 at the top of the script and re-run it — it installs into a new ' +
+        'Change GRADLE_VERSION at the top of the script and re-run it — it installs into a new ' +
         'versioned folder and repoints the "latest" symlink; GRADLE_HOME (which points at "latest") never needs ' +
         'to change. Safe/idempotent to re-run.',
     remove:
@@ -615,18 +627,20 @@ const GRADLE_MANUAL_WINDOWS: DevEnvManagerBootstrap = {
     builtIntoOS: false,
     availableOn: ['windows'],
     installTool:
-        'Invoke-WebRequest -Uri https://services.gradle.org/distributions/gradle-9.6.1-bin.zip -OutFile "$env:TEMP\\gradle-9.6.1-bin.zip"\n' +
-        '(Get-FileHash "$env:TEMP\\gradle-9.6.1-bin.zip" -Algorithm SHA256).Hash.ToLower()   # compare against 9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14\n' +
+        `$Version = "${VERSION_PLACEHOLDER}"\n` +
+        'Invoke-WebRequest -Uri "https://services.gradle.org/distributions/gradle-$Version-bin.zip" -OutFile "$env:TEMP\\gradle-$Version-bin.zip"\n' +
+        'Expand-Archive -Path "$env:TEMP\\gradle-$Version-bin.zip" -DestinationPath "$env:TEMP\\gradle-$Version" -Force\n' +
         'New-Item -ItemType Directory -Force -Path C:\\Tools\\gradle | Out-Null\n' +
-        'Expand-Archive -Path "$env:TEMP\\gradle-9.6.1-bin.zip" -DestinationPath C:\\Tools\\gradle -Force',
+        'if (Test-Path C:\\Tools\\gradle\\latest) { Remove-Item -Recurse -Force C:\\Tools\\gradle\\latest }   # stable folder, replaced on every install\n' +
+        'Move-Item "$env:TEMP\\gradle-$Version\\gradle-$Version" C:\\Tools\\gradle\\latest',
     configure:
-        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", "C:\\Tools\\gradle\\gradle-9.6.1", "User")\n' +
+        '[Environment]::SetEnvironmentVariable("GRADLE_HOME", "C:\\Tools\\gradle\\latest", "User")\n' +
         '$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n' +
-        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\gradle\\gradle-9.6.1\\bin", "User")',
+        '[Environment]::SetEnvironmentVariable("PATH", "$current;C:\\Tools\\gradle\\latest\\bin", "User")',
     verify: 'gradle -v',
     update:
-        'Download the newer bin.zip, extract it next to the old one under C:\\Tools\\gradle, then update the ' +
-        'GRADLE_HOME value above to point at the new folder.',
+        'Re-run the install step with the newer version — it replaces C:\\Tools\\gradle\\latest in place, so ' +
+        'GRADLE_HOME and PATH never need to change.',
     remove:
         '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $null, "User")\n' +
         'Remove-Item -Recurse -Force C:\\Tools\\gradle',
@@ -644,23 +658,23 @@ const GRADLE_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
     installTool:
         '#Requires -Version 5.1\n' +
         '$ErrorActionPreference = "Stop"\n' +
-        '$Version = "9.6.1"\n' +
-        '$Sha256  = "9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14"\n' +
-        '$Root    = "C:\\Tools\\gradle"\n' +
-        '$Zip     = "$env:TEMP\\gradle-$Version-bin.zip"\n' +
-        '$Url     = "https://services.gradle.org/distributions/gradle-$Version-bin.zip"\n' +
+        `$Version    = "${VERSION_PLACEHOLDER}"\n` +
+        '$Root       = "C:\\Tools\\gradle"\n' +
+        '$GradleHome = "$Root\\latest"   # stable folder, replaced on every install\n' +
+        '$Zip        = "$env:TEMP\\gradle-$Version-bin.zip"\n' +
+        '$Tmp        = "$env:TEMP\\gradle-$Version"\n' +
+        '$Url        = "https://services.gradle.org/distributions/gradle-$Version-bin.zip"\n' +
         '\n' +
         'Write-Host "Downloading $Url ..."\n' +
         'Invoke-WebRequest -Uri $Url -OutFile $Zip\n' +
         '\n' +
-        'Write-Host "Verifying checksum ..."\n' +
-        '$actual = (Get-FileHash $Zip -Algorithm SHA256).Hash.ToLower()\n' +
-        'if ($actual -ne $Sha256) { throw "Checksum mismatch! expected $Sha256 got $actual" }\n' +
-        '\n' +
         'Write-Host "Extracting ..."\n' +
+        'if (Test-Path $Tmp) { Remove-Item -Recurse -Force $Tmp }\n' +
+        'Expand-Archive -Path $Zip -DestinationPath $Tmp -Force\n' +
         'New-Item -ItemType Directory -Force -Path $Root | Out-Null\n' +
-        'Expand-Archive -Path $Zip -DestinationPath $Root -Force\n' +
-        '$GradleHome = "$Root\\gradle-$Version"\n' +
+        'if (Test-Path $GradleHome) { Remove-Item -Recurse -Force $GradleHome }\n' +
+        'Move-Item "$Tmp\\gradle-$Version" $GradleHome\n' +
+        'Remove-Item -Recurse -Force $Tmp, $Zip\n' +
         '\n' +
         'Write-Host "Setting environment variables (User scope) ..."\n' +
         '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $GradleHome, "User")\n' +
@@ -672,8 +686,8 @@ const GRADLE_AUTOMATED_WINDOWS: DevEnvManagerBootstrap = {
         'Write-Host "Done. Open a NEW terminal and run: gradle -v"',
     verify: 'gradle -v',
     update:
-        'Bump $Version/$Sha256 at the top of the script and re-run it — it installs into a new ' +
-        'C:\\Tools\\gradle\\gradle-<version> folder and repoints GRADLE_HOME/PATH at it.',
+        'Change $Version at the top of the script and re-run it — it replaces C:\\Tools\\gradle\\latest with the ' +
+        'new version, so GRADLE_HOME/PATH never need to change.',
     remove:
         '[Environment]::SetEnvironmentVariable("GRADLE_HOME", $null, "User")\n' +
         'Remove-Item -Recurse -Force C:\\Tools\\gradle',
@@ -686,8 +700,8 @@ const GRADLE: DevEnvCategoryData = {
     category: 'gradle',
     label: 'Gradle',
     description:
-        'Manually install Gradle from the official binary-only ("-bin") distribution — download, verify the ' +
-        'checksum, extract to a recommended folder, and wire GRADLE_HOME/PATH via a versioned-dir + "latest" ' +
+        'Manually install Gradle from the official binary-only ("-bin") distribution — download, extract to a ' +
+        'recommended folder, and wire GRADLE_HOME/PATH via a versioned-dir + "latest" ' +
         'symlink pattern for easy upgrades. Package-manager installs (brew/choco/scoop/apt/dnf/pacman/zypper) are ' +
         'intentionally out of scope here — see SDKMAN! in the Java category for automatic multi-version management.',
     managersByOS: {
@@ -709,7 +723,7 @@ const PYTHON: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['macos'],
                 installTool: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
-                configure: 'uv python install 3.13\nuv python pin 3.13   # writes .python-version',
+                configure: 'uv python install 3.14\nuv python pin 3.14   # writes .python-version',
                 verify: 'uv --version',
                 update: 'uv self update   # standalone installs only — use "brew upgrade uv" if installed via Homebrew',
                 remove: 'rm ~/.local/bin/uv ~/.local/bin/uvx   # or: brew uninstall uv',
@@ -723,12 +737,12 @@ const PYTHON: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['macos'],
                 installManager: 'brew install pyenv',
-                installTool: 'pyenv install 3.13.2',
+                installTool: 'pyenv install 3.14.10',
                 configure: "Add pyenv's shell init lines to ~/.zshrc — the installer prints the exact block to append.",
                 verify: 'pyenv --version',
                 update: 'brew upgrade pyenv',
                 remove: 'brew uninstall pyenv   # then remove the shell init lines it added',
-                versionSwitch: 'pyenv global 3.13.2\npyenv local 3.13.2\npyenv shell 3.13.2',
+                versionSwitch: 'pyenv global 3.14.10\npyenv local 3.14.10\npyenv shell 3.14.10',
             },
             PIP_ENTRY,
             PIPX_ENTRY,
@@ -740,7 +754,7 @@ const PYTHON: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['windows'],
                 installTool: 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"',
-                configure: 'uv python install 3.13\nuv python pin 3.13   # writes .python-version',
+                configure: 'uv python install 3.14\nuv python pin 3.14   # writes .python-version',
                 verify: 'uv --version',
                 update: 'uv self update   # standalone installs only',
                 remove: "Re-run the manager you installed it with in reverse (winget uninstall / scoop uninstall), or delete the installer's own install directory.",
@@ -754,14 +768,14 @@ const PYTHON: DevEnvCategoryData = {
                 availableOn: ['windows'],
                 installManager:
                     'choco install pyenv-win -y   # or the install-pyenv-win.ps1 PowerShell script, or: scoop install main/pyenv',
-                installTool: 'pyenv install 3.13.2',
+                installTool: 'pyenv install 3.14.10',
                 configure:
                     'Set PYENV, PYENV_HOME, PYENV_ROOT environment variables and add \\bin and \\shims to PATH ' +
                     '(the installer does this automatically).',
                 verify: 'pyenv --version',
                 update: 'pyenv update',
                 remove: 'Remove ~/.pyenv and the PYENV* environment variables.',
-                versionSwitch: 'pyenv global 3.13.2\npyenv local 3.13.2\npyenv shell 3.13.2',
+                versionSwitch: 'pyenv global 3.14.10\npyenv local 3.14.10\npyenv shell 3.14.10',
                 notes:
                     'Separate VBScript/batch codebase from Unix pyenv — .bat shims, not executable shims, and ' +
                     'no pyenv virtualenv support.',
@@ -776,7 +790,7 @@ const PYTHON: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['linux'],
                 installTool: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
-                configure: 'uv python install 3.13\nuv python pin 3.13   # writes .python-version',
+                configure: 'uv python install 3.14\nuv python pin 3.14   # writes .python-version',
                 verify: 'uv --version',
                 update: 'uv self update   # standalone installs only',
                 remove: 'rm ~/.local/bin/uv ~/.local/bin/uvx',
@@ -792,7 +806,7 @@ const PYTHON: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['linux'],
                 installManager: 'curl -fsSL https://pyenv.run | bash',
-                installTool: 'pyenv install 3.13.2   # builds from source',
+                installTool: 'pyenv install 3.14.10   # builds from source',
                 configure:
                     'Install OS build dependencies first, e.g. Debian/Ubuntu: sudo apt install build-essential ' +
                     "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev — then add pyenv's shell " +
@@ -800,7 +814,7 @@ const PYTHON: DevEnvCategoryData = {
                 verify: 'pyenv --version',
                 update: 'git -C ~/.pyenv pull',
                 remove: 'rm -rf ~/.pyenv   # then remove the shell init lines it added',
-                versionSwitch: 'pyenv global 3.13.2\npyenv local 3.13.2\npyenv shell 3.13.2',
+                versionSwitch: 'pyenv global 3.14.10\npyenv local 3.14.10\npyenv shell 3.14.10',
             },
             PIP_ENTRY,
             PIPX_ENTRY,
@@ -851,7 +865,7 @@ const GO: DevEnvCategoryData = {
                 verify: 'go version',
                 update: 'brew upgrade go',
                 remove: 'brew uninstall go',
-                notes: 'Pinned formulae exist for older majors, e.g. go@1.25, if you need to hold back a version.',
+                notes: 'Pinned formulae exist for older majors, e.g. go@1.26, if you need to hold back a version.',
             },
             {
                 managerId: 'goenv',
@@ -859,7 +873,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['macos'],
                 installManager: 'brew install goenv',
-                installTool: 'goenv install 1.26.4',
+                installTool: 'goenv install 1.27.4',
                 configure:
                     `echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.zshrc\n` +
                     `echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.zshrc\n` +
@@ -869,7 +883,7 @@ const GO: DevEnvCategoryData = {
                 update: 'brew upgrade goenv',
                 remove: 'brew uninstall goenv   # then remove the three profile lines above',
                 versionSwitch:
-                    'goenv install 1.26.4 then goenv global 1.26.4 (system-wide) or goenv local 1.26.4 ' +
+                    'goenv install 1.27.4 then goenv global 1.27.4 (system-wide) or goenv local 1.27.4 ' +
                     '(per-directory, writes a .go-version file).',
                 notes: "macOS/Linux only — no Windows support, confirmed against the project's own README/INSTALL.md.",
             },
@@ -925,7 +939,7 @@ const GO: DevEnvCategoryData = {
                 builtIntoOS: false,
                 availableOn: ['linux'],
                 installManager: 'git clone https://github.com/go-nv/goenv.git ~/.goenv',
-                installTool: 'goenv install 1.26.4',
+                installTool: 'goenv install 1.27.4',
                 configure:
                     `echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bashrc\n` +
                     `echo 'export PATH="$GOENV_ROOT/bin:$PATH"' >> ~/.bashrc\n` +
@@ -935,7 +949,7 @@ const GO: DevEnvCategoryData = {
                 update: 'cd ~/.goenv && git pull',
                 remove: 'rm -rf ~/.goenv   # then remove the three profile lines above',
                 versionSwitch:
-                    'goenv install 1.26.4 then goenv global 1.26.4 (system-wide) or goenv local 1.26.4 ' +
+                    'goenv install 1.27.4 then goenv global 1.27.4 (system-wide) or goenv local 1.27.4 ' +
                     '(per-directory, writes a .go-version file).',
                 notes: "macOS/Linux only — no Windows support, confirmed against the project's own README/INSTALL.md.",
             },
@@ -1052,7 +1066,7 @@ const RUST: DevEnvCategoryData = {
                 update: 'rustup update',
                 remove: 'rustup self uninstall',
                 versionSwitch:
-                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                    'rustup toolchain install stable   # or a pinned release, e.g. 1.90.0\nrustup default stable   # system-wide\nrustup override set stable   # per-directory',
                 notes: 'Also installable via brew install rust, but that path does not include rustup — no toolchain/version switching without it.',
             },
         ],
@@ -1071,7 +1085,7 @@ const RUST: DevEnvCategoryData = {
                 update: 'rustup update',
                 remove: 'rustup self uninstall',
                 versionSwitch:
-                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                    'rustup toolchain install stable   # or a pinned release, e.g. 1.90.0\nrustup default stable   # system-wide\nrustup override set stable   # per-directory',
                 notes: 'Alternates: choco install rust -y, scoop install main/rustup.',
             },
         ],
@@ -1089,7 +1103,7 @@ const RUST: DevEnvCategoryData = {
                 update: 'rustup update',
                 remove: 'rustup self uninstall',
                 versionSwitch:
-                    'rustup toolchain install 1.82.0\nrustup default 1.82.0   # system-wide\nrustup override set 1.82.0   # per-directory',
+                    'rustup toolchain install stable   # or a pinned release, e.g. 1.90.0\nrustup default stable   # system-wide\nrustup override set stable   # per-directory',
                 notes:
                     'Distro rustc/cargo packages (apt/dnf/pacman/zypper) typically lag the upstream release and ' +
                     'do not include rustup — prefer this installer when you need a current or pinned version.',
@@ -1161,10 +1175,10 @@ const NODEJS: DevEnvCategoryData = {
                 managerLabel: 'Homebrew',
                 builtIntoOS: true,
                 availableOn: ['macos'],
-                installTool: 'brew install node@24   # LTS; use "brew install node" for Current (non-LTS)',
+                installTool: 'brew install node   # Node 26 (LTS)',
                 verify: 'node -v && npm -v',
-                update: 'brew upgrade node@24',
-                remove: 'brew uninstall node@24',
+                update: 'brew upgrade node',
+                remove: 'brew uninstall node',
                 versionSwitch:
                     'Use nvm or fnm below to run multiple Node versions side by side — plain Homebrew only tracks one linked version at a time.',
             },
@@ -1173,7 +1187,7 @@ const NODEJS: DevEnvCategoryData = {
                 managerLabel: 'nvm',
                 builtIntoOS: false,
                 availableOn: ['macos'],
-                installManager: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash',
+                installManager: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash',
                 installTool: '# the installer auto-detects and appends its loader lines to ~/.zshrc',
                 verify: 'nvm --version',
                 update: 'Re-run the install script with a newer nvm release tag.',
@@ -1192,7 +1206,7 @@ const NODEJS: DevEnvCategoryData = {
                 update: 'brew upgrade fnm',
                 remove: 'brew uninstall fnm',
                 versionSwitch:
-                    'fnm install --lts && fnm default 24   # --use-on-cd auto-switches on .node-version/.nvmrc',
+                    'fnm install --lts && fnm default 26   # --use-on-cd auto-switches on .node-version/.nvmrc',
                 notes: 'Cross-platform (macOS/Windows/Linux) including native Windows — generally the recommended default over nvm/nvm-windows today.',
             },
             COREPACK_ENTRY,
@@ -1235,7 +1249,7 @@ const NODEJS: DevEnvCategoryData = {
                 verify: 'fnm --version',
                 update: 'winget upgrade --id Schniz.fnm -e',
                 remove: 'winget uninstall --id Schniz.fnm -e',
-                versionSwitch: 'fnm install --lts && fnm default 24',
+                versionSwitch: 'fnm install --lts && fnm default 26',
                 notes: 'Alternates: choco install fnm, scoop install fnm.',
             },
             COREPACK_ENTRY,
@@ -1246,7 +1260,7 @@ const NODEJS: DevEnvCategoryData = {
                 managerLabel: 'nvm',
                 builtIntoOS: false,
                 availableOn: ['linux'],
-                installManager: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash',
+                installManager: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash',
                 installTool: '# the installer auto-detects and appends its loader lines to ~/.bashrc',
                 verify: 'nvm --version',
                 update: 'Re-run the install script with a newer nvm release tag.',
@@ -1264,7 +1278,7 @@ const NODEJS: DevEnvCategoryData = {
                 update: 'Re-run the install script for a newer fnm release.',
                 remove: "Remove fnm's install directory and the eval line above manually.",
                 versionSwitch:
-                    'fnm install --lts && fnm default 24   # --use-on-cd auto-switches on .node-version/.nvmrc',
+                    'fnm install --lts && fnm default 26   # --use-on-cd auto-switches on .node-version/.nvmrc',
             },
             COREPACK_ENTRY,
         ],
@@ -1327,7 +1341,7 @@ const BUN: DevEnvCategoryData = {
                 managerLabel: 'Official installer script',
                 builtIntoOS: false,
                 availableOn: ['windows'],
-                installTool: 'powershell -c "irm bun.sh/install.ps1|iex"   # requires Windows 10 version 1809+',
+                installTool: 'powershell -c "irm bun.com/install.ps1|iex"   # requires Windows 10 version 1809+',
                 configure: "If PATH wasn't updated automatically, add %USERPROFILE%\\.bun\\bin to the User PATH.",
                 verify: 'bun --version',
                 update: 'bun upgrade',
@@ -1344,7 +1358,7 @@ const BUN: DevEnvCategoryData = {
                 verify: 'bun --version',
                 update: 'scoop update bun   # use this, not "bun upgrade", to avoid conflicts',
                 remove: 'scoop uninstall bun',
-                notes: 'No official winget package exists for Bun — do not invent one.',
+                notes: 'Also installable via winget: winget install -e --id Oven-sh.Bun.',
             },
         ],
         linux: [
