@@ -27,6 +27,8 @@ export interface MaintenanceTask {
     steps: readonly string[];
     appId?: string;
     version?: string;
+    /** `group` only: per-package commands run when the combined command fails (e.g. one package missing). */
+    fallback?: readonly string[];
 }
 
 export interface MaintenancePlan {
@@ -81,6 +83,10 @@ const ALWAYS_ELIGIBLE_MANAGERS: readonly CatalogManager[] = ['script', 'installe
 
 /** Emitted before each PowerShell task so a cmdlet-only command never sees a stale native exit code. */
 const PS_RESET_EXIT_CODE = '$global:LASTEXITCODE = 0;';
+
+// winget exits with 0x8A15002B (-1978335189, "no applicable update") when a package is already current.
+const PS_FAILED = '($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189)';
+const PS_EXIT_CHECK = `if ${PS_FAILED} { throw "exit $LASTEXITCODE" }`;
 
 function findMethodByManager(methods: CatalogMethod[], manager: CatalogManager): CatalogMethod | undefined {
     return methods.find((m) => m.manager === manager);
@@ -157,8 +163,9 @@ export function getCommand(method: CatalogMethod, action: ScriptAction, version?
 }
 
 /**
- * Per-app command for the planner. Update falls back update → upgrade → install and Upgrade
- * falls back upgrade → update → install: re-running the installer is how most vendor scripts update.
+ * Per-app command for the planner. Update falls back update → upgrade and Upgrade falls back
+ * upgrade → update; only vendor scripts and installers then fall back to install, because re-running
+ * them is how they update — a package manager's install of an installed package does nothing.
  */
 function getMaintenanceAppCommand(
     method: CatalogMethod,
@@ -170,7 +177,7 @@ function getMaintenanceAppCommand(
         action === 'update' || action === 'upgrade'
             ? (getCommand(method, action, version) ??
               getCommand(method, 'upgrade', version) ??
-              getCommand(method, 'install', version))
+              (ALWAYS_ELIGIBLE_MANAGERS.includes(manager) ? getCommand(method, 'install', version) : null))
             : getCommand(method, action, version);
     if (!command) return null;
     if (action !== 'update' && action !== 'upgrade') return command;
@@ -234,7 +241,7 @@ function emitRepoSetupSection(lines: string[], apps: CatalogApp[], config: Build
         if (isWindows) {
             const name = escapePowerShellText(entry.appName);
             lines.push(
-                `try { Write-Host "▶ repo setup: ${name} (${entry.manager})"; ${PS_RESET_EXIT_CODE} ${entry.repoSetup}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ repo setup: ${name} failed: $_"; $fail++ }`,
+                `try { Write-Host "▶ repo setup: ${name} (${entry.manager})"; ${PS_RESET_EXIT_CODE} ${entry.repoSetup}; ${PS_EXIT_CHECK}; $ok++ } catch { Write-Host "✖ repo setup: ${name} failed: $_"; $fail++ }`,
             );
         } else {
             const fnName = `_repo_setup_${i + 1}`;
@@ -303,15 +310,19 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
 
         if (app.parameterized) {
             const versions = config.selectedVersions[app.id] ?? [];
+            const seenCommands = new Set<string>();
             for (const v of versions) {
                 const cmd = getCommand(method, action, v);
                 if (!cmd) {
                     lines.push(`# ${app.name} ${v}: no ${action} command — skipped`);
                     continue;
                 }
+                // Version-independent commands (e.g. choco `nodejs-lts`) run once, not once per version.
+                if (seenCommands.has(cmd)) continue;
+                seenCommands.add(cmd);
                 if (isWindows) {
                     lines.push(
-                        `try { Write-Host "▶ ${action} ${psName} ${v} (${manager})"; ${PS_RESET_EXIT_CODE} ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${psName} ${v} failed: $_"; $fail++ }`,
+                        `try { Write-Host "▶ ${action} ${psName} ${v} (${manager})"; ${PS_RESET_EXIT_CODE} ${cmd}; ${PS_EXIT_CHECK}; $ok++ } catch { Write-Host "✖ ${psName} ${v} failed: $_"; $fail++ }`,
                     );
                 } else {
                     taskIndex += 1;
@@ -329,7 +340,7 @@ export function buildCombinedScript(apps: CatalogApp[], action: ScriptAction, co
                 // $LASTEXITCODE is only set by external executables, so it is reset first: a cmdlet-only
                 // command (e.g. `irm … | iex`) must not inherit the previous task's exit code.
                 lines.push(
-                    `try { Write-Host "▶ ${action} ${psName}"; ${PS_RESET_EXIT_CODE} ${cmd}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${psName} failed: $_"; $fail++ }`,
+                    `try { Write-Host "▶ ${action} ${psName}"; ${PS_RESET_EXIT_CODE} ${cmd}; ${PS_EXIT_CHECK}; $ok++ } catch { Write-Host "✖ ${psName} failed: $_"; $fail++ }`,
                 );
             } else {
                 taskIndex += 1;
@@ -374,7 +385,7 @@ export function buildPerAppScripts(
             const versions = config.selectedVersions[app.id] ?? [];
             const cmds = versions.map((v) => getCommand(method, action, v)).filter((c): c is string => c !== null);
             if (cmds.length === 0) continue;
-            result[app.id] = repoSetupPrefix + cmds.join('\n');
+            result[app.id] = repoSetupPrefix + [...new Set(cmds)].join('\n');
         } else {
             const cmd = getCommand(method, action);
             if (!cmd) continue;
@@ -439,8 +450,8 @@ function normalizeMaintenanceOptions(
 
 interface BatchTemplate {
     label: string;
-    /** Install command of a plain package, with `{id}` standing for the method id. */
-    plain: string;
+    /** Accepted install commands of a plain package, with `{id}` standing for the method id. */
+    plain: readonly string[];
     /** Combined command per action. A missing action keeps those apps per app. */
     actions: Partial<Record<ScriptAction, (ids: string[]) => string>>;
 }
@@ -449,13 +460,13 @@ const ids = (list: string[]): string => list.join(' ');
 const latest = (list: string[]): string => list.map((id) => `${id}@latest`).join(' ');
 
 // Batching rule: a method joins a batch only when it has an `id`, no `repoSetup`, and its install
-// command is exactly `plain` with that id (whitespace-normalised) — a plain package with no extra
+// command is exactly one of the `plain` forms with that id (whitespace-normalised) — a plain package with no extra
 // flags or steps. Its combined command for every action then comes from the template. winget stays
 // per app: its multi-package install takes bare queries and drops the per-id `--id … -e` matching.
 const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     'brew:formula': {
         label: 'Homebrew formulae',
-        plain: 'brew install {id}',
+        plain: ['brew install {id}'],
         actions: {
             install: (l) => `brew install ${ids(l)}`,
             update: (l) => `brew upgrade ${ids(l)}`,
@@ -465,7 +476,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'brew:cask': {
         label: 'Homebrew casks',
-        plain: 'brew install --cask {id}',
+        plain: ['brew install --cask {id}'],
         actions: {
             install: (l) => `brew install --cask ${ids(l)}`,
             update: (l) => `brew upgrade --cask ${ids(l)}`,
@@ -475,7 +486,11 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'apt': {
         label: 'apt packages',
-        plain: 'sudo apt update && sudo apt install -y {id}',
+        plain: [
+            'sudo apt update && sudo apt install -y {id}',
+            'sudo apt install -y {id}',
+            'sudo apt-get install -y {id}',
+        ],
         actions: {
             install: (l) => `sudo apt-get update && sudo apt-get install -y ${ids(l)}`,
             update: (l) => `sudo apt-get update && sudo apt-get install --only-upgrade -y ${ids(l)}`,
@@ -485,7 +500,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'dnf': {
         label: 'dnf packages',
-        plain: 'sudo dnf install -y {id}',
+        plain: ['sudo dnf install -y {id}'],
         actions: {
             install: (l) => `sudo dnf install -y ${ids(l)}`,
             update: (l) => `sudo dnf upgrade -y ${ids(l)}`,
@@ -495,7 +510,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'zypper': {
         label: 'zypper packages',
-        plain: 'sudo zypper install -y {id}',
+        plain: ['sudo zypper install -y {id}'],
         actions: {
             install: (l) => `sudo zypper install -y ${ids(l)}`,
             update: (l) => `sudo zypper update -y ${ids(l)}`,
@@ -505,7 +520,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'pacman': {
         label: 'pacman packages',
-        plain: 'sudo pacman -S --needed --noconfirm {id}',
+        plain: ['sudo pacman -S --needed --noconfirm {id}', 'sudo pacman -S --noconfirm {id}'],
         actions: {
             install: (l) => `sudo pacman -S --needed --noconfirm ${ids(l)}`,
             // Arch does not support partial upgrades, so updating any package means a full -Syu.
@@ -516,7 +531,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'flatpak': {
         label: 'Flatpak apps',
-        plain: 'flatpak install -y flathub {id}',
+        plain: ['flatpak install -y flathub {id}'],
         actions: {
             install: (l) => `flatpak install -y flathub ${ids(l)}`,
             update: (l) => `flatpak update -y ${ids(l)}`,
@@ -526,7 +541,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'snap': {
         label: 'Snap packages',
-        plain: 'sudo snap install {id}',
+        plain: ['sudo snap install {id}'],
         actions: {
             install: (l) => `sudo snap install ${ids(l)}`,
             update: (l) => `sudo snap refresh ${ids(l)}`,
@@ -536,7 +551,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'choco': {
         label: 'Chocolatey packages',
-        plain: 'choco install {id} -y',
+        plain: ['choco install {id} -y'],
         actions: {
             install: (l) => `choco install ${ids(l)} -y`,
             update: (l) => `choco upgrade ${ids(l)} -y`,
@@ -546,7 +561,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'scoop': {
         label: 'Scoop apps',
-        plain: 'scoop install {id}',
+        plain: ['scoop install {id}'],
         actions: {
             install: (l) => `scoop install ${ids(l)}`,
             update: (l) => `scoop update ${ids(l)}`,
@@ -556,7 +571,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'npm': {
         label: 'npm globals',
-        plain: 'npm install -g {id}@latest',
+        plain: ['npm install -g {id}@latest'],
         actions: {
             install: (l) => `npm install -g ${latest(l)}`,
             update: (l) => `npm update -g ${ids(l)}`,
@@ -566,7 +581,7 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'uv': {
         label: 'uv tools',
-        plain: 'uv tool install {id}',
+        plain: ['uv tool install {id}'],
         // `uv tool install` takes one tool per call, so install stays per app.
         actions: {
             update: (l) => `uv tool upgrade ${ids(l)}`,
@@ -576,13 +591,13 @@ const BATCH_TEMPLATES: Record<string, BatchTemplate> = {
     },
     'pipx': {
         label: 'pipx packages',
-        plain: 'pipx install {id}',
+        plain: ['pipx install {id}'],
         // `pipx reinstall` and `pipx uninstall` take one package per call.
         actions: { install: (l) => `pipx install ${ids(l)}`, update: (l) => `pipx upgrade ${ids(l)}` },
     },
     'cargo': {
         label: 'cargo crates',
-        plain: 'cargo install {id}',
+        plain: ['cargo install {id}'],
         actions: {
             install: (l) => `cargo install ${ids(l)}`,
             update: (l) => `cargo install ${ids(l)}`,
@@ -611,6 +626,25 @@ function normalizeWhitespace(value: string): string {
     return value.trim().replace(/\s+/g, ' ');
 }
 
+function batchKey(method: CatalogMethod): string {
+    return method.manager === 'brew' ? `brew:${method.kind ?? 'formula'}` : method.manager;
+}
+
+/**
+ * Returns the single package token when `install` is one of the manager's plain forms, else null.
+ * Exported so the catalog test can require `id` to equal that token on every plain method.
+ */
+export function getPlainPackageToken(method: CatalogMethod, install: string = method.install): string | null {
+    const normalized = normalizeWhitespace(install);
+    for (const form of BATCH_TEMPLATES[batchKey(method)]?.plain ?? []) {
+        const [prefix, suffix] = form.split('{id}');
+        if (!normalized.startsWith(prefix) || !normalized.endsWith(suffix)) continue;
+        const token = normalized.slice(prefix.length, normalized.length - suffix.length);
+        if (/^[\w@.+/:{}-]+$/.test(token)) return token;
+    }
+    return null;
+}
+
 /** Returns the batch key and package id when this method/version is a plain package, else null. */
 function getBatchMember(
     method: CatalogMethod,
@@ -618,15 +652,11 @@ function getBatchMember(
     version: string | undefined,
 ): { key: string; id: string } | null {
     if (!method.id || method.repoSetup) return null;
-    const key = method.manager === 'brew' ? `brew:${method.kind ?? 'formula'}` : method.manager;
-    const template = BATCH_TEMPLATES[key];
-    if (!template?.actions[action]) return null;
+    const key = batchKey(method);
+    if (!BATCH_TEMPLATES[key]?.actions[action]) return null;
     const id = version === undefined ? method.id : method.id.replaceAll('{version}', version);
     const install = getCommand(method, 'install', version);
-    if (!install || normalizeWhitespace(install) !== normalizeWhitespace(template.plain.replace('{id}', id))) {
-        return null;
-    }
-    return { key, id };
+    return install && getPlainPackageToken(method, install) === id ? { key, id } : null;
 }
 
 /**
@@ -679,7 +709,10 @@ export function buildActionPlan(
 
     // Groups are materialised after the loop; their slot in `appTasks` keeps first-seen order.
     const appTasks: MaintenanceTask[] = [];
-    const groups = new Map<string, { slot: number; manager: CatalogManager; ids: string[]; names: string[] }>();
+    const groups = new Map<
+        string,
+        { slot: number; manager: CatalogManager; ids: string[]; names: string[]; fallback: string[] }
+    >();
 
     for (const app of apps) {
         const manager = resolveManager(app, appConfig);
@@ -700,26 +733,35 @@ export function buildActionPlan(
             : [undefined];
         let emitted = 0;
         let missingCommand = false;
+        const appCommands = new Set<string>();
         for (const version of versions) {
             const label = version === undefined ? app.name : `${app.name} ${version}`;
+            const command = getMaintenanceAppCommand(method, manager, action, version);
             const member = combine ? getBatchMember(method, action, version) : null;
             if (member) {
-                const group = groups.get(member.key);
-                if (group) {
-                    group.ids.push(member.id);
-                    group.names.push(label);
-                } else {
-                    groups.set(member.key, { slot: appTasks.length, manager, ids: [member.id], names: [label] });
+                let group = groups.get(member.key);
+                if (!group) {
+                    group = { slot: appTasks.length, manager, ids: [], names: [], fallback: [] };
+                    groups.set(member.key, group);
                     appTasks.push({ kind: 'group', manager, label: member.key, steps: [] });
+                }
+                group.names.push(label);
+                // One id per group: versions sharing a package (choco `nodejs-lts`) are handled once.
+                if (!group.ids.includes(member.id)) {
+                    group.ids.push(member.id);
+                    group.fallback.push(command ?? BATCH_TEMPLATES[member.key].actions[action]!([member.id]));
                 }
                 emitted += 1;
                 continue;
             }
-            const command = getMaintenanceAppCommand(method, manager, action, version);
             if (!command) {
                 missingCommand = true;
                 continue;
             }
+            emitted += 1;
+            // Version-independent commands run once rather than once per selected version.
+            if (appCommands.has(command)) continue;
+            appCommands.add(command);
             appTasks.push({
                 kind: 'app',
                 manager,
@@ -728,7 +770,6 @@ export function buildActionPlan(
                 appId: app.id,
                 ...(version === undefined ? {} : { version }),
             });
-            emitted += 1;
         }
 
         if (emitted === 0) {
@@ -745,6 +786,8 @@ export function buildActionPlan(
             manager: group.manager,
             label: `${template.label} (${group.names.join(', ')})`,
             steps: [template.actions[action]!(group.ids)],
+            // A combined command fails as a whole when one package is missing, so retry package by package.
+            ...(group.ids.length > 1 ? { fallback: [...new Set(group.fallback)] } : {}),
         };
     }
 
@@ -807,14 +850,23 @@ const TASK_FUNCTION_PREFIX: Record<'setup' | 'group' | 'app', string> = {
     app: '_maint_app_',
 };
 
-function renderBashSteps(steps: readonly string[]): string {
-    return steps.join(' && ');
+/** A group with a fallback fails only when a per-package retry fails too. */
+function renderBashSteps(task: MaintenanceTask): string {
+    if (!task.fallback?.length) return task.steps.join(' && ');
+    const retries = task.fallback.map((step) => `{ ${step}; } || rc=1;`).join(' ');
+    // Only the combined (last) step falls back; a failed preparatory step such as `brew update` still fails.
+    const combined = `${task.steps[task.steps.length - 1]} || { local rc=0; ${retries} return "$rc"; }`;
+    return task.steps.length === 1 ? combined : `${task.steps.slice(0, -1).join(' && ')} && { ${combined}; }`;
 }
 
-function renderPowerShellSteps(steps: readonly string[]): string {
+function renderPowerShellSteps(task: MaintenanceTask): string {
     // Multi-command operations are represented as separate steps so the generated script stays
     // compatible with Windows PowerShell 5.1; each native command gets an explicit exit check.
-    return steps.map((step) => `${step}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }`).join('; ');
+    const checked = task.steps.map((step) => `${step}; ${PS_EXIT_CHECK}`);
+    if (!task.fallback?.length) return checked.join('; ');
+    const retries = task.fallback.map((step) => `${step}; if ${PS_FAILED} { $rc = 1 }`).join('; ');
+    const combined = `${task.steps[task.steps.length - 1]}; if ${PS_FAILED} { $rc = 0; ${retries}; if ($rc -ne 0) { throw "per-package fallback failed" } }`;
+    return [...checked.slice(0, -1), combined].join('; ');
 }
 
 /**
@@ -871,7 +923,7 @@ export function buildMaintenanceScript(
                     : `${plan.action} ${task.label}`;
 
         if (isWindows) {
-            const command = renderPowerShellSteps(task.steps);
+            const command = renderPowerShellSteps(task);
             const escaped = escapePowerShellText(taskLabel);
             lines.push(
                 `try { Write-Host "▶ ${escaped}"; ${PS_RESET_EXIT_CODE} ${command}; $ok++ } catch { Write-Host "✖ ${escaped} failed: $_"; $fail++ }`,
@@ -890,7 +942,7 @@ export function buildMaintenanceScript(
         }
         lines.push(
             `${functionName}() {`,
-            renderBashSteps(task.steps),
+            renderBashSteps(task),
             '}',
             `run_task "${escapeBashText(taskLabel)}" ${functionName}`,
         );
@@ -1064,7 +1116,7 @@ export function buildBootstrapScript(
         fnIndex += 1;
         if (isWindows) {
             lines.push(
-                `try { Write-Host "▶ setup ${manager}"; ${command}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ setup ${manager} failed: $_"; $fail++ }`,
+                `try { Write-Host "▶ setup ${manager}"; ${command}; ${PS_EXIT_CHECK}; $ok++ } catch { Write-Host "✖ setup ${manager} failed: $_"; $fail++ }`,
             );
         } else {
             const fnName = `_setup_${fnIndex}`;
@@ -1110,7 +1162,7 @@ export function buildBootstrapScript(
         const label = `setup ${manager} (via ${resolved.app.name})`;
         if (isWindows) {
             lines.push(
-                `try { Write-Host "▶ ${label}"; ${resolved.command}; if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }; $ok++ } catch { Write-Host "✖ ${label} failed: $_"; $fail++ }`,
+                `try { Write-Host "▶ ${label}"; ${resolved.command}; ${PS_EXIT_CHECK}; $ok++ } catch { Write-Host "✖ ${label} failed: $_"; $fail++ }`,
             );
         } else {
             const fnName = `_setup_${fnIndex}`;

@@ -41,8 +41,8 @@
                     {
                         "manager": "winget",
                         "id": "Mozilla.Firefox",
-                        "install": "winget install --id Mozilla.Firefox -e",
-                        "update": "winget upgrade --id Mozilla.Firefox -e",
+                        "install": "winget install --id Mozilla.Firefox -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Mozilla.Firefox -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Mozilla.Firefox -e",
                         "verify": "winget list --id Mozilla.Firefox"
                     },
@@ -179,8 +179,8 @@
                     {
                         "manager": "winget",
                         "id": "Google.Chrome",
-                        "install": "winget install --id Google.Chrome -e",
-                        "update": "winget upgrade --id Google.Chrome -e",
+                        "install": "winget install --id Google.Chrome -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Google.Chrome -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Google.Chrome -e",
                         "verify": "winget list --id Google.Chrome"
                     },
@@ -249,8 +249,8 @@
                     {
                         "manager": "winget",
                         "id": "Microsoft.Edge",
-                        "install": "winget install --id Microsoft.Edge -e",
-                        "update": "winget upgrade --id Microsoft.Edge -e",
+                        "install": "winget install --id Microsoft.Edge -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Microsoft.Edge -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Microsoft.Edge -e",
                         "verify": "winget list --id Microsoft.Edge"
                     },
@@ -312,8 +312,8 @@
                     {
                         "manager": "winget",
                         "id": "Opera.Opera",
-                        "install": "winget install --id Opera.Opera -e",
-                        "update": "winget upgrade --id Opera.Opera -e",
+                        "install": "winget install --id Opera.Opera -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Opera.Opera -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Opera.Opera -e",
                         "verify": "winget list --id Opera.Opera"
                     },
@@ -449,8 +449,8 @@
                     {
                         "manager": "winget",
                         "id": "TorProject.TorBrowser",
-                        "install": "winget install --id TorProject.TorBrowser -e",
-                        "update": "winget upgrade --id TorProject.TorBrowser -e",
+                        "install": "winget install --id TorProject.TorBrowser -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id TorProject.TorBrowser -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id TorProject.TorBrowser -e",
                         "verify": "winget list --id TorProject.TorBrowser"
                     },
@@ -475,6 +475,7 @@
                             "manager": "apt",
                             "id": "torbrowser-launcher",
                             "install": "sudo apt install -y torbrowser-launcher",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y torbrowser-launcher",
                             "remove": "sudo apt remove -y torbrowser-launcher"
                         },
                         {
@@ -499,6 +500,7 @@
                             "manager": "dnf",
                             "id": "torbrowser-launcher",
                             "install": "sudo dnf install -y torbrowser-launcher",
+                            "update": "sudo dnf upgrade -y torbrowser-launcher",
                             "remove": "sudo dnf remove -y torbrowser-launcher"
                         },
                         {
@@ -582,8 +584,8 @@
                     {
                         "manager": "winget",
                         "id": "Brave.Brave",
-                        "install": "winget install --id Brave.Brave -e",
-                        "update": "winget upgrade --id Brave.Brave -e",
+                        "install": "winget install --id Brave.Brave -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Brave.Brave -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Brave.Brave -e",
                         "verify": "winget list --id Brave.Brave"
                     },
@@ -688,8 +690,8 @@
                     {
                         "manager": "winget",
                         "id": "Vivaldi.Vivaldi",
-                        "install": "winget install --id Vivaldi.Vivaldi -e",
-                        "update": "winget upgrade --id Vivaldi.Vivaldi -e",
+                        "install": "winget install --id Vivaldi.Vivaldi -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Vivaldi.Vivaldi -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Vivaldi.Vivaldi -e",
                         "verify": "winget list --id Vivaldi.Vivaldi"
                     },
@@ -826,8 +828,8 @@
                     {
                         "manager": "winget",
                         "id": "Waterfox.Waterfox",
-                        "install": "winget install --id Waterfox.Waterfox -e",
-                        "update": "winget upgrade --id Waterfox.Waterfox -e",
+                        "install": "winget install --id Waterfox.Waterfox -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Waterfox.Waterfox -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Waterfox.Waterfox -e",
                         "verify": "winget list --id Waterfox.Waterfox"
                     },
@@ -866,8 +868,8 @@
                     {
                         "manager": "winget",
                         "id": "Microsoft.Teams",
-                        "install": "winget install --id Microsoft.Teams -e",
-                        "update": "winget upgrade --id Microsoft.Teams -e",
+                        "install": "winget install --id Microsoft.Teams -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Microsoft.Teams -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Microsoft.Teams -e",
                         "verify": "winget list --id Microsoft.Teams"
                     },
@@ -906,8 +908,8 @@
                     {
                         "manager": "winget",
                         "id": "OpenWhisperSystems.Signal",
-                        "install": "winget install --id OpenWhisperSystems.Signal -e",
-                        "update": "winget upgrade --id OpenWhisperSystems.Signal -e",
+                        "install": "winget install --id OpenWhisperSystems.Signal -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id OpenWhisperSystems.Signal -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id OpenWhisperSystems.Signal -e",
                         "verify": "winget list --id OpenWhisperSystems.Signal"
                     },
@@ -1035,8 +1037,8 @@
                     {
                         "manager": "winget",
                         "id": "Telegram.TelegramDesktop",
-                        "install": "winget install --id Telegram.TelegramDesktop -e",
-                        "update": "winget upgrade --id Telegram.TelegramDesktop -e",
+                        "install": "winget install --id Telegram.TelegramDesktop -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Telegram.TelegramDesktop -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Telegram.TelegramDesktop -e",
                         "verify": "winget list --id Telegram.TelegramDesktop"
                     },
@@ -1061,6 +1063,7 @@
                             "manager": "apt",
                             "id": "telegram-desktop",
                             "install": "sudo apt install -y telegram-desktop",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y telegram-desktop",
                             "verify": "telegram-desktop --version",
                             "remove": "sudo apt remove -y telegram-desktop"
                         },
@@ -1086,6 +1089,7 @@
                             "manager": "dnf",
                             "id": "telegram-desktop",
                             "install": "sudo dnf install -y telegram-desktop",
+                            "update": "sudo dnf upgrade -y telegram-desktop",
                             "verify": "telegram-desktop --version",
                             "remove": "sudo dnf remove -y telegram-desktop"
                         },
@@ -1170,8 +1174,8 @@
                     {
                         "manager": "winget",
                         "id": "Mozilla.Thunderbird",
-                        "install": "winget install --id Mozilla.Thunderbird -e",
-                        "update": "winget upgrade --id Mozilla.Thunderbird -e",
+                        "install": "winget install --id Mozilla.Thunderbird -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Mozilla.Thunderbird -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Mozilla.Thunderbird -e",
                         "verify": "winget list --id Mozilla.Thunderbird"
                     },
@@ -1308,7 +1312,7 @@
                         "manager": "winget",
                         "id": "9NKSQGP7F2NH",
                         "install": "winget install --id 9NKSQGP7F2NH -e --source msstore --accept-package-agreements --accept-source-agreements",
-                        "update": "winget upgrade --id 9NKSQGP7F2NH -e --source msstore",
+                        "update": "winget upgrade --id 9NKSQGP7F2NH -e --source msstore --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id 9NKSQGP7F2NH -e",
                         "verify": "winget list --id 9NKSQGP7F2NH"
                     }
@@ -1340,8 +1344,8 @@
                     {
                         "manager": "winget",
                         "id": "SlackTechnologies.Slack",
-                        "install": "winget install --id SlackTechnologies.Slack -e",
-                        "update": "winget upgrade --id SlackTechnologies.Slack -e",
+                        "install": "winget install --id SlackTechnologies.Slack -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id SlackTechnologies.Slack -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id SlackTechnologies.Slack -e",
                         "verify": "winget list --id SlackTechnologies.Slack"
                     },
@@ -1366,6 +1370,7 @@
                             "manager": "apt",
                             "id": "slack-desktop",
                             "install": "wget -O /tmp/slack.deb \"https://slack.com/downloads/instructions/linux?ddl=1&build=deb\" && sudo apt install -y /tmp/slack.deb",
+                            "update": "wget -O /tmp/slack.deb \"https://slack.com/downloads/instructions/linux?ddl=1&build=deb\" && sudo apt install -y /tmp/slack.deb",
                             "remove": "sudo apt remove -y slack-desktop",
                             "verify": "slack --version"
                         },
@@ -1391,6 +1396,7 @@
                             "manager": "dnf",
                             "id": "slack",
                             "install": "sudo dnf install -y https://downloads.slack-edge.com/desktop-releases/linux/x64/$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)/slack-$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)-0.1.el8.x86_64.rpm",
+                            "update": "sudo dnf install -y https://downloads.slack-edge.com/desktop-releases/linux/x64/$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)/slack-$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)-0.1.el8.x86_64.rpm",
                             "remove": "sudo dnf remove -y slack",
                             "verify": "slack --version"
                         },
@@ -1474,8 +1480,8 @@
                     {
                         "manager": "winget",
                         "id": "Google.GoogleDrive",
-                        "install": "winget install --id Google.GoogleDrive -e",
-                        "update": "winget upgrade --id Google.GoogleDrive -e",
+                        "install": "winget install --id Google.GoogleDrive -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Google.GoogleDrive -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Google.GoogleDrive -e",
                         "verify": "winget list --id Google.GoogleDrive"
                     },
@@ -1514,8 +1520,8 @@
                     {
                         "manager": "winget",
                         "id": "Dropbox.Dropbox",
-                        "install": "winget install --id Dropbox.Dropbox -e",
-                        "update": "winget upgrade --id Dropbox.Dropbox -e",
+                        "install": "winget install --id Dropbox.Dropbox -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Dropbox.Dropbox -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Dropbox.Dropbox -e",
                         "verify": "winget list --id Dropbox.Dropbox"
                     },
@@ -1577,8 +1583,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.IntelliJIDEA",
-                        "install": "winget install --id JetBrains.IntelliJIDEA -e",
-                        "update": "winget upgrade --id JetBrains.IntelliJIDEA -e",
+                        "install": "winget install --id JetBrains.IntelliJIDEA -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.IntelliJIDEA -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.IntelliJIDEA -e",
                         "verify": "idea64.exe --version"
                     },
@@ -1666,8 +1672,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.PyCharm",
-                        "install": "winget install --id JetBrains.PyCharm -e",
-                        "update": "winget upgrade --id JetBrains.PyCharm -e",
+                        "install": "winget install --id JetBrains.PyCharm -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.PyCharm -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.PyCharm -e",
                         "verify": "pycharm64.exe --version"
                     },
@@ -1755,8 +1761,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.PhpStorm",
-                        "install": "winget install --id JetBrains.PhpStorm -e",
-                        "update": "winget upgrade --id JetBrains.PhpStorm -e",
+                        "install": "winget install --id JetBrains.PhpStorm -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.PhpStorm -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.PhpStorm -e",
                         "verify": "phpstorm64.exe --version"
                     },
@@ -1844,8 +1850,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.GoLand",
-                        "install": "winget install --id JetBrains.GoLand -e",
-                        "update": "winget upgrade --id JetBrains.GoLand -e",
+                        "install": "winget install --id JetBrains.GoLand -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.GoLand -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.GoLand -e",
                         "verify": "goland64.exe --version"
                     },
@@ -1933,8 +1939,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.Rider",
-                        "install": "winget install --id JetBrains.Rider -e",
-                        "update": "winget upgrade --id JetBrains.Rider -e",
+                        "install": "winget install --id JetBrains.Rider -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.Rider -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.Rider -e",
                         "verify": "rider64.exe --version"
                     },
@@ -2022,8 +2028,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.CLion",
-                        "install": "winget install --id JetBrains.CLion -e",
-                        "update": "winget upgrade --id JetBrains.CLion -e",
+                        "install": "winget install --id JetBrains.CLion -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.CLion -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.CLion -e",
                         "verify": "clion64.exe --version"
                     },
@@ -2111,8 +2117,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.RustRover",
-                        "install": "winget install --id JetBrains.RustRover -e",
-                        "update": "winget upgrade --id JetBrains.RustRover -e",
+                        "install": "winget install --id JetBrains.RustRover -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.RustRover -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.RustRover -e",
                         "verify": "rustrover64.exe --version"
                     },
@@ -2193,8 +2199,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.RubyMine",
-                        "install": "winget install --id JetBrains.RubyMine -e",
-                        "update": "winget upgrade --id JetBrains.RubyMine -e",
+                        "install": "winget install --id JetBrains.RubyMine -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.RubyMine -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.RubyMine -e",
                         "verify": "rubymine64.exe --version"
                     },
@@ -2282,8 +2288,8 @@
                     {
                         "manager": "winget",
                         "id": "Microsoft.VisualStudioCode",
-                        "install": "winget install --id Microsoft.VisualStudioCode -e",
-                        "update": "winget upgrade --id Microsoft.VisualStudioCode -e",
+                        "install": "winget install --id Microsoft.VisualStudioCode -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Microsoft.VisualStudioCode -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Microsoft.VisualStudioCode -e",
                         "verify": "code --version"
                     },
@@ -2419,8 +2425,8 @@
                     {
                         "manager": "winget",
                         "id": "Microsoft.VisualStudioCode.Insiders",
-                        "install": "winget install --id Microsoft.VisualStudioCode.Insiders -e",
-                        "update": "winget upgrade --id Microsoft.VisualStudioCode.Insiders -e",
+                        "install": "winget install --id Microsoft.VisualStudioCode.Insiders -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Microsoft.VisualStudioCode.Insiders -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Microsoft.VisualStudioCode.Insiders -e",
                         "verify": "code-insiders --version"
                     },
@@ -2524,8 +2530,8 @@
                     {
                         "manager": "winget",
                         "id": "VSCodium.VSCodium",
-                        "install": "winget install --id VSCodium.VSCodium -e",
-                        "update": "winget upgrade --id VSCodium.VSCodium -e",
+                        "install": "winget install --id VSCodium.VSCodium -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id VSCodium.VSCodium -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id VSCodium.VSCodium -e",
                         "verify": "codium --version"
                     },
@@ -2686,8 +2692,8 @@
                     {
                         "manager": "winget",
                         "id": "Anysphere.Cursor",
-                        "install": "winget install --id Anysphere.Cursor -e",
-                        "update": "winget upgrade --id Anysphere.Cursor -e",
+                        "install": "winget install --id Anysphere.Cursor -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Anysphere.Cursor -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Anysphere.Cursor -e"
                     },
                     {
@@ -2756,8 +2762,8 @@
                     {
                         "manager": "winget",
                         "id": "ZedIndustries.Zed",
-                        "install": "winget install --id ZedIndustries.Zed -e",
-                        "update": "winget upgrade --id ZedIndustries.Zed -e",
+                        "install": "winget install --id ZedIndustries.Zed -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id ZedIndustries.Zed -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id ZedIndustries.Zed -e"
                     }
                 ],
@@ -2944,8 +2950,8 @@
                     {
                         "manager": "winget",
                         "id": "Amazon.Kiro",
-                        "install": "winget install --id Amazon.Kiro -e",
-                        "update": "winget upgrade --id Amazon.Kiro -e",
+                        "install": "winget install --id Amazon.Kiro -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Amazon.Kiro -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Amazon.Kiro -e"
                     }
                 ],
@@ -2977,8 +2983,8 @@
                     {
                         "manager": "winget",
                         "id": "SublimeHQ.SublimeText.4",
-                        "install": "winget install --id SublimeHQ.SublimeText.4 -e",
-                        "update": "winget upgrade --id SublimeHQ.SublimeText.4 -e",
+                        "install": "winget install --id SublimeHQ.SublimeText.4 -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id SublimeHQ.SublimeText.4 -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id SublimeHQ.SublimeText.4 -e",
                         "verify": "subl --version"
                     },
@@ -3045,8 +3051,8 @@
                     {
                         "manager": "winget",
                         "id": "Helix.Helix",
-                        "install": "winget install --id Helix.Helix -e",
-                        "update": "winget upgrade --id Helix.Helix -e",
+                        "install": "winget install --id Helix.Helix -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Helix.Helix -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Helix.Helix -e",
                         "verify": "hx --version"
                     },
@@ -3070,7 +3076,7 @@
                         {
                             "manager": "apt",
                             "id": "helix",
-                            "install": "sudo add-apt-repository ppa:maveonair/helix-editor && sudo apt update && sudo apt install -y helix",
+                            "install": "sudo add-apt-repository -y ppa:maveonair/helix-editor && sudo apt update && sudo apt install -y helix",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y helix",
                             "remove": "sudo apt remove -y helix",
                             "verify": "hx --version"
@@ -3086,6 +3092,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
+                            "update": "cargo install --force --git https://github.com/helix-editor/helix helix-term --locked",
                             "verify": "hx --version",
                             "remove": "cargo uninstall helix-term"
                         }
@@ -3110,6 +3117,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
+                            "update": "cargo install --force --git https://github.com/helix-editor/helix helix-term --locked",
                             "verify": "hx --version",
                             "remove": "cargo uninstall helix-term"
                         }
@@ -3126,6 +3134,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
+                            "update": "cargo install --force --git https://github.com/helix-editor/helix helix-term --locked",
                             "verify": "hx --version",
                             "remove": "cargo uninstall helix-term"
                         }
@@ -3142,6 +3151,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
+                            "update": "cargo install --force --git https://github.com/helix-editor/helix helix-term --locked",
                             "verify": "hx --version",
                             "remove": "cargo uninstall helix-term"
                         }
@@ -3174,8 +3184,8 @@
                     {
                         "manager": "winget",
                         "id": "Lapce.Lapce",
-                        "install": "winget install --id Lapce.Lapce -e",
-                        "update": "winget upgrade --id Lapce.Lapce -e",
+                        "install": "winget install --id Lapce.Lapce -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Lapce.Lapce -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Lapce.Lapce -e"
                     },
                     {
@@ -3255,8 +3265,8 @@
                     {
                         "manager": "winget",
                         "id": "KDE.Kate",
-                        "install": "winget install --id KDE.Kate -e",
-                        "update": "winget upgrade --id KDE.Kate -e",
+                        "install": "winget install --id KDE.Kate -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id KDE.Kate -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id KDE.Kate -e"
                     }
                 ],
@@ -3344,6 +3354,7 @@
                         "manager": "mas",
                         "id": "1024640650",
                         "install": "mas install 1024640650",
+                        "update": "mas upgrade 1024640650",
                         "remove": "sudo mas uninstall 1024640650"
                     }
                 ],
@@ -3401,8 +3412,8 @@
                     {
                         "manager": "winget",
                         "id": "EclipseFoundation.Eclipse.Java",
-                        "install": "winget install --id EclipseFoundation.Eclipse.Java -e",
-                        "update": "winget upgrade --id EclipseFoundation.Eclipse.Java -e",
+                        "install": "winget install --id EclipseFoundation.Eclipse.Java -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id EclipseFoundation.Eclipse.Java -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id EclipseFoundation.Eclipse.Java -e"
                     },
                     {
@@ -3521,8 +3532,8 @@
                     {
                         "manager": "winget",
                         "id": "Apache.NetBeans",
-                        "install": "winget install --id Apache.NetBeans -e",
-                        "update": "winget upgrade --id Apache.NetBeans -e",
+                        "install": "winget install --id Apache.NetBeans -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Apache.NetBeans -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Apache.NetBeans -e"
                     },
                     {
@@ -3641,8 +3652,8 @@
                     {
                         "manager": "winget",
                         "id": "Google.AndroidStudio",
-                        "install": "winget install --id Google.AndroidStudio -e",
-                        "update": "winget upgrade --id Google.AndroidStudio -e",
+                        "install": "winget install --id Google.AndroidStudio -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Google.AndroidStudio -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Google.AndroidStudio -e"
                     },
                     {
@@ -3742,8 +3753,8 @@
                     {
                         "manager": "winget",
                         "id": "Notepad++.Notepad++",
-                        "install": "winget install --id Notepad++.Notepad++ -e",
-                        "update": "winget upgrade --id Notepad++.Notepad++ -e",
+                        "install": "winget install --id Notepad++.Notepad++ -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Notepad++.Notepad++ -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Notepad++.Notepad++ -e"
                     },
                     {
@@ -3830,8 +3841,8 @@
                     {
                         "manager": "winget",
                         "id": "Anthropic.ClaudeCode",
-                        "install": "winget install --id Anthropic.ClaudeCode -e",
-                        "update": "winget upgrade --id Anthropic.ClaudeCode -e",
+                        "install": "winget install --id Anthropic.ClaudeCode -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Anthropic.ClaudeCode -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Anthropic.ClaudeCode -e",
                         "verify": "claude --version"
                     },
@@ -3953,8 +3964,8 @@
                     {
                         "manager": "winget",
                         "id": "Anthropic.Claude",
-                        "install": "winget install --id Anthropic.Claude -e",
-                        "update": "winget upgrade --id Anthropic.Claude -e",
+                        "install": "winget install --id Anthropic.Claude -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Anthropic.Claude -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Anthropic.Claude -e",
                         "verify": "winget list --id Anthropic.Claude"
                     }
@@ -4020,8 +4031,8 @@
                     {
                         "manager": "winget",
                         "id": "OpenAI.Codex",
-                        "install": "winget install --id OpenAI.Codex -e",
-                        "update": "winget upgrade --id OpenAI.Codex -e",
+                        "install": "winget install --id OpenAI.Codex -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id OpenAI.Codex -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id OpenAI.Codex -e",
                         "verify": "codex --version"
                     },
@@ -4647,6 +4658,7 @@
                         {
                             "manager": "apt",
                             "install": "wget https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.deb && sudo dpkg -i kiro-cli.deb && sudo apt-get install -y -f",
+                            "update": "wget https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.deb && sudo dpkg -i kiro-cli.deb && sudo apt-get install -y -f",
                             "remove": "sudo apt-get remove -y kiro-cli",
                             "verify": "kiro-cli --version"
                         },
@@ -4717,7 +4729,7 @@
                 "windows": [
                     {
                         "manager": "script",
-                        "install": "python -m pip install aider-install && aider-install",
+                        "install": "python -m pip install aider-install; aider-install",
                         "verify": "aider --version"
                     },
                     {
@@ -5197,8 +5209,8 @@
                     {
                         "manager": "winget",
                         "id": "Spotify.Spotify",
-                        "install": "winget install --id Spotify.Spotify -e",
-                        "update": "winget upgrade --id Spotify.Spotify -e",
+                        "install": "winget install --id Spotify.Spotify -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Spotify.Spotify -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Spotify.Spotify -e",
                         "verify": "winget list --id Spotify.Spotify -e"
                     },
@@ -5314,8 +5326,8 @@
                     {
                         "manager": "winget",
                         "id": "VideoLAN.VLC",
-                        "install": "winget install --id VideoLAN.VLC -e",
-                        "update": "winget upgrade --id VideoLAN.VLC -e",
+                        "install": "winget install --id VideoLAN.VLC -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id VideoLAN.VLC -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id VideoLAN.VLC -e",
                         "verify": "winget list --id VideoLAN.VLC -e"
                     },
@@ -5362,6 +5374,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "vlc",
                             "install": "sudo dnf install -y vlc",
                             "update": "sudo dnf upgrade -y vlc",
                             "remove": "sudo dnf remove -y vlc",
@@ -5442,8 +5455,8 @@
                     {
                         "manager": "winget",
                         "id": "Jellyfin.Server",
-                        "install": "winget install --id Jellyfin.Server -e",
-                        "update": "winget upgrade --id Jellyfin.Server -e",
+                        "install": "winget install --id Jellyfin.Server -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Jellyfin.Server -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Jellyfin.Server -e",
                         "verify": "winget list --id Jellyfin.Server -e"
                     },
@@ -5504,15 +5517,15 @@
                     {
                         "manager": "winget",
                         "id": "Jellyfin.JellyfinMediaPlayer",
-                        "install": "winget install --id Jellyfin.JellyfinMediaPlayer -e",
-                        "update": "winget upgrade --id Jellyfin.JellyfinMediaPlayer -e",
+                        "install": "winget install --id Jellyfin.JellyfinMediaPlayer -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Jellyfin.JellyfinMediaPlayer -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Jellyfin.JellyfinMediaPlayer -e",
                         "verify": "winget list --id Jellyfin.JellyfinMediaPlayer -e"
                     },
                     {
                         "manager": "scoop",
                         "id": "extras/jellyfin-media-player",
-                        "install": "scoop bucket add extras && scoop install extras/jellyfin-media-player",
+                        "install": "scoop bucket add extras; scoop install extras/jellyfin-media-player",
                         "update": "scoop update jellyfin-media-player",
                         "remove": "scoop uninstall jellyfin-media-player"
                     }
@@ -5585,8 +5598,8 @@
                     {
                         "manager": "winget",
                         "id": "Gyan.FFmpeg",
-                        "install": "winget install --id Gyan.FFmpeg -e",
-                        "update": "winget upgrade --id Gyan.FFmpeg -e",
+                        "install": "winget install --id Gyan.FFmpeg -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Gyan.FFmpeg -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Gyan.FFmpeg -e",
                         "verify": "ffmpeg -version"
                     },
@@ -5619,6 +5632,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "ffmpeg",
                             "install": "sudo dnf install -y ffmpeg",
                             "update": "sudo dnf upgrade -y ffmpeg",
                             "remove": "sudo dnf remove -y ffmpeg",
@@ -5664,8 +5678,8 @@
                     {
                         "manager": "winget",
                         "id": "PeterPawlowski.foobar2000",
-                        "install": "winget install --id PeterPawlowski.foobar2000 -e",
-                        "update": "winget upgrade --id PeterPawlowski.foobar2000 -e",
+                        "install": "winget install --id PeterPawlowski.foobar2000 -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id PeterPawlowski.foobar2000 -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id PeterPawlowski.foobar2000 -e",
                         "verify": "winget list --id PeterPawlowski.foobar2000 -e"
                     },
@@ -5726,6 +5740,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "audacious",
                             "install": "sudo dnf install -y audacious",
                             "update": "sudo dnf upgrade -y audacious",
                             "remove": "sudo dnf remove -y audacious",
@@ -5788,8 +5803,8 @@
                     {
                         "manager": "winget",
                         "id": "shinchiro.mpv",
-                        "install": "winget install --id shinchiro.mpv -e",
-                        "update": "winget upgrade --id shinchiro.mpv -e",
+                        "install": "winget install --id shinchiro.mpv -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id shinchiro.mpv -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id shinchiro.mpv -e",
                         "verify": "mpv --version"
                     },
@@ -5829,6 +5844,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "mpv",
                             "install": "sudo dnf install -y mpv",
                             "update": "sudo dnf upgrade -y mpv",
                             "remove": "sudo dnf remove -y mpv",
@@ -5887,8 +5903,8 @@
                     {
                         "manager": "winget",
                         "id": "HandBrake.HandBrake",
-                        "install": "winget install --id HandBrake.HandBrake -e",
-                        "update": "winget upgrade --id HandBrake.HandBrake -e",
+                        "install": "winget install --id HandBrake.HandBrake -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id HandBrake.HandBrake -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id HandBrake.HandBrake -e",
                         "verify": "winget list --id HandBrake.HandBrake -e"
                     },
@@ -5986,8 +6002,8 @@
                     {
                         "manager": "winget",
                         "id": "TheDocumentFoundation.LibreOffice",
-                        "install": "winget install --id TheDocumentFoundation.LibreOffice -e",
-                        "update": "winget upgrade --id TheDocumentFoundation.LibreOffice -e",
+                        "install": "winget install --id TheDocumentFoundation.LibreOffice -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id TheDocumentFoundation.LibreOffice -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id TheDocumentFoundation.LibreOffice -e",
                         "verify": "winget list --id TheDocumentFoundation.LibreOffice -e"
                     },
@@ -6034,6 +6050,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "libreoffice",
                             "install": "sudo dnf install -y libreoffice",
                             "update": "sudo dnf upgrade -y libreoffice\\*",
                             "remove": "sudo dnf remove -y libreoffice\\*",
@@ -6114,8 +6131,8 @@
                     {
                         "manager": "winget",
                         "id": "SoftMaker.FreeOffice.2024",
-                        "install": "winget install --id SoftMaker.FreeOffice.2024 -e",
-                        "update": "winget upgrade --id SoftMaker.FreeOffice.2024 -e",
+                        "install": "winget install --id SoftMaker.FreeOffice.2024 -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id SoftMaker.FreeOffice.2024 -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id SoftMaker.FreeOffice.2024 -e",
                         "verify": "winget list --id SoftMaker.FreeOffice.2024 -e"
                     }
@@ -6169,8 +6186,8 @@
                     {
                         "manager": "winget",
                         "id": "Kingsoft.WPSOffice",
-                        "install": "winget install --id Kingsoft.WPSOffice -e",
-                        "update": "winget upgrade --id Kingsoft.WPSOffice -e",
+                        "install": "winget install --id Kingsoft.WPSOffice -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Kingsoft.WPSOffice -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Kingsoft.WPSOffice -e",
                         "verify": "winget list --id Kingsoft.WPSOffice -e"
                     },
@@ -6267,8 +6284,8 @@
                     {
                         "manager": "winget",
                         "id": "SumatraPDF.SumatraPDF",
-                        "install": "winget install --id SumatraPDF.SumatraPDF -e",
-                        "update": "winget upgrade --id SumatraPDF.SumatraPDF -e",
+                        "install": "winget install --id SumatraPDF.SumatraPDF -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id SumatraPDF.SumatraPDF -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id SumatraPDF.SumatraPDF -e"
                     },
                     {
@@ -6314,8 +6331,8 @@
                     {
                         "manager": "winget",
                         "id": "BlenderFoundation.Blender",
-                        "install": "winget install --id BlenderFoundation.Blender -e",
-                        "update": "winget upgrade --id BlenderFoundation.Blender -e",
+                        "install": "winget install --id BlenderFoundation.Blender -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id BlenderFoundation.Blender -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id BlenderFoundation.Blender -e",
                         "verify": "winget list --id BlenderFoundation.Blender -e"
                     },
@@ -6362,6 +6379,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "blender",
                             "install": "sudo dnf install -y blender",
                             "update": "sudo dnf upgrade -y blender",
                             "remove": "sudo dnf remove -y blender",
@@ -6442,8 +6460,8 @@
                     {
                         "manager": "winget",
                         "id": "Upscayl.Upscayl",
-                        "install": "winget install --id Upscayl.Upscayl -e",
-                        "update": "winget upgrade --id Upscayl.Upscayl -e",
+                        "install": "winget install --id Upscayl.Upscayl -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Upscayl.Upscayl -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Upscayl.Upscayl -e",
                         "verify": "winget list --id Upscayl.Upscayl -e"
                     }
@@ -6564,6 +6582,7 @@
                         "manager": "mas",
                         "id": "6444050820",
                         "install": "mas install 6444050820",
+                        "update": "mas upgrade 6444050820",
                         "verify": "open -a \"Draw Things\"",
                         "remove": "sudo mas uninstall 6444050820"
                     }
@@ -6596,8 +6615,8 @@
                     {
                         "manager": "winget",
                         "id": "PCSX2Team.PCSX2",
-                        "install": "winget install --id PCSX2Team.PCSX2 -e",
-                        "update": "winget upgrade --id PCSX2Team.PCSX2 -e",
+                        "install": "winget install --id PCSX2Team.PCSX2 -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id PCSX2Team.PCSX2 -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id PCSX2Team.PCSX2 -e",
                         "verify": "winget list --id PCSX2Team.PCSX2 -e"
                     },
@@ -6684,8 +6703,8 @@
                     {
                         "manager": "winget",
                         "id": "Neovim.Neovim",
-                        "install": "winget install --id Neovim.Neovim -e",
-                        "update": "winget upgrade --id Neovim.Neovim -e",
+                        "install": "winget install --id Neovim.Neovim -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Neovim.Neovim -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Neovim.Neovim -e",
                         "verify": "nvim --version"
                     },
@@ -6904,8 +6923,8 @@
                     {
                         "manager": "winget",
                         "id": "Git.Git",
-                        "install": "winget install --id Git.Git -e",
-                        "update": "winget upgrade --id Git.Git -e",
+                        "install": "winget install --id Git.Git -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Git.Git -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Git.Git -e",
                         "verify": "git --version"
                     },
@@ -7010,8 +7029,8 @@
                     {
                         "manager": "winget",
                         "id": "vim.vim",
-                        "install": "winget install --id vim.vim -e",
-                        "update": "winget upgrade --id vim.vim -e",
+                        "install": "winget install --id vim.vim -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id vim.vim -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id vim.vim -e",
                         "verify": "vim --version"
                     },
@@ -7169,8 +7188,8 @@
                     {
                         "manager": "winget",
                         "id": "CoreyButler.NVMforWindows",
-                        "install": "winget install --id CoreyButler.NVMforWindows -e",
-                        "update": "winget upgrade --id CoreyButler.NVMforWindows -e",
+                        "install": "winget install --id CoreyButler.NVMforWindows -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id CoreyButler.NVMforWindows -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id CoreyButler.NVMforWindows -e",
                         "verify": "nvm version"
                     },
@@ -7349,8 +7368,8 @@
                     {
                         "manager": "winget",
                         "id": "astral-sh.uv",
-                        "install": "winget install --id astral-sh.uv -e",
-                        "update": "winget upgrade --id astral-sh.uv -e",
+                        "install": "winget install --id astral-sh.uv -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id astral-sh.uv -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id astral-sh.uv -e",
                         "verify": "uv --version"
                     },
@@ -7392,6 +7411,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
+                            "update": "cargo install --force --git https://github.com/astral-sh/uv uv",
                             "verify": "uv --version",
                             "remove": "cargo uninstall uv"
                         }
@@ -7416,6 +7436,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
+                            "update": "cargo install --force --git https://github.com/astral-sh/uv uv",
                             "verify": "uv --version",
                             "remove": "cargo uninstall uv"
                         }
@@ -7440,6 +7461,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
+                            "update": "cargo install --force --git https://github.com/astral-sh/uv uv",
                             "verify": "uv --version",
                             "remove": "cargo uninstall uv"
                         }
@@ -7464,6 +7486,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
+                            "update": "cargo install --force --git https://github.com/astral-sh/uv uv",
                             "verify": "uv --version",
                             "remove": "cargo uninstall uv"
                         }
@@ -7512,6 +7535,7 @@
                     "debian": [
                         {
                             "manager": "apt",
+                            "id": "pipx",
                             "install": "sudo apt-get install -y pipx",
                             "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y pipx",
                             "remove": "sudo apt-get remove -y pipx",
@@ -7521,6 +7545,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "pipx",
                             "install": "sudo dnf install -y pipx",
                             "update": "sudo dnf upgrade -y pipx",
                             "remove": "sudo dnf remove -y pipx",
@@ -7530,6 +7555,7 @@
                     "arch": [
                         {
                             "manager": "pacman",
+                            "id": "python-pipx",
                             "install": "sudo pacman -S --noconfirm python-pipx",
                             "update": "sudo pacman -Syu --noconfirm",
                             "remove": "sudo pacman -Rs --noconfirm python-pipx",
@@ -7539,6 +7565,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "python3-pipx",
                             "install": "sudo zypper install -y python3-pipx",
                             "update": "sudo zypper update -y python3-pipx",
                             "remove": "sudo zypper remove -y python3-pipx",
@@ -7572,8 +7599,8 @@
                     {
                         "manager": "winget",
                         "id": "GnuWin32.Tree",
-                        "install": "winget install --id GnuWin32.Tree -e",
-                        "update": "winget upgrade --id GnuWin32.Tree -e",
+                        "install": "winget install --id GnuWin32.Tree -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id GnuWin32.Tree -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id GnuWin32.Tree -e",
                         "verify": "tree --version"
                     },
@@ -7671,8 +7698,8 @@
                     {
                         "manager": "winget",
                         "id": "tldr-pages.tlrc",
-                        "install": "winget install --id tldr-pages.tlrc -e",
-                        "update": "winget upgrade --id tldr-pages.tlrc -e",
+                        "install": "winget install --id tldr-pages.tlrc -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id tldr-pages.tlrc -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id tldr-pages.tlrc -e",
                         "verify": "tldr --version"
                     },
@@ -7782,8 +7809,8 @@
                     {
                         "manager": "winget",
                         "id": "jqlang.jq",
-                        "install": "winget install --id jqlang.jq -e",
-                        "update": "winget upgrade --id jqlang.jq -e",
+                        "install": "winget install --id jqlang.jq -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id jqlang.jq -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id jqlang.jq -e",
                         "verify": "jq --version"
                     },
@@ -7881,8 +7908,8 @@
                     {
                         "manager": "winget",
                         "id": "chmln.sd",
-                        "install": "winget install --id chmln.sd -e",
-                        "update": "winget upgrade --id chmln.sd -e",
+                        "install": "winget install --id chmln.sd -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id chmln.sd -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id chmln.sd -e",
                         "verify": "sd --version"
                     },
@@ -8001,8 +8028,8 @@
                     {
                         "manager": "winget",
                         "id": "BurntSushi.ripgrep.MSVC",
-                        "install": "winget install --id BurntSushi.ripgrep.MSVC -e",
-                        "update": "winget upgrade --id BurntSushi.ripgrep.MSVC -e",
+                        "install": "winget install --id BurntSushi.ripgrep.MSVC -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id BurntSushi.ripgrep.MSVC -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id BurntSushi.ripgrep.MSVC -e",
                         "verify": "rg --version"
                     },
@@ -8129,8 +8156,8 @@
                     {
                         "manager": "winget",
                         "id": "sharkdp.fd",
-                        "install": "winget install --id sharkdp.fd -e",
-                        "update": "winget upgrade --id sharkdp.fd -e",
+                        "install": "winget install --id sharkdp.fd -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id sharkdp.fd -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id sharkdp.fd -e",
                         "verify": "fd --version"
                     },
@@ -8459,8 +8486,8 @@
                     {
                         "manager": "winget",
                         "id": "JesseDuffield.lazygit",
-                        "install": "winget install --id JesseDuffield.lazygit -e",
-                        "update": "winget upgrade --id JesseDuffield.lazygit -e",
+                        "install": "winget install --id JesseDuffield.lazygit -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JesseDuffield.lazygit -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JesseDuffield.lazygit -e",
                         "verify": "lazygit --version"
                     },
@@ -8577,8 +8604,8 @@
                     {
                         "manager": "winget",
                         "id": "sharkdp.bat",
-                        "install": "winget install --id sharkdp.bat -e",
-                        "update": "winget upgrade --id sharkdp.bat -e",
+                        "install": "winget install --id sharkdp.bat -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id sharkdp.bat -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id sharkdp.bat -e",
                         "verify": "bat --version"
                     },
@@ -8701,6 +8728,7 @@
                     {
                         "manager": "cargo",
                         "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
+                        "update": "cargo install --force --git https://github.com/rtk-ai/rtk rtk",
                         "verify": "rtk --version",
                         "remove": "cargo uninstall rtk"
                     }
@@ -8715,6 +8743,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
+                            "update": "cargo install --force --git https://github.com/rtk-ai/rtk rtk",
                             "verify": "rtk --version",
                             "remove": "cargo uninstall rtk"
                         }
@@ -8728,6 +8757,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
+                            "update": "cargo install --force --git https://github.com/rtk-ai/rtk rtk",
                             "verify": "rtk --version",
                             "remove": "cargo uninstall rtk"
                         }
@@ -8741,6 +8771,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
+                            "update": "cargo install --force --git https://github.com/rtk-ai/rtk rtk",
                             "verify": "rtk --version",
                             "remove": "cargo uninstall rtk"
                         }
@@ -8754,6 +8785,7 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
+                            "update": "cargo install --force --git https://github.com/rtk-ai/rtk rtk",
                             "verify": "rtk --version",
                             "remove": "cargo uninstall rtk"
                         }
@@ -8790,8 +8822,8 @@
                     {
                         "manager": "winget",
                         "id": "Amazon.AWSCLI",
-                        "install": "winget install --id Amazon.AWSCLI -e",
-                        "update": "winget upgrade --id Amazon.AWSCLI -e",
+                        "install": "winget install --id Amazon.AWSCLI -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Amazon.AWSCLI -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Amazon.AWSCLI -e",
                         "verify": "aws --version"
                     },
@@ -8922,8 +8954,8 @@
                     {
                         "manager": "winget",
                         "id": "Postman.Postman",
-                        "install": "winget install --id Postman.Postman -e",
-                        "update": "winget upgrade --id Postman.Postman -e",
+                        "install": "winget install --id Postman.Postman -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Postman.Postman -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Postman.Postman -e"
                     },
                     {
@@ -9034,8 +9066,8 @@
                     {
                         "manager": "winget",
                         "id": "Bruno.Bruno",
-                        "install": "winget install --id Bruno.Bruno -e",
-                        "update": "winget upgrade --id Bruno.Bruno -e",
+                        "install": "winget install --id Bruno.Bruno -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Bruno.Bruno -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Bruno.Bruno -e"
                     },
                     {
@@ -9189,8 +9221,8 @@
                     {
                         "manager": "winget",
                         "id": "Transmission.Transmission",
-                        "install": "winget install --id Transmission.Transmission -e",
-                        "update": "winget upgrade --id Transmission.Transmission -e",
+                        "install": "winget install --id Transmission.Transmission -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Transmission.Transmission -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Transmission.Transmission -e"
                     },
                     {
@@ -9316,8 +9348,8 @@
                     {
                         "manager": "winget",
                         "id": "JernejSimoncic.Wget",
-                        "install": "winget install --id JernejSimoncic.Wget -e",
-                        "update": "winget upgrade --id JernejSimoncic.Wget -e",
+                        "install": "winget install --id JernejSimoncic.Wget -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JernejSimoncic.Wget -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JernejSimoncic.Wget -e",
                         "verify": "wget --version"
                     },
@@ -9406,8 +9438,8 @@
                     {
                         "manager": "winget",
                         "id": "cURL.cURL",
-                        "install": "winget install --id cURL.cURL -e",
-                        "update": "winget upgrade --id cURL.cURL -e",
+                        "install": "winget install --id cURL.cURL -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id cURL.cURL -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id cURL.cURL -e",
                         "verify": "curl --version"
                     },
@@ -9571,8 +9603,8 @@
                     {
                         "manager": "winget",
                         "id": "OliverBetz.ExifTool",
-                        "install": "winget install --id OliverBetz.ExifTool -e",
-                        "update": "winget upgrade --id OliverBetz.ExifTool -e",
+                        "install": "winget install --id OliverBetz.ExifTool -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id OliverBetz.ExifTool -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id OliverBetz.ExifTool -e",
                         "verify": "exiftool -ver"
                     },
@@ -9970,8 +10002,8 @@
                     {
                         "manager": "winget",
                         "id": "7zip.7zip",
-                        "install": "winget install --id 7zip.7zip -e",
-                        "update": "winget upgrade --id 7zip.7zip -e",
+                        "install": "winget install --id 7zip.7zip -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id 7zip.7zip -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id 7zip.7zip -e"
                     },
                     {
@@ -10063,8 +10095,8 @@
                     {
                         "manager": "winget",
                         "id": "Docker.DockerDesktop",
-                        "install": "winget install --id Docker.DockerDesktop -e",
-                        "update": "winget upgrade --id Docker.DockerDesktop -e",
+                        "install": "winget install --id Docker.DockerDesktop -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Docker.DockerDesktop -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Docker.DockerDesktop -e",
                         "verify": "docker --version"
                     },
@@ -10118,10 +10150,11 @@
                             "update": "sudo apt update && sudo apt install --only-upgrade -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
                             "remove": "sudo apt remove -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
                             "verify": "docker --version",
-                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\")/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\") $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null"
+                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && if [ \"$ID\" = debian ]; then echo debian; else echo ubuntu; fi)/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && if [ \"$ID\" = debian ]; then echo debian; else echo ubuntu; fi) $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null"
                         },
                         {
                             "manager": "snap",
+                            "id": "docker",
                             "install": "sudo snap install docker",
                             "update": "sudo snap refresh docker",
                             "remove": "sudo snap remove docker",
@@ -10139,6 +10172,7 @@
                         },
                         {
                             "manager": "snap",
+                            "id": "docker",
                             "install": "sudo snap install docker",
                             "update": "sudo snap refresh docker",
                             "remove": "sudo snap remove docker",
@@ -10148,6 +10182,7 @@
                     "arch": [
                         {
                             "manager": "snap",
+                            "id": "docker",
                             "install": "sudo snap install docker",
                             "update": "sudo snap refresh docker",
                             "remove": "sudo snap remove docker",
@@ -10157,6 +10192,7 @@
                     "suse": [
                         {
                             "manager": "snap",
+                            "id": "docker",
                             "install": "sudo snap install docker",
                             "update": "sudo snap refresh docker",
                             "remove": "sudo snap remove docker",
@@ -10212,13 +10248,14 @@
                             "update": "sudo apt update && sudo apt install --only-upgrade -y docker-compose-plugin",
                             "remove": "sudo apt remove -y docker-compose-plugin",
                             "verify": "docker compose version",
-                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\")/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\") $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null",
+                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && if [ \"$ID\" = debian ]; then echo debian; else echo ubuntu; fi)/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && if [ \"$ID\" = debian ]; then echo debian; else echo ubuntu; fi) $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null",
                             "id": "docker-compose-plugin"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "docker-compose-plugin",
                             "install": "sudo dnf install -y docker-compose-plugin",
                             "update": "sudo dnf upgrade -y docker-compose-plugin",
                             "remove": "sudo dnf remove -y docker-compose-plugin",
@@ -10273,8 +10310,8 @@
                     {
                         "manager": "winget",
                         "id": "RedHat.Podman",
-                        "install": "winget install --id RedHat.Podman -e",
-                        "update": "winget upgrade --id RedHat.Podman -e",
+                        "install": "winget install --id RedHat.Podman -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id RedHat.Podman -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id RedHat.Podman -e",
                         "verify": "podman --version"
                     },
@@ -10309,6 +10346,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "podman",
                             "install": "sudo dnf install -y podman",
                             "update": "sudo dnf upgrade -y podman",
                             "remove": "sudo dnf remove -y podman",
@@ -10361,7 +10399,9 @@
                 "windows": [
                     {
                         "manager": "pipx",
+                        "id": "podman-compose",
                         "install": "pipx install podman-compose",
+                        "update": "pipx upgrade podman-compose",
                         "verify": "podman-compose --version",
                         "remove": "pipx uninstall podman-compose"
                     }
@@ -10378,7 +10418,9 @@
                         },
                         {
                             "manager": "pipx",
+                            "id": "podman-compose",
                             "install": "pipx install podman-compose",
+                            "update": "pipx upgrade podman-compose",
                             "remove": "pipx uninstall podman-compose",
                             "verify": "podman-compose --version"
                         }
@@ -10386,6 +10428,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "podman-compose",
                             "install": "sudo dnf install -y podman-compose",
                             "update": "sudo dnf upgrade -y podman-compose",
                             "remove": "sudo dnf remove -y podman-compose",
@@ -10393,7 +10436,9 @@
                         },
                         {
                             "manager": "pipx",
+                            "id": "podman-compose",
                             "install": "pipx install podman-compose",
+                            "update": "pipx upgrade podman-compose",
                             "remove": "pipx uninstall podman-compose",
                             "verify": "podman-compose --version"
                         }
@@ -10401,7 +10446,9 @@
                     "arch": [
                         {
                             "manager": "pipx",
+                            "id": "podman-compose",
                             "install": "pipx install podman-compose",
+                            "update": "pipx upgrade podman-compose",
                             "remove": "pipx uninstall podman-compose",
                             "verify": "podman-compose --version"
                         }
@@ -10409,7 +10456,9 @@
                     "suse": [
                         {
                             "manager": "pipx",
+                            "id": "podman-compose",
                             "install": "pipx install podman-compose",
+                            "update": "pipx upgrade podman-compose",
                             "remove": "pipx uninstall podman-compose",
                             "verify": "podman-compose --version"
                         }
@@ -10467,8 +10516,8 @@
                     {
                         "manager": "winget",
                         "id": "DBeaver.DBeaver.Community",
-                        "install": "winget install --id DBeaver.DBeaver.Community -e",
-                        "update": "winget upgrade --id DBeaver.DBeaver.Community -e",
+                        "install": "winget install --id DBeaver.DBeaver.Community -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id DBeaver.DBeaver.Community -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id DBeaver.DBeaver.Community -e",
                         "verify": "dbeaver -version"
                     },
@@ -10589,8 +10638,8 @@
                     {
                         "manager": "winget",
                         "id": "JetBrains.DataGrip",
-                        "install": "winget install --id JetBrains.DataGrip -e",
-                        "update": "winget upgrade --id JetBrains.DataGrip -e",
+                        "install": "winget install --id JetBrains.DataGrip -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JetBrains.DataGrip -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JetBrains.DataGrip -e"
                     },
                     {
@@ -10673,8 +10722,8 @@
                     {
                         "manager": "winget",
                         "id": "JGraph.Draw",
-                        "install": "winget install --id JGraph.Draw -e",
-                        "update": "winget upgrade --id JGraph.Draw -e",
+                        "install": "winget install --id JGraph.Draw -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id JGraph.Draw -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id JGraph.Draw -e"
                     },
                     {
@@ -10814,8 +10863,8 @@
                     {
                         "manager": "winget",
                         "id": "Proton.ProtonVPN",
-                        "install": "winget install --id Proton.ProtonVPN -e",
-                        "update": "winget upgrade --id Proton.ProtonVPN -e",
+                        "install": "winget install --id Proton.ProtonVPN -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Proton.ProtonVPN -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Proton.ProtonVPN -e"
                     },
                     {
@@ -10901,8 +10950,8 @@
                     {
                         "manager": "winget",
                         "id": "ElementLabs.LMStudio",
-                        "install": "winget install --id ElementLabs.LMStudio -e",
-                        "update": "winget upgrade --id ElementLabs.LMStudio -e",
+                        "install": "winget install --id ElementLabs.LMStudio -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id ElementLabs.LMStudio -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id ElementLabs.LMStudio -e",
                         "verify": "winget list --id ElementLabs.LMStudio"
                     }
@@ -10955,8 +11004,8 @@
                     {
                         "manager": "winget",
                         "id": "Ollama.Ollama",
-                        "install": "winget install --id Ollama.Ollama -e",
-                        "update": "winget upgrade --id Ollama.Ollama -e",
+                        "install": "winget install --id Ollama.Ollama -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Ollama.Ollama -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Ollama.Ollama -e",
                         "verify": "ollama --version"
                     }
@@ -11049,8 +11098,8 @@
                     {
                         "manager": "winget",
                         "id": "ggml.llamacpp",
-                        "install": "winget install --id ggml.llamacpp -e",
-                        "update": "winget upgrade --id ggml.llamacpp -e",
+                        "install": "winget install --id ggml.llamacpp -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id ggml.llamacpp -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id ggml.llamacpp -e",
                         "verify": "llama-cli --version"
                     }
@@ -11083,8 +11132,8 @@
                     {
                         "manager": "winget",
                         "id": "Joplin.Joplin",
-                        "install": "winget install --id Joplin.Joplin -e",
-                        "update": "winget upgrade --id Joplin.Joplin -e",
+                        "install": "winget install --id Joplin.Joplin -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Joplin.Joplin -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Joplin.Joplin -e",
                         "verify": "winget list --id Joplin.Joplin"
                     }
@@ -11265,8 +11314,8 @@
                     {
                         "manager": "winget",
                         "id": "Amazon.Corretto.{version}.JDK",
-                        "install": "winget install --id Amazon.Corretto.{version}.JDK -e",
-                        "update": "winget upgrade --id Amazon.Corretto.{version}.JDK -e",
+                        "install": "winget install --id Amazon.Corretto.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Amazon.Corretto.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Amazon.Corretto.{version}.JDK -e",
                         "verify": "java -version"
                     },
@@ -11291,6 +11340,7 @@
                     "debian": [
                         {
                             "manager": "apt",
+                            "id": "java-{version}-amazon-corretto-jdk",
                             "repoSetup": "wget -O - https://apt.corretto.aws/corretto.key | sudo gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && echo \"deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main\" | sudo tee /etc/apt/sources.list.d/corretto.list && sudo apt-get update",
                             "install": "sudo apt-get install -y java-{version}-amazon-corretto-jdk",
                             "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y java-{version}-amazon-corretto-jdk",
@@ -11301,6 +11351,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "java-{version}-amazon-corretto-devel",
                             "repoSetup": "sudo rpm --import https://yum.corretto.aws/corretto.key && sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo",
                             "install": "sudo dnf install -y java-{version}-amazon-corretto-devel",
                             "update": "sudo dnf upgrade -y java-{version}-amazon-corretto-devel",
@@ -11312,6 +11363,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "java-{version}-amazon-corretto-devel",
                             "repoSetup": "sudo rpm --import https://yum.corretto.aws/corretto.key && sudo zypper addrepo https://yum.corretto.aws/corretto.repo && sudo zypper refresh",
                             "install": "sudo zypper install -y java-{version}-amazon-corretto-devel",
                             "update": "sudo zypper update -y java-{version}-amazon-corretto-devel",
@@ -11349,8 +11401,8 @@
                     {
                         "manager": "winget",
                         "id": "EclipseAdoptium.Temurin.{version}.JDK",
-                        "install": "winget install --id EclipseAdoptium.Temurin.{version}.JDK -e",
-                        "update": "winget upgrade --id EclipseAdoptium.Temurin.{version}.JDK -e",
+                        "install": "winget install --id EclipseAdoptium.Temurin.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id EclipseAdoptium.Temurin.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id EclipseAdoptium.Temurin.{version}.JDK -e",
                         "verify": "java -version"
                     },
@@ -11375,6 +11427,7 @@
                     "debian": [
                         {
                             "manager": "apt",
+                            "id": "temurin-{version}-jdk",
                             "repoSetup": "sudo apt install -y wget apt-transport-https gpg && wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null && echo \"deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main\" | sudo tee /etc/apt/sources.list.d/adoptium.list && sudo apt update",
                             "install": "sudo apt install -y temurin-{version}-jdk",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y temurin-{version}-jdk",
@@ -11385,6 +11438,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "temurin-{version}-jdk",
                             "repoSetup": "cat <<'EOF' | sudo tee /etc/yum.repos.d/adoptium.repo\n[Adoptium]\nname=Adoptium\nbaseurl=https://packages.adoptium.net/artifactory/rpm/fedora/$releasever/$basearch\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public\nEOF",
                             "install": "sudo dnf install -y temurin-{version}-jdk",
                             "update": "sudo dnf upgrade -y temurin-{version}-jdk",
@@ -11396,6 +11450,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "temurin-{version}-jdk",
                             "repoSetup": "sudo zypper ar -f https://packages.adoptium.net/artifactory/rpm/opensuse/$(. /etc/os-release; echo $VERSION_ID)/$(uname -m) adoptium",
                             "install": "sudo zypper install -y temurin-{version}-jdk",
                             "update": "sudo zypper update -y temurin-{version}-jdk",
@@ -11433,8 +11488,8 @@
                     {
                         "manager": "winget",
                         "id": "Microsoft.OpenJDK.{version}",
-                        "install": "winget install --id Microsoft.OpenJDK.{version} -e",
-                        "update": "winget upgrade --id Microsoft.OpenJDK.{version} -e",
+                        "install": "winget install --id Microsoft.OpenJDK.{version} -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Microsoft.OpenJDK.{version} -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Microsoft.OpenJDK.{version} -e",
                         "verify": "java -version"
                     },
@@ -11459,6 +11514,7 @@
                     "debian": [
                         {
                             "manager": "apt",
+                            "id": "msopenjdk-{version}",
                             "repoSetup": ". /etc/os-release && wget https://packages.microsoft.com/config/${ID}/${VERSION_ID}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb && sudo apt-get install -y apt-transport-https && sudo apt-get update",
                             "install": "sudo apt-get install -y msopenjdk-{version}",
                             "update": "sudo apt-get update && sudo apt-get install --only-upgrade -y msopenjdk-{version}",
@@ -11471,6 +11527,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "msopenjdk-{version}",
                             "repoSetup": "sudo rpm -Uvh https://packages.microsoft.com/config/opensuse/15/packages-microsoft-prod.rpm && sudo zypper update -y",
                             "install": "sudo zypper install -y msopenjdk-{version}",
                             "update": "sudo zypper update -y msopenjdk-{version}",
@@ -11508,8 +11565,8 @@
                     {
                         "manager": "winget",
                         "id": "Azul.Zulu.{version}.JDK",
-                        "install": "winget install --id Azul.Zulu.{version}.JDK -e",
-                        "update": "winget upgrade --id Azul.Zulu.{version}.JDK -e",
+                        "install": "winget install --id Azul.Zulu.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Azul.Zulu.{version}.JDK -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Azul.Zulu.{version}.JDK -e",
                         "verify": "java -version"
                     },
@@ -11534,6 +11591,7 @@
                     "debian": [
                         {
                             "manager": "apt",
+                            "id": "zulu{version}-jdk",
                             "repoSetup": "sudo apt install -y gnupg ca-certificates curl && curl -s https://repos.azul.com/azul-repo.key | sudo gpg --dearmor -o /usr/share/keyrings/azul.gpg && echo \"deb [signed-by=/usr/share/keyrings/azul.gpg] https://repos.azul.com/zulu/deb stable main\" | sudo tee /etc/apt/sources.list.d/zulu.list && sudo apt update",
                             "install": "sudo apt install -y zulu{version}-jdk",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y zulu{version}-jdk",
@@ -11544,6 +11602,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "zulu{version}-jdk",
                             "repoSetup": "sudo rpm --import https://repos.azul.com/azul-repo.key && sudo curl -L -o /etc/yum.repos.d/zulu.repo https://repos.azul.com/zulu/rpm/zulu.repo",
                             "install": "sudo dnf install -y zulu{version}-jdk",
                             "update": "sudo dnf upgrade -y zulu{version}-jdk",
@@ -11555,6 +11614,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "zulu{version}-jdk",
                             "repoSetup": "curl -O https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-2.noarch.rpm && sudo rpm --import https://repos.azul.com/azul-repo.key && sudo zypper install -y zulu-repo-1.0.0-2.noarch.rpm",
                             "install": "sudo zypper install -y zulu{version}-jdk",
                             "update": "sudo zypper update -y zulu{version}-jdk",
@@ -11591,8 +11651,8 @@
                     {
                         "manager": "winget",
                         "id": "OpenJS.NodeJS.LTS",
-                        "install": "winget install --id OpenJS.NodeJS.LTS -e",
-                        "update": "winget upgrade --id OpenJS.NodeJS.LTS -e",
+                        "install": "winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id OpenJS.NodeJS.LTS -e",
                         "verify": "node --version"
                     },
@@ -11670,7 +11730,7 @@
                     ]
                 }
             },
-            "notes": "`node@26` is the Active LTS line, `node@24` is Maintenance LTS and `node@22` is near end of life. On Windows, winget and Chocolatey install the current LTS (no per-version package for 24 or 26), while Scoop installs the selected line from the versions bucket. nvm and fnm are also catalogued for version management."
+            "notes": "`node@26` is the Active LTS line, `node@24` is Maintenance LTS and `node@22` is near end of life. On Windows, winget and Chocolatey install the current LTS only, whichever lines are selected (winget has a per-version id only for 22), while Scoop installs the selected line from the versions bucket. nvm and fnm are also catalogued for version management."
         },
         {
             "id": "python",
@@ -11697,8 +11757,8 @@
                     {
                         "manager": "winget",
                         "id": "Python.Python.{version}",
-                        "install": "winget install --id Python.Python.{version} -e",
-                        "update": "winget upgrade --id Python.Python.{version} -e",
+                        "install": "winget install --id Python.Python.{version} -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Python.Python.{version} -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Python.Python.{version} -e",
                         "verify": "python --version"
                     },
@@ -11729,6 +11789,7 @@
                         {
                             "manager": "uv",
                             "install": "uv python install {version}",
+                            "update": "uv python upgrade {version}",
                             "verify": "python3 --version",
                             "remove": "uv python uninstall {version}"
                         }
@@ -11736,6 +11797,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "python{version}",
                             "install": "sudo dnf install -y python{version}",
                             "update": "sudo dnf upgrade -y python{version}",
                             "remove": "sudo dnf remove -y python{version}",
@@ -11744,6 +11806,7 @@
                         {
                             "manager": "uv",
                             "install": "uv python install {version}",
+                            "update": "uv python upgrade {version}",
                             "verify": "python3 --version",
                             "remove": "uv python uninstall {version}"
                         }
@@ -11752,6 +11815,7 @@
                         {
                             "manager": "uv",
                             "install": "uv python install {version}",
+                            "update": "uv python upgrade {version}",
                             "verify": "python3 --version",
                             "remove": "uv python uninstall {version}"
                         }
@@ -11760,6 +11824,7 @@
                         {
                             "manager": "uv",
                             "install": "uv python install {version}",
+                            "update": "uv python upgrade {version}",
                             "verify": "python3 --version",
                             "remove": "uv python uninstall {version}"
                         }
@@ -11791,8 +11856,8 @@
                     {
                         "manager": "winget",
                         "id": "GoLang.Go",
-                        "install": "winget install --id GoLang.Go -e",
-                        "update": "winget upgrade --id GoLang.Go -e",
+                        "install": "winget install --id GoLang.Go -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id GoLang.Go -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id GoLang.Go -e",
                         "verify": "go version"
                     },
@@ -11834,6 +11899,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "golang",
                             "install": "sudo dnf install -y golang",
                             "update": "sudo dnf upgrade -y golang",
                             "remove": "sudo dnf remove -y golang",
@@ -11851,6 +11917,7 @@
                     "arch": [
                         {
                             "manager": "pacman",
+                            "id": "go",
                             "install": "sudo pacman -S --noconfirm go",
                             "update": "sudo pacman -Syu --noconfirm",
                             "remove": "sudo pacman -Rs --noconfirm go",
@@ -11868,6 +11935,7 @@
                     "suse": [
                         {
                             "manager": "zypper",
+                            "id": "go",
                             "install": "sudo zypper install -y go",
                             "update": "sudo zypper update -y go",
                             "remove": "sudo zypper remove -y go",
@@ -11917,7 +11985,7 @@
                     {
                         "manager": "winget",
                         "id": "Rustlang.Rustup",
-                        "install": "winget install --id Rustlang.Rustup -e",
+                        "install": "winget install --id Rustlang.Rustup -e --accept-source-agreements --accept-package-agreements",
                         "update": "rustup update",
                         "remove": "rustup self uninstall",
                         "verify": "cargo --version"
@@ -11975,6 +12043,7 @@
                     "arch": [
                         {
                             "manager": "pacman",
+                            "id": "rust",
                             "install": "sudo pacman -S --noconfirm rust",
                             "update": "sudo pacman -Syu --noconfirm",
                             "remove": "sudo pacman -Rs --noconfirm rust",
@@ -12067,6 +12136,7 @@
                     "fedora": [
                         {
                             "manager": "dnf",
+                            "id": "maven",
                             "install": "sudo dnf install -y maven",
                             "update": "sudo dnf upgrade -y maven",
                             "remove": "sudo dnf remove -y maven",
@@ -12117,7 +12187,7 @@
                     {
                         "manager": "script",
                         "install": "curl -s \"https://get.sdkman.io\" | bash",
-                        "update": "sdk selfupdate",
+                        "update": "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && sdk selfupdate",
                         "remove": "rm -rf ~/.sdkman",
                         "verify": "sdk version"
                     }
@@ -12128,7 +12198,7 @@
                         {
                             "manager": "script",
                             "install": "curl -s \"https://get.sdkman.io\" | bash",
-                            "update": "sdk selfupdate",
+                            "update": "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && sdk selfupdate",
                             "remove": "rm -rf ~/.sdkman",
                             "verify": "sdk version"
                         }
@@ -12137,7 +12207,7 @@
                         {
                             "manager": "script",
                             "install": "curl -s \"https://get.sdkman.io\" | bash",
-                            "update": "sdk selfupdate",
+                            "update": "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && sdk selfupdate",
                             "remove": "rm -rf ~/.sdkman",
                             "verify": "sdk version"
                         }
@@ -12146,7 +12216,7 @@
                         {
                             "manager": "script",
                             "install": "curl -s \"https://get.sdkman.io\" | bash",
-                            "update": "sdk selfupdate",
+                            "update": "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && sdk selfupdate",
                             "remove": "rm -rf ~/.sdkman",
                             "verify": "sdk version"
                         }
@@ -12155,7 +12225,7 @@
                         {
                             "manager": "script",
                             "install": "curl -s \"https://get.sdkman.io\" | bash",
-                            "update": "sdk selfupdate",
+                            "update": "source \"$HOME/.sdkman/bin/sdkman-init.sh\" && sdk selfupdate",
                             "remove": "rm -rf ~/.sdkman",
                             "verify": "sdk version"
                         }
@@ -12187,8 +12257,8 @@
                     {
                         "manager": "winget",
                         "id": "Schniz.fnm",
-                        "install": "winget install --id Schniz.fnm -e",
-                        "update": "winget upgrade --id Schniz.fnm -e",
+                        "install": "winget install --id Schniz.fnm -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Schniz.fnm -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Schniz.fnm -e",
                         "verify": "fnm --version"
                     },
@@ -12414,8 +12484,8 @@
                     {
                         "manager": "winget",
                         "id": "Oven-sh.Bun",
-                        "install": "winget install --id Oven-sh.Bun -e",
-                        "update": "winget upgrade --id Oven-sh.Bun -e",
+                        "install": "winget install --id Oven-sh.Bun -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Oven-sh.Bun -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Oven-sh.Bun -e",
                         "verify": "bun --version"
                     },
@@ -12637,9 +12707,9 @@
                     {
                         "manager": "winget",
                         "id": "GitHub.cli",
-                        "install": "winget install --id GitHub.cli -e",
-                        "update": "winget upgrade --id GitHub.cli -e",
-                        "upgrade": "winget upgrade --id GitHub.cli -e",
+                        "install": "winget install --id GitHub.cli -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id GitHub.cli -e --accept-source-agreements --accept-package-agreements",
+                        "upgrade": "winget upgrade --id GitHub.cli -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id GitHub.cli -e",
                         "verify": "gh --version"
                     }
@@ -12963,8 +13033,8 @@
                     {
                         "manager": "winget",
                         "id": "qarmin.krokiet",
-                        "install": "winget install --id qarmin.krokiet -e",
-                        "update": "winget upgrade --id qarmin.krokiet -e",
+                        "install": "winget install --id qarmin.krokiet -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id qarmin.krokiet -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id qarmin.krokiet -e"
                     },
                     {
@@ -13214,8 +13284,8 @@
                     {
                         "manager": "winget",
                         "id": "zizmor.zizmor",
-                        "install": "winget install --id zizmor.zizmor -e",
-                        "update": "winget upgrade --id zizmor.zizmor -e",
+                        "install": "winget install --id zizmor.zizmor -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id zizmor.zizmor -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id zizmor.zizmor -e",
                         "verify": "zizmor --version"
                     },
@@ -13407,8 +13477,8 @@
                     {
                         "manager": "winget",
                         "id": "rhysd.actionlint",
-                        "install": "winget install --id rhysd.actionlint -e",
-                        "update": "winget upgrade --id rhysd.actionlint -e",
+                        "install": "winget install --id rhysd.actionlint -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id rhysd.actionlint -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id rhysd.actionlint -e",
                         "verify": "actionlint -version"
                     },
@@ -13471,8 +13541,8 @@
                     {
                         "manager": "winget",
                         "id": "Casey.Just",
-                        "install": "winget install --id Casey.Just -e",
-                        "update": "winget upgrade --id Casey.Just -e",
+                        "install": "winget install --id Casey.Just -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id Casey.Just -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id Casey.Just -e",
                         "verify": "just --version"
                     },
@@ -13582,8 +13652,8 @@
                     {
                         "manager": "winget",
                         "id": "koalaman.shellcheck",
-                        "install": "winget install --id koalaman.shellcheck -e",
-                        "update": "winget upgrade --id koalaman.shellcheck -e",
+                        "install": "winget install --id koalaman.shellcheck -e --accept-source-agreements --accept-package-agreements",
+                        "update": "winget upgrade --id koalaman.shellcheck -e --accept-source-agreements --accept-package-agreements",
                         "remove": "winget uninstall --id koalaman.shellcheck -e",
                         "verify": "shellcheck --version"
                     },

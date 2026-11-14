@@ -240,7 +240,7 @@ describe('ScriptOutput — combine per package manager', () => {
         expect(combineBox()).toBeInTheDocument();
         fireEvent.click(screen.getByRole('button', { name: 'Update' }));
         expect(combineBox()).toBeInTheDocument();
-        expect(screen.getByTestId('output-code').textContent).toContain('brew update && brew upgrade git jq');
+        expect(screen.getByTestId('output-code').textContent).toContain('brew update && { brew upgrade git jq || ');
 
         rerender(
             <ToasterProvider>
