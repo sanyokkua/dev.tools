@@ -269,7 +269,7 @@ describe('Software Installer — Step 3: App catalog', () => {
         fireEvent.click(within(screen.getByRole('group', { name: 'Update scope' })).getByText('Batch maintenance'));
 
         expect(screen.getByTestId('output-code')).toBeInTheDocument();
-        expect(screen.getByTestId('output-code').textContent).toContain('brew update && brew upgrade --greedy');
+        expect(screen.getByTestId('output-code').textContent).toContain('brew update && brew upgrade\n');
         expect(screen.getByRole('button', { name: /Build Scripts/i })).not.toBeDisabled();
 
         const batchManagers = screen.getByRole('group', { name: 'Batch maintenance managers' });

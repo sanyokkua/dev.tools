@@ -1688,7 +1688,7 @@ describe('buildMaintenancePlan', () => {
             includeCleanup: true,
         });
         const macScript = buildMaintenanceScript(macPlan, { platform: 'macos' });
-        expect(macScript).toContain('_maint_1_update() {\nbrew update && brew upgrade --greedy\n}');
+        expect(macScript).toContain('_maint_1_update() {\nbrew update && brew upgrade\n}');
         expect(macScript).toContain('run_task "update Homebrew" _maint_1_update');
         expect(macScript).toContain('run_task "cleanup Homebrew" _maint_1_cleanup');
         expect(macScript).not.toMatch(/(^|\n)\s*[^#].*&\s*$/m);
@@ -1701,7 +1701,7 @@ describe('buildMaintenancePlan', () => {
         });
         const windowsScript = buildMaintenanceScript(windowsPlan, { platform: 'windows' });
         expect(windowsScript).toContain('$ErrorActionPreference = "Stop"');
-        expect(windowsScript).toContain('winget upgrade --all --include-unknown --include-pinned');
+        expect(windowsScript).toContain('winget upgrade --all --accept-package-agreements --accept-source-agreements');
         expect(windowsScript).toContain('try { Write-Host "▶ update winget"');
     });
 });
@@ -1712,7 +1712,7 @@ describe('buildManagerWideScript', () => {
     it('macOS: emits brew and mas update-all commands wrapped in run_task, in order', () => {
         const script = buildManagerWideScript(['brew', 'mas'], 'update', { platform: 'macos' }, false);
         expect(script).toContain('#!/usr/bin/env bash');
-        expect(script).toContain('brew update && brew upgrade --greedy');
+        expect(script).toContain('brew update && brew upgrade\n');
         expect(script).toContain('mas upgrade');
         expect(script.indexOf('brew update')).toBeLessThan(script.indexOf('mas upgrade'));
         expect(script).toContain('run_task "update Homebrew" _maint_1_update');
@@ -1722,8 +1722,7 @@ describe('buildManagerWideScript', () => {
     it('Windows: emits winget/choco/scoop update-all commands via try/catch', () => {
         const script = buildManagerWideScript(['winget', 'choco', 'scoop'], 'update', { platform: 'windows' }, false);
         expect(script).toContain('$ok=0;$fail=0');
-        expect(script).toContain('winget upgrade --all --include-unknown');
-        expect(script).toContain('choco upgrade chocolatey -y;');
+        expect(script).toContain('winget upgrade --all --accept-package-agreements');
         expect(script).toContain('choco upgrade all -y;');
         expect(script).toContain('scoop update;');
         expect(script).toContain('scoop update *;');
@@ -1736,7 +1735,7 @@ describe('buildManagerWideScript', () => {
             { platform: 'linux', linuxDistro: 'debian' },
             false,
         );
-        expect(script).toContain('sudo apt update && sudo apt full-upgrade -y');
+        expect(script).toContain('sudo apt-get update && sudo apt-get upgrade -y');
         expect(script).toContain('flatpak update -y');
         expect(script).toContain('sudo snap refresh');
     });
@@ -1802,7 +1801,7 @@ describe('buildManagerWideScript', () => {
         const script = buildManagerWideScript(['apt'], 'update', { platform: 'linux', linuxDistro: 'debian' }, false);
         const fnMatch = script.match(/_maint_1_update\(\) \{\n([\s\S]*?)\n\}/);
         expect(fnMatch).not.toBeNull();
-        expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
+        expect(fnMatch![1]).toBe('sudo apt-get update && sudo apt-get upgrade -y');
     });
 
     it('action=upgrade uses the manager upgrade operation', () => {

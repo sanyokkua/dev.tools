@@ -1,6 +1,7 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { HIDDEN_MANAGERS, MANAGER_LABEL } from '@/common/catalog-utils';
+import { PROVIDER_RESOLVED_MANAGERS } from '@/common/manager-bootstrap-catalog';
 import type { BuilderConfig, MaintenancePlan, RequiredBootstrap, ScriptAction } from '@/common/script-builder';
 import {
     buildBootstrapScript,
@@ -109,8 +110,15 @@ const ScriptOutput = ({
 
     // Batch choices are scoped to the active target and action. The separate platform/distro
     // reset above keeps a user's deselection intact while they edit manager preferences.
+    // Dev managers (npm/uv/pipx) are opt-in: they may not be installed, so they start deselected.
     useEffect(() => {
-        if (maintenanceAction) setBatchManagers(batchManagerEntries.map((entry) => entry.manager));
+        if (maintenanceAction) {
+            setBatchManagers(
+                batchManagerEntries
+                    .map((entry) => entry.manager)
+                    .filter((manager) => !PROVIDER_RESOLVED_MANAGERS.includes(manager)),
+            );
+        }
     }, [maintenanceAction, batchManagerEntries]);
 
     const config = useMemo<BuilderConfig>(
