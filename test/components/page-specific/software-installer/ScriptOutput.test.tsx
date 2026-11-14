@@ -145,7 +145,7 @@ describe('ScriptOutput', () => {
 
         const outputCode = screen.getByTestId('output-code');
         expect(outputCode.textContent).toContain('batch maintenance');
-        expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
+        expect(outputCode.textContent).toContain('brew update && brew upgrade\n');
         expect(screen.getByTestId('batch-maintenance-warning')).toHaveTextContent(
             'updates software outside the selected app basket',
         );
@@ -164,7 +164,7 @@ describe('ScriptOutput', () => {
 
         const outputCode = screen.getByTestId('output-code');
         expect(outputCode.textContent).toContain('batch maintenance');
-        expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
+        expect(outputCode.textContent).toContain('brew update && brew upgrade\n');
         expect(outputCode.textContent).not.toContain('brew upgrade git');
     });
 

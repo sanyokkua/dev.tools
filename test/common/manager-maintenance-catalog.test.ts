@@ -68,10 +68,9 @@ describe('MANAGER_MAINTENANCE integrity', () => {
 
     it('uses the requested batch commands for Windows managers', () => {
         expect(MANAGER_MAINTENANCE.windows.find((e) => e.manager === 'winget')?.operations.update?.steps).toEqual([
-            'winget upgrade --all --include-unknown --include-pinned',
+            'winget upgrade --all --accept-package-agreements --accept-source-agreements',
         ]);
         expect(MANAGER_MAINTENANCE.windows.find((e) => e.manager === 'choco')?.operations.update?.steps).toEqual([
-            'choco upgrade chocolatey -y',
             'choco upgrade all -y',
         ]);
         expect(MANAGER_MAINTENANCE.windows.find((e) => e.manager === 'scoop')?.operations.update?.steps).toEqual([
@@ -80,11 +79,77 @@ describe('MANAGER_MAINTENANCE integrity', () => {
         ]);
     });
 
-    it('exposes separate update and upgrade operations for every batch entry', () => {
+    it('exposes separate update and upgrade operations for every batch entry except npm', () => {
         for (const entry of ALL_ENTRIES) {
             expect(entry.operations.update?.steps.length).toBeGreaterThan(0);
-            expect(entry.operations.upgrade?.steps.length).toBeGreaterThan(0);
+            if (entry.manager === 'npm') {
+                // npm has no global forced upgrade; Upgrade is emitted per app instead.
+                expect(entry.operations.upgrade).toBeUndefined();
+            } else {
+                expect(entry.operations.upgrade?.steps.length).toBeGreaterThan(0);
+            }
         }
+    });
+
+    describe('Update is non-forced and Upgrade is forced/greedy', () => {
+        const find = (entries: typeof ALL_ENTRIES | undefined, manager: CatalogManager) =>
+            entries?.find((e) => e.manager === manager);
+        const steps = (entries: typeof ALL_ENTRIES | undefined, manager: CatalogManager) => ({
+            update: find(entries, manager)?.operations.update?.steps.join(' && '),
+            upgrade: find(entries, manager)?.operations.upgrade?.steps.join(' && '),
+        });
+
+        it.each([
+            ['brew', MANAGER_MAINTENANCE.macos, 'brew update && brew upgrade', 'brew update && brew upgrade --greedy'],
+            [
+                'winget',
+                MANAGER_MAINTENANCE.windows,
+                'winget upgrade --all --accept-package-agreements --accept-source-agreements',
+                'winget upgrade --all --include-unknown --include-pinned --accept-package-agreements --accept-source-agreements',
+            ],
+            [
+                'apt',
+                MANAGER_MAINTENANCE.linux.debian,
+                'sudo apt-get update && sudo apt-get upgrade -y',
+                'sudo apt-get update && sudo apt-get full-upgrade -y',
+            ],
+            [
+                'dnf',
+                MANAGER_MAINTENANCE.linux.fedora,
+                'sudo dnf upgrade --refresh -y',
+                'sudo dnf distro-sync --refresh -y',
+            ],
+            ['uv', MANAGER_MAINTENANCE.macos, 'uv tool upgrade --all', 'uv tool upgrade --all --reinstall'],
+            ['pipx', MANAGER_MAINTENANCE.windows, 'pipx upgrade-all', 'pipx reinstall-all'],
+        ] as const)('%s update and upgrade differ', (manager, entries, update, upgrade) => {
+            expect(steps(entries, manager)).toEqual({ update, upgrade });
+        });
+
+        it('zypper Upgrade is a distribution upgrade while Update keeps the Tumbleweed/Leap detection', () => {
+            const { update, upgrade } = steps(MANAGER_MAINTENANCE.linux.suse, 'zypper');
+            expect(update).toContain('sudo zypper update -y');
+            expect(upgrade).toBe('sudo zypper refresh && sudo zypper dup -y');
+        });
+
+        it.each([
+            ['choco', MANAGER_MAINTENANCE.windows, 'choco upgrade all -y'],
+            ['scoop', MANAGER_MAINTENANCE.windows, 'scoop update && scoop update *'],
+            ['pacman', MANAGER_MAINTENANCE.linux.arch, 'sudo pacman -Syu --noconfirm'],
+            ['flatpak', MANAGER_MAINTENANCE.linux.debian, 'flatpak update -y'],
+            ['snap', MANAGER_MAINTENANCE.linux.debian, 'sudo snap refresh'],
+        ] as const)('%s has no forced variant, so update and upgrade are identical', (manager, entries, command) => {
+            expect(steps(entries, manager)).toEqual({ update: command, upgrade: command });
+        });
+
+        it('offers npm update -g on every platform, with no global upgrade', () => {
+            for (const entries of [
+                MANAGER_MAINTENANCE.macos,
+                MANAGER_MAINTENANCE.windows,
+                MANAGER_MAINTENANCE.linux.arch,
+            ]) {
+                expect(steps(entries, 'npm')).toEqual({ update: 'npm update -g', upgrade: undefined });
+            }
+        });
     });
 
     it('has zero appimage entries anywhere in the catalog', () => {
