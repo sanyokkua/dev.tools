@@ -3,7 +3,7 @@ jest.mock('mermaid', () => ({
     default: { initialize: jest.fn(), parse: jest.fn(), render: jest.fn() },
 }));
 
-import { parseMermaid, renderMermaid } from '@/common/mermaid';
+import { parseMermaid, renderMermaid, toXmlSvg } from '@/common/mermaid';
 import mermaidDefault from 'mermaid';
 
 const mm = mermaidDefault as unknown as { initialize: jest.Mock; parse: jest.Mock; render: jest.Mock };
@@ -54,6 +54,44 @@ describe('renderMermaid', () => {
     it('propagates errors thrown by mermaid.render', async () => {
         mm.render.mockRejectedValue(new Error('render failure'));
         await expect(renderMermaid('d6', 'bad diagram')).rejects.toThrow('render failure');
+    });
+});
+
+describe('renderMermaid options', () => {
+    it('disables htmlLabels globally and for flowchart when htmlLabels: false', async () => {
+        await renderMermaid('d7', 'graph TD\nA --> B', { htmlLabels: false });
+        expect(mm.initialize).toHaveBeenCalledWith(
+            expect.objectContaining({ htmlLabels: false, flowchart: { htmlLabels: false } }),
+        );
+    });
+
+    it('does not set htmlLabels by default', async () => {
+        await renderMermaid('d8', 'graph TD\nA --> B');
+        expect(mm.initialize.mock.calls[0][0]).not.toHaveProperty('htmlLabels');
+    });
+});
+
+// ─── toXmlSvg ─────────────────────────────────────────────────────────────────
+
+describe('toXmlSvg', () => {
+    const sample =
+        '<svg xmlns="http://www.w3.org/2000/svg"><foreignObject><div xmlns="http://www.w3.org/1999/xhtml">A<br>B&nbsp;ü 🚀</div></foreignObject></svg>';
+
+    it('produces well-formed XML from HTML-serialised SVG', () => {
+        const out = toXmlSvg(sample);
+        const doc = new DOMParser().parseFromString(out, 'image/svg+xml');
+        expect(doc.querySelector('parsererror')).toBeNull();
+        expect(out).toContain('<br');
+        expect(out).toContain('ü 🚀');
+        expect(out).not.toContain('&nbsp;');
+    });
+
+    it('adds the svg namespace when missing', () => {
+        expect(toXmlSvg('<svg><text>x</text></svg>')).toContain('xmlns="http://www.w3.org/2000/svg"');
+    });
+
+    it('throws when there is no svg element', () => {
+        expect(() => toXmlSvg('<div>nope</div>')).toThrow();
     });
 });
 

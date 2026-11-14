@@ -1,7 +1,7 @@
 'use client';
 import { DEFAULT_FILE_NAME } from '@/common/constants';
 import { FileInfo } from '@/common/file-types';
-import { renderMermaid } from '@/common/mermaid';
+import { renderMermaid, toXmlSvg } from '@/common/mermaid';
 import { useFileOpen } from '@/contexts/FileOpenContext';
 import { useFileSaveDialog } from '@/contexts/FileSaveDialogContext';
 import { usePage } from '@/contexts/PageContext';
@@ -22,6 +22,14 @@ const DEFAULT_DIAGRAM = `graph TD
     D --> E`;
 
 const MERMAID_EXTENSION = '.mmd';
+
+function exportErrorMessage(format: 'SVG' | 'PNG', err: unknown): string {
+    const message = err instanceof Error ? err.message : '';
+    const isSyntax = /parse error|syntax|lexical|expecting/i.test(message);
+    return isSyntax
+        ? `${format} export failed — fix syntax errors first`
+        : `${format} export failed — could not generate the image${message ? ` (${message})` : ''}`;
+}
 
 const MermaidPreview: React.FC<{ src: string }> = ({ src }) => {
     const [debounced, setDebounced] = useState(src);
@@ -90,7 +98,8 @@ const IndexPage: React.FC = () => {
     const handleExportSvg = useCallback(async () => {
         try {
             const svgString = await renderMermaid('mermaid-editor-svg-export', content);
-            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>\n${toXmlSvg(svgString)}`;
+            const blob = new Blob([xml], { type: 'image/svg+xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -98,14 +107,16 @@ const IndexPage: React.FC = () => {
             a.click();
             URL.revokeObjectURL(url);
             showToast({ message: 'SVG exported', type: ToastType.SUCCESS });
-        } catch {
-            showToast({ message: 'Export failed — fix syntax errors first', type: ToastType.ERROR });
+        } catch (err) {
+            showToast({ message: exportErrorMessage('SVG', err), type: ToastType.ERROR });
         }
     }, [content, fileName, showToast]);
 
     const handleExportPng = useCallback(async () => {
         try {
-            const svgString = await renderMermaid('mermaid-editor-png-export', content);
+            // htmlLabels off: no foreignObject, which would taint the canvas in Safari
+            const rendered = await renderMermaid('mermaid-editor-png-export', content, { htmlLabels: false });
+            const svgString = toXmlSvg(rendered);
 
             // Upscale SVG to print dimensions before rasterisation
             const PRINT_MIN_WIDTH = 2480; // ~A4 at 300 DPI
@@ -142,19 +153,23 @@ const IndexPage: React.FC = () => {
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((pngBlob) => {
-                        if (!pngBlob) {
-                            reject(new Error('toBlob returned null'));
-                            return;
-                        }
-                        const url = URL.createObjectURL(pngBlob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${fileName}.png`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        resolve();
-                    }, 'image/png');
+                    try {
+                        canvas.toBlob((pngBlob) => {
+                            if (!pngBlob) {
+                                reject(new Error('toBlob returned null'));
+                                return;
+                            }
+                            const url = URL.createObjectURL(pngBlob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${fileName}.png`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            resolve();
+                        }, 'image/png');
+                    } catch (e) {
+                        reject(e);
+                    }
                 };
                 img.onerror = (): void => {
                     reject(new Error('SVG image load failed'));
@@ -162,8 +177,8 @@ const IndexPage: React.FC = () => {
                 img.src = svgUrl;
             });
             showToast({ message: 'PNG exported', type: ToastType.SUCCESS });
-        } catch {
-            showToast({ message: 'PNG export failed — fix syntax errors first', type: ToastType.ERROR });
+        } catch (err) {
+            showToast({ message: exportErrorMessage('PNG', err), type: ToastType.ERROR });
         }
     }, [content, fileName, showToast]);
 
