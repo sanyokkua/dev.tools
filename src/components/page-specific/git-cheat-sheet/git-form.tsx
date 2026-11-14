@@ -6,7 +6,7 @@ import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedCont
 import Switch from '@/controls/Switch';
 import React, { useState } from 'react';
 
-export type FormData = { name: string; email: string; globalConfig: boolean; os: OSType };
+export type FormData = { name: string; email: string; globalConfig: boolean; os: OSType; includeGh: boolean };
 
 interface FormProps {
     onSubmit: (formData: FormData) => void;
@@ -19,7 +19,13 @@ const OS_OPTIONS: SegmentedOption[] = [
 ];
 
 const GitForm: React.FC<FormProps> = ({ onSubmit }) => {
-    const [formData, setFormData] = useState<FormData>({ name: '', email: '', globalConfig: false, os: 'macos' });
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        email: '',
+        globalConfig: false,
+        os: 'macos',
+        includeGh: false,
+    });
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setFormData((prev) => ({ ...prev, name: e.target.value }));
@@ -37,13 +43,17 @@ const GitForm: React.FC<FormProps> = ({ onSubmit }) => {
         setFormData((prev) => ({ ...prev, globalConfig: checked }));
     };
 
+    const handleGhChange = (checked: boolean): void => {
+        setFormData((prev) => ({ ...prev, includeGh: checked }));
+    };
+
     const handleSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         onSubmit(formData);
     };
 
     const handleReset = (): void => {
-        const reset: FormData = { name: '', email: '', globalConfig: false, os: 'macos' };
+        const reset: FormData = { name: '', email: '', globalConfig: false, os: 'macos', includeGh: false };
         setFormData(reset);
         onSubmit(reset);
     };
@@ -85,6 +95,7 @@ const GitForm: React.FC<FormProps> = ({ onSubmit }) => {
                 />
             </div>
             <Switch checked={formData.globalConfig} onChange={handleGlobalChange} label="Global config (--global)" />
+            <Switch checked={formData.includeGh} onChange={handleGhChange} label="Include GitHub CLI (gh)" />
             <div className="git-cheat-sheet__form-actions">
                 <Button type="submit" text="Generate" variant="solid" colorStyle="primary-color" size="small" />
                 <Button
