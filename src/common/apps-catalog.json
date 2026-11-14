@@ -1,6 +1,6 @@
 {
     "$schema": "./apps.schema.md",
-    "version": "2026-09-16",
+    "version": "2026-11-15",
     "generatedFrom": "official-source audit",
     "platforms": ["macos", "windows", "linux"],
     "linuxDistros": ["debian", "fedora", "arch", "suse"],
@@ -15,7 +15,7 @@
         },
         "dev": ["npm", "uv", "pipx", "cargo", "go"]
     },
-    "appCount": 162,
+    "appCount": 159,
     "apps": [
         {
             "id": "firefox",
@@ -67,10 +67,10 @@
                             "manager": "apt",
                             "id": "firefox",
                             "install": "sudo install -d -m 0755 /etc/apt/keyrings && wget -qO- https://packages.mozilla.org/apt/repo-signing-key.gpg | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null && echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | sudo tee /etc/apt/sources.list.d/mozilla.list && sudo apt update && sudo apt install -y firefox",
-                            "update": "sudo apt update && sudo apt upgrade firefox",
-                            "remove": "sudo apt remove firefox",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y firefox",
+                            "remove": "sudo apt remove -y firefox",
                             "verify": "firefox --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade firefox"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y firefox"
                         },
                         {
                             "manager": "flatpak",
@@ -94,8 +94,8 @@
                             "manager": "dnf",
                             "id": "firefox",
                             "install": "sudo dnf install -y firefox",
-                            "update": "sudo dnf upgrade firefox",
-                            "remove": "sudo dnf remove firefox",
+                            "update": "sudo dnf upgrade -y firefox",
+                            "remove": "sudo dnf remove -y firefox",
                             "verify": "firefox --version"
                         },
                         {
@@ -205,10 +205,10 @@
                             "manager": "apt",
                             "id": "google-chrome-stable",
                             "install": "wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main\" | sudo tee /etc/apt/sources.list.d/google-chrome.list && sudo apt update && sudo apt install -y google-chrome-stable",
-                            "update": "sudo apt update && sudo apt upgrade google-chrome-stable",
-                            "remove": "sudo apt remove google-chrome-stable",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y google-chrome-stable",
+                            "remove": "sudo apt remove -y google-chrome-stable",
                             "verify": "google-chrome --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade google-chrome-stable"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y google-chrome-stable"
                         }
                     ],
                     "fedora": [
@@ -216,8 +216,8 @@
                             "manager": "dnf",
                             "id": "google-chrome-stable",
                             "install": "sudo tee /etc/yum.repos.d/google-chrome.repo > /dev/null <<'EOF'\n[google-chrome]\nname=google-chrome\nbaseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64\nenabled=1\ngpgcheck=1\ngpgkey=https://dl.google.com/linux/linux_signing_key.pub\nEOF\nsudo dnf install -y google-chrome-stable",
-                            "update": "sudo dnf upgrade google-chrome-stable",
-                            "remove": "sudo dnf remove google-chrome-stable",
+                            "update": "sudo dnf upgrade -y google-chrome-stable",
+                            "remove": "sudo dnf remove -y google-chrome-stable",
                             "verify": "google-chrome --version"
                         }
                     ]
@@ -268,19 +268,19 @@
                             "manager": "apt",
                             "id": "microsoft-edge-stable",
                             "install": "curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main\" | sudo tee /etc/apt/sources.list.d/microsoft-edge.list && sudo apt update && sudo apt install -y microsoft-edge-stable",
-                            "update": "sudo apt update && sudo apt upgrade microsoft-edge-stable",
-                            "remove": "sudo apt remove microsoft-edge-stable",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y microsoft-edge-stable",
+                            "remove": "sudo apt remove -y microsoft-edge-stable",
                             "verify": "microsoft-edge --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade microsoft-edge-stable"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y microsoft-edge-stable"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "dnf",
                             "id": "microsoft-edge-stable",
-                            "install": "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc && sudo dnf config-manager --add-repo https://packages.microsoft.com/yumrepos/edge && sudo dnf install -y microsoft-edge-stable",
-                            "update": "sudo dnf upgrade microsoft-edge-stable",
-                            "remove": "sudo dnf remove microsoft-edge-stable",
+                            "install": "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc && sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://packages.microsoft.com/yumrepos/edge --overwrite && sudo dnf install -y microsoft-edge-stable",
+                            "update": "sudo dnf upgrade -y microsoft-edge-stable",
+                            "remove": "sudo dnf remove -y microsoft-edge-stable",
                             "verify": "microsoft-edge --version"
                         }
                     ]
@@ -338,10 +338,10 @@
                             "manager": "apt",
                             "id": "opera-stable",
                             "install": "wget -qO- https://deb.opera.com/archive.key | sudo gpg --dearmor -o /etc/apt/keyrings/opera.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/opera.gpg] https://deb.opera.com/opera-stable/ stable non-free\" | sudo tee /etc/apt/sources.list.d/opera-stable.list && sudo apt update && sudo apt install -y opera-stable",
-                            "update": "sudo apt update && sudo apt upgrade opera-stable",
-                            "remove": "sudo apt remove opera-stable",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y opera-stable",
+                            "remove": "sudo apt remove -y opera-stable",
                             "verify": "opera --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade opera-stable"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y opera-stable"
                         },
                         {
                             "manager": "flatpak",
@@ -365,8 +365,8 @@
                             "manager": "dnf",
                             "id": "opera-stable",
                             "install": "sudo rpm --import https://rpm.opera.com/rpmrepo.key && sudo tee /etc/yum.repos.d/opera.repo > /dev/null <<'EOF'\n[opera]\nname=Opera packages\ntype=rpm-md\nbaseurl=https://rpm.opera.com/rpm\ngpgcheck=1\ngpgkey=https://rpm.opera.com/rpmrepo.key\nEOF\nsudo dnf install -y opera-stable",
-                            "update": "sudo dnf upgrade opera-stable",
-                            "remove": "sudo dnf remove opera-stable",
+                            "update": "sudo dnf upgrade -y opera-stable",
+                            "remove": "sudo dnf remove -y opera-stable",
                             "verify": "opera --version"
                         },
                         {
@@ -474,7 +474,8 @@
                         {
                             "manager": "apt",
                             "id": "torbrowser-launcher",
-                            "install": "sudo apt install -y torbrowser-launcher"
+                            "install": "sudo apt install -y torbrowser-launcher",
+                            "remove": "sudo apt remove -y torbrowser-launcher"
                         },
                         {
                             "manager": "flatpak",
@@ -497,7 +498,8 @@
                         {
                             "manager": "dnf",
                             "id": "torbrowser-launcher",
-                            "install": "sudo dnf install -y torbrowser-launcher"
+                            "install": "sudo dnf install -y torbrowser-launcher",
+                            "remove": "sudo dnf remove -y torbrowser-launcher"
                         },
                         {
                             "manager": "flatpak",
@@ -606,10 +608,10 @@
                             "manager": "apt",
                             "id": "brave-browser",
                             "install": "sudo curl -fsSLo /etc/apt/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main\" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list && sudo apt update && sudo apt install -y brave-browser",
-                            "update": "sudo apt update && sudo apt upgrade brave-browser",
-                            "remove": "sudo apt remove brave-browser",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y brave-browser",
+                            "remove": "sudo apt remove -y brave-browser",
                             "verify": "brave-browser --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade brave-browser"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y brave-browser"
                         },
                         {
                             "manager": "flatpak",
@@ -624,9 +626,9 @@
                         {
                             "manager": "dnf",
                             "id": "brave-browser",
-                            "install": "sudo dnf install -y dnf-plugins-core && sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo && sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc && sudo dnf install -y brave-browser",
-                            "update": "sudo dnf upgrade brave-browser",
-                            "remove": "sudo dnf remove brave-browser",
+                            "install": "sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo --overwrite && sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc && sudo dnf install -y brave-browser",
+                            "update": "sudo dnf upgrade -y brave-browser",
+                            "remove": "sudo dnf remove -y brave-browser",
                             "verify": "brave-browser --version"
                         },
                         {
@@ -685,11 +687,11 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "VivaldiTechnologies.Vivaldi",
-                        "install": "winget install --id VivaldiTechnologies.Vivaldi -e",
-                        "update": "winget upgrade --id VivaldiTechnologies.Vivaldi -e",
-                        "remove": "winget uninstall --id VivaldiTechnologies.Vivaldi -e",
-                        "verify": "winget list --id VivaldiTechnologies.Vivaldi"
+                        "id": "Vivaldi.Vivaldi",
+                        "install": "winget install --id Vivaldi.Vivaldi -e",
+                        "update": "winget upgrade --id Vivaldi.Vivaldi -e",
+                        "remove": "winget uninstall --id Vivaldi.Vivaldi -e",
+                        "verify": "winget list --id Vivaldi.Vivaldi"
                     },
                     {
                         "manager": "choco",
@@ -712,10 +714,10 @@
                             "manager": "apt",
                             "id": "vivaldi-stable",
                             "install": "wget -qO- https://repo.vivaldi.com/archive/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/vivaldi.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/vivaldi.gpg] https://repo.vivaldi.com/archive/deb/ stable main\" | sudo tee /etc/apt/sources.list.d/vivaldi.list && sudo apt update && sudo apt install -y vivaldi-stable",
-                            "update": "sudo apt update && sudo apt upgrade vivaldi-stable",
-                            "remove": "sudo apt remove vivaldi-stable",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y vivaldi-stable",
+                            "remove": "sudo apt remove -y vivaldi-stable",
                             "verify": "vivaldi --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade vivaldi-stable"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y vivaldi-stable"
                         },
                         {
                             "manager": "flatpak",
@@ -738,9 +740,9 @@
                         {
                             "manager": "dnf",
                             "id": "vivaldi-stable",
-                            "install": "sudo dnf config-manager --add-repo https://repo.vivaldi.com/archive/vivaldi-fedora.repo && sudo dnf install -y vivaldi-stable",
-                            "update": "sudo dnf upgrade vivaldi-stable",
-                            "remove": "sudo dnf remove vivaldi-stable",
+                            "install": "sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://repo.vivaldi.com/archive/vivaldi-fedora.repo --overwrite && sudo dnf install -y vivaldi-stable",
+                            "update": "sudo dnf upgrade -y vivaldi-stable",
+                            "remove": "sudo dnf remove -y vivaldi-stable",
                             "verify": "vivaldi --version"
                         },
                         {
@@ -871,10 +873,10 @@
                     },
                     {
                         "manager": "choco",
-                        "id": "microsoft-teams",
-                        "install": "choco install microsoft-teams -y",
-                        "update": "choco upgrade microsoft-teams -y",
-                        "remove": "choco uninstall microsoft-teams -y"
+                        "id": "microsoft-teams-new-bootstrapper",
+                        "install": "choco install microsoft-teams-new-bootstrapper -y",
+                        "update": "choco upgrade microsoft-teams-new-bootstrapper -y",
+                        "remove": "choco uninstall microsoft-teams-new-bootstrapper -y"
                     }
                 ],
                 "linux": {}
@@ -930,10 +932,10 @@
                             "manager": "apt",
                             "id": "signal-desktop",
                             "install": "wget -qO- https://updates.signal.org/desktop/apt/keys.asc | sudo gpg --dearmor -o /etc/apt/keyrings/signal-desktop-keyring.gpg && echo \"deb [arch=amd64 signed-by=/etc/apt/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main\" | sudo tee /etc/apt/sources.list.d/signal-xenial.list && sudo apt update && sudo apt install -y signal-desktop",
-                            "update": "sudo apt update && sudo apt upgrade signal-desktop",
-                            "remove": "sudo apt remove signal-desktop",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y signal-desktop",
+                            "remove": "sudo apt remove -y signal-desktop",
                             "verify": "signal-desktop --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade signal-desktop"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y signal-desktop"
                         },
                         {
                             "manager": "flatpak",
@@ -1059,7 +1061,8 @@
                             "manager": "apt",
                             "id": "telegram-desktop",
                             "install": "sudo apt install -y telegram-desktop",
-                            "verify": "telegram-desktop --version"
+                            "verify": "telegram-desktop --version",
+                            "remove": "sudo apt remove -y telegram-desktop"
                         },
                         {
                             "manager": "flatpak",
@@ -1083,7 +1086,8 @@
                             "manager": "dnf",
                             "id": "telegram-desktop",
                             "install": "sudo dnf install -y telegram-desktop",
-                            "verify": "telegram-desktop --version"
+                            "verify": "telegram-desktop --version",
+                            "remove": "sudo dnf remove -y telegram-desktop"
                         },
                         {
                             "manager": "flatpak",
@@ -1192,10 +1196,10 @@
                             "manager": "apt",
                             "id": "thunderbird",
                             "install": "sudo apt install -y thunderbird",
-                            "update": "sudo apt update && sudo apt upgrade thunderbird",
-                            "remove": "sudo apt remove thunderbird",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y thunderbird",
+                            "remove": "sudo apt remove -y thunderbird",
                             "verify": "thunderbird --version",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade thunderbird"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y thunderbird"
                         },
                         {
                             "manager": "flatpak",
@@ -1219,8 +1223,8 @@
                             "manager": "dnf",
                             "id": "thunderbird",
                             "install": "sudo dnf install -y thunderbird",
-                            "update": "sudo dnf upgrade thunderbird",
-                            "remove": "sudo dnf remove thunderbird",
+                            "update": "sudo dnf upgrade -y thunderbird",
+                            "remove": "sudo dnf remove -y thunderbird",
                             "verify": "thunderbird --version"
                         },
                         {
@@ -1302,23 +1306,16 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "WhatsApp.WhatsApp",
-                        "install": "winget install --id WhatsApp.WhatsApp -e",
-                        "update": "winget upgrade --id WhatsApp.WhatsApp -e",
-                        "remove": "winget uninstall --id WhatsApp.WhatsApp -e",
-                        "verify": "winget list --id WhatsApp.WhatsApp"
-                    },
-                    {
-                        "manager": "choco",
-                        "id": "whatsapp",
-                        "install": "choco install whatsapp -y",
-                        "update": "choco upgrade whatsapp -y",
-                        "remove": "choco uninstall whatsapp -y"
+                        "id": "9NKSQGP7F2NH",
+                        "install": "winget install --id 9NKSQGP7F2NH -e --source msstore --accept-package-agreements --accept-source-agreements",
+                        "update": "winget upgrade --id 9NKSQGP7F2NH -e --source msstore",
+                        "remove": "winget uninstall --id 9NKSQGP7F2NH -e",
+                        "verify": "winget list --id 9NKSQGP7F2NH"
                     }
                 ],
                 "linux": {}
             },
-            "notes": "Proprietary; no official Linux desktop client is catalogued."
+            "notes": "Proprietary. Windows installs from the Microsoft Store through winget (product id 9NKSQGP7F2NH). No official Linux desktop client is catalogued."
         },
         {
             "id": "slack",
@@ -1369,7 +1366,7 @@
                             "manager": "apt",
                             "id": "slack-desktop",
                             "install": "wget -O /tmp/slack.deb \"https://slack.com/downloads/instructions/linux?ddl=1&build=deb\" && sudo apt install -y /tmp/slack.deb",
-                            "remove": "sudo apt remove slack-desktop",
+                            "remove": "sudo apt remove -y slack-desktop",
                             "verify": "slack --version"
                         },
                         {
@@ -1394,7 +1391,7 @@
                             "manager": "dnf",
                             "id": "slack",
                             "install": "sudo dnf install -y https://downloads.slack-edge.com/desktop-releases/linux/x64/$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)/slack-$(curl -s https://slack.com/release-notes/linux | grep -oP '\\d+\\.\\d+\\.\\d+' | head -1)-0.1.el8.x86_64.rpm",
-                            "remove": "sudo dnf remove slack",
+                            "remove": "sudo dnf remove -y slack",
                             "verify": "slack --version"
                         },
                         {
@@ -1536,10 +1533,10 @@
                             "manager": "apt",
                             "id": "nautilus-dropbox",
                             "install": "sudo apt install -y nautilus-dropbox",
-                            "update": "sudo apt update && sudo apt upgrade nautilus-dropbox",
-                            "remove": "sudo apt remove nautilus-dropbox",
+                            "update": "sudo apt update && sudo apt install --only-upgrade -y nautilus-dropbox",
+                            "remove": "sudo apt remove -y nautilus-dropbox",
                             "verify": "dropbox status",
-                            "upgrade": "sudo apt update && sudo apt full-upgrade nautilus-dropbox"
+                            "upgrade": "sudo apt update && sudo apt install --only-upgrade -y nautilus-dropbox"
                         }
                     ],
                     "fedora": [
@@ -1547,8 +1544,8 @@
                             "manager": "dnf",
                             "id": "nautilus-dropbox",
                             "install": "sudo dnf install -y nautilus-dropbox",
-                            "update": "sudo dnf upgrade nautilus-dropbox",
-                            "remove": "sudo dnf remove nautilus-dropbox",
+                            "update": "sudo dnf upgrade -y nautilus-dropbox",
+                            "remove": "sudo dnf remove -y nautilus-dropbox",
                             "verify": "dropbox status"
                         }
                     ]
@@ -1579,10 +1576,10 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "JetBrains.IntelliJIDEA.Ultimate",
-                        "install": "winget install --id JetBrains.IntelliJIDEA.Ultimate -e",
-                        "update": "winget upgrade --id JetBrains.IntelliJIDEA.Ultimate -e",
-                        "remove": "winget uninstall --id JetBrains.IntelliJIDEA.Ultimate -e",
+                        "id": "JetBrains.IntelliJIDEA",
+                        "install": "winget install --id JetBrains.IntelliJIDEA -e",
+                        "update": "winget upgrade --id JetBrains.IntelliJIDEA -e",
+                        "remove": "winget uninstall --id JetBrains.IntelliJIDEA -e",
                         "verify": "idea64.exe --version"
                     },
                     {
@@ -1604,41 +1601,41 @@
                     "debian": [
                         {
                             "manager": "snap",
-                            "id": "intellij-idea-ultimate",
-                            "install": "sudo snap install intellij-idea-ultimate --classic",
-                            "update": "sudo snap refresh intellij-idea-ultimate",
-                            "remove": "sudo snap remove intellij-idea-ultimate",
-                            "verify": "snap run intellij-idea-ultimate"
+                            "id": "intellij-idea",
+                            "install": "sudo snap install intellij-idea --classic",
+                            "update": "sudo snap refresh intellij-idea",
+                            "remove": "sudo snap remove intellij-idea",
+                            "verify": "snap run intellij-idea"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "snap",
-                            "id": "intellij-idea-ultimate",
-                            "install": "sudo snap install intellij-idea-ultimate --classic",
-                            "update": "sudo snap refresh intellij-idea-ultimate",
-                            "remove": "sudo snap remove intellij-idea-ultimate",
-                            "verify": "snap run intellij-idea-ultimate"
+                            "id": "intellij-idea",
+                            "install": "sudo snap install intellij-idea --classic",
+                            "update": "sudo snap refresh intellij-idea",
+                            "remove": "sudo snap remove intellij-idea",
+                            "verify": "snap run intellij-idea"
                         }
                     ],
                     "arch": [
                         {
                             "manager": "snap",
-                            "id": "intellij-idea-ultimate",
-                            "install": "sudo snap install intellij-idea-ultimate --classic",
-                            "update": "sudo snap refresh intellij-idea-ultimate",
-                            "remove": "sudo snap remove intellij-idea-ultimate",
-                            "verify": "snap run intellij-idea-ultimate"
+                            "id": "intellij-idea",
+                            "install": "sudo snap install intellij-idea --classic",
+                            "update": "sudo snap refresh intellij-idea",
+                            "remove": "sudo snap remove intellij-idea",
+                            "verify": "snap run intellij-idea"
                         }
                     ],
                     "suse": [
                         {
                             "manager": "snap",
-                            "id": "intellij-idea-ultimate",
-                            "install": "sudo snap install intellij-idea-ultimate --classic",
-                            "update": "sudo snap refresh intellij-idea-ultimate",
-                            "remove": "sudo snap remove intellij-idea-ultimate",
-                            "verify": "snap run intellij-idea-ultimate"
+                            "id": "intellij-idea",
+                            "install": "sudo snap install intellij-idea --classic",
+                            "update": "sudo snap refresh intellij-idea",
+                            "remove": "sudo snap remove intellij-idea",
+                            "verify": "snap run intellij-idea"
                         }
                     ]
                 }
@@ -1668,10 +1665,10 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "JetBrains.PyCharm.Professional",
-                        "install": "winget install --id JetBrains.PyCharm.Professional -e",
-                        "update": "winget upgrade --id JetBrains.PyCharm.Professional -e",
-                        "remove": "winget uninstall --id JetBrains.PyCharm.Professional -e",
+                        "id": "JetBrains.PyCharm",
+                        "install": "winget install --id JetBrains.PyCharm -e",
+                        "update": "winget upgrade --id JetBrains.PyCharm -e",
+                        "remove": "winget uninstall --id JetBrains.PyCharm -e",
                         "verify": "pycharm64.exe --version"
                     },
                     {
@@ -1693,41 +1690,41 @@
                     "debian": [
                         {
                             "manager": "snap",
-                            "id": "pycharm-professional",
-                            "install": "sudo snap install pycharm-professional --classic",
-                            "update": "sudo snap refresh pycharm-professional",
-                            "remove": "sudo snap remove pycharm-professional",
-                            "verify": "snap run pycharm-professional"
+                            "id": "pycharm",
+                            "install": "sudo snap install pycharm --classic",
+                            "update": "sudo snap refresh pycharm",
+                            "remove": "sudo snap remove pycharm",
+                            "verify": "snap run pycharm"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "snap",
-                            "id": "pycharm-professional",
-                            "install": "sudo snap install pycharm-professional --classic",
-                            "update": "sudo snap refresh pycharm-professional",
-                            "remove": "sudo snap remove pycharm-professional",
-                            "verify": "snap run pycharm-professional"
+                            "id": "pycharm",
+                            "install": "sudo snap install pycharm --classic",
+                            "update": "sudo snap refresh pycharm",
+                            "remove": "sudo snap remove pycharm",
+                            "verify": "snap run pycharm"
                         }
                     ],
                     "arch": [
                         {
                             "manager": "snap",
-                            "id": "pycharm-professional",
-                            "install": "sudo snap install pycharm-professional --classic",
-                            "update": "sudo snap refresh pycharm-professional",
-                            "remove": "sudo snap remove pycharm-professional",
-                            "verify": "snap run pycharm-professional"
+                            "id": "pycharm",
+                            "install": "sudo snap install pycharm --classic",
+                            "update": "sudo snap refresh pycharm",
+                            "remove": "sudo snap remove pycharm",
+                            "verify": "snap run pycharm"
                         }
                     ],
                     "suse": [
                         {
                             "manager": "snap",
-                            "id": "pycharm-professional",
-                            "install": "sudo snap install pycharm-professional --classic",
-                            "update": "sudo snap refresh pycharm-professional",
-                            "remove": "sudo snap remove pycharm-professional",
-                            "verify": "snap run pycharm-professional"
+                            "id": "pycharm",
+                            "install": "sudo snap install pycharm --classic",
+                            "update": "sudo snap refresh pycharm",
+                            "remove": "sudo snap remove pycharm",
+                            "verify": "snap run pycharm"
                         }
                     ]
                 }
@@ -2032,10 +2029,10 @@
                     },
                     {
                         "manager": "choco",
-                        "id": "clion",
-                        "install": "choco install clion -y",
-                        "update": "choco upgrade clion -y",
-                        "remove": "choco uninstall clion -y"
+                        "id": "clion-ide",
+                        "install": "choco install clion-ide -y",
+                        "update": "choco upgrade clion-ide -y",
+                        "remove": "choco uninstall clion-ide -y"
                     },
                     {
                         "manager": "scoop",
@@ -2880,7 +2877,7 @@
                         {
                             "manager": "apt",
                             "id": "antigravity",
-                            "install": "sudo apt install antigravity",
+                            "install": "sudo apt install -y antigravity",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y antigravity",
                             "remove": "sudo apt remove -y antigravity"
                         }
@@ -2889,7 +2886,7 @@
                         {
                             "manager": "dnf",
                             "id": "antigravity",
-                            "install": "sudo dnf install antigravity",
+                            "install": "sudo dnf install -y antigravity",
                             "update": "sudo dnf upgrade -y antigravity",
                             "remove": "sudo dnf remove -y antigravity"
                         }
@@ -3015,7 +3012,7 @@
                         {
                             "manager": "dnf",
                             "id": "sublime-text",
-                            "install": "sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg && sudo dnf config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo && sudo dnf install -y sublime-text",
+                            "install": "sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg && sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo --overwrite && sudo dnf install -y sublime-text",
                             "update": "sudo dnf upgrade -y sublime-text",
                             "remove": "sudo dnf remove -y sublime-text",
                             "verify": "subl --version"
@@ -3089,7 +3086,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
-                            "verify": "hx --version"
+                            "verify": "hx --version",
+                            "remove": "cargo uninstall helix-term"
                         }
                     ],
                     "fedora": [
@@ -3112,7 +3110,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
-                            "verify": "hx --version"
+                            "verify": "hx --version",
+                            "remove": "cargo uninstall helix-term"
                         }
                     ],
                     "arch": [
@@ -3127,7 +3126,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
-                            "verify": "hx --version"
+                            "verify": "hx --version",
+                            "remove": "cargo uninstall helix-term"
                         }
                     ],
                     "suse": [
@@ -3142,7 +3142,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/helix-editor/helix helix-term --locked",
-                            "verify": "hx --version"
+                            "verify": "hx --version",
+                            "remove": "cargo uninstall helix-term"
                         }
                     ]
                 }
@@ -3339,7 +3340,12 @@
                         "verify": "open -a \"CotEditor\"",
                         "upgrade": "brew upgrade --greedy --cask coteditor"
                     },
-                    { "manager": "mas", "id": "1024640650", "install": "mas install 1024640650" }
+                    {
+                        "manager": "mas",
+                        "id": "1024640650",
+                        "install": "mas install 1024640650",
+                        "remove": "sudo mas uninstall 1024640650"
+                    }
                 ],
                 "windows": [],
                 "linux": {}
@@ -3538,10 +3544,10 @@
                     "debian": [
                         {
                             "manager": "flatpak",
-                            "id": "org.apache.netbeans.NetBeans",
-                            "install": "flatpak install -y flathub org.apache.netbeans.NetBeans",
-                            "update": "flatpak update -y org.apache.netbeans.NetBeans",
-                            "remove": "flatpak uninstall -y org.apache.netbeans.NetBeans",
+                            "id": "org.apache.netbeans",
+                            "install": "flatpak install -y flathub org.apache.netbeans",
+                            "update": "flatpak update -y org.apache.netbeans",
+                            "remove": "flatpak uninstall -y org.apache.netbeans",
                             "verify": "netbeans --version"
                         },
                         {
@@ -3556,10 +3562,10 @@
                     "fedora": [
                         {
                             "manager": "flatpak",
-                            "id": "org.apache.netbeans.NetBeans",
-                            "install": "flatpak install -y flathub org.apache.netbeans.NetBeans",
-                            "update": "flatpak update -y org.apache.netbeans.NetBeans",
-                            "remove": "flatpak uninstall -y org.apache.netbeans.NetBeans",
+                            "id": "org.apache.netbeans",
+                            "install": "flatpak install -y flathub org.apache.netbeans",
+                            "update": "flatpak update -y org.apache.netbeans",
+                            "remove": "flatpak uninstall -y org.apache.netbeans",
                             "verify": "netbeans --version"
                         },
                         {
@@ -3574,10 +3580,10 @@
                     "arch": [
                         {
                             "manager": "flatpak",
-                            "id": "org.apache.netbeans.NetBeans",
-                            "install": "flatpak install -y flathub org.apache.netbeans.NetBeans",
-                            "update": "flatpak update -y org.apache.netbeans.NetBeans",
-                            "remove": "flatpak uninstall -y org.apache.netbeans.NetBeans",
+                            "id": "org.apache.netbeans",
+                            "install": "flatpak install -y flathub org.apache.netbeans",
+                            "update": "flatpak update -y org.apache.netbeans",
+                            "remove": "flatpak uninstall -y org.apache.netbeans",
                             "verify": "netbeans --version"
                         },
                         {
@@ -3592,10 +3598,10 @@
                     "suse": [
                         {
                             "manager": "flatpak",
-                            "id": "org.apache.netbeans.NetBeans",
-                            "install": "flatpak install -y flathub org.apache.netbeans.NetBeans",
-                            "update": "flatpak update -y org.apache.netbeans.NetBeans",
-                            "remove": "flatpak uninstall -y org.apache.netbeans.NetBeans",
+                            "id": "org.apache.netbeans",
+                            "install": "flatpak install -y flathub org.apache.netbeans",
+                            "update": "flatpak update -y org.apache.netbeans",
+                            "remove": "flatpak uninstall -y org.apache.netbeans",
                             "verify": "netbeans --version"
                         },
                         {
@@ -3807,7 +3813,8 @@
                         "manager": "script",
                         "install": "curl -fsSL https://claude.ai/install.sh | bash",
                         "update": "claude update",
-                        "verify": "claude --version"
+                        "verify": "claude --version",
+                        "remove": "rm -f ~/.local/bin/claude && rm -rf ~/.local/share/claude"
                     },
                     {
                         "manager": "npm",
@@ -3815,7 +3822,8 @@
                         "install": "npm install -g @anthropic-ai/claude-code@latest",
                         "verify": "claude --version",
                         "update": "npm install -g @anthropic-ai/claude-code@latest",
-                        "upgrade": "npm install -g @anthropic-ai/claude-code@latest"
+                        "upgrade": "npm install -g @anthropic-ai/claude-code@latest",
+                        "remove": "npm uninstall -g @anthropic-ai/claude-code"
                     }
                 ],
                 "windows": [
@@ -3831,7 +3839,8 @@
                         "manager": "script",
                         "install": "irm https://claude.ai/install.ps1 | iex",
                         "update": "claude update",
-                        "verify": "claude --version"
+                        "verify": "claude --version",
+                        "remove": "Remove-Item -Path \"$env:USERPROFILE\\.local\\bin\\claude.exe\" -Force; Remove-Item -Path \"$env:USERPROFILE\\.local\\share\\claude\" -Recurse -Force"
                     },
                     {
                         "manager": "npm",
@@ -4101,122 +4110,6 @@
             "notes": "Open source CLI. The official npm package is scoped as `@openai/codex`; the unscoped `codex` package is unrelated."
         },
         {
-            "id": "gemini-cli",
-            "name": "Gemini CLI",
-            "category": "AI Coding Tools",
-            "description": "Google's open-source Gemini AI agent for the terminal",
-            "site": "https://github.com/google-gemini/gemini-cli",
-            "platforms": { "macos": true, "windows": true, "linux": true },
-            "methods": {
-                "macos": [
-                    {
-                        "manager": "brew",
-                        "id": "gemini-cli",
-                        "kind": "formula",
-                        "install": "brew install gemini-cli",
-                        "update": "brew upgrade gemini-cli",
-                        "remove": "brew uninstall gemini-cli",
-                        "verify": "gemini --version"
-                    },
-                    {
-                        "manager": "npm",
-                        "id": "@google/gemini-cli",
-                        "install": "npm install -g @google/gemini-cli@latest",
-                        "update": "npm install -g @google/gemini-cli@latest",
-                        "remove": "npm uninstall -g @google/gemini-cli",
-                        "verify": "gemini --version",
-                        "upgrade": "npm install -g @google/gemini-cli@latest"
-                    }
-                ],
-                "windows": [
-                    {
-                        "manager": "npm",
-                        "id": "@google/gemini-cli",
-                        "install": "npm install -g @google/gemini-cli@latest",
-                        "update": "npm install -g @google/gemini-cli@latest",
-                        "remove": "npm uninstall -g @google/gemini-cli",
-                        "verify": "gemini --version",
-                        "upgrade": "npm install -g @google/gemini-cli@latest"
-                    }
-                ],
-                "linux": {
-                    "debian": [
-                        {
-                            "manager": "brew",
-                            "id": "gemini-cli",
-                            "kind": "formula",
-                            "install": "brew install gemini-cli",
-                            "verify": "gemini --version"
-                        },
-                        {
-                            "manager": "npm",
-                            "id": "@google/gemini-cli",
-                            "install": "npm install -g @google/gemini-cli@latest",
-                            "update": "npm install -g @google/gemini-cli@latest",
-                            "remove": "npm uninstall -g @google/gemini-cli",
-                            "verify": "gemini --version",
-                            "upgrade": "npm install -g @google/gemini-cli@latest"
-                        }
-                    ],
-                    "fedora": [
-                        {
-                            "manager": "brew",
-                            "id": "gemini-cli",
-                            "kind": "formula",
-                            "install": "brew install gemini-cli",
-                            "verify": "gemini --version"
-                        },
-                        {
-                            "manager": "npm",
-                            "id": "@google/gemini-cli",
-                            "install": "npm install -g @google/gemini-cli@latest",
-                            "update": "npm install -g @google/gemini-cli@latest",
-                            "remove": "npm uninstall -g @google/gemini-cli",
-                            "verify": "gemini --version",
-                            "upgrade": "npm install -g @google/gemini-cli@latest"
-                        }
-                    ],
-                    "arch": [
-                        {
-                            "manager": "brew",
-                            "id": "gemini-cli",
-                            "kind": "formula",
-                            "install": "brew install gemini-cli",
-                            "verify": "gemini --version"
-                        },
-                        {
-                            "manager": "npm",
-                            "id": "@google/gemini-cli",
-                            "install": "npm install -g @google/gemini-cli@latest",
-                            "update": "npm install -g @google/gemini-cli@latest",
-                            "remove": "npm uninstall -g @google/gemini-cli",
-                            "verify": "gemini --version",
-                            "upgrade": "npm install -g @google/gemini-cli@latest"
-                        }
-                    ],
-                    "suse": [
-                        {
-                            "manager": "brew",
-                            "id": "gemini-cli",
-                            "kind": "formula",
-                            "install": "brew install gemini-cli",
-                            "verify": "gemini --version"
-                        },
-                        {
-                            "manager": "npm",
-                            "id": "@google/gemini-cli",
-                            "install": "npm install -g @google/gemini-cli@latest",
-                            "update": "npm install -g @google/gemini-cli@latest",
-                            "remove": "npm uninstall -g @google/gemini-cli",
-                            "verify": "gemini --version",
-                            "upgrade": "npm install -g @google/gemini-cli@latest"
-                        }
-                    ]
-                }
-            },
-            "notes": "Open source (Apache-2.0). Requires Node.js 20+. Verify command is gemini."
-        },
-        {
             "id": "qwen-code",
             "name": "Qwen Code",
             "category": "AI Coding Tools",
@@ -4262,7 +4155,9 @@
                             "id": "qwen-code",
                             "kind": "formula",
                             "install": "brew install qwen-code",
-                            "verify": "qwen --version"
+                            "verify": "qwen --version",
+                            "remove": "brew uninstall qwen-code",
+                            "update": "brew upgrade qwen-code"
                         },
                         {
                             "manager": "npm",
@@ -4280,7 +4175,9 @@
                             "id": "qwen-code",
                             "kind": "formula",
                             "install": "brew install qwen-code",
-                            "verify": "qwen --version"
+                            "verify": "qwen --version",
+                            "remove": "brew uninstall qwen-code",
+                            "update": "brew upgrade qwen-code"
                         },
                         {
                             "manager": "npm",
@@ -4298,7 +4195,9 @@
                             "id": "qwen-code",
                             "kind": "formula",
                             "install": "brew install qwen-code",
-                            "verify": "qwen --version"
+                            "verify": "qwen --version",
+                            "remove": "brew uninstall qwen-code",
+                            "update": "brew upgrade qwen-code"
                         },
                         {
                             "manager": "npm",
@@ -4316,7 +4215,9 @@
                             "id": "qwen-code",
                             "kind": "formula",
                             "install": "brew install qwen-code",
-                            "verify": "qwen --version"
+                            "verify": "qwen --version",
+                            "remove": "brew uninstall qwen-code",
+                            "update": "brew upgrade qwen-code"
                         },
                         {
                             "manager": "npm",
@@ -4365,7 +4266,8 @@
                         "install": "pipx install mistral-vibe",
                         "verify": "vibe --version",
                         "update": "pipx upgrade mistral-vibe",
-                        "upgrade": "pipx upgrade mistral-vibe"
+                        "upgrade": "pipx upgrade mistral-vibe",
+                        "remove": "pipx uninstall mistral-vibe"
                     }
                 ],
                 "windows": [
@@ -4384,7 +4286,8 @@
                         "install": "pipx install mistral-vibe",
                         "verify": "vibe --version",
                         "update": "pipx upgrade mistral-vibe",
-                        "upgrade": "pipx upgrade mistral-vibe"
+                        "upgrade": "pipx upgrade mistral-vibe",
+                        "remove": "pipx uninstall mistral-vibe"
                     }
                 ],
                 "linux": {
@@ -4394,7 +4297,9 @@
                             "id": "mistral-vibe",
                             "kind": "formula",
                             "install": "brew install mistral-vibe",
-                            "verify": "vibe --version"
+                            "verify": "vibe --version",
+                            "remove": "brew uninstall mistral-vibe",
+                            "update": "brew upgrade mistral-vibe"
                         },
                         {
                             "manager": "uv",
@@ -4411,7 +4316,8 @@
                             "install": "pipx install mistral-vibe",
                             "verify": "vibe --version",
                             "update": "pipx upgrade mistral-vibe",
-                            "upgrade": "pipx upgrade mistral-vibe"
+                            "upgrade": "pipx upgrade mistral-vibe",
+                            "remove": "pipx uninstall mistral-vibe"
                         }
                     ],
                     "fedora": [
@@ -4420,7 +4326,9 @@
                             "id": "mistral-vibe",
                             "kind": "formula",
                             "install": "brew install mistral-vibe",
-                            "verify": "vibe --version"
+                            "verify": "vibe --version",
+                            "remove": "brew uninstall mistral-vibe",
+                            "update": "brew upgrade mistral-vibe"
                         },
                         {
                             "manager": "uv",
@@ -4437,7 +4345,8 @@
                             "install": "pipx install mistral-vibe",
                             "verify": "vibe --version",
                             "update": "pipx upgrade mistral-vibe",
-                            "upgrade": "pipx upgrade mistral-vibe"
+                            "upgrade": "pipx upgrade mistral-vibe",
+                            "remove": "pipx uninstall mistral-vibe"
                         }
                     ],
                     "arch": [
@@ -4446,7 +4355,9 @@
                             "id": "mistral-vibe",
                             "kind": "formula",
                             "install": "brew install mistral-vibe",
-                            "verify": "vibe --version"
+                            "verify": "vibe --version",
+                            "remove": "brew uninstall mistral-vibe",
+                            "update": "brew upgrade mistral-vibe"
                         },
                         {
                             "manager": "uv",
@@ -4463,7 +4374,8 @@
                             "install": "pipx install mistral-vibe",
                             "verify": "vibe --version",
                             "update": "pipx upgrade mistral-vibe",
-                            "upgrade": "pipx upgrade mistral-vibe"
+                            "upgrade": "pipx upgrade mistral-vibe",
+                            "remove": "pipx uninstall mistral-vibe"
                         }
                     ],
                     "suse": [
@@ -4472,7 +4384,9 @@
                             "id": "mistral-vibe",
                             "kind": "formula",
                             "install": "brew install mistral-vibe",
-                            "verify": "vibe --version"
+                            "verify": "vibe --version",
+                            "remove": "brew uninstall mistral-vibe",
+                            "update": "brew upgrade mistral-vibe"
                         },
                         {
                             "manager": "uv",
@@ -4489,7 +4403,8 @@
                             "install": "pipx install mistral-vibe",
                             "verify": "vibe --version",
                             "update": "pipx upgrade mistral-vibe",
-                            "upgrade": "pipx upgrade mistral-vibe"
+                            "upgrade": "pipx upgrade mistral-vibe",
+                            "remove": "pipx uninstall mistral-vibe"
                         }
                     ]
                 }
@@ -4552,7 +4467,9 @@
                             "id": "opencode",
                             "kind": "formula",
                             "install": "brew install opencode",
-                            "verify": "opencode --version"
+                            "verify": "opencode --version",
+                            "remove": "brew uninstall opencode",
+                            "update": "brew upgrade opencode"
                         },
                         {
                             "manager": "npm",
@@ -4575,7 +4492,9 @@
                             "id": "opencode",
                             "kind": "formula",
                             "install": "brew install opencode",
-                            "verify": "opencode --version"
+                            "verify": "opencode --version",
+                            "remove": "brew uninstall opencode",
+                            "update": "brew upgrade opencode"
                         },
                         {
                             "manager": "npm",
@@ -4598,7 +4517,9 @@
                             "id": "opencode",
                             "kind": "formula",
                             "install": "brew install opencode",
-                            "verify": "opencode --version"
+                            "verify": "opencode --version",
+                            "remove": "brew uninstall opencode",
+                            "update": "brew upgrade opencode"
                         },
                         {
                             "manager": "npm",
@@ -4621,7 +4542,9 @@
                             "id": "opencode",
                             "kind": "formula",
                             "install": "brew install opencode",
-                            "verify": "opencode --version"
+                            "verify": "opencode --version",
+                            "remove": "brew uninstall opencode",
+                            "update": "brew upgrade opencode"
                         },
                         {
                             "manager": "npm",
@@ -4723,8 +4646,8 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "wget https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.deb && sudo dpkg -i kiro-cli.deb && sudo apt-get install -f",
-                            "remove": "sudo apt-get remove kiro-cli",
+                            "install": "wget https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.deb && sudo dpkg -i kiro-cli.deb && sudo apt-get install -y -f",
+                            "remove": "sudo apt-get remove -y kiro-cli",
                             "verify": "kiro-cli --version"
                         },
                         {
@@ -4787,7 +4710,8 @@
                         "install": "pipx install aider-chat",
                         "verify": "aider --version",
                         "update": "pipx upgrade aider-chat",
-                        "upgrade": "pipx upgrade aider-chat"
+                        "upgrade": "pipx upgrade aider-chat",
+                        "remove": "pipx uninstall aider-chat"
                     }
                 ],
                 "windows": [
@@ -4811,7 +4735,8 @@
                         "install": "pipx install aider-chat",
                         "verify": "aider --version",
                         "update": "pipx upgrade aider-chat",
-                        "upgrade": "pipx upgrade aider-chat"
+                        "upgrade": "pipx upgrade aider-chat",
+                        "remove": "pipx uninstall aider-chat"
                     }
                 ],
                 "linux": {
@@ -4836,7 +4761,8 @@
                             "install": "pipx install aider-chat",
                             "verify": "aider --version",
                             "update": "pipx upgrade aider-chat",
-                            "upgrade": "pipx upgrade aider-chat"
+                            "upgrade": "pipx upgrade aider-chat",
+                            "remove": "pipx uninstall aider-chat"
                         }
                     ],
                     "fedora": [
@@ -4860,7 +4786,8 @@
                             "install": "pipx install aider-chat",
                             "verify": "aider --version",
                             "update": "pipx upgrade aider-chat",
-                            "upgrade": "pipx upgrade aider-chat"
+                            "upgrade": "pipx upgrade aider-chat",
+                            "remove": "pipx uninstall aider-chat"
                         }
                     ],
                     "arch": [
@@ -4884,7 +4811,8 @@
                             "install": "pipx install aider-chat",
                             "verify": "aider --version",
                             "update": "pipx upgrade aider-chat",
-                            "upgrade": "pipx upgrade aider-chat"
+                            "upgrade": "pipx upgrade aider-chat",
+                            "remove": "pipx uninstall aider-chat"
                         }
                     ],
                     "suse": [
@@ -4908,7 +4836,8 @@
                             "install": "pipx install aider-chat",
                             "verify": "aider --version",
                             "update": "pipx upgrade aider-chat",
-                            "upgrade": "pipx upgrade aider-chat"
+                            "upgrade": "pipx upgrade aider-chat",
+                            "remove": "pipx uninstall aider-chat"
                         }
                     ]
                 }
@@ -5412,7 +5341,8 @@
                             "install": "sudo apt update && sudo apt install -y vlc",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y vlc",
                             "remove": "sudo apt remove -y vlc",
-                            "verify": "vlc --version"
+                            "verify": "vlc --version",
+                            "id": "vlc"
                         },
                         {
                             "manager": "flatpak",
@@ -5552,7 +5482,7 @@
         },
         {
             "id": "jellyfin-media-player",
-            "name": "Jellyfin Media Player",
+            "name": "Jellyfin Desktop",
             "category": "Media Players",
             "description": "Official Jellyfin desktop client for watching media from a Jellyfin server.",
             "site": "https://jellyfin.org/clients/",
@@ -5591,46 +5521,46 @@
                     "debian": [
                         {
                             "manager": "flatpak",
-                            "id": "com.github.iwalton3.jellyfin-media-player",
-                            "install": "flatpak install -y flathub com.github.iwalton3.jellyfin-media-player",
-                            "update": "flatpak update -y com.github.iwalton3.jellyfin-media-player",
-                            "remove": "flatpak uninstall -y com.github.iwalton3.jellyfin-media-player",
-                            "verify": "flatpak info com.github.iwalton3.jellyfin-media-player"
+                            "id": "org.jellyfin.JellyfinDesktop",
+                            "install": "flatpak install -y flathub org.jellyfin.JellyfinDesktop",
+                            "update": "flatpak update -y org.jellyfin.JellyfinDesktop",
+                            "remove": "flatpak uninstall -y org.jellyfin.JellyfinDesktop",
+                            "verify": "flatpak info org.jellyfin.JellyfinDesktop"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "flatpak",
-                            "id": "com.github.iwalton3.jellyfin-media-player",
-                            "install": "flatpak install -y flathub com.github.iwalton3.jellyfin-media-player",
-                            "update": "flatpak update -y com.github.iwalton3.jellyfin-media-player",
-                            "remove": "flatpak uninstall -y com.github.iwalton3.jellyfin-media-player",
-                            "verify": "flatpak info com.github.iwalton3.jellyfin-media-player"
+                            "id": "org.jellyfin.JellyfinDesktop",
+                            "install": "flatpak install -y flathub org.jellyfin.JellyfinDesktop",
+                            "update": "flatpak update -y org.jellyfin.JellyfinDesktop",
+                            "remove": "flatpak uninstall -y org.jellyfin.JellyfinDesktop",
+                            "verify": "flatpak info org.jellyfin.JellyfinDesktop"
                         }
                     ],
                     "arch": [
                         {
                             "manager": "flatpak",
-                            "id": "com.github.iwalton3.jellyfin-media-player",
-                            "install": "flatpak install -y flathub com.github.iwalton3.jellyfin-media-player",
-                            "update": "flatpak update -y com.github.iwalton3.jellyfin-media-player",
-                            "remove": "flatpak uninstall -y com.github.iwalton3.jellyfin-media-player",
-                            "verify": "flatpak info com.github.iwalton3.jellyfin-media-player"
+                            "id": "org.jellyfin.JellyfinDesktop",
+                            "install": "flatpak install -y flathub org.jellyfin.JellyfinDesktop",
+                            "update": "flatpak update -y org.jellyfin.JellyfinDesktop",
+                            "remove": "flatpak uninstall -y org.jellyfin.JellyfinDesktop",
+                            "verify": "flatpak info org.jellyfin.JellyfinDesktop"
                         }
                     ],
                     "suse": [
                         {
                             "manager": "flatpak",
-                            "id": "com.github.iwalton3.jellyfin-media-player",
-                            "install": "flatpak install -y flathub com.github.iwalton3.jellyfin-media-player",
-                            "update": "flatpak update -y com.github.iwalton3.jellyfin-media-player",
-                            "remove": "flatpak uninstall -y com.github.iwalton3.jellyfin-media-player",
-                            "verify": "flatpak info com.github.iwalton3.jellyfin-media-player"
+                            "id": "org.jellyfin.JellyfinDesktop",
+                            "install": "flatpak install -y flathub org.jellyfin.JellyfinDesktop",
+                            "update": "flatpak update -y org.jellyfin.JellyfinDesktop",
+                            "remove": "flatpak uninstall -y org.jellyfin.JellyfinDesktop",
+                            "verify": "flatpak info org.jellyfin.JellyfinDesktop"
                         }
                     ]
                 }
             },
-            "notes": "The official Jellyfin desktop client is also known as Jellyfin Desktop in current project materials."
+            "notes": "Official Jellyfin desktop client, formerly Jellyfin Media Player. The Flathub app is org.jellyfin.JellyfinDesktop."
         },
         {
             "id": "ffmpeg",
@@ -5682,7 +5612,8 @@
                             "install": "sudo apt update && sudo apt install -y ffmpeg",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y ffmpeg",
                             "remove": "sudo apt remove -y ffmpeg",
-                            "verify": "ffmpeg -version"
+                            "verify": "ffmpeg -version",
+                            "id": "ffmpeg"
                         }
                     ],
                     "fedora": [
@@ -5694,7 +5625,16 @@
                             "verify": "ffmpeg -version"
                         }
                     ],
-                    "arch": [],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "ffmpeg",
+                            "install": "sudo pacman -S --needed --noconfirm ffmpeg",
+                            "update": "sudo pacman -S --noconfirm ffmpeg",
+                            "remove": "sudo pacman -Rns --noconfirm ffmpeg",
+                            "verify": "ffmpeg -version"
+                        }
+                    ],
                     "suse": []
                 }
             },
@@ -5771,7 +5711,8 @@
                             "install": "sudo apt update && sudo apt install -y audacious",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y audacious",
                             "remove": "sudo apt remove -y audacious",
-                            "verify": "audacious --version"
+                            "verify": "audacious --version",
+                            "id": "audacious"
                         },
                         {
                             "manager": "flatpak",
@@ -5846,10 +5787,10 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "mpv.net",
-                        "install": "winget install --id mpv.net -e",
-                        "update": "winget upgrade --id mpv.net -e",
-                        "remove": "winget uninstall --id mpv.net -e",
+                        "id": "shinchiro.mpv",
+                        "install": "winget install --id shinchiro.mpv -e",
+                        "update": "winget upgrade --id shinchiro.mpv -e",
+                        "remove": "winget uninstall --id shinchiro.mpv -e",
                         "verify": "mpv --version"
                     },
                     {
@@ -5874,7 +5815,8 @@
                             "install": "sudo apt update && sudo apt install -y mpv",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y mpv",
                             "remove": "sudo apt remove -y mpv",
-                            "verify": "mpv --version"
+                            "verify": "mpv --version",
+                            "id": "mpv"
                         },
                         {
                             "manager": "flatpak",
@@ -5920,7 +5862,7 @@
                     ]
                 }
             },
-            "notes": "Open source (GPL/LGPL). The winget entry is the mpv.net GUI fork; Windows package-manager alternatives for vanilla mpv are Scoop and Chocolatey."
+            "notes": "Open source (GPL/LGPL). The winget entry is the shinchiro mpv build; Scoop and Chocolatey also carry vanilla mpv."
         },
         {
             "id": "handbrake",
@@ -5933,12 +5875,12 @@
                 "macos": [
                     {
                         "manager": "brew",
-                        "id": "handbrake",
-                        "kind": "formula",
-                        "install": "brew install handbrake",
-                        "update": "brew upgrade handbrake",
-                        "remove": "brew uninstall handbrake",
-                        "verify": "HandBrakeCLI --version"
+                        "id": "handbrake-app",
+                        "kind": "cask",
+                        "install": "brew install --cask handbrake-app",
+                        "update": "brew upgrade --cask handbrake-app",
+                        "remove": "brew uninstall --cask handbrake-app",
+                        "upgrade": "brew upgrade --greedy --cask handbrake-app"
                     }
                 ],
                 "windows": [
@@ -5980,13 +5922,6 @@
                             "install": "flatpak install -y flathub fr.handbrake.ghb",
                             "update": "flatpak update -y fr.handbrake.ghb",
                             "remove": "flatpak uninstall -y fr.handbrake.ghb"
-                        },
-                        {
-                            "manager": "snap",
-                            "id": "handbrake-jz",
-                            "install": "sudo snap install handbrake-jz",
-                            "update": "sudo snap refresh handbrake-jz",
-                            "remove": "sudo snap remove handbrake-jz"
                         }
                     ],
                     "fedora": [
@@ -6003,13 +5938,6 @@
                             "install": "flatpak install -y flathub fr.handbrake.ghb",
                             "update": "flatpak update -y fr.handbrake.ghb",
                             "remove": "flatpak uninstall -y fr.handbrake.ghb"
-                        },
-                        {
-                            "manager": "snap",
-                            "id": "handbrake-jz",
-                            "install": "sudo snap install handbrake-jz",
-                            "update": "sudo snap refresh handbrake-jz",
-                            "remove": "sudo snap remove handbrake-jz"
                         }
                     ],
                     "arch": [
@@ -6019,13 +5947,6 @@
                             "install": "flatpak install -y flathub fr.handbrake.ghb",
                             "update": "flatpak update -y fr.handbrake.ghb",
                             "remove": "flatpak uninstall -y fr.handbrake.ghb"
-                        },
-                        {
-                            "manager": "snap",
-                            "id": "handbrake-jz",
-                            "install": "sudo snap install handbrake-jz",
-                            "update": "sudo snap refresh handbrake-jz",
-                            "remove": "sudo snap remove handbrake-jz"
                         }
                     ],
                     "suse": [
@@ -6035,18 +5956,11 @@
                             "install": "flatpak install -y flathub fr.handbrake.ghb",
                             "update": "flatpak update -y fr.handbrake.ghb",
                             "remove": "flatpak uninstall -y fr.handbrake.ghb"
-                        },
-                        {
-                            "manager": "snap",
-                            "id": "handbrake-jz",
-                            "install": "sudo snap install handbrake-jz",
-                            "update": "sudo snap refresh handbrake-jz",
-                            "remove": "sudo snap remove handbrake-jz"
                         }
                     ]
                 }
             },
-            "notes": "Open source (GPL). The snap is community-published as handbrake-jz. Fedora package names are capitalized."
+            "notes": "Open source (GPL). Fedora package names are capitalized."
         },
         {
             "id": "libreoffice",
@@ -6099,7 +6013,8 @@
                             "install": "sudo apt update && sudo apt install -y libreoffice",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y libreoffice",
                             "remove": "sudo apt remove -y libreoffice*",
-                            "verify": "libreoffice --version"
+                            "verify": "libreoffice --version",
+                            "id": "libreoffice"
                         },
                         {
                             "manager": "flatpak",
@@ -6174,47 +6089,6 @@
                 }
             },
             "notes": "Open source (MPL 2.0). Choco offers libreoffice-fresh (latest) and libreoffice-still (LTS); block uses Fresh."
-        },
-        {
-            "id": "openoffice",
-            "name": "OpenOffice",
-            "category": "Document Editors",
-            "description": "Apache OpenOffice — open-source office productivity suite.",
-            "site": "https://www.openoffice.org",
-            "platforms": { "macos": true, "windows": true, "linux": false },
-            "methods": {
-                "macos": [
-                    {
-                        "manager": "brew",
-                        "id": "openoffice",
-                        "kind": "cask",
-                        "install": "brew install --cask openoffice",
-                        "update": "brew upgrade --cask openoffice",
-                        "remove": "brew uninstall --cask openoffice",
-                        "verify": "open -a OpenOffice",
-                        "upgrade": "brew upgrade --greedy --cask openoffice"
-                    }
-                ],
-                "windows": [
-                    {
-                        "manager": "winget",
-                        "id": "Apache.OpenOffice",
-                        "install": "winget install --id Apache.OpenOffice -e",
-                        "update": "winget upgrade --id Apache.OpenOffice -e",
-                        "remove": "winget uninstall --id Apache.OpenOffice -e",
-                        "verify": "winget list --id Apache.OpenOffice -e"
-                    },
-                    {
-                        "manager": "choco",
-                        "id": "openoffice",
-                        "install": "choco install openoffice -y",
-                        "update": "choco upgrade openoffice -y",
-                        "remove": "choco uninstall openoffice -y"
-                    }
-                ],
-                "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
-            },
-            "notes": "Open source (Apache 2.0). The catalog includes macOS and Windows package-manager routes; no verified Linux package-manager route is included."
         },
         {
             "id": "softmaker-freeoffice",
@@ -6467,7 +6341,8 @@
                             "install": "sudo apt update && sudo apt install -y blender",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y blender",
                             "remove": "sudo apt remove -y blender",
-                            "verify": "blender --version"
+                            "verify": "blender --version",
+                            "id": "blender"
                         },
                         {
                             "manager": "flatpak",
@@ -6689,7 +6564,8 @@
                         "manager": "mas",
                         "id": "6444050820",
                         "install": "mas install 6444050820",
-                        "verify": "open -a \"Draw Things\""
+                        "verify": "open -a \"Draw Things\"",
+                        "remove": "sudo mas uninstall 6444050820"
                     }
                 ],
                 "windows": []
@@ -6719,11 +6595,11 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "PCSX2.PCSX2",
-                        "install": "winget install --id PCSX2.PCSX2 -e",
-                        "update": "winget upgrade --id PCSX2.PCSX2 -e",
-                        "remove": "winget uninstall --id PCSX2.PCSX2 -e",
-                        "verify": "winget list --id PCSX2.PCSX2 -e"
+                        "id": "PCSX2Team.PCSX2",
+                        "install": "winget install --id PCSX2Team.PCSX2 -e",
+                        "update": "winget upgrade --id PCSX2Team.PCSX2 -e",
+                        "remove": "winget uninstall --id PCSX2Team.PCSX2 -e",
+                        "verify": "winget list --id PCSX2Team.PCSX2 -e"
                     },
                     {
                         "manager": "choco",
@@ -6980,6 +6856,26 @@
                             "remove": "sudo dnf remove -y nano",
                             "verify": "nano --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "nano",
+                            "install": "sudo pacman -S --needed --noconfirm nano",
+                            "update": "sudo pacman -S --noconfirm nano",
+                            "remove": "sudo pacman -Rns --noconfirm nano",
+                            "verify": "nano --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "nano",
+                            "install": "sudo zypper install -y nano",
+                            "update": "sudo zypper update -y nano",
+                            "remove": "sudo zypper remove -y nano",
+                            "verify": "nano --version"
+                        }
                     ]
                 }
             },
@@ -7156,6 +7052,26 @@
                             "remove": "sudo dnf remove -y vim",
                             "verify": "vim --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "vim",
+                            "install": "sudo pacman -S --needed --noconfirm vim",
+                            "update": "sudo pacman -S --noconfirm vim",
+                            "remove": "sudo pacman -Rns --noconfirm vim",
+                            "verify": "vim --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "vim",
+                            "install": "sudo zypper install -y vim",
+                            "update": "sudo zypper update -y vim",
+                            "remove": "sudo zypper remove -y vim",
+                            "verify": "vim --version"
+                        }
                     ]
                 }
             },
@@ -7242,10 +7158,11 @@
                     },
                     {
                         "manager": "script",
-                        "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
+                        "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
                         "verify": "nvm --version",
-                        "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
-                        "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash"
+                        "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                        "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                        "remove": "rm -rf ~/.nvm"
                     }
                 ],
                 "windows": [
@@ -7278,46 +7195,46 @@
                     "debian": [
                         {
                             "manager": "script",
-                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
+                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
                             "remove": "rm -rf ~/.nvm",
                             "verify": "nvm --version",
-                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
-                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash"
+                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash"
                         }
                     ],
                     "fedora": [
                         {
                             "manager": "script",
-                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
+                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
                             "remove": "rm -rf ~/.nvm",
                             "verify": "nvm --version",
-                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
-                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash"
+                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash"
                         }
                     ],
                     "arch": [
                         {
                             "manager": "script",
-                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
+                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
                             "remove": "rm -rf ~/.nvm",
                             "verify": "nvm --version",
-                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
-                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash"
+                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash"
                         }
                     ],
                     "suse": [
                         {
                             "manager": "script",
-                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
+                            "install": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
                             "remove": "rm -rf ~/.nvm",
                             "verify": "nvm --version",
-                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash",
-                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash"
+                            "update": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash",
+                            "upgrade": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash"
                         }
                     ]
                 }
             },
-            "notes": "The current upstream nvm installer is v0.40.7. Windows uses the separate nvm-windows project; POSIX nvm is supported on macOS, Linux, and WSL."
+            "notes": "The current upstream nvm installer is v0.41.0. Windows uses the separate nvm-windows project; POSIX nvm is supported on macOS, Linux, and WSL."
         },
         {
             "id": "pyenv",
@@ -7340,7 +7257,8 @@
                     {
                         "manager": "script",
                         "install": "curl -fsSL https://pyenv.run | bash",
-                        "verify": "pyenv --version"
+                        "verify": "pyenv --version",
+                        "remove": "rm -rf ~/.pyenv"
                     }
                 ],
                 "windows": [
@@ -7423,7 +7341,8 @@
                     {
                         "manager": "script",
                         "install": "curl -LsSf https://astral.sh/uv/install.sh | sh",
-                        "verify": "uv --version"
+                        "verify": "uv --version",
+                        "remove": "rm -f ~/.local/bin/uv ~/.local/bin/uvx"
                     }
                 ],
                 "windows": [
@@ -7467,12 +7386,14 @@
                             "install": "pipx install uv",
                             "verify": "uv --version",
                             "update": "pipx upgrade uv",
-                            "upgrade": "pipx upgrade uv"
+                            "upgrade": "pipx upgrade uv",
+                            "remove": "pipx uninstall uv"
                         },
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
-                            "verify": "uv --version"
+                            "verify": "uv --version",
+                            "remove": "cargo uninstall uv"
                         }
                     ],
                     "fedora": [
@@ -7489,12 +7410,14 @@
                             "install": "pipx install uv",
                             "verify": "uv --version",
                             "update": "pipx upgrade uv",
-                            "upgrade": "pipx upgrade uv"
+                            "upgrade": "pipx upgrade uv",
+                            "remove": "pipx uninstall uv"
                         },
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
-                            "verify": "uv --version"
+                            "verify": "uv --version",
+                            "remove": "cargo uninstall uv"
                         }
                     ],
                     "arch": [
@@ -7511,12 +7434,14 @@
                             "install": "pipx install uv",
                             "verify": "uv --version",
                             "update": "pipx upgrade uv",
-                            "upgrade": "pipx upgrade uv"
+                            "upgrade": "pipx upgrade uv",
+                            "remove": "pipx uninstall uv"
                         },
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
-                            "verify": "uv --version"
+                            "verify": "uv --version",
+                            "remove": "cargo uninstall uv"
                         }
                     ],
                     "suse": [
@@ -7533,12 +7458,14 @@
                             "install": "pipx install uv",
                             "verify": "uv --version",
                             "update": "pipx upgrade uv",
-                            "upgrade": "pipx upgrade uv"
+                            "upgrade": "pipx upgrade uv",
+                            "remove": "pipx uninstall uv"
                         },
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/astral-sh/uv uv",
-                            "verify": "uv --version"
+                            "verify": "uv --version",
+                            "remove": "cargo uninstall uv"
                         }
                     ]
                 }
@@ -7604,8 +7531,8 @@
                         {
                             "manager": "pacman",
                             "install": "sudo pacman -S --noconfirm python-pipx",
-                            "update": "sudo pacman -Syu",
-                            "remove": "sudo pacman -Rs python-pipx",
+                            "update": "sudo pacman -Syu --noconfirm",
+                            "remove": "sudo pacman -Rs --noconfirm python-pipx",
                             "verify": "pipx --version"
                         }
                     ],
@@ -7613,8 +7540,8 @@
                         {
                             "manager": "zypper",
                             "install": "sudo zypper install -y python3-pipx",
-                            "update": "sudo zypper update python3-pipx",
-                            "remove": "sudo zypper remove python3-pipx",
+                            "update": "sudo zypper update -y python3-pipx",
+                            "remove": "sudo zypper remove -y python3-pipx",
                             "verify": "pipx --version"
                         }
                     ]
@@ -7687,6 +7614,26 @@
                             "remove": "sudo dnf remove -y tree",
                             "verify": "tree --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "tree",
+                            "install": "sudo pacman -S --needed --noconfirm tree",
+                            "update": "sudo pacman -S --noconfirm tree",
+                            "remove": "sudo pacman -Rns --noconfirm tree",
+                            "verify": "tree --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "tree",
+                            "install": "sudo zypper install -y tree",
+                            "update": "sudo zypper update -y tree",
+                            "remove": "sudo zypper remove -y tree",
+                            "verify": "tree --version"
+                        }
                     ]
                 }
             },
@@ -7716,7 +7663,8 @@
                         "install": "cargo install tlrc --locked",
                         "verify": "tldr --version",
                         "update": "cargo install --force tlrc",
-                        "upgrade": "cargo install --force tlrc"
+                        "upgrade": "cargo install --force tlrc",
+                        "remove": "cargo uninstall tlrc"
                     }
                 ],
                 "windows": [
@@ -7742,7 +7690,8 @@
                         "install": "cargo install tlrc --locked",
                         "verify": "tldr --version",
                         "update": "cargo install --force tlrc",
-                        "upgrade": "cargo install --force tlrc"
+                        "upgrade": "cargo install --force tlrc",
+                        "remove": "cargo uninstall tlrc"
                     }
                 ],
                 "linux": {
@@ -7761,7 +7710,8 @@
                             "install": "cargo install tlrc --locked",
                             "verify": "tldr --version",
                             "update": "cargo install --force tlrc",
-                            "upgrade": "cargo install --force tlrc"
+                            "upgrade": "cargo install --force tlrc",
+                            "remove": "cargo uninstall tlrc"
                         }
                     ],
                     "fedora": [
@@ -7779,7 +7729,8 @@
                             "install": "cargo install tlrc --locked",
                             "verify": "tldr --version",
                             "update": "cargo install --force tlrc",
-                            "upgrade": "cargo install --force tlrc"
+                            "upgrade": "cargo install --force tlrc",
+                            "remove": "cargo uninstall tlrc"
                         }
                     ],
                     "arch": [
@@ -7789,7 +7740,8 @@
                             "install": "cargo install tlrc --locked",
                             "verify": "tldr --version",
                             "update": "cargo install --force tlrc",
-                            "upgrade": "cargo install --force tlrc"
+                            "upgrade": "cargo install --force tlrc",
+                            "remove": "cargo uninstall tlrc"
                         }
                     ],
                     "suse": [
@@ -7799,7 +7751,8 @@
                             "install": "cargo install tlrc --locked",
                             "verify": "tldr --version",
                             "update": "cargo install --force tlrc",
-                            "upgrade": "cargo install --force tlrc"
+                            "upgrade": "cargo install --force tlrc",
+                            "remove": "cargo uninstall tlrc"
                         }
                     ]
                 }
@@ -7871,6 +7824,26 @@
                             "remove": "sudo dnf remove -y jq",
                             "verify": "jq --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "jq",
+                            "install": "sudo pacman -S --needed --noconfirm jq",
+                            "update": "sudo pacman -S --noconfirm jq",
+                            "remove": "sudo pacman -Rns --noconfirm jq",
+                            "verify": "jq --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "jq",
+                            "install": "sudo zypper install -y jq",
+                            "update": "sudo zypper update -y jq",
+                            "remove": "sudo zypper remove -y jq",
+                            "verify": "jq --version"
+                        }
                     ]
                 }
             },
@@ -7900,7 +7873,8 @@
                         "install": "cargo install sd",
                         "verify": "sd --version",
                         "update": "cargo install --force sd",
-                        "upgrade": "cargo install --force sd"
+                        "upgrade": "cargo install --force sd",
+                        "remove": "cargo uninstall sd"
                     }
                 ],
                 "windows": [
@@ -7926,7 +7900,8 @@
                         "install": "cargo install sd",
                         "verify": "sd --version",
                         "update": "cargo install --force sd",
-                        "upgrade": "cargo install --force sd"
+                        "upgrade": "cargo install --force sd",
+                        "remove": "cargo uninstall sd"
                     }
                 ],
                 "linux": {
@@ -7945,7 +7920,8 @@
                             "install": "cargo install sd",
                             "verify": "sd --version",
                             "update": "cargo install --force sd",
-                            "upgrade": "cargo install --force sd"
+                            "upgrade": "cargo install --force sd",
+                            "remove": "cargo uninstall sd"
                         }
                     ],
                     "fedora": [
@@ -7963,7 +7939,8 @@
                             "install": "cargo install sd",
                             "verify": "sd --version",
                             "update": "cargo install --force sd",
-                            "upgrade": "cargo install --force sd"
+                            "upgrade": "cargo install --force sd",
+                            "remove": "cargo uninstall sd"
                         }
                     ],
                     "arch": [
@@ -7973,7 +7950,8 @@
                             "install": "cargo install sd",
                             "verify": "sd --version",
                             "update": "cargo install --force sd",
-                            "upgrade": "cargo install --force sd"
+                            "upgrade": "cargo install --force sd",
+                            "remove": "cargo uninstall sd"
                         }
                     ],
                     "suse": [
@@ -7983,7 +7961,8 @@
                             "install": "cargo install sd",
                             "verify": "sd --version",
                             "update": "cargo install --force sd",
-                            "upgrade": "cargo install --force sd"
+                            "upgrade": "cargo install --force sd",
+                            "remove": "cargo uninstall sd"
                         }
                     ]
                 }
@@ -8014,7 +7993,8 @@
                         "install": "cargo install ripgrep",
                         "verify": "rg --version",
                         "update": "cargo install --force ripgrep",
-                        "upgrade": "cargo install --force ripgrep"
+                        "upgrade": "cargo install --force ripgrep",
+                        "remove": "cargo uninstall ripgrep"
                     }
                 ],
                 "windows": [
@@ -8048,7 +8028,8 @@
                         "install": "cargo install ripgrep",
                         "verify": "rg --version",
                         "update": "cargo install --force ripgrep",
-                        "upgrade": "cargo install --force ripgrep"
+                        "upgrade": "cargo install --force ripgrep",
+                        "remove": "cargo uninstall ripgrep"
                     }
                 ],
                 "linux": {
@@ -8067,7 +8048,8 @@
                             "install": "cargo install ripgrep",
                             "verify": "rg --version",
                             "update": "cargo install --force ripgrep",
-                            "upgrade": "cargo install --force ripgrep"
+                            "upgrade": "cargo install --force ripgrep",
+                            "remove": "cargo uninstall ripgrep"
                         }
                     ],
                     "fedora": [
@@ -8085,7 +8067,8 @@
                             "install": "cargo install ripgrep",
                             "verify": "rg --version",
                             "update": "cargo install --force ripgrep",
-                            "upgrade": "cargo install --force ripgrep"
+                            "upgrade": "cargo install --force ripgrep",
+                            "remove": "cargo uninstall ripgrep"
                         }
                     ],
                     "arch": [
@@ -8095,7 +8078,8 @@
                             "install": "cargo install ripgrep",
                             "verify": "rg --version",
                             "update": "cargo install --force ripgrep",
-                            "upgrade": "cargo install --force ripgrep"
+                            "upgrade": "cargo install --force ripgrep",
+                            "remove": "cargo uninstall ripgrep"
                         }
                     ],
                     "suse": [
@@ -8105,7 +8089,8 @@
                             "install": "cargo install ripgrep",
                             "verify": "rg --version",
                             "update": "cargo install --force ripgrep",
-                            "upgrade": "cargo install --force ripgrep"
+                            "upgrade": "cargo install --force ripgrep",
+                            "remove": "cargo uninstall ripgrep"
                         }
                     ]
                 }
@@ -8136,7 +8121,8 @@
                         "install": "cargo install fd-find",
                         "verify": "fd --version",
                         "update": "cargo install --force fd-find",
-                        "upgrade": "cargo install --force fd-find"
+                        "upgrade": "cargo install --force fd-find",
+                        "remove": "cargo uninstall fd-find"
                     }
                 ],
                 "windows": [
@@ -8170,7 +8156,8 @@
                         "install": "cargo install fd-find",
                         "verify": "fd --version",
                         "update": "cargo install --force fd-find",
-                        "upgrade": "cargo install --force fd-find"
+                        "upgrade": "cargo install --force fd-find",
+                        "remove": "cargo uninstall fd-find"
                     }
                 ],
                 "linux": {
@@ -8189,7 +8176,8 @@
                             "install": "cargo install fd-find",
                             "verify": "fd --version",
                             "update": "cargo install --force fd-find",
-                            "upgrade": "cargo install --force fd-find"
+                            "upgrade": "cargo install --force fd-find",
+                            "remove": "cargo uninstall fd-find"
                         }
                     ],
                     "fedora": [
@@ -8207,7 +8195,8 @@
                             "install": "cargo install fd-find",
                             "verify": "fd --version",
                             "update": "cargo install --force fd-find",
-                            "upgrade": "cargo install --force fd-find"
+                            "upgrade": "cargo install --force fd-find",
+                            "remove": "cargo uninstall fd-find"
                         }
                     ],
                     "arch": [
@@ -8217,7 +8206,8 @@
                             "install": "cargo install fd-find",
                             "verify": "fd --version",
                             "update": "cargo install --force fd-find",
-                            "upgrade": "cargo install --force fd-find"
+                            "upgrade": "cargo install --force fd-find",
+                            "remove": "cargo uninstall fd-find"
                         }
                     ],
                     "suse": [
@@ -8227,7 +8217,8 @@
                             "install": "cargo install fd-find",
                             "verify": "fd --version",
                             "update": "cargo install --force fd-find",
-                            "upgrade": "cargo install --force fd-find"
+                            "upgrade": "cargo install --force fd-find",
+                            "remove": "cargo uninstall fd-find"
                         }
                     ]
                 }
@@ -8303,7 +8294,8 @@
                         "install": "pipx install ranger-fm",
                         "verify": "ranger --version",
                         "update": "pipx upgrade ranger-fm",
-                        "upgrade": "pipx upgrade ranger-fm"
+                        "upgrade": "pipx upgrade ranger-fm",
+                        "remove": "pipx uninstall ranger-fm"
                     }
                 ],
                 "windows": [],
@@ -8323,7 +8315,8 @@
                             "install": "pipx install ranger-fm",
                             "verify": "ranger --version",
                             "update": "pipx upgrade ranger-fm",
-                            "upgrade": "pipx upgrade ranger-fm"
+                            "upgrade": "pipx upgrade ranger-fm",
+                            "remove": "pipx uninstall ranger-fm"
                         }
                     ],
                     "fedora": [
@@ -8341,7 +8334,8 @@
                             "install": "pipx install ranger-fm",
                             "verify": "ranger --version",
                             "update": "pipx upgrade ranger-fm",
-                            "upgrade": "pipx upgrade ranger-fm"
+                            "upgrade": "pipx upgrade ranger-fm",
+                            "remove": "pipx uninstall ranger-fm"
                         }
                     ],
                     "arch": [
@@ -8351,7 +8345,8 @@
                             "install": "pipx install ranger-fm",
                             "verify": "ranger --version",
                             "update": "pipx upgrade ranger-fm",
-                            "upgrade": "pipx upgrade ranger-fm"
+                            "upgrade": "pipx upgrade ranger-fm",
+                            "remove": "pipx uninstall ranger-fm"
                         }
                     ],
                     "suse": [
@@ -8361,7 +8356,8 @@
                             "install": "pipx install ranger-fm",
                             "verify": "ranger --version",
                             "update": "pipx upgrade ranger-fm",
-                            "upgrade": "pipx upgrade ranger-fm"
+                            "upgrade": "pipx upgrade ranger-fm",
+                            "remove": "pipx uninstall ranger-fm"
                         }
                     ]
                 }
@@ -8406,6 +8402,26 @@
                             "install": "sudo dnf install -y nnn",
                             "update": "sudo dnf upgrade -y nnn",
                             "remove": "sudo dnf remove -y nnn",
+                            "verify": "nnn -V"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "nnn",
+                            "install": "sudo pacman -S --needed --noconfirm nnn",
+                            "update": "sudo pacman -S --noconfirm nnn",
+                            "remove": "sudo pacman -Rns --noconfirm nnn",
+                            "verify": "nnn -V"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "nnn",
+                            "install": "sudo zypper install -y nnn",
+                            "update": "sudo zypper update -y nnn",
+                            "remove": "sudo zypper remove -y nnn",
                             "verify": "nnn -V"
                         }
                     ]
@@ -8477,7 +8493,7 @@
                         {
                             "manager": "apt",
                             "id": "lazygit",
-                            "install": "sudo add-apt-repository ppa:lazygit-team/release && sudo apt update && sudo apt install -y lazygit",
+                            "install": "sudo apt update && sudo apt install -y lazygit",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y lazygit",
                             "remove": "sudo apt remove -y lazygit",
                             "verify": "lazygit --version"
@@ -8527,7 +8543,7 @@
                     ]
                 }
             },
-            "notes": "Not in default Debian/Ubuntu repositories; the catalogued Linux route uses the project PPA, while Fedora uses the atim/lazygit COPR."
+            "notes": "The apt package exists only in recent Debian and Ubuntu releases; the go method works everywhere. Fedora uses the atim/lazygit COPR."
         },
         {
             "id": "bat",
@@ -8553,7 +8569,8 @@
                         "install": "cargo install --locked bat",
                         "verify": "bat --version",
                         "update": "cargo install --force bat",
-                        "upgrade": "cargo install --force bat"
+                        "upgrade": "cargo install --force bat",
+                        "remove": "cargo uninstall bat"
                     }
                 ],
                 "windows": [
@@ -8587,7 +8604,8 @@
                         "install": "cargo install --locked bat",
                         "verify": "bat --version",
                         "update": "cargo install --force bat",
-                        "upgrade": "cargo install --force bat"
+                        "upgrade": "cargo install --force bat",
+                        "remove": "cargo uninstall bat"
                     }
                 ],
                 "linux": {
@@ -8606,7 +8624,8 @@
                             "install": "cargo install --locked bat",
                             "verify": "bat --version",
                             "update": "cargo install --force bat",
-                            "upgrade": "cargo install --force bat"
+                            "upgrade": "cargo install --force bat",
+                            "remove": "cargo uninstall bat"
                         }
                     ],
                     "fedora": [
@@ -8624,7 +8643,8 @@
                             "install": "cargo install --locked bat",
                             "verify": "bat --version",
                             "update": "cargo install --force bat",
-                            "upgrade": "cargo install --force bat"
+                            "upgrade": "cargo install --force bat",
+                            "remove": "cargo uninstall bat"
                         }
                     ],
                     "arch": [
@@ -8634,7 +8654,8 @@
                             "install": "cargo install --locked bat",
                             "verify": "bat --version",
                             "update": "cargo install --force bat",
-                            "upgrade": "cargo install --force bat"
+                            "upgrade": "cargo install --force bat",
+                            "remove": "cargo uninstall bat"
                         }
                     ],
                     "suse": [
@@ -8644,7 +8665,8 @@
                             "install": "cargo install --locked bat",
                             "verify": "bat --version",
                             "update": "cargo install --force bat",
-                            "upgrade": "cargo install --force bat"
+                            "upgrade": "cargo install --force bat",
+                            "remove": "cargo uninstall bat"
                         }
                     ]
                 }
@@ -8679,7 +8701,8 @@
                     {
                         "manager": "cargo",
                         "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
-                        "verify": "rtk --version"
+                        "verify": "rtk --version",
+                        "remove": "cargo uninstall rtk"
                     }
                 ],
                 "linux": {
@@ -8692,7 +8715,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
-                            "verify": "rtk --version"
+                            "verify": "rtk --version",
+                            "remove": "cargo uninstall rtk"
                         }
                     ],
                     "fedora": [
@@ -8704,7 +8728,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
-                            "verify": "rtk --version"
+                            "verify": "rtk --version",
+                            "remove": "cargo uninstall rtk"
                         }
                     ],
                     "arch": [
@@ -8716,7 +8741,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
-                            "verify": "rtk --version"
+                            "verify": "rtk --version",
+                            "remove": "cargo uninstall rtk"
                         }
                     ],
                     "suse": [
@@ -8728,7 +8754,8 @@
                         {
                             "manager": "cargo",
                             "install": "cargo install --git https://github.com/rtk-ai/rtk rtk",
-                            "verify": "rtk --version"
+                            "verify": "rtk --version",
+                            "remove": "cargo uninstall rtk"
                         }
                     ]
                 }
@@ -8793,14 +8820,6 @@
                 "linux": {
                     "debian": [
                         {
-                            "manager": "apt",
-                            "id": "awscli",
-                            "install": "sudo apt update && sudo apt install -y awscli",
-                            "update": "sudo apt update && sudo apt install --only-upgrade -y awscli",
-                            "remove": "sudo apt remove -y awscli",
-                            "verify": "aws --version"
-                        },
-                        {
                             "manager": "snap",
                             "id": "aws-cli",
                             "install": "sudo snap install aws-cli --classic",
@@ -8814,14 +8833,6 @@
                             "update": "sudo ./aws/install --update",
                             "remove": "sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws",
                             "verify": "aws --version"
-                        },
-                        {
-                            "manager": "pipx",
-                            "id": "awscli",
-                            "install": "pipx install awscli",
-                            "verify": "aws --version",
-                            "update": "pipx upgrade awscli",
-                            "upgrade": "pipx upgrade awscli"
                         }
                     ],
                     "fedora": [
@@ -8847,14 +8858,6 @@
                             "update": "sudo ./aws/install --update",
                             "remove": "sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws",
                             "verify": "aws --version"
-                        },
-                        {
-                            "manager": "pipx",
-                            "id": "awscli",
-                            "install": "pipx install awscli",
-                            "verify": "aws --version",
-                            "update": "pipx upgrade awscli",
-                            "upgrade": "pipx upgrade awscli"
                         }
                     ],
                     "arch": [
@@ -8872,14 +8875,6 @@
                             "update": "sudo ./aws/install --update",
                             "remove": "sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws",
                             "verify": "aws --version"
-                        },
-                        {
-                            "manager": "pipx",
-                            "id": "awscli",
-                            "install": "pipx install awscli",
-                            "verify": "aws --version",
-                            "update": "pipx upgrade awscli",
-                            "upgrade": "pipx upgrade awscli"
                         }
                     ],
                     "suse": [
@@ -8897,14 +8892,6 @@
                             "update": "sudo ./aws/install --update",
                             "remove": "sudo rm -rf /usr/local/aws-cli /usr/local/bin/aws",
                             "verify": "aws --version"
-                        },
-                        {
-                            "manager": "pipx",
-                            "id": "awscli",
-                            "install": "pipx install awscli",
-                            "verify": "aws --version",
-                            "update": "pipx upgrade awscli",
-                            "upgrade": "pipx upgrade awscli"
                         }
                     ]
                 }
@@ -9095,7 +9082,8 @@
                             "install": "npm install -g @usebruno/cli@latest",
                             "verify": "bru --version",
                             "update": "npm install -g @usebruno/cli@latest",
-                            "upgrade": "npm install -g @usebruno/cli@latest"
+                            "upgrade": "npm install -g @usebruno/cli@latest",
+                            "remove": "npm uninstall -g @usebruno/cli"
                         }
                     ],
                     "fedora": [
@@ -9119,7 +9107,8 @@
                             "install": "npm install -g @usebruno/cli@latest",
                             "verify": "bru --version",
                             "update": "npm install -g @usebruno/cli@latest",
-                            "upgrade": "npm install -g @usebruno/cli@latest"
+                            "upgrade": "npm install -g @usebruno/cli@latest",
+                            "remove": "npm uninstall -g @usebruno/cli"
                         }
                     ],
                     "arch": [
@@ -9143,7 +9132,8 @@
                             "install": "npm install -g @usebruno/cli@latest",
                             "verify": "bru --version",
                             "update": "npm install -g @usebruno/cli@latest",
-                            "upgrade": "npm install -g @usebruno/cli@latest"
+                            "upgrade": "npm install -g @usebruno/cli@latest",
+                            "remove": "npm uninstall -g @usebruno/cli"
                         }
                     ],
                     "suse": [
@@ -9167,7 +9157,8 @@
                             "install": "npm install -g @usebruno/cli@latest",
                             "verify": "bru --version",
                             "update": "npm install -g @usebruno/cli@latest",
-                            "upgrade": "npm install -g @usebruno/cli@latest"
+                            "upgrade": "npm install -g @usebruno/cli@latest",
+                            "remove": "npm uninstall -g @usebruno/cli"
                         }
                     ]
                 }
@@ -9367,6 +9358,26 @@
                             "remove": "sudo dnf remove -y wget",
                             "verify": "wget --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "wget",
+                            "install": "sudo pacman -S --needed --noconfirm wget",
+                            "update": "sudo pacman -S --noconfirm wget",
+                            "remove": "sudo pacman -Rns --noconfirm wget",
+                            "verify": "wget --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "wget",
+                            "install": "sudo zypper install -y wget",
+                            "update": "sudo zypper update -y wget",
+                            "remove": "sudo zypper remove -y wget",
+                            "verify": "wget --version"
+                        }
                     ]
                 }
             },
@@ -9437,35 +9448,30 @@
                             "remove": "sudo dnf remove -y curl",
                             "verify": "curl --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "curl",
+                            "install": "sudo pacman -S --needed --noconfirm curl",
+                            "update": "sudo pacman -S --noconfirm curl",
+                            "remove": "sudo pacman -Rns --noconfirm curl",
+                            "verify": "curl --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "curl",
+                            "install": "sudo zypper install -y curl",
+                            "update": "sudo zypper update -y curl",
+                            "remove": "sudo zypper remove -y curl",
+                            "verify": "curl --version"
+                        }
                     ]
                 }
             },
             "notes": "Already present on Windows 10/11, macOS, and most Linux; on macOS Homebrew's curl is keg-only. Removing distro curl can pull dependencies."
-        },
-        {
-            "id": "android-file-transfer",
-            "name": "Android File Transfer",
-            "category": "System Utilities",
-            "description": "Transfers files from and to an Android smartphone",
-            "site": "https://www.android.com/filetransfer/",
-            "platforms": { "macos": true, "windows": false, "linux": false },
-            "methods": {
-                "macos": [
-                    {
-                        "manager": "brew",
-                        "id": "android-file-transfer",
-                        "kind": "cask",
-                        "install": "brew install --cask android-file-transfer",
-                        "update": "brew upgrade --cask android-file-transfer",
-                        "remove": "brew uninstall --cask android-file-transfer",
-                        "verify": "open -a \"Android File Transfer\"",
-                        "upgrade": "brew upgrade --greedy --cask android-file-transfer"
-                    }
-                ],
-                "windows": [],
-                "linux": {}
-            },
-            "notes": "macOS only; this is distinct from the unrelated open-source `android-file-transfer-linux` project."
         },
         {
             "id": "openmtp",
@@ -9607,6 +9613,26 @@
                             "remove": "sudo dnf remove -y perl-Image-ExifTool",
                             "verify": "exiftool -ver"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "perl-image-exiftool",
+                            "install": "sudo pacman -S --needed --noconfirm perl-image-exiftool",
+                            "update": "sudo pacman -S --noconfirm perl-image-exiftool",
+                            "remove": "sudo pacman -Rns --noconfirm perl-image-exiftool",
+                            "verify": "exiftool -ver"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "exiftool",
+                            "install": "sudo zypper install -y exiftool",
+                            "update": "sudo zypper update -y exiftool",
+                            "remove": "sudo zypper remove -y exiftool",
+                            "verify": "exiftool -ver"
+                        }
                     ]
                 }
             },
@@ -9701,6 +9727,26 @@
                             "remove": "sudo dnf remove -y htop",
                             "verify": "htop --version"
                         }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "htop",
+                            "install": "sudo pacman -S --needed --noconfirm htop",
+                            "update": "sudo pacman -S --noconfirm htop",
+                            "remove": "sudo pacman -Rns --noconfirm htop",
+                            "verify": "htop --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "htop",
+                            "install": "sudo zypper install -y htop",
+                            "update": "sudo zypper update -y htop",
+                            "remove": "sudo zypper remove -y htop",
+                            "verify": "htop --version"
+                        }
                     ]
                 }
             },
@@ -9749,7 +9795,7 @@
                     ]
                 }
             },
-            "notes": "Linux-focused GPU monitor with no native Windows build; macOS Apple GPU support depends on the hardware generation."
+            "notes": "Linux-focused GPU monitor with no native Windows build; macOS Apple GPU support depends on the hardware generation. The Homebrew formula is deprecated upstream and may be removed."
         },
         {
             "id": "iterm2",
@@ -10068,10 +10114,11 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null && sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
+                            "install": "sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
                             "remove": "sudo apt remove -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
-                            "verify": "docker --version"
+                            "verify": "docker --version",
+                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\")/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\") $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null"
                         },
                         {
                             "manager": "snap",
@@ -10084,10 +10131,11 @@
                     "fedora": [
                         {
                             "manager": "dnf",
-                            "install": "sudo dnf -y install dnf-plugins-core && sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo && sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && sudo systemctl enable --now docker",
+                            "install": "sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && sudo systemctl enable --now docker",
                             "update": "sudo dnf upgrade -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
                             "remove": "sudo dnf remove -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
-                            "verify": "docker --version"
+                            "verify": "docker --version",
+                            "repoSetup": "sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo --overwrite"
                         },
                         {
                             "manager": "snap",
@@ -10117,7 +10165,7 @@
                     ]
                 }
             },
-            "notes": "On macOS, the Homebrew `docker` formula installs only the CLI client; the daemon is provided by Docker Desktop, Colima, or a remote engine. On Windows the engine is delivered through Docker Desktop and WSL 2; Scoop installs the CLI only."
+            "notes": "On macOS, the Homebrew `docker` formula installs only the CLI client; the daemon is provided by Docker Desktop, Colima, or a remote engine. On Windows the engine is delivered through Docker Desktop and WSL 2; Scoop installs the CLI only. On Linux, docker buildx and compose ship as the docker-buildx-plugin and docker-compose-plugin packages; on macOS buildx is the separate `docker-buildx` Homebrew formula."
         },
         {
             "id": "docker-compose",
@@ -10163,7 +10211,9 @@
                             "install": "sudo apt update && sudo apt install -y docker-compose-plugin",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y docker-compose-plugin",
                             "remove": "sudo apt remove -y docker-compose-plugin",
-                            "verify": "docker compose version"
+                            "verify": "docker compose version",
+                            "repoSetup": "sudo install -m 0755 -d /etc/apt/keyrings && curl -fsSL \"https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\")/gpg\" | sudo tee /etc/apt/keyrings/docker.asc >/dev/null && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$(. /etc/os-release && echo \"$ID\") $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null",
+                            "id": "docker-compose-plugin"
                         }
                     ],
                     "fedora": [
@@ -10172,11 +10222,30 @@
                             "install": "sudo dnf install -y docker-compose-plugin",
                             "update": "sudo dnf upgrade -y docker-compose-plugin",
                             "remove": "sudo dnf remove -y docker-compose-plugin",
+                            "verify": "docker compose version",
+                            "repoSetup": "sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo --overwrite"
+                        }
+                    ],
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "docker-compose",
+                            "install": "sudo pacman -S --needed --noconfirm docker-compose",
+                            "update": "sudo pacman -S --noconfirm docker-compose",
+                            "remove": "sudo pacman -Rns --noconfirm docker-compose",
                             "verify": "docker compose version"
                         }
                     ],
-                    "arch": [],
-                    "suse": []
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "docker-compose",
+                            "install": "sudo zypper install -y docker-compose",
+                            "update": "sudo zypper update -y docker-compose",
+                            "remove": "sudo zypper remove -y docker-compose",
+                            "verify": "docker compose version"
+                        }
+                    ]
                 }
             },
             "notes": "Compose v2 is a Docker CLI plugin invoked as `docker compose`. The legacy v1 `docker-compose` standalone binary is end-of-life. Linux package routes should match the Docker engine source."
@@ -10233,7 +10302,8 @@
                             "install": "sudo apt update && sudo apt install -y podman",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y podman",
                             "remove": "sudo apt remove -y podman",
-                            "verify": "podman --version"
+                            "verify": "podman --version",
+                            "id": "podman"
                         }
                     ],
                     "fedora": [
@@ -10245,8 +10315,26 @@
                             "verify": "podman --version"
                         }
                     ],
-                    "arch": [],
-                    "suse": []
+                    "arch": [
+                        {
+                            "manager": "pacman",
+                            "id": "podman",
+                            "install": "sudo pacman -S --needed --noconfirm podman",
+                            "update": "sudo pacman -S --noconfirm podman",
+                            "remove": "sudo pacman -Rns --noconfirm podman",
+                            "verify": "podman --version"
+                        }
+                    ],
+                    "suse": [
+                        {
+                            "manager": "zypper",
+                            "id": "podman",
+                            "install": "sudo zypper install -y podman",
+                            "update": "sudo zypper update -y podman",
+                            "remove": "sudo zypper remove -y podman",
+                            "verify": "podman --version"
+                        }
+                    ]
                 }
             },
             "notes": "Apache-2.0, daemonless, rootless-capable. On macOS/Windows it runs containers in a managed Linux VM (`podman machine`); Podman Desktop is a separate GUI product."
@@ -10274,7 +10362,8 @@
                     {
                         "manager": "pipx",
                         "install": "pipx install podman-compose",
-                        "verify": "podman-compose --version"
+                        "verify": "podman-compose --version",
+                        "remove": "pipx uninstall podman-compose"
                     }
                 ],
                 "linux": {
@@ -10284,7 +10373,8 @@
                             "install": "sudo apt update && sudo apt install -y podman-compose",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y podman-compose",
                             "remove": "sudo apt remove -y podman-compose",
-                            "verify": "podman-compose --version"
+                            "verify": "podman-compose --version",
+                            "id": "podman-compose"
                         },
                         {
                             "manager": "pipx",
@@ -10376,10 +10466,10 @@
                 "windows": [
                     {
                         "manager": "winget",
-                        "id": "dbeaver.dbeaver",
-                        "install": "winget install --id dbeaver.dbeaver -e",
-                        "update": "winget upgrade --id dbeaver.dbeaver -e",
-                        "remove": "winget uninstall --id dbeaver.dbeaver -e",
+                        "id": "DBeaver.DBeaver.Community",
+                        "install": "winget install --id DBeaver.DBeaver.Community -e",
+                        "update": "winget upgrade --id DBeaver.DBeaver.Community -e",
+                        "remove": "winget uninstall --id DBeaver.DBeaver.Community -e",
                         "verify": "dbeaver -version"
                     },
                     {
@@ -10740,7 +10830,7 @@
                     "debian": [
                         {
                             "manager": "apt",
-                            "install": "wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb && sudo dpkg -i ./protonvpn-stable-release_1.0.8_all.deb && sudo apt update && sudo apt install -y proton-vpn-gnome-desktop",
+                            "install": "wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.10_all.deb && sudo dpkg -i ./protonvpn-stable-release_1.0.10_all.deb && sudo apt update && sudo apt install -y proton-vpn-gnome-desktop",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y proton-vpn-gnome-desktop",
                             "remove": "sudo apt remove -y proton-vpn-gnome-desktop",
                             "verify": "protonvpn-app --version"
@@ -10754,13 +10844,6 @@
                         }
                     ],
                     "fedora": [
-                        {
-                            "manager": "dnf",
-                            "install": "sudo dnf install -y https://repo.protonvpn.com/fedora-$(awk -F= '/^VERSION_ID/{print $2}' /etc/os-release | tr -d '\"')-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.4-1.noarch.rpm && sudo dnf install -y proton-vpn-gnome-desktop",
-                            "update": "sudo dnf upgrade -y proton-vpn-gnome-desktop",
-                            "remove": "sudo dnf remove -y proton-vpn-gnome-desktop",
-                            "verify": "protonvpn-app --version"
-                        },
                         {
                             "manager": "flatpak",
                             "id": "com.protonvpn.www",
@@ -10789,7 +10872,7 @@
                     ]
                 }
             },
-            "notes": "Freemium. Native Linux package routes use Proton VPN repository packages; the Flathub entry `com.protonvpn.www` is community-maintained.",
+            "notes": "Freemium. The Debian/Ubuntu route uses the Proton VPN repository package; Fedora users should use the Flathub entry (com.protonvpn.www, community-maintained) or Proton's own Fedora guide, which pins a versioned repo RPM.",
             "platformNotes": {
                 "linux": "Official native Linux GUI packages target current Debian/Ubuntu and Fedora GNOME releases; Flatpak is an additional community route."
             }
@@ -10888,7 +10971,7 @@
             "category": "LLM Platforms",
             "description": "Run, create, and share large language models (CLI + server)",
             "site": "https://ollama.com",
-            "platforms": { "macos": true, "windows": true, "linux": true },
+            "platforms": { "macos": true, "windows": false, "linux": true },
             "methods": {
                 "macos": [
                     {
@@ -10901,16 +10984,7 @@
                         "verify": "ollama --version"
                     }
                 ],
-                "windows": [
-                    {
-                        "manager": "winget",
-                        "id": "Ollama.Ollama",
-                        "install": "winget install --id Ollama.Ollama -e",
-                        "update": "winget upgrade --id Ollama.Ollama -e",
-                        "remove": "winget uninstall --id Ollama.Ollama -e",
-                        "verify": "ollama --version"
-                    }
-                ],
+                "windows": [],
                 "linux": {
                     "debian": [
                         {
@@ -10950,7 +11024,7 @@
                     ]
                 }
             },
-            "notes": "Headless CLI/server, distinct from the desktop app. Linux uses the official installer script; macOS/Windows desktop packages include the same CLI."
+            "notes": "Headless CLI/server, distinct from the desktop app. Linux uses the official installer script; on Windows install Ollama (Desktop App), which includes the CLI."
         },
         {
             "id": "llama.cpp",
@@ -11397,10 +11471,10 @@
                     "suse": [
                         {
                             "manager": "zypper",
-                            "repoSetup": "sudo rpm -Uvh https://packages.microsoft.com/config/opensuse/15/packages-microsoft-prod.rpm && sudo zypper update",
-                            "install": "sudo zypper install msopenjdk-{version}",
-                            "update": "sudo zypper update msopenjdk-{version}",
-                            "remove": "sudo zypper remove msopenjdk-{version}",
+                            "repoSetup": "sudo rpm -Uvh https://packages.microsoft.com/config/opensuse/15/packages-microsoft-prod.rpm && sudo zypper update -y",
+                            "install": "sudo zypper install -y msopenjdk-{version}",
+                            "update": "sudo zypper update -y msopenjdk-{version}",
+                            "remove": "sudo zypper remove -y msopenjdk-{version}",
                             "verify": "java -version"
                         }
                     ]
@@ -11532,10 +11606,10 @@
                     },
                     {
                         "manager": "scoop",
-                        "id": "nodejs-lts",
-                        "install": "scoop install nodejs-lts",
-                        "update": "scoop update nodejs-lts",
-                        "remove": "scoop uninstall nodejs-lts",
+                        "id": "versions/nodejs{version}",
+                        "install": "scoop bucket add versions; scoop install versions/nodejs{version}",
+                        "update": "scoop update nodejs{version}",
+                        "remove": "scoop uninstall nodejs{version}",
                         "verify": "node --version"
                     }
                 ],
@@ -11596,7 +11670,7 @@
                     ]
                 }
             },
-            "notes": "`node@22` and `node@24` are supported LTS lines; `node@26` is the current line. nvm and fnm are also catalogued for version management."
+            "notes": "`node@26` is the Active LTS line, `node@24` is Maintenance LTS and `node@22` is near end of life. On Windows, winget and Chocolatey install the current LTS (no per-version package for 24 or 26), while Scoop installs the selected line from the versions bucket. nvm and fnm are also catalogued for version management."
         },
         {
             "id": "python",
@@ -11606,7 +11680,7 @@
             "site": "https://www.python.org",
             "platforms": { "macos": true, "windows": true, "linux": true },
             "parameterized": true,
-            "versions": ["3.11", "3.12", "3.13", "3.14"],
+            "versions": ["3.11", "3.12", "3.13", "3.14", "3.15"],
             "methods": {
                 "macos": [
                     {
@@ -11630,18 +11704,16 @@
                     },
                     {
                         "manager": "choco",
-                        "id": "python",
-                        "install": "choco install python --version={version}.x -y",
-                        "update": "choco upgrade python -y",
-                        "remove": "choco uninstall python -y",
+                        "install": "choco install python$('{version}'.Replace('.','')) -y",
+                        "update": "choco upgrade python$('{version}'.Replace('.','')) -y",
+                        "remove": "choco uninstall python$('{version}'.Replace('.','')) -y",
                         "verify": "python --version"
                     },
                     {
                         "manager": "scoop",
-                        "id": "python",
-                        "install": "scoop install python",
-                        "update": "scoop update python",
-                        "remove": "scoop uninstall python",
+                        "install": "scoop bucket add versions; scoop install versions/python$('{version}'.Replace('.',''))",
+                        "update": "scoop update python$('{version}'.Replace('.',''))",
+                        "remove": "scoop uninstall python$('{version}'.Replace('.',''))",
                         "verify": "python --version"
                     }
                 ],
@@ -11654,7 +11726,12 @@
                             "remove": "sudo apt remove -y python{version}",
                             "verify": "python3 --version"
                         },
-                        { "manager": "uv", "install": "uv python install {version}", "verify": "python3 --version" }
+                        {
+                            "manager": "uv",
+                            "install": "uv python install {version}",
+                            "verify": "python3 --version",
+                            "remove": "uv python uninstall {version}"
+                        }
                     ],
                     "fedora": [
                         {
@@ -11664,17 +11741,32 @@
                             "remove": "sudo dnf remove -y python{version}",
                             "verify": "python3 --version"
                         },
-                        { "manager": "uv", "install": "uv python install {version}", "verify": "python3 --version" }
+                        {
+                            "manager": "uv",
+                            "install": "uv python install {version}",
+                            "verify": "python3 --version",
+                            "remove": "uv python uninstall {version}"
+                        }
                     ],
                     "arch": [
-                        { "manager": "uv", "install": "uv python install {version}", "verify": "python3 --version" }
+                        {
+                            "manager": "uv",
+                            "install": "uv python install {version}",
+                            "verify": "python3 --version",
+                            "remove": "uv python uninstall {version}"
+                        }
                     ],
                     "suse": [
-                        { "manager": "uv", "install": "uv python install {version}", "verify": "python3 --version" }
+                        {
+                            "manager": "uv",
+                            "install": "uv python install {version}",
+                            "verify": "python3 --version",
+                            "remove": "uv python uninstall {version}"
+                        }
                     ]
                 }
             },
-            "notes": "`{version}` is a supported minor line (3.11–3.14); distro packages may lag the upstream release."
+            "notes": "`{version}` is a supported minor line (3.11-3.15); distro packages may lag the upstream release."
         },
         {
             "id": "go",
@@ -11759,9 +11851,9 @@
                     "arch": [
                         {
                             "manager": "pacman",
-                            "install": "sudo pacman -S go",
-                            "update": "sudo pacman -Syu",
-                            "remove": "sudo pacman -Rs go",
+                            "install": "sudo pacman -S --noconfirm go",
+                            "update": "sudo pacman -Syu --noconfirm",
+                            "remove": "sudo pacman -Rs --noconfirm go",
                             "verify": "go version"
                         },
                         {
@@ -11776,9 +11868,9 @@
                     "suse": [
                         {
                             "manager": "zypper",
-                            "install": "sudo zypper install go",
+                            "install": "sudo zypper install -y go",
                             "update": "sudo zypper update -y go",
-                            "remove": "sudo zypper remove go",
+                            "remove": "sudo zypper remove -y go",
                             "verify": "go version",
                             "upgrade": "sudo zypper update -y go"
                         },
@@ -11884,8 +11976,8 @@
                         {
                             "manager": "pacman",
                             "install": "sudo pacman -S --noconfirm rust",
-                            "update": "sudo pacman -Syu",
-                            "remove": "sudo pacman -Rs rust",
+                            "update": "sudo pacman -Syu --noconfirm",
+                            "remove": "sudo pacman -Rs --noconfirm rust",
                             "verify": "cargo --version"
                         },
                         {
@@ -11900,8 +11992,8 @@
                         {
                             "manager": "zypper",
                             "install": "sudo zypper install -y rust cargo",
-                            "update": "sudo zypper update rust cargo",
-                            "remove": "sudo zypper remove rust cargo",
+                            "update": "sudo zypper update -y rust cargo",
+                            "remove": "sudo zypper remove -y rust cargo",
                             "verify": "cargo --version"
                         },
                         {
@@ -11937,14 +12029,6 @@
                 ],
                 "windows": [
                     {
-                        "manager": "winget",
-                        "id": "Apache.Maven",
-                        "install": "winget install --id Apache.Maven -e",
-                        "update": "winget upgrade --id Apache.Maven -e",
-                        "remove": "winget uninstall --id Apache.Maven -e",
-                        "verify": "mvn -version"
-                    },
-                    {
                         "manager": "choco",
                         "id": "maven",
                         "install": "choco install maven -y",
@@ -11968,7 +12052,8 @@
                             "install": "sudo apt update && sudo apt install -y maven",
                             "update": "sudo apt update && sudo apt install --only-upgrade -y maven",
                             "remove": "sudo apt remove -y maven",
-                            "verify": "mvn -version"
+                            "verify": "mvn -version",
+                            "id": "maven"
                         },
                         {
                             "manager": "snap",
@@ -12308,9 +12393,9 @@
                 "macos": [
                     {
                         "manager": "brew",
-                        "id": "oven-sh/bun/bun",
+                        "id": "bun",
                         "kind": "formula",
-                        "install": "brew install oven-sh/bun/bun",
+                        "install": "brew install bun",
                         "update": "brew upgrade bun",
                         "remove": "brew uninstall bun",
                         "verify": "bun --version"
@@ -12327,10 +12412,26 @@
                 ],
                 "windows": [
                     {
+                        "manager": "winget",
+                        "id": "Oven-sh.Bun",
+                        "install": "winget install --id Oven-sh.Bun -e",
+                        "update": "winget upgrade --id Oven-sh.Bun -e",
+                        "remove": "winget uninstall --id Oven-sh.Bun -e",
+                        "verify": "bun --version"
+                    },
+                    {
                         "manager": "scoop",
                         "install": "scoop install bun",
                         "update": "scoop update bun",
                         "remove": "scoop uninstall bun",
+                        "verify": "bun --version",
+                        "id": "bun"
+                    },
+                    {
+                        "manager": "script",
+                        "install": "irm bun.sh/install.ps1 | iex",
+                        "update": "bun upgrade",
+                        "remove": "Remove-Item -Recurse -Force \"$HOME\\.bun\"",
                         "verify": "bun --version"
                     },
                     {
@@ -12418,7 +12519,7 @@
                     ]
                 }
             },
-            "notes": "Cross-platform JavaScript runtime and package manager. Homebrew, Scoop, npm, and the official shell installer are represented where supported."
+            "notes": "Cross-platform JavaScript runtime and package manager. Homebrew, winget, Scoop, npm, and the official installer scripts are represented where supported."
         },
         {
             "id": "chatgpt",
@@ -12484,7 +12585,7 @@
                 "linux": { "debian": [], "fedora": [], "arch": [], "suse": [] }
             },
             "platformNotes": { "macos": "Homebrew cask requires macOS 14 or newer." },
-            "notes": "Proprietary macOS disk analysis utility distributed as a Homebrew cask."
+            "notes": "Open-source (MIT) macOS disk analysis utility distributed as a Homebrew cask."
         },
         {
             "id": "homebrew-app",
@@ -12560,7 +12661,7 @@
                         {
                             "manager": "dnf",
                             "id": "gh",
-                            "repoSetup": "sudo dnf install -y dnf-plugins-core && sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo",
+                            "repoSetup": "sudo dnf install -y dnf5-plugins && sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo --overwrite",
                             "install": "sudo dnf install -y gh",
                             "update": "sudo dnf upgrade -y gh",
                             "upgrade": "sudo dnf upgrade -y gh",
@@ -12672,7 +12773,7 @@
                     ]
                 }
             },
-            "notes": "Open-source (MIT). The global npm package is `@fission-ai/openspec`; catalog updates reinstall its latest published version."
+            "notes": "Open-source (MIT). The global npm package is `@fission-ai/openspec`; catalog updates reinstall its latest published version. Requires Node.js 22.12 or newer."
         },
         {
             "id": "serena",
@@ -12767,7 +12868,7 @@
                         "id": "specify-cli",
                         "install": "uv tool install specify-cli",
                         "update": "uv tool upgrade specify-cli",
-                        "upgrade": "uv tool upgrade specify-cli",
+                        "upgrade": "uv tool install --force specify-cli",
                         "remove": "uv tool uninstall specify-cli",
                         "verify": "specify version"
                     }
@@ -12778,7 +12879,7 @@
                         "id": "specify-cli",
                         "install": "uv tool install specify-cli",
                         "update": "uv tool upgrade specify-cli",
-                        "upgrade": "uv tool upgrade specify-cli",
+                        "upgrade": "uv tool install --force specify-cli",
                         "remove": "uv tool uninstall specify-cli",
                         "verify": "specify version"
                     }
@@ -12790,7 +12891,7 @@
                             "id": "specify-cli",
                             "install": "uv tool install specify-cli",
                             "update": "uv tool upgrade specify-cli",
-                            "upgrade": "uv tool upgrade specify-cli",
+                            "upgrade": "uv tool install --force specify-cli",
                             "remove": "uv tool uninstall specify-cli",
                             "verify": "specify version"
                         }
@@ -12801,7 +12902,7 @@
                             "id": "specify-cli",
                             "install": "uv tool install specify-cli",
                             "update": "uv tool upgrade specify-cli",
-                            "upgrade": "uv tool upgrade specify-cli",
+                            "upgrade": "uv tool install --force specify-cli",
                             "remove": "uv tool uninstall specify-cli",
                             "verify": "specify version"
                         }
@@ -12812,7 +12913,7 @@
                             "id": "specify-cli",
                             "install": "uv tool install specify-cli",
                             "update": "uv tool upgrade specify-cli",
-                            "upgrade": "uv tool upgrade specify-cli",
+                            "upgrade": "uv tool install --force specify-cli",
                             "remove": "uv tool uninstall specify-cli",
                             "verify": "specify version"
                         }
@@ -12823,14 +12924,14 @@
                             "id": "specify-cli",
                             "install": "uv tool install specify-cli",
                             "update": "uv tool upgrade specify-cli",
-                            "upgrade": "uv tool upgrade specify-cli",
+                            "upgrade": "uv tool install --force specify-cli",
                             "remove": "uv tool uninstall specify-cli",
                             "verify": "specify version"
                         }
                     ]
                 }
             },
-            "notes": "Open-source (MIT). The persistent CLI package is `specify-cli`; the catalog does not generate project initialization commands."
+            "notes": "Open-source (MIT). The persistent CLI package is `specify-cli`; the catalog does not generate project initialization commands. Extensions are added per project with `specify extension add <name> --from <zip>`, and `npx modern-web-guidance@latest install` adds web guidance. Neither is installed by this catalog."
         }
     ]
 }
