@@ -1,6 +1,19 @@
 export const WINDOWS_WINGET_VERIFY = `winget --version`;
 
-export const WINDOWS_WINGET_UPGRADE_SELF = `winget upgrade Microsoft.AppInstaller`;
+// Repair/re-register winget (App Installer) — https://learn.microsoft.com/en-us/windows/package-manager/winget/
+export const WINDOWS_WINGET_UPGRADE_SELF =
+    `Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery\n` +
+    `Repair-WinGetPackageManager -AllUsers\n` +
+    `# or, if App Installer is installed but not registered for this user:\n` +
+    `Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe`;
+
+// WSL — https://learn.microsoft.com/en-us/windows/wsl/install
+export const WINDOWS_WSL_INSTALL = `wsl --install`;
+export const WINDOWS_WSL_MANAGE =
+    `wsl --update\n` +
+    `wsl --list --online\n` +
+    `# install a specific distribution from the list above (replace <Distro>)\n` +
+    `wsl --install -d <Distro>`;
 
 export const WINDOWS_WINGET_UPDATE_ALL = `winget upgrade --all`;
 
@@ -24,7 +37,8 @@ export const WINDOWS_SCOOP_UPDATE_ALL = `scoop update *`;
 // Session only — current PowerShell process, lost when the window closes. NOT the same as SetEnvironmentVariable.
 export const WINDOWS_ENV_SESSION_ONLY = `$env:MY_VAR = "value"`;
 
-export const WINDOWS_ENV_SET_VARIABLE = String.raw`[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Eclipse Adoptium\jdk-21", "User")`;
+// Adoptium installs into a versioned folder — adjust jdk-25.0.x-hotspot to the folder actually installed.
+export const WINDOWS_ENV_SET_VARIABLE = String.raw`[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Eclipse Adoptium\jdk-25.0.x-hotspot", "User")`;
 
 export const WINDOWS_ENV_ADD_TO_PATH =
     `$current = [Environment]::GetEnvironmentVariable("PATH", "User")\n` +

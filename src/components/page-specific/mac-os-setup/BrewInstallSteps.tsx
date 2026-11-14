@@ -77,7 +77,7 @@ const BrewInstallSteps: React.FC = () => (
                     <code>/opt/&lt;tool&gt;</code> for a system-wide install, or <code>~/.dev_tools</code> /{' '}
                     <code>~/tools</code> for a single-user install (no sudo required).
                     <p className="info-note" style={{ marginTop: 8 }}>
-                        Example: <code>/opt/apache-maven-3.9.16</code>, <code>/opt/gradle/gradle-9.6.1</code>. Wire the
+                        Example: <code>/opt/apache-maven-3.10.0</code>, <code>/opt/gradle/gradle-9.9.1</code>. Wire the
                         resulting PATH/HOME variables using the mechanism already covered in the{' '}
                         <strong>Environment variables</strong> tab above — see the Dev Environment Setup page&apos;s
                         Maven/Gradle categories for the full manual install walkthrough.

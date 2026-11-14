@@ -29,6 +29,7 @@ export const LINUX_SNAP_INSTALL_DNF =
 export const LINUX_SNAP_INSTALL_PACMAN =
     `# Install via AUR (e.g., with yay or paru)\n` + `yay -S snapd\n` + `sudo systemctl enable --now snapd.socket`;
 export const LINUX_SNAP_INSTALL_ZYPPER =
+    `# Tumbleweed; on Leap replace openSUSE_Tumbleweed with openSUSE_Leap_<version> (e.g. openSUSE_Leap_15.6)\n` +
     `sudo zypper addrepo --refresh https://download.opensuse.org/repositories/system:/snappy/openSUSE_Tumbleweed snappy\n` +
     `sudo zypper --gpg-auto-import-keys refresh\n` +
     `sudo zypper dup --from snappy\n` +
@@ -38,12 +39,16 @@ export const LINUX_SNAP_VERIFY = `snap --version`;
 // Homebrew on Linux — dependencies
 export const LINUX_BREW_DEPS_APT = `sudo apt install build-essential procps curl file git`;
 export const LINUX_BREW_DEPS_DNF =
-    `sudo dnf groupinstall 'Development Tools'\n` + `sudo dnf install procps-ng curl file git`;
+    `sudo dnf group install development-tools\n` + `sudo dnf install procps-ng curl file git`;
 
 // Homebrew on Linux — shared steps
 export const LINUX_BREW_INSTALL = `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`;
 export const LINUX_BREW_PATH =
+    `# bash:\n` +
     `echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc\n` +
+    `# or for zsh:\n` +
+    `echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zshrc\n` +
+    `# apply to the current shell:\n` +
     `eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"`;
 export const LINUX_BREW_VERIFY = `brew --version`;
 
@@ -53,14 +58,17 @@ export const LINUX_ENV_PERSIST_USER_PROFILE =
     `echo 'export MY_VAR="value"' >> ~/.bashrc\n` + `# or for zsh:\n` + `echo 'export MY_VAR="value"' >> ~/.zshrc`;
 export const LINUX_ENV_ADD_TO_PATH = `export PATH="$HOME/.local/bin:$PATH"`;
 export const LINUX_ENV_JAVA_HOME =
-    `export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"\n` + `export PATH="$JAVA_HOME/bin:$PATH"`;
+    `# Debian/Ubuntu path shown; the suffix is your CPU architecture (amd64, arm64, ...).\n` +
+    `# Fedora/Arch/openSUSE use /usr/lib/jvm/java-25-openjdk (no suffix) — check with: ls /usr/lib/jvm\n` +
+    `export JAVA_HOME="/usr/lib/jvm/java-25-openjdk-amd64"\n` +
+    `export PATH="$JAVA_HOME/bin:$PATH"`;
 export const LINUX_ENV_RELOAD = `source ~/.bashrc\n` + `# or for zsh:\n` + `source ~/.zshrc`;
 
 // Environment variables — system-wide, all users (reaches login shells; not systemd services)
 export const LINUX_ENV_ETC_ENVIRONMENT =
     `# /etc/environment — strict KEY=VALUE, one per line, NO export, NO shell syntax\n` +
     `sudo tee -a /etc/environment <<'EOF'\n` +
-    `JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"\n` +
+    `JAVA_HOME="/usr/lib/jvm/java-25-openjdk-amd64"\n` +
     `EOF`;
 export const LINUX_ENV_PROFILE_D =
     `sudo tee /etc/profile.d/custom-env.sh <<'EOF'\n` +
@@ -91,4 +99,7 @@ export const LINUX_ENV_SYSTEMD_SERVICE =
 export const LINUX_ENV_VERIFY =
     `printenv MY_VAR\n` +
     `# confirm PAM loads /etc/environment for your login path:\n` +
-    `grep pam_env /etc/pam.d/common-session`;
+    `# Debian/Ubuntu:\n` +
+    `grep pam_env /etc/pam.d/common-session\n` +
+    `# Fedora/RHEL (use system-auth instead):\n` +
+    `grep pam_env /etc/pam.d/system-auth`;

@@ -51,8 +51,8 @@ const IndexPage = (): React.JSX.Element => {
                             </div>
                             <p>
                                 Raises the unified-memory (<code>iogpu.wired_limit_mb</code>) limit so larger local LLMs
-                                fit. Apple Silicon only. Pairs with the{' '}
-                                <Link href="/llm-vram-calculator">LLM VRAM Calculator</Link>.
+                                fit. Apple Silicon only; the setting needs macOS 14+ and resets on reboot. Pairs with
+                                the <Link href="/llm-vram-calculator">LLM VRAM Calculator</Link>.
                             </p>
                             <VramManager />
                             <p style={{ marginTop: 16, fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>
