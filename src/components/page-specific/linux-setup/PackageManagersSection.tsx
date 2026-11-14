@@ -57,7 +57,7 @@ const SNAP_HINT: Record<LinuxDistro, string | null> = {
     debian: null,
     fedora: null,
     arch: 'Snap is not in the official Arch repos. Install via the AUR using yay, paru, or another AUR helper.',
-    suse: 'Snap requires adding the openSUSE Snappy extra repository before installing.',
+    suse: 'Snap requires adding the openSUSE Snappy extra repository before installing. The URL below targets Tumbleweed; on Leap swap in your Leap release folder.',
 };
 
 const BREW_DEPS: Record<LinuxDistro, string> = {
@@ -122,7 +122,7 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
                 />
                 <CodeSnippet headerText="bash — install Homebrew" content={LINUX_BREW_INSTALL} language="bash" />
                 <CodeSnippet
-                    headerText="bash — add to PATH (add to ~/.bashrc or ~/.zshrc)"
+                    headerText="bash — add to PATH (~/.bashrc or ~/.zshrc)"
                     content={LINUX_BREW_PATH}
                     language="bash"
                 />
@@ -140,7 +140,7 @@ const PackageManagersSection: React.FC<Props> = ({ distro }) => {
                     single-user install.
                 </p>
                 <p className="info-note">
-                    Example: <code>/opt/apache-maven-3.9.16</code>, <code>/opt/gradle/gradle-9.6.1</code>. Wire the
+                    Example: <code>/opt/apache-maven-3.10.0</code>, <code>/opt/gradle/gradle-9.9.1</code>. Wire the
                     resulting PATH/HOME variables using the mechanism already covered in this page&apos;s{' '}
                     <strong>Environment variables</strong> tab — see the Dev Environment Setup page&apos;s Maven/Gradle
                     categories for the full manual install walkthrough.

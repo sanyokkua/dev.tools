@@ -59,9 +59,22 @@ describe('macos-utils constants', () => {
         expect(MAC_OS_ENV_LAUNCH_AGENT_PLIST).toContain('RunAtLoad');
     });
 
-    it('MAC_OS_ENV_LAUNCH_AGENT_LOAD references LaunchAgents and launchctl load', () => {
+    it('MAC_OS_ENV_LAUNCH_AGENT_LOAD uses launchctl bootstrap/bootout, not the legacy load', () => {
         expect(MAC_OS_ENV_LAUNCH_AGENT_LOAD).toContain('LaunchAgents');
-        expect(MAC_OS_ENV_LAUNCH_AGENT_LOAD).toContain('launchctl load');
+        expect(MAC_OS_ENV_LAUNCH_AGENT_LOAD).toContain('launchctl bootstrap gui/$(id -u)');
+        expect(MAC_OS_ENV_LAUNCH_AGENT_LOAD).toContain('launchctl bootout gui/$(id -u)');
+        expect(MAC_OS_ENV_LAUNCH_AGENT_LOAD).not.toContain('launchctl load');
+    });
+
+    it('MAC_OS_BREW_ADD_TO_PROFILE picks the prefix by architecture and evals shellenv now', () => {
+        expect(MAC_OS_BREW_ADD_TO_PROFILE).toContain('/opt/homebrew');
+        expect(MAC_OS_BREW_ADD_TO_PROFILE).toContain('/usr/local');
+        expect(MAC_OS_BREW_ADD_TO_PROFILE).toContain('>> ~/.zprofile');
+        expect(MAC_OS_BREW_ADD_TO_PROFILE.split('\n').pop()).toContain('eval "$($BREW_PREFIX/bin/brew shellenv)"');
+    });
+
+    it('MAC_OS_ENV_JAVA_HOME targets JDK 25', () => {
+        expect(MAC_OS_ENV_JAVA_HOME).toContain('java_home -v 25');
     });
 
     it('MAC_OS_ENV_LAUNCHCTL_GETENV uses launchctl getenv', () => {

@@ -93,7 +93,9 @@ const EnvironmentVariablesSection: React.FC = () => (
             <p style={mutedNote}>
                 <strong>Reaches:</strong> all users, on their next PAM-authenticated login. Does <strong>not</strong>{' '}
                 affect systemd services, and reaching a GUI session depends on the display manager loading{' '}
-                <code>pam_env</code>. Takes effect at next login, not the current session.
+                <code>pam_env</code>. Takes effect at next login, not the current session. The PAM file that loads{' '}
+                <code>pam_env</code> is <code>/etc/pam.d/common-session</code> on Debian/Ubuntu and{' '}
+                <code>/etc/pam.d/system-auth</code> on Fedora/RHEL.
             </p>
         </div>
 
