@@ -1,4 +1,9 @@
-import type { DevEnvCategory, DevEnvManagerBootstrap, DevEnvOS } from '@/common/dev-env-catalog';
+import {
+    applyVersion,
+    type DevEnvCategory,
+    type DevEnvManagerBootstrap,
+    type DevEnvOS,
+} from '@/common/dev-env-catalog';
 import { saveTextFile } from '@/common/file-utils';
 import CodeSnippet from '@/elements/CodeSnippet';
 import React, { useMemo } from 'react';
@@ -22,31 +27,32 @@ function slug(text: string): string {
         .replace(/(^-|-$)/g, '');
 }
 
-function buildSteps(entry: DevEnvManagerBootstrap): StepDef[] {
+export function buildSteps(entry: DevEnvManagerBootstrap, version?: string): StepDef[] {
+    const sub = (text: string): string => (version ? applyVersion(text, version) : text);
     const steps: StepDef[] = [];
 
     if (!entry.builtIntoOS && entry.installManager) {
         steps.push({
             title: 'Install the package manager',
-            snippets: [{ header: `Install ${entry.managerLabel}`, content: entry.installManager }],
+            snippets: [{ header: `Install ${entry.managerLabel}`, content: sub(entry.installManager) }],
         });
     }
 
     const installSnippets: StepSnippet[] = [];
     if (entry.repoSetup) {
-        installSnippets.push({ header: 'Repository setup (one-time)', content: entry.repoSetup });
+        installSnippets.push({ header: 'Repository setup (one-time)', content: sub(entry.repoSetup) });
     }
-    installSnippets.push({ header: 'Install', content: entry.installTool });
+    installSnippets.push({ header: 'Install', content: sub(entry.installTool) });
     if (entry.configure) {
-        installSnippets.push({ header: 'Configure', content: entry.configure });
+        installSnippets.push({ header: 'Configure', content: sub(entry.configure) });
     }
     steps.push({ title: 'Install & configure', snippets: installSnippets });
 
-    steps.push({ title: 'Verify', snippets: [{ header: 'Verify', content: entry.verify }] });
+    steps.push({ title: 'Verify', snippets: [{ header: 'Verify', content: sub(entry.verify) }] });
 
     const updateRemoveSnippets: StepSnippet[] = [];
-    if (entry.update) updateRemoveSnippets.push({ header: 'Update', content: entry.update });
-    if (entry.remove) updateRemoveSnippets.push({ header: 'Remove', content: entry.remove });
+    if (entry.update) updateRemoveSnippets.push({ header: 'Update', content: sub(entry.update) });
+    if (entry.remove) updateRemoveSnippets.push({ header: 'Remove', content: sub(entry.remove) });
     if (updateRemoveSnippets.length > 0) {
         steps.push({ title: 'Update & remove', snippets: updateRemoveSnippets });
     }
@@ -54,7 +60,7 @@ function buildSteps(entry: DevEnvManagerBootstrap): StepDef[] {
     if (entry.versionSwitch) {
         steps.push({
             title: 'Switching versions',
-            snippets: [{ header: 'Switch version', content: entry.versionSwitch }],
+            snippets: [{ header: 'Switch version', content: sub(entry.versionSwitch) }],
         });
     }
 
@@ -99,14 +105,15 @@ interface ManagerSetupStepsProps {
     entry: DevEnvManagerBootstrap;
     os: DevEnvOS;
     category: DevEnvCategory;
+    version?: string;
 }
 
-const ManagerSetupSteps: React.FC<ManagerSetupStepsProps> = ({ entry, os, category }) => {
+const ManagerSetupSteps: React.FC<ManagerSetupStepsProps> = ({ entry, os, category, version }) => {
     const language: Language = os === 'windows' ? 'powershell' : 'bash';
     const fileExtension = os === 'windows' ? '.ps1' : '.sh';
     const fileMimeType = os === 'windows' ? 'text/plain' : 'text/x-shellscript';
     const filePrefix = `${category}-${entry.managerId}`;
-    const steps = useMemo(() => buildSteps(entry), [entry]);
+    const steps = useMemo(() => buildSteps(entry, version), [entry, version]);
 
     return (
         <section className="dev-env-manager-group">

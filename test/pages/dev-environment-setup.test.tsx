@@ -1,5 +1,11 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { DEV_ENV_CATALOG, type DevEnvCategory, type DevEnvOS } from '../../src/common/dev-env-catalog';
+import {
+    DEFAULT_GRADLE_VERSION,
+    DEFAULT_MAVEN_VERSION,
+    DEV_ENV_CATALOG,
+    type DevEnvCategory,
+    type DevEnvOS,
+} from '../../src/common/dev-env-catalog';
 import { PageProvider } from '../../src/components/contexts/PageContext';
 import { ToasterProvider } from '../../src/components/contexts/ToasterContext';
 import IndexPage from '../../src/pages/dev-environment-setup/index';
@@ -142,6 +148,41 @@ describe('Dev Environment Setup page', () => {
         const downloadButtons = screen.getAllByRole('button', { name: /Download/ });
         expect(copyButtons.length).toBeGreaterThan(0);
         expect(copyButtons.length).toBe(downloadButtons.length);
+    });
+
+    describe('version input', () => {
+        function selectAutomated(category: string): void {
+            renderPage();
+            fireEvent.click(screen.getByText(category));
+            fireEvent.click(screen.getByText('Automated install script (bash/zsh)'));
+        }
+        const scriptText = (): string => document.body.textContent ?? '';
+
+        it('is hidden for categories other than Maven/Gradle', () => {
+            renderPage();
+            expect(screen.queryByTestId('version-section')).not.toBeInTheDocument();
+        });
+
+        it('is prefilled with the default and substitutes it into the Gradle script', () => {
+            selectAutomated('Gradle');
+            expect(screen.getByLabelText('Gradle version')).toHaveValue(DEFAULT_GRADLE_VERSION);
+            expect(scriptText()).toContain(`GRADLE_VERSION="${DEFAULT_GRADLE_VERSION}"`);
+            expect(scriptText()).not.toContain('{{VERSION}}');
+        });
+
+        it('substitutes a custom version and shows no checksum', () => {
+            selectAutomated('Gradle');
+            fireEvent.change(screen.getByLabelText('Gradle version'), { target: { value: '9.8.0' } });
+            expect(scriptText()).toContain('GRADLE_VERSION="9.8.0"');
+            expect(scriptText()).not.toMatch(/sha-?256|[0-9a-f]{64}/i);
+        });
+
+        it('falls back to the default and shows a hint on invalid input', () => {
+            selectAutomated('Maven');
+            fireEvent.change(screen.getByLabelText('Maven version'), { target: { value: 'bogus' } });
+            expect(scriptText()).toContain(`MAVEN_VERSION="${DEFAULT_MAVEN_VERSION}"`);
+            expect(screen.getByTestId('version-hint')).toHaveTextContent('not a valid version');
+        });
     });
 });
 

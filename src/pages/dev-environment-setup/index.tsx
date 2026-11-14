@@ -1,11 +1,14 @@
 import {
     DEV_ENV_CATALOG,
+    resolveVersion,
+    VERSIONED_CATEGORY_DEFAULTS,
     type DevEnvCategory,
     type DevEnvLinuxDistro,
     type DevEnvManagerBootstrap,
     type DevEnvOS,
 } from '@/common/dev-env-catalog';
 import { usePage } from '@/contexts/PageContext';
+import Input from '@/controls/Input';
 import SegmentedControl, { type SegmentedOption } from '@/controls/SegmentedControl';
 import ToolAbout from '@/controls/ToolAbout';
 import ManagerSetupSteps from '@/page-specific/dev-environment-setup/ManagerSetupSteps';
@@ -35,6 +38,7 @@ const IndexPage = (): React.JSX.Element => {
     const [category, setCategory] = useState<DevEnvCategory>('java');
     const [os, setOs] = useState<DevEnvOS>('macos');
     const [linuxDistro, setLinuxDistro] = useState<DevEnvLinuxDistro>('debian');
+    const [versionInput, setVersionInput] = useState('');
     const [selectedManagerIds, setSelectedManagerIds] = useState<string[]>([]);
 
     useEffect(() => {
@@ -44,6 +48,15 @@ const IndexPage = (): React.JSX.Element => {
     useEffect(() => {
         setOs('macos');
         setLinuxDistro('debian');
+    }, [category]);
+
+    const defaultVersion = VERSIONED_CATEGORY_DEFAULTS[category];
+    const version = defaultVersion ? resolveVersion(versionInput, defaultVersion) : undefined;
+    const versionInvalid =
+        defaultVersion !== undefined && versionInput.trim() !== '' && version !== versionInput.trim();
+
+    useEffect(() => {
+        setVersionInput(VERSIONED_CATEGORY_DEFAULTS[category] ?? '');
     }, [category]);
 
     useEffect(() => {
@@ -138,9 +151,28 @@ const IndexPage = (): React.JSX.Element => {
                 </div>
             </div>
 
+            {defaultVersion && (
+                <div className="dev-env-step" data-testid="version-section">
+                    <div className="dev-env-step__label">
+                        <span className="dev-env-step__number">4</span>Version
+                    </div>
+                    <Input
+                        value={versionInput}
+                        onChange={setVersionInput}
+                        placeholder={defaultVersion}
+                        aria-label={`${DEV_ENV_CATALOG[category].label} version`}
+                    />
+                    <p className="dev-env-hint" data-testid="version-hint">
+                        {versionInvalid
+                            ? `"${versionInput.trim()}" is not a valid version (expected e.g. ${defaultVersion}) — using ${defaultVersion}.`
+                            : `Scripts below install version ${version}. Downloads are not checksum-verified.`}
+                    </p>
+                </div>
+            )}
+
             <div className="dev-env-step">
                 <div className="dev-env-step__label">
-                    <span className="dev-env-step__number">4</span>Instructions
+                    <span className="dev-env-step__number">{defaultVersion ? 5 : 4}</span>Instructions
                 </div>
                 {selectedEntries.length === 0 ? (
                     <p className="dev-env-empty" data-testid="dev-env-empty">
@@ -148,7 +180,13 @@ const IndexPage = (): React.JSX.Element => {
                     </p>
                 ) : (
                     selectedEntries.map((entry) => (
-                        <ManagerSetupSteps key={entry.managerId} entry={entry} os={os} category={category} />
+                        <ManagerSetupSteps
+                            key={entry.managerId}
+                            entry={entry}
+                            os={os}
+                            category={category}
+                            version={version}
+                        />
                     ))
                 )}
             </div>
