@@ -71,13 +71,41 @@ describe('Git Cheat Sheet page', () => {
         expect(screen.getByText(/2\. configure user info/i)).toBeInTheDocument();
         expect(screen.getByText(/3\. optional: ssh key setup/i)).toBeInTheDocument();
         expect(screen.getByText(/4\. optional: gpg commit signing/i)).toBeInTheDocument();
-        expect(screen.getByText(/5\. verify setup/i)).toBeInTheDocument();
+        expect(screen.getByText(/5\. optional: github cli/i)).toBeInTheDocument();
+        expect(screen.getByText(/6\. verify setup/i)).toBeInTheDocument();
     });
 
     it('Manual mode shows OS chip selector (macOS, Windows, Ubuntu/Debian)', () => {
         renderPage();
         fireEvent.click(screen.getByRole('button', { name: 'Manual (step-by-step)' }));
         expect(screen.getByRole('button', { name: 'Ubuntu/Debian' })).toBeInTheDocument();
+    });
+
+    it('renders Include GitHub CLI switch', () => {
+        renderPage();
+        expect(screen.getByRole('switch', { name: /include github cli/i })).toBeInTheDocument();
+    });
+
+    it('Manual mode renders gh install for the selected OS and usage commands', () => {
+        renderPage();
+        fireEvent.click(screen.getByRole('button', { name: 'Manual (step-by-step)' }));
+        expect(screen.getByText('brew install gh')).toBeInTheDocument();
+        expect(screen.getByText('Create a pull request')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /^github cli$/i })).toHaveAttribute(
+            'href',
+            'https://cli.github.com/manual',
+        );
+    });
+
+    it('Windows output is chained with ; and includes gh when enabled', () => {
+        renderPage();
+        fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Al' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'al@example.com' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Windows' }));
+        fireEvent.click(screen.getByRole('switch', { name: /include github cli/i }));
+        fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+        expect(screen.getByText(/single-line, ;-chained/)).toBeInTheDocument();
+        expect(screen.getAllByText('gh auth login').length).toBeGreaterThan(0);
     });
 
     it('renders external doc links', () => {

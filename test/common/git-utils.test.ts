@@ -1,5 +1,13 @@
 import {
     generateGitCommands,
+    GH_AUTH_LOGIN,
+    GH_AUTH_SETUP_GIT,
+    GH_INSTALL,
+    GH_INSTALL_FEDORA,
+    GH_SETUP,
+    GH_USAGE,
+    GIT_CONFIG_GLOBAL_DEFAULT_BRANCH,
+    GIT_CONFIG_GLOBAL_PULL_REBASE,
     GIT_CONFIG_GLOBAL_USER_EMAIL,
     GIT_CONFIG_GLOBAL_USER_NAME,
     GIT_CONFIG_GLOBAL_VERIFY,
@@ -23,14 +31,20 @@ import {
     GPG_INSTALL_WINDOWS,
     GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
     GPG_PINENTRY_INSTALL,
+    GPG_PINENTRY_RELOAD_AGENT,
     GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
     GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG,
     GPG_PINENTRY_SETUP_MKDIR_GNUPG,
     GPG_TEST,
     GPG_VERIFY_INSTALL,
+    INSTALL_WL_CLIPBOARD,
     INSTALL_XCLIP,
+    joinCommands,
+    SSH_CONFIG_MACOS_APPEND,
     SSH_KEY_ADD_AGENT,
+    SSH_KEY_ADD_AGENT_WINDOWS,
     SSH_KEY_COPY_PUBLIC_KEY_LINUX,
+    SSH_KEY_COPY_PUBLIC_KEY_LINUX_WAYLAND,
     SSH_KEY_COPY_PUBLIC_KEY_MACOS,
     SSH_KEY_COPY_PUBLIC_KEY_WINDOWS,
     SSH_KEY_GENERATE,
@@ -58,8 +72,59 @@ describe('git-utils constants', () => {
         expect(SSH_KEY_GENERATE).toMatch(/^ssh-keygen/);
     });
 
-    it('SSH_KEY_ADD_AGENT references ssh-agent', () => {
-        expect(SSH_KEY_ADD_AGENT).toContain('ssh-agent');
+    it('SSH_KEY_ADD_AGENT is per-OS and only bash/macOS use eval', () => {
+        expect(SSH_KEY_ADD_AGENT.macos).toContain('--apple-use-keychain');
+        expect(SSH_KEY_ADD_AGENT.linux).toContain('eval "$(ssh-agent -s)"');
+        expect(SSH_KEY_ADD_AGENT.windows).toBe(SSH_KEY_ADD_AGENT_WINDOWS);
+        expect(SSH_KEY_ADD_AGENT_WINDOWS).not.toContain('eval');
+        expect(SSH_KEY_ADD_AGENT_WINDOWS).toContain('Start-Service ssh-agent');
+    });
+
+    it('macOS ssh config append is guarded and includes the keychain block', () => {
+        expect(SSH_CONFIG_MACOS_APPEND).toContain('grep -qxF');
+        expect(SSH_CONFIG_MACOS_APPEND).toContain('UseKeychain yes');
+    });
+
+    it('GPG_TEST is non-destructive (no commit)', () => {
+        expect(GPG_TEST).toBe('echo "test" | gpg --clearsign');
+    });
+
+    it('pinentry setup uses mkdir -p/chmod 700 and append-if-missing', () => {
+        expect(GPG_PINENTRY_SETUP_MKDIR_GNUPG).toBe('mkdir -p ~/.gnupg && chmod 700 ~/.gnupg');
+        expect(GPG_PINENTRY_SETUP_ADD_AGENT_RECORD).toContain('>>');
+        expect(GPG_PINENTRY_SETUP_ADD_AGENT_RECORD).toContain('grep -qxF');
+        expect(GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG).toContain('grep -qxF');
+        expect(GPG_PINENTRY_RELOAD_AGENT).toBe('gpgconf --kill gpg-agent');
+    });
+
+    it('Wayland clipboard uses wl-copy', () => {
+        expect(INSTALL_WL_CLIPBOARD).toContain('wl-clipboard');
+        expect(SSH_KEY_COPY_PUBLIC_KEY_LINUX_WAYLAND).toContain('wl-copy');
+    });
+
+    it('GH data covers install per OS, setup and usage', () => {
+        expect(GH_INSTALL.macos).toBe('brew install gh');
+        expect(GH_INSTALL.windows).toContain('GitHub.cli');
+        expect(GH_INSTALL.linux).toContain('githubcli-archive-keyring.gpg');
+        expect(GH_INSTALL_FEDORA).toContain('dnf5-plugins');
+        expect(GH_SETUP.map((c) => c.command)).toEqual(
+            expect.arrayContaining(['gh auth login', 'gh auth setup-git', 'gh auth status']),
+        );
+        expect(GH_USAGE.length).toBeGreaterThan(10);
+        [...GH_SETUP, ...GH_USAGE].forEach((c) => {
+            expect(c.description.length).toBeGreaterThan(0);
+            expect(c.command.startsWith('gh ')).toBe(true);
+        });
+    });
+
+    it('joinCommands uses ; on Windows and && elsewhere', () => {
+        const c = [
+            { description: 'a', command: 'one' },
+            { description: 'b', command: 'two' },
+        ];
+        expect(joinCommands(c, 'windows')).toBe('one; two');
+        expect(joinCommands(c, 'macos')).toBe('one && two');
+        expect(joinCommands(c, 'linux')).toBe('one && two');
     });
 
     it('SSH_KEY_COPY_PUBLIC_KEY_MACOS uses pbcopy', () => {
@@ -86,9 +151,10 @@ describe('git-utils constants', () => {
         expect(GPG_INSTALL_WINDOWS).toContain('winget');
     });
 
-    it('INSTALL_XCLIP installs gnupg and xclip', () => {
+    it('INSTALL_XCLIP installs only xclip', () => {
         expect(INSTALL_XCLIP).toContain('xclip');
-        expect(INSTALL_XCLIP).toContain('gnupg');
+        expect(INSTALL_XCLIP).not.toContain('gnupg');
+        expect(INSTALL_XCLIP).not.toContain(' git ');
     });
 });
 
@@ -141,8 +207,25 @@ describe('generateGitCommands — macOS global config', () => {
     });
 
     it('includes SSH agent setup', () => {
-        const agentCmd = cmds.find((c) => c.command === SSH_KEY_ADD_AGENT);
+        const agentCmd = cmds.find((c) => c.command === SSH_KEY_ADD_AGENT.macos);
         expect(agentCmd).toBeDefined();
+    });
+
+    it('includes keychain ssh config and default branch/pull settings', () => {
+        expect(cmds.find((c) => c.command === SSH_CONFIG_MACOS_APPEND)).toBeDefined();
+        expect(cmds.find((c) => c.command === GIT_CONFIG_GLOBAL_DEFAULT_BRANCH)).toBeDefined();
+        expect(cmds.find((c) => c.command === GIT_CONFIG_GLOBAL_PULL_REBASE)).toBeDefined();
+    });
+
+    it('restarts gpg-agent after pinentry config', () => {
+        expect(cmds.find((c) => c.command === GPG_PINENTRY_RELOAD_AGENT)).toBeDefined();
+    });
+
+    it('omits gh commands by default and appends them when requested', () => {
+        expect(cmds.find((c) => c.command === GH_AUTH_LOGIN)).toBeUndefined();
+        const withGh = generateGitCommands('Alice', 'alice@example.com', true, 'macos', true);
+        const tail = withGh.slice(-3).map((c) => c.command);
+        expect(tail).toEqual([GH_INSTALL.macos, GH_AUTH_LOGIN, GH_AUTH_SETUP_GIT]);
     });
 
     it('does NOT add xclip step on macOS', () => {
@@ -276,6 +359,17 @@ describe('generateGitCommands — Windows global config', () => {
 
     it('uses Windows GPG install', () => {
         expect(cmds.find((c) => c.command === GPG_INSTALL_WINDOWS)).toBeDefined();
+    });
+
+    it('uses PowerShell ssh-agent commands, not eval', () => {
+        const agentCmd = cmds.find((c) => c.command === SSH_KEY_ADD_AGENT.windows);
+        expect(agentCmd).toBeDefined();
+        expect(cmds.some((c) => c.command.includes('eval'))).toBe(false);
+    });
+
+    it('appends the Windows gh install when requested', () => {
+        const withGh = generateGitCommands('Carol', 'carol@example.com', true, 'windows', true);
+        expect(withGh.find((c) => c.command === GH_INSTALL.windows)).toBeDefined();
     });
 
     it('does NOT add xclip install step for Windows', () => {

@@ -1,5 +1,13 @@
 import {
     generateGitCommands,
+    GH_INSTALL_DEBIAN,
+    GH_INSTALL_FEDORA,
+    GH_INSTALL_MACOS,
+    GH_INSTALL_WINDOWS,
+    GH_SETUP,
+    GH_USAGE,
+    GIT_CONFIG_GLOBAL_DEFAULT_BRANCH,
+    GIT_CONFIG_GLOBAL_PULL_REBASE,
     GIT_CONFIG_GLOBAL_USER_EMAIL,
     GIT_CONFIG_GLOBAL_USER_NAME,
     GIT_CONFIG_GLOBAL_VERIFY,
@@ -23,13 +31,22 @@ import {
     GPG_INSTALL_WINDOWS,
     GPG_PINENTRY_ADD_EXPORT_TO_PROFILE,
     GPG_PINENTRY_INSTALL,
+    GPG_PINENTRY_RELOAD_AGENT,
     GPG_PINENTRY_SETUP_ADD_AGENT_RECORD,
     GPG_PINENTRY_SETUP_ADD_AGENT_TO_CONFIG,
     GPG_PINENTRY_SETUP_MKDIR_GNUPG,
+    GPG_TEST,
     GPG_VERIFY_INSTALL,
+    INSTALL_WL_CLIPBOARD,
     INSTALL_XCLIP,
-    SSH_KEY_ADD_AGENT,
+    joinCommands,
+    SSH_CONFIG_MACOS_APPEND,
+    SSH_CONFIG_MACOS_BLOCK,
+    SSH_KEY_ADD_AGENT_LINUX,
+    SSH_KEY_ADD_AGENT_MACOS,
+    SSH_KEY_ADD_AGENT_WINDOWS,
     SSH_KEY_COPY_PUBLIC_KEY_LINUX,
+    SSH_KEY_COPY_PUBLIC_KEY_LINUX_WAYLAND,
     SSH_KEY_COPY_PUBLIC_KEY_MACOS,
     SSH_KEY_COPY_PUBLIC_KEY_WINDOWS,
     SSH_KEY_GENERATE,
@@ -73,7 +90,7 @@ const GitCheatSheetPage: FC = () => {
     const [detailedCommands, setDetailedCommands] = useState<{ description: string; command: string }[]>([]);
 
     const handleGenerate = (data: FormData): void => {
-        const { name, email, globalConfig, os } = data;
+        const { name, email, globalConfig, os, includeGh } = data;
         setNameValue(name);
         setEmailValue(email);
         setOsType(os);
@@ -82,8 +99,8 @@ const GitCheatSheetPage: FC = () => {
             setDetailedCommands([]);
             return;
         }
-        const commands = generateGitCommands(name, email, globalConfig, os);
-        setSingleLineCommands(commands.map((cmd) => cmd.command).join(' && '));
+        const commands = generateGitCommands(name, email, globalConfig, os, includeGh);
+        setSingleLineCommands(joinCommands(commands, os));
         setDetailedCommands(commands);
     };
 
@@ -96,7 +113,7 @@ const GitCheatSheetPage: FC = () => {
                 {singleLineCommands ? (
                     <>
                         <CodeSnippet
-                            headerText="All commands (single-line, &&-chained)"
+                            headerText={`All commands (single-line, ${osType === 'windows' ? ';' : '&&'}-chained)`}
                             content={singleLineCommands}
                             language={codeLanguage}
                         />
@@ -173,6 +190,16 @@ const GitCheatSheetPage: FC = () => {
                     content={`${GIT_CONFIG_GLOBAL_USER_EMAIL} "${emailValue}"`}
                     language="bash"
                 />
+                <CodeSnippet
+                    headerText="Set Default Branch Name (global)"
+                    content={GIT_CONFIG_GLOBAL_DEFAULT_BRANCH}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Merge on Pull, no rebase (global; use true to rebase instead)"
+                    content={GIT_CONFIG_GLOBAL_PULL_REBASE}
+                    language="bash"
+                />
                 <CodeSnippet headerText="List Local Config" content={GIT_CONFIG_VERIFY} language="bash" />
                 <CodeSnippet headerText="List Global Config" content={GIT_CONFIG_GLOBAL_VERIFY} language="bash" />
             </div>
@@ -185,7 +212,31 @@ const GitCheatSheetPage: FC = () => {
                     content={`${SSH_KEY_GENERATE} "${emailValue}"`}
                     language="bash"
                 />
-                <CodeSnippet headerText="Start SSH Agent &amp; Add Key" content={SSH_KEY_ADD_AGENT} language="bash" />
+                <CodeSnippet
+                    headerText="Start SSH Agent &amp; Add Key (macOS)"
+                    content={SSH_KEY_ADD_AGENT_MACOS}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Persist Key in Keychain: append to ~/.ssh/config (macOS)"
+                    content={SSH_CONFIG_MACOS_APPEND}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Resulting ~/.ssh/config block (macOS)"
+                    content={SSH_CONFIG_MACOS_BLOCK}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Start SSH Agent &amp; Add Key (Linux)"
+                    content={SSH_KEY_ADD_AGENT_LINUX}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Start SSH Agent &amp; Add Key (Windows, PowerShell as Administrator)"
+                    content={SSH_KEY_ADD_AGENT_WINDOWS}
+                    language="powershell"
+                />
                 <CodeSnippet
                     headerText="Copy Public Key (macOS)"
                     content={SSH_KEY_COPY_PUBLIC_KEY_MACOS}
@@ -195,6 +246,16 @@ const GitCheatSheetPage: FC = () => {
                 <CodeSnippet
                     headerText="Copy Public Key (Linux)"
                     content={SSH_KEY_COPY_PUBLIC_KEY_LINUX}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Install wl-clipboard (Linux, Wayland)"
+                    content={INSTALL_WL_CLIPBOARD}
+                    language="bash"
+                />
+                <CodeSnippet
+                    headerText="Copy Public Key (Linux, Wayland)"
+                    content={SSH_KEY_COPY_PUBLIC_KEY_LINUX_WAYLAND}
                     language="bash"
                 />
                 <CodeSnippet
@@ -212,7 +273,7 @@ const GitCheatSheetPage: FC = () => {
                 <CodeSnippet headerText="Install GPG (Windows)" content={GPG_INSTALL_WINDOWS} language="powershell" />
                 <CodeSnippet headerText="Generate GPG Key" content={GPG_GENERATE_KEY} language="bash" />
                 <CodeSnippet
-                    headerText="List Secret Keys (and copy id, eg.: sec   rsa4096/YOUR_KEY_ID YYYY-MM-DD [SC])"
+                    headerText="List Secret Keys (and copy id, eg.: sec   ed25519/YOUR_KEY_ID YYYY-MM-DD [SC])"
                     content={GPG_GET_KEY_ID}
                     language="bash"
                 />
@@ -272,13 +333,72 @@ const GitCheatSheetPage: FC = () => {
                     content={GPG_PINENTRY_ADD_EXPORT_TO_PROFILE}
                     language="bash"
                 />
+                <CodeSnippet
+                    headerText="(macOS) Restart gpg-agent to apply the config"
+                    content={GPG_PINENTRY_RELOAD_AGENT}
+                    language="bash"
+                />
             </div>
 
-            {/* 5. Verify Setup */}
+            {/* 5. GitHub CLI */}
             <div className="git-cheat-sheet__manual-step">
-                <h3>5. Verify Setup</h3>
+                <h3>5. Optional: GitHub CLI (gh)</h3>
+                <p>
+                    Install uses the OS selected in step 1. Full reference:{' '}
+                    <a href="https://cli.github.com/manual" target="_blank" rel="noreferrer">
+                        cli.github.com/manual
+                    </a>
+                </p>
+                {manualOs === 'macos' && (
+                    <CodeSnippet headerText="Install gh: macOS (Homebrew)" content={GH_INSTALL_MACOS} language="bash" />
+                )}
+                {manualOs === 'windows' && (
+                    <CodeSnippet
+                        headerText="Install gh: Windows (Winget)"
+                        content={GH_INSTALL_WINDOWS}
+                        language="powershell"
+                    />
+                )}
+                {manualOs === 'linux' && (
+                    <>
+                        <CodeSnippet
+                            headerText="Install gh: Ubuntu/Debian (apt)"
+                            content={GH_INSTALL_DEBIAN}
+                            language="bash"
+                        />
+                        <CodeSnippet
+                            headerText="Install gh: Fedora (dnf5)"
+                            content={GH_INSTALL_FEDORA}
+                            language="bash"
+                        />
+                    </>
+                )}
+                <h4>Setup</h4>
+                {GH_SETUP.map((cmd) => (
+                    <CodeSnippet
+                        key={StringUtils.slugifyString(cmd.description)}
+                        headerText={cmd.description}
+                        content={cmd.command}
+                        language="bash"
+                    />
+                ))}
+                <h4>Common usage</h4>
+                {GH_USAGE.map((cmd) => (
+                    <CodeSnippet
+                        key={StringUtils.slugifyString(cmd.description)}
+                        headerText={cmd.description}
+                        content={cmd.command}
+                        language="bash"
+                    />
+                ))}
+            </div>
+
+            {/* 6. Verify Setup */}
+            <div className="git-cheat-sheet__manual-step">
+                <h3>6. Verify Setup</h3>
                 <CodeSnippet headerText="Test SSH Connection" content={SSH_KEY_TEST} language="bash" />
                 <CodeSnippet headerText="Test GPG Setup" content={GPG_VERIFY_INSTALL} language="bash" />
+                <CodeSnippet headerText="Test GPG Signing (no commit created)" content={GPG_TEST} language="bash" />
             </div>
         </div>
     );
@@ -292,7 +412,7 @@ const GitCheatSheetPage: FC = () => {
             </ToolAbout>
             <div className="git-cheat-sheet">
                 <div className="git-cheat-sheet__header">
-                    <p>Configure Git, SSH and GPG. Official docs:</p>
+                    <p>Configure Git, SSH, GPG and GitHub CLI. Official docs:</p>
                     <ul>
                         <li>
                             <a
@@ -310,6 +430,11 @@ const GitCheatSheetPage: FC = () => {
                                 rel="noreferrer"
                             >
                                 GitHub GPG
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://cli.github.com/manual" target="_blank" rel="noreferrer">
+                                GitHub CLI
                             </a>
                         </li>
                         <li>
