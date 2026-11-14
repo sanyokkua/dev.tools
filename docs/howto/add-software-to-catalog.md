@@ -143,6 +143,28 @@ use package-specific reinstall/upgrade commands for npm, uv, pipx, Cargo, Go, an
 installers. Do not add project initialization commands such as `openspec init`, `serena init`, or
 `specify init`.
 
+### How generated scripts combine commands
+
+With "Combine commands per package manager" on (the default), `buildActionPlan()` in `script-builder.ts`
+merges plain packages into one command per manager, e.g. `brew install git jq` and
+`brew install --cask firefox vlc`. A method joins a combined command only when:
+
+- it has an `id`, has no `repoSetup`, and
+- its `install` command is exactly the manager's `BATCH_TEMPLATES` `plain` form with that id
+  (for example `brew install --cask {id}`, `flatpak install -y flathub {id}`, `npm install -g {id}@latest`).
+
+Anything else (compound commands, extra flags such as `snap --classic` or `uv tool install -p 3.13`, scripts)
+stays one task per app. So keep simple packages in the exact canonical form, or they will not be combined.
+
+Tasks run in tiers: repo setup, OS managers, flatpak/snap/appimage, scripts/installers, then dev managers
+(npm, uv, pipx, cargo, go). Remove runs the tiers in reverse.
+
+**Update vs Upgrade.** Update is the normal, non-forced upgrade (`brew upgrade`); Upgrade is the forced or
+greedy one (`brew upgrade --greedy`, `npm install -g x@latest`, `uv tool upgrade --reinstall`). For a single
+app, Update falls back `update` -> `upgrade` -> `install`, and Upgrade falls back `upgrade` -> `update` ->
+`install`. That means a script-installed app with no `update` field is updated by re-running its installer,
+so only leave `update` out when re-running `install` is the right update.
+
 ---
 
 ## Add a platform or manager for an existing app
