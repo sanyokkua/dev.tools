@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased] — 2026-11-15
+
+### Software Installer
+
+- Generated scripts now combine plain packages into one command per package manager (`brew install a b`, `brew install --cask x y`, `apt-get install -y …`, `flatpak`, `snap`, `choco`, `scoop`, `npm`, `uv`, `pipx`, `cargo`), ordered OS managers → flatpak/snap → script installers → dev managers (reversed for Remove). A "Combine commands per package manager" toggle keeps the one-task-per-app output.
+- Update and Upgrade now differ: Update is the normal upgrade, Upgrade is forced/greedy (`brew upgrade --greedy`, `apt-get full-upgrade`, `dnf distro-sync`, `npm install -g x@latest`, `uv tool upgrade --reinstall`). Added npm, uv and pipx global maintenance entries.
+- Update/Upgrade/Remove no longer drop npm, uv or script-installed apps; script installers without an update command are re-run. PowerShell scripts reset `$LASTEXITCODE` per task, so cmdlet-only steps are no longer counted as failures.
+- Catalog refresh: removed Gemini CLI, OpenOffice and Android File Transfer; fixed stale winget/choco/flatpak/snap ids (JetBrains unified IDEs, Teams, Vivaldi, DBeaver, PCSX2, Jellyfin Desktop, NetBeans, mpv, HandBrake); moved Fedora repo setup to dnf5 syntax; made Linux commands non-interactive; added Python 3.15; added colima, zizmor, actionlint, just, shellcheck, Czkawka/Krokiet, SonarScanner, Porting Kit, FBReader, Monaspace and JetBrains Mono (new Fonts category).
+
+### Other tools
+
+- **Mermaid Editor**: SVG and PNG export now work for labels containing `<br/>`, entities and unicode; export errors are reported instead of hanging.
+- **Dev Environment Setup**: Maven and Gradle scripts take a version input (no checksum pinning, Maven downloads from the Apache archive); refreshed Java 25, Node 26, Python 3.14, Go 1.27, nvm v0.41.0 and SDKMAN defaults.
+- **macOS / Windows / Linux setup**: `launchctl bootstrap`, architecture-aware Homebrew shellenv, winget repair, WSL card, dnf5 `group install`, Java 25 paths.
+- **Git Cheat Sheet**: new GitHub CLI (gh) install/setup/usage step; per-OS ssh-agent commands; non-destructive GPG test; PowerShell-safe one-liner.
+
 ## [Unreleased] — 2026-09-16
 
 ### Software Installer

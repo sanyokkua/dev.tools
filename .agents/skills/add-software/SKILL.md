@@ -59,7 +59,13 @@ Edit `src/common/apps-catalog.json` directly — no code generation step.
     - `verifyBeforeEmit: true` — prepends version-check before install
     - `parameterized: true` + `versions: ["1.0", "2.0"]` — enables version picker
 
-- [ ]   4. **Verify**:
+- [ ]   4. **Keep simple packages canonical** so generated scripts can combine them per manager:
+       `install` must be exactly the manager template with the method `id` (e.g. `brew install --cask my-app`,
+       `flatpak install -y flathub org.x.App`, `npm install -g pkg@latest`), with no `repoSetup`. Anything else stays
+       per app. Linux commands must be non-interactive (`-y`, `--noconfirm`). A missing `update` means "re-run
+       `install`" — see "How generated scripts combine commands" in `docs/howto/add-software-to-catalog.md`.
+
+- [ ]   5. **Verify**:
 
     ```bash
     npm run build               # confirms JSON parses + no TypeScript errors
@@ -67,7 +73,7 @@ Edit `src/common/apps-catalog.json` directly — no code generation step.
     npm run verify:ui           # navigate to Software Installer, search the app, confirm commands appear
     ```
 
-- [ ]   5. **Commit**: `git add src/common/apps-catalog.json && git commit -m "feat(catalog): add <name>"` then `git status` clean.
+- [ ]   6. **Commit**: `git add src/common/apps-catalog.json && git commit -m "feat(catalog): add <name>"` then `git status` clean.
 
 ## Adding a new package manager
 
