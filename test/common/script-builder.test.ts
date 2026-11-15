@@ -692,7 +692,9 @@ describe('buildCombinedScript', () => {
 
         it('throws on non-zero $LASTEXITCODE', () => {
             const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
-            expect(script).toContain('if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }');
+            expect(script).toContain(
+                'if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { throw "exit $LASTEXITCODE" }',
+            );
         });
 
         it('ends with success/failure summary', () => {
@@ -2195,6 +2197,69 @@ describe('buildActionPlan', () => {
         expect(steps(plan)).toEqual(['brew upgrade git', 'brew upgrade jq', 'brew upgrade --cask firefox']);
     });
 
+    it('falls back to per-package commands when a combined group fails', () => {
+        const apps = [brewApp('git', 'formula'), brewApp('jq', 'formula')];
+        const plan = buildActionPlan(apps, 'update', macosConfig, combined);
+        expect(plan.tasks[0].fallback).toEqual(['brew upgrade git', 'brew upgrade jq']);
+        expect(buildMaintenanceScript(plan, macosConfig)).toContain(
+            'brew update && { brew upgrade git jq || { local rc=0; { brew upgrade git; } || rc=1; { brew upgrade jq; } || rc=1; return "$rc"; }; }',
+        );
+
+        const choco = (id: string): CatalogApp => ({
+            ...WINGET_APP,
+            id,
+            methods: { windows: [{ manager: 'choco', id, install: `choco install ${id} -y` }] },
+        });
+        const winPlan = buildActionPlan([choco('a'), choco('b')], 'install', windowsConfig, combined);
+        expect(buildMaintenanceScript(winPlan, windowsConfig)).toContain(
+            'choco install a b -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 0; ' +
+                'choco install a -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 1 }; ' +
+                'choco install b -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 1 }; ' +
+                'if ($rc -ne 0) { throw "per-package fallback failed" } }',
+        );
+        // A single-package group has nothing to fall back to.
+        expect(buildActionPlan([choco('a')], 'install', windowsConfig, combined).tasks[0].fallback).toBeUndefined();
+    });
+
+    it('batches every accepted plain apt install form', () => {
+        const apt = (id: string, install: string): CatalogApp => ({
+            ...CURL_APT,
+            id,
+            methods: { linux: { debian: [{ manager: 'apt', id, install }] } },
+        });
+        const apps = [apt('a', 'sudo apt update && sudo apt install -y a'), apt('b', 'sudo apt install -y b')];
+        const plan = buildActionPlan(apps, 'install', { ...linuxDebianConfig, managers: ['apt'] }, combined);
+        expect(steps(plan)).toEqual(['sudo apt-get update && sudo apt-get install -y a b']);
+    });
+
+    it('de-duplicates ids and per-app commands shared by several selected versions', () => {
+        const node: CatalogApp = {
+            ...WINGET_APP,
+            id: 'node',
+            name: 'Node',
+            parameterized: true,
+            versions: ['22', '24'],
+            methods: {
+                windows: [
+                    { manager: 'choco', id: 'nodejs-lts', install: 'choco install nodejs-lts -y' },
+                    { manager: 'winget', id: 'OpenJS.NodeJS.LTS', install: 'winget install --id OpenJS.NodeJS.LTS -e' },
+                ],
+            },
+        };
+        const config: BuilderConfig = { ...windowsConfig, selectedVersions: { node: ['22', '24'] } };
+        const grouped = buildActionPlan([node], 'install', { ...config, managers: ['choco'] }, combined);
+        expect(steps(grouped)).toEqual(['choco install nodejs-lts -y']);
+        const perApp = buildActionPlan([node], 'install', { ...config, managers: ['winget'] }, combined);
+        expect(steps(perApp)).toEqual(['winget install --id OpenJS.NodeJS.LTS -e']);
+    });
+
+    it('skips a package-manager app without an update command instead of re-running its install', () => {
+        const plan = buildActionPlan([devApp('pkg', 'mas', 'mas install 1')], 'update', macosConfig, combined);
+        expect(plan.tasks).toEqual([]);
+        expect(plan.skipped).toEqual([{ appId: 'pkg', reason: 'no update command' }]);
+        expect(buildMaintenanceScript(plan, macosConfig)).toContain('# skipped pkg: no update command');
+    });
+
     it('resets $LASTEXITCODE before each PowerShell task and never emits ";;"', () => {
         const plan = buildActionPlan([FIREFOX, WINGET_APP], 'install', windowsConfig, combined);
         const script = buildMaintenanceScript(plan, { platform: 'windows' });
@@ -2231,9 +2296,12 @@ describe('buildActionPlan', () => {
         expect(tasks).toEqual([
             [
                 'update Homebrew casks (Firefox, Visual Studio Code)',
-                'brew update && brew upgrade --cask firefox visual-studio-code',
+                'brew update && { brew upgrade --cask firefox visual-studio-code || { local rc=0; { brew upgrade --cask firefox; } || rc=1; { brew upgrade --cask visual-studio-code; } || rc=1; return "$rc"; }; }',
             ],
-            ['update Homebrew formulae (Git, jq, ripgrep)', 'brew upgrade git jq ripgrep'],
+            [
+                'update Homebrew formulae (Git, jq, ripgrep)',
+                'brew upgrade git jq ripgrep || { local rc=0; { brew upgrade git; } || rc=1; { brew upgrade jq; } || rc=1; { brew upgrade ripgrep; } || rc=1; return "$rc"; }',
+            ],
             ['update npm globals (OpenSpec)', 'npm update -g @fission-ai/openspec'],
             ['update Serena (uv)', 'uv tool upgrade serena-agent'],
             ['update uv tools (Spec Kit)', 'uv tool upgrade specify-cli'],

@@ -1,5 +1,6 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import { validateCatalog } from '@/common/catalog-utils';
+import { getPlainPackageToken } from '@/common/script-builder';
 
 describe('APPS_CATALOG integrity', () => {
     const allMethods = () =>
@@ -408,15 +409,72 @@ describe('APPS_CATALOG integrity', () => {
                 if (manager === 'pacman' && /^sudo pacman -[SR]/.test(segment)) {
                     expect(segment).toContain('--noconfirm');
                 }
+                if (/\badd-apt-repository\b/.test(segment)) {
+                    expect(segment).toMatch(/add-apt-repository -y\b/);
+                }
             }
         });
 
-        it('uses the dnf5 repository syntax and the os-release id for the Docker apt repo', () => {
+        it('gives every plain single-package method the id it installs, so it can be combined', () => {
+            for (const method of allMethods()) {
+                const token = getPlainPackageToken(method);
+                if (token)
+                    expect({ install: method.install, id: method.id }).toEqual({ install: method.install, id: token });
+            }
+        });
+
+        it('keeps Windows commands parseable by Windows PowerShell 5.1 (no && or ||)', () => {
+            for (const app of apps) {
+                for (const method of app.methods.windows ?? []) {
+                    for (const field of ['repoSetup', 'install', 'update', 'upgrade', 'remove'] as const) {
+                        expect(method[field] ?? '').not.toMatch(/&&|\|\|/);
+                    }
+                }
+            }
+        });
+
+        it('accepts winget source and package agreements on every install and upgrade', () => {
+            for (const method of allMethods().filter((m) => m.manager === 'winget')) {
+                for (const field of ['install', 'update', 'upgrade'] as const) {
+                    const command = method[field];
+                    if (!command?.startsWith('winget ')) continue;
+                    expect(command).toContain('--accept-source-agreements');
+                    expect(command).toContain('--accept-package-agreements');
+                }
+            }
+        });
+
+        it('loads the SDKMAN shell function before calling sdk', () => {
+            for (const method of allMethods()) {
+                for (const field of ['install', 'update', 'upgrade', 'remove'] as const) {
+                    const command = method[field] ?? '';
+                    if (/(^|[;&|]\s*)sdk /.test(command)) expect(command).toContain('sdkman-init.sh');
+                }
+            }
+            expect(find('sdkman')?.methods.macos?.[0]?.update).toBe(
+                'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk selfupdate',
+            );
+        });
+
+        it('gives package-manager methods a real update command (install does not upgrade)', () => {
+            for (const method of allMethods()) {
+                if (method.manager === 'script' || method.manager === 'installer') continue;
+                expect({ install: method.install, update: method.update ?? method.upgrade }).toEqual({
+                    install: method.install,
+                    update: expect.any(String),
+                });
+            }
+        });
+
+        it('uses the dnf5 repository syntax and the Debian or Ubuntu Docker apt repo', () => {
             const docker = find('docker');
             const apt = docker?.methods.linux?.debian?.find((m) => m.manager === 'apt');
             const dnf = docker?.methods.linux?.fedora?.find((m) => m.manager === 'dnf');
             expect(apt?.repoSetup).toContain('/etc/os-release');
-            expect(apt?.repoSetup).not.toContain('linux/ubuntu');
+            // Ubuntu derivatives (Mint, Pop!_OS, …) report their own $ID, which download.docker.com does not serve.
+            expect(apt?.repoSetup).not.toContain('echo "$ID"');
+            expect(apt?.repoSetup).toContain('if [ "$ID" = debian ]; then echo debian; else echo ubuntu; fi');
+            expect(apt?.repoSetup).toContain('${UBUNTU_CODENAME:-$VERSION_CODENAME}');
             expect(dnf?.repoSetup).toContain('addrepo --from-repofile=');
             expect(dnf?.repoSetup).toContain('dnf5-plugins');
             const compose = find('docker-compose');
