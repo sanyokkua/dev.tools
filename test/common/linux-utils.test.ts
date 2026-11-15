@@ -84,8 +84,26 @@ describe('linux-utils constants', () => {
         expect(LINUX_FLATPAK_FLATHUB).toContain('flathub.org');
     });
 
-    it('LINUX_BREW_PATH contains linuxbrew', () => {
+    it('LINUX_BREW_PATH contains linuxbrew and covers bash and zsh', () => {
         expect(LINUX_BREW_PATH).toContain('linuxbrew');
+        expect(LINUX_BREW_PATH).toContain('~/.bashrc');
+        expect(LINUX_BREW_PATH).toContain('~/.zshrc');
+    });
+
+    it('LINUX_BREW_DEPS_DNF uses dnf group install development-tools', () => {
+        expect(LINUX_BREW_DEPS_DNF).toContain('sudo dnf group install development-tools');
+        expect(LINUX_BREW_DEPS_DNF).not.toContain('groupinstall');
+    });
+
+    it('JAVA_HOME examples target JDK 25', () => {
+        expect(LINUX_ENV_JAVA_HOME).toContain('java-25-openjdk');
+        expect(LINUX_ENV_JAVA_HOME).not.toContain('java-21');
+        expect(LINUX_ENV_ETC_ENVIRONMENT).toContain('java-25-openjdk');
+    });
+
+    it('LINUX_ENV_VERIFY mentions both Debian and Fedora PAM files', () => {
+        expect(LINUX_ENV_VERIFY).toContain('common-session');
+        expect(LINUX_ENV_VERIFY).toContain('system-auth');
     });
 
     it('LINUX_ENV_ADD_TO_PATH contains PATH', () => {

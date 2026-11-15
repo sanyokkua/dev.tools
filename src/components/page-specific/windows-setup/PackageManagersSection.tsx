@@ -8,6 +8,8 @@ import {
     WINDOWS_WINGET_UPDATE_ALL,
     WINDOWS_WINGET_UPGRADE_SELF,
     WINDOWS_WINGET_VERIFY,
+    WINDOWS_WSL_INSTALL,
+    WINDOWS_WSL_MANAGE,
 } from '@/common/windows-utils';
 import CodeSnippet from '@/elements/CodeSnippet';
 import React, { useState } from 'react';
@@ -50,8 +52,9 @@ const PackageManagersSection: React.FC = () => {
                         <span className="n">2</span> winget
                     </div>
                     <p>
-                        <strong>winget</strong> ships with Windows 11 and Windows 10 (1809+) via the App Installer
-                        package. No installation required — just verify it works.
+                        <strong>winget</strong> ships with Windows 11 via the App Installer package. No installation
+                        required — just verify it works. Windows 10 reached end of support on 14 October 2025, so target
+                        Windows 11 for new setups.
                     </p>
                     <CodeSnippet
                         headerText="PowerShell — verify"
@@ -59,10 +62,11 @@ const PackageManagersSection: React.FC = () => {
                         language="powershell"
                     />
                     <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-variant)', marginTop: 8 }}>
-                        If winget is missing or outdated, update App Installer through the Microsoft Store, or run:
+                        If winget is missing or broken, update App Installer through the Microsoft Store, or repair it
+                        from PowerShell:
                     </p>
                     <CodeSnippet
-                        headerText="PowerShell — update App Installer"
+                        headerText="PowerShell — repair winget / App Installer"
                         content={WINDOWS_WINGET_UPGRADE_SELF}
                         language="powershell"
                     />
@@ -138,11 +142,31 @@ const PackageManagersSection: React.FC = () => {
                     <code>C:\Program Files\...</code>, whose space breaks some build tools/scripts.
                 </p>
                 <p className="info-note">
-                    Example: <code>C:\Tools\apache-maven-3.9.16</code>, <code>C:\Tools\gradle\gradle-9.6.1</code>. Wire{' '}
+                    Example: <code>C:\Tools\apache-maven-3.10.0</code>, <code>C:\Tools\gradle\gradle-9.9.1</code>. Wire{' '}
                     <code>MAVEN_HOME</code>/<code>GRADLE_HOME</code> and PATH using the mechanism already covered in
                     this page&apos;s <strong>Environment variables</strong> tab — see the Dev Environment Setup
                     page&apos;s Maven/Gradle categories for the full manual install walkthrough.
                 </p>
+            </div>
+
+            <div className="card pad" style={{ marginBottom: 16 }}>
+                <div className="steplabel">
+                    <span className="n">4</span> WSL (Windows Subsystem for Linux)
+                </div>
+                <p>
+                    Run a Linux distribution on Windows. Run from an elevated PowerShell; a restart may be required
+                    after the first install.
+                </p>
+                <CodeSnippet
+                    headerText="PowerShell — install WSL"
+                    content={WINDOWS_WSL_INSTALL}
+                    language="powershell"
+                />
+                <CodeSnippet
+                    headerText="PowerShell — update, list and install distributions"
+                    content={WINDOWS_WSL_MANAGE}
+                    language="powershell"
+                />
             </div>
         </section>
     );

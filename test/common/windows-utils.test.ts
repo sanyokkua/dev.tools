@@ -16,6 +16,8 @@ import {
     WINDOWS_WINGET_UPDATE_ALL,
     WINDOWS_WINGET_UPGRADE_SELF,
     WINDOWS_WINGET_VERIFY,
+    WINDOWS_WSL_INSTALL,
+    WINDOWS_WSL_MANAGE,
 } from '@/common/windows-utils';
 
 describe('windows-utils constants', () => {
@@ -40,6 +42,22 @@ describe('windows-utils constants', () => {
     ])('%s is a non-empty string', (_name, value) => {
         expect(typeof value).toBe('string');
         expect(value.length).toBeGreaterThan(0);
+    });
+
+    it('winget repair uses Repair-WinGetPackageManager and AppInstaller registration', () => {
+        expect(WINDOWS_WINGET_UPGRADE_SELF).toContain('Repair-WinGetPackageManager');
+        expect(WINDOWS_WINGET_UPGRADE_SELF).toContain('Microsoft.DesktopAppInstaller_8wekyb3d8bbwe');
+    });
+
+    it('WSL constants cover install, update and online list', () => {
+        expect(WINDOWS_WSL_INSTALL).toBe('wsl --install');
+        expect(WINDOWS_WSL_MANAGE).toContain('wsl --update');
+        expect(WINDOWS_WSL_MANAGE).toContain('wsl --list --online');
+    });
+
+    it('JAVA_HOME example is a JDK 25 placeholder, not a nonexistent jdk-21 folder', () => {
+        expect(WINDOWS_ENV_SET_VARIABLE).toContain('jdk-25');
+        expect(WINDOWS_ENV_SET_VARIABLE).not.toContain('jdk-21');
     });
 
     it('choco install references community.chocolatey.org', () => {

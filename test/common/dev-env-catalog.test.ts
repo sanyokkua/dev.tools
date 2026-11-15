@@ -1,4 +1,14 @@
-import { DEV_ENV_CATALOG, DevEnvCategory, DevEnvManagerBootstrap, DevEnvOS } from '@/common/dev-env-catalog';
+import {
+    applyVersion,
+    DEFAULT_GRADLE_VERSION,
+    DEFAULT_MAVEN_VERSION,
+    DEV_ENV_CATALOG,
+    DevEnvCategory,
+    DevEnvManagerBootstrap,
+    DevEnvOS,
+    resolveVersion,
+    VERSION_PLACEHOLDER,
+} from '@/common/dev-env-catalog';
 
 const CATEGORIES: DevEnvCategory[] = ['java', 'maven', 'gradle', 'python', 'go', 'rust', 'nodejs', 'bun'];
 const OSES: DevEnvOS[] = ['macos', 'windows', 'linux'];
@@ -183,11 +193,59 @@ describe('DEV_ENV_CATALOG integrity', () => {
         }
     });
 
-    it('Gradle 9.6.1 SHA-256 checksum literal is byte-identical everywhere it is embedded', () => {
-        const sha256 = '9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14';
-        const entries = OSES.flatMap((os) => DEV_ENV_CATALOG.gradle.managersByOS[os]);
-        const withChecksum = entries.filter((e) => `${e.installTool}${e.configure ?? ''}`.includes(sha256));
-        expect(withChecksum.length).toBe(entries.length);
+    it('Maven and Gradle scripts contain no checksum verification', () => {
+        for (const category of ['maven', 'gradle'] as const) {
+            for (const os of OSES) {
+                for (const entry of DEV_ENV_CATALOG[category].managersByOS[os]) {
+                    const text = [entry.installTool, entry.configure, entry.update, entry.notes].join('\n');
+                    expect(text).not.toMatch(/sha-?(256|512)|get-filehash|checksum|[0-9a-f]{64}/i);
+                }
+            }
+        }
+    });
+
+    it('Maven and Gradle install scripts carry the version placeholder, and it is substituted', () => {
+        for (const category of ['maven', 'gradle'] as const) {
+            for (const os of OSES) {
+                for (const entry of DEV_ENV_CATALOG[category].managersByOS[os]) {
+                    expect(entry.installTool).toContain(VERSION_PLACEHOLDER);
+                    const out = applyVersion(entry.installTool, '1.2.3');
+                    expect(out).not.toContain(VERSION_PLACEHOLDER);
+                    expect(out).toContain('"1.2.3"');
+                }
+            }
+        }
+    });
+
+    it('Maven downloads come from archive.apache.org with the major derived from the version', () => {
+        for (const os of OSES) {
+            for (const entry of DEV_ENV_CATALOG.maven.managersByOS[os]) {
+                expect(entry.installTool).toContain('https://archive.apache.org/dist/maven/maven-');
+                expect(entry.installTool).not.toContain('dlcdn.apache.org');
+                expect(entry.installTool).toMatch(/MAVEN_VERSION%%\.\*|Split\('\.'\)\[0\]/);
+            }
+        }
+    });
+
+    it('Maven MAVEN_HOME points at a stable path that does not embed the version', () => {
+        for (const os of OSES) {
+            for (const entry of DEV_ENV_CATALOG.maven.managersByOS[os]) {
+                const text = `${entry.installTool}\n${entry.configure ?? ''}`;
+                expect(text).not.toMatch(/MAVEN_HOME=\S*apache-maven-/);
+                expect(text).toMatch(
+                    /apache-maven\/latest|INSTALL_ROOT\/latest|\$Root\\apache-maven"|C:\\Tools\\apache-maven/,
+                );
+            }
+        }
+    });
+
+    it('resolveVersion accepts valid versions and falls back on invalid input', () => {
+        expect(resolveVersion('9.8.0', DEFAULT_GRADLE_VERSION)).toBe('9.8.0');
+        expect(resolveVersion(' 3.9.9 ', DEFAULT_MAVEN_VERSION)).toBe('3.9.9');
+        expect(resolveVersion('4.0.0-rc-3', DEFAULT_MAVEN_VERSION)).toBe('4.0.0-rc-3');
+        expect(resolveVersion('', DEFAULT_MAVEN_VERSION)).toBe(DEFAULT_MAVEN_VERSION);
+        expect(resolveVersion('latest', DEFAULT_MAVEN_VERSION)).toBe(DEFAULT_MAVEN_VERSION);
+        expect(resolveVersion('9; rm -rf /', DEFAULT_GRADLE_VERSION)).toBe(DEFAULT_GRADLE_VERSION);
     });
 
     it('Maven and Gradle manual entries name their required JDK version', () => {

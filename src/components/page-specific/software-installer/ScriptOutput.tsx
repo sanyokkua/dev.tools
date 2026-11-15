@@ -1,11 +1,12 @@
 import { APPS_CATALOG } from '@/common/apps-catalog';
 import type { CatalogApp, CatalogManager, CatalogPlatform, LinuxDistro } from '@/common/apps-catalog-types';
 import { HIDDEN_MANAGERS, MANAGER_LABEL } from '@/common/catalog-utils';
+import { PROVIDER_RESOLVED_MANAGERS } from '@/common/manager-bootstrap-catalog';
 import type { BuilderConfig, MaintenancePlan, RequiredBootstrap, ScriptAction } from '@/common/script-builder';
 import {
+    buildActionPlan,
     buildBootstrapScript,
     buildCombinedScript,
-    buildMaintenancePlan,
     buildMaintenanceScript,
     buildPerAppScripts,
     getMaintenanceEntries,
@@ -84,13 +85,10 @@ const ScriptOutput = ({
 }: ScriptOutputProps): React.JSX.Element => {
     const [action, setAction] = useState<OutputTab>('install');
     const [scope, setScope] = useState<Scope>('combined');
+    const [combine, setCombine] = useState<boolean>(true);
     const [includeCleanup, setIncludeCleanup] = useState<boolean>(true);
     const [batchManagers, setBatchManagers] = useState<CatalogManager[]>([]);
     const [providerChoice, setProviderChoice] = useState<Partial<Record<CatalogManager, string>>>({});
-
-    useEffect(() => {
-        setBatchManagers([]);
-    }, [platform, linuxDistro]);
 
     const maintenanceEntries = useMemo(
         () =>
@@ -100,6 +98,16 @@ const ScriptOutput = ({
         [platform, linuxDistro],
     );
 
+    // Batch choices are reset only when the target changes, so a deselection survives switching
+    // between Update and Upgrade. Dev managers (npm/uv/pipx) may not be installed: opt-in.
+    useEffect(() => {
+        setBatchManagers(
+            maintenanceEntries
+                .map((entry) => entry.manager)
+                .filter((manager) => !PROVIDER_RESOLVED_MANAGERS.includes(manager)),
+        );
+    }, [maintenanceEntries]);
+
     const maintenanceAction = action === 'update' || action === 'upgrade' ? action : null;
     const batchManagerEntries = useMemo(
         () =>
@@ -107,30 +115,28 @@ const ScriptOutput = ({
         [maintenanceAction, maintenanceEntries],
     );
 
-    // Batch choices are scoped to the active target and action. The separate platform/distro
-    // reset above keeps a user's deselection intact while they edit manager preferences.
-    useEffect(() => {
-        if (maintenanceAction) setBatchManagers(batchManagerEntries.map((entry) => entry.manager));
-    }, [maintenanceAction, batchManagerEntries]);
+    const hasBatchSelection = updateScope === 'batch';
+    const isBatchMode = maintenanceAction !== null && hasBatchSelection;
 
     const config = useMemo<BuilderConfig>(
         () => ({
             platform,
             linuxDistro: platform === 'linux' ? linuxDistro : undefined,
             managers: selectedManagers,
-            overrides: Object.fromEntries(
-                Object.entries(selectedApps).filter(([, mgr]) => mgr !== null) as [string, CatalogManager][],
-            ),
+            // The basket marks per-app methods "Ignored" in batch maintenance, so they are not applied.
+            overrides: isBatchMode
+                ? {}
+                : Object.fromEntries(
+                      Object.entries(selectedApps).filter(([, mgr]) => mgr !== null) as [string, CatalogManager][],
+                  ),
             fallbackMode: prefMode === 'preferred' ? 'preferred-only' : 'fallback',
             selectedVersions,
         }),
-        [platform, linuxDistro, selectedManagers, prefMode, selectedApps, selectedVersions],
+        [platform, linuxDistro, selectedManagers, prefMode, selectedApps, selectedVersions, isBatchMode],
     );
 
     const selectedList = useMemo(() => APPS_CATALOG.apps.filter((a) => a.id in selectedApps), [selectedApps]);
 
-    const hasBatchSelection = updateScope === 'batch';
-    const isBatchMode = maintenanceAction !== null && hasBatchSelection;
     const requiredBootstrap: RequiredBootstrap[] = useMemo(
         () => getRequiredBootstrap(selectedList, config, hasBatchSelection ? batchManagers : []),
         [selectedList, config, hasBatchSelection, batchManagers],
@@ -147,40 +153,45 @@ const ScriptOutput = ({
 
     const showUpdateScope = maintenanceAction !== null;
     const showScope = !isBatchMode;
-    const showCleanupCheckbox = isBatchMode;
+    // Combining only makes sense for one combined script; per-app output always lists each app.
+    const showCombine = showScope && scope === 'combined';
+    const combineCommands = showCombine && combine;
+    const showCleanupCheckbox = maintenanceAction !== null;
     const ext = platform === 'windows' ? 'ps1' : 'sh';
 
-    const maintenancePlan: MaintenancePlan | null = useMemo(() => {
-        if (!maintenanceAction) return null;
-        return buildMaintenancePlan(selectedList, maintenanceAction, config, {
+    // Install/remove use the planner only when combining; otherwise they keep buildCombinedScript.
+    const actionPlan: MaintenancePlan | null = useMemo(() => {
+        if (action === 'setup' || (!maintenanceAction && !combineCommands)) return null;
+        return buildActionPlan(selectedList, action, config, {
             strategy: isBatchMode ? 'batch' : 'one-by-one',
             batchManagers: isBatchMode ? batchManagers : [],
-            includeCleanup: isBatchMode && includeCleanup,
+            includeCleanup: maintenanceAction !== null && includeCleanup,
+            combine: combineCommands,
         });
-    }, [selectedList, maintenanceAction, config, isBatchMode, batchManagers, includeCleanup]);
+    }, [selectedList, action, maintenanceAction, config, isBatchMode, batchManagers, includeCleanup, combineCommands]);
 
     const actionPerAppScripts = useMemo(() => {
-        if (action === 'setup' || (maintenanceAction && maintenancePlan)) return {};
+        if (action === 'setup' || actionPlan) return {};
         return buildPerAppScripts(selectedList, action, config);
-    }, [action, maintenanceAction, maintenancePlan, selectedList, config]);
+    }, [action, actionPlan, selectedList, config]);
 
     const maintenancePerAppScripts = useMemo(() => {
-        if (!maintenancePlan || isBatchMode || scope !== 'per-app') return {};
+        if (!actionPlan || isBatchMode || scope !== 'per-app') return {};
         const result: Record<string, string> = {};
-        for (const task of maintenancePlan.tasks) {
+        for (const task of actionPlan.tasks) {
             if (task.kind !== 'app' || !task.appId) continue;
             result[task.appId] = [...(result[task.appId] ? [result[task.appId]] : []), ...task.steps].join('\n');
         }
         return result;
-    }, [maintenancePlan, isBatchMode, scope]);
+    }, [actionPlan, isBatchMode, scope]);
 
-    const perAppScripts = maintenancePlan ? maintenancePerAppScripts : actionPerAppScripts;
-    const canBuildScripts = maintenancePlan
-        ? maintenancePlan.tasks.length > 0
+    const perAppScripts = actionPlan ? maintenancePerAppScripts : actionPerAppScripts;
+    const canBuildScripts = actionPlan
+        ? actionPlan.tasks.length > 0
         : action === 'setup'
           ? requiredBootstrap.length > 0
           : Object.keys(actionPerAppScripts).length > 0;
-    const hasVisibleOutput = maintenancePlan ? maintenancePlan.tasks.length > 0 : selectedList.length > 0;
+    const hasVisibleOutput = actionPlan ? actionPlan.tasks.length > 0 : selectedList.length > 0;
     const isEmpty = !hasVisibleOutput;
 
     useEffect(() => {
@@ -195,16 +206,17 @@ const ScriptOutput = ({
 
     const scriptContent = useMemo(() => {
         if (action === 'setup') return '';
-        if (maintenancePlan) {
-            return buildMaintenanceScript(
-                maintenancePlan,
-                config,
-                isBatchMode ? 'batch maintenance' : 'selected-app maintenance',
-            );
+        if (actionPlan) {
+            const title = isBatchMode
+                ? 'batch maintenance'
+                : maintenanceAction
+                  ? 'selected-app maintenance'
+                  : 'combined';
+            return buildMaintenanceScript(actionPlan, config, title);
         }
         if (selectedList.length === 0 || scope === 'per-app') return '';
         return buildCombinedScript(selectedList, action, config);
-    }, [action, maintenancePlan, isBatchMode, config, selectedList, scope, actionPerAppScripts]);
+    }, [action, actionPlan, isBatchMode, maintenanceAction, config, selectedList, scope]);
 
     const language = platform === 'windows' ? 'powershell' : 'bash';
 
@@ -260,6 +272,19 @@ const ScriptOutput = ({
                                     onChange={(v) => setScope(v as Scope)}
                                     aria-label="Script scope"
                                 />
+                            </div>
+                        )}
+                        {showCombine && (
+                            <div className="installer-output-control-group">
+                                <label className="installer-checkbox-row">
+                                    <input
+                                        type="checkbox"
+                                        checked={combine}
+                                        onChange={(e) => setCombine(e.target.checked)}
+                                        aria-label="Combine commands per package manager"
+                                    />
+                                    Combine commands per package manager
+                                </label>
                             </div>
                         )}
                         {showUpdateScope && (
@@ -327,11 +352,11 @@ const ScriptOutput = ({
                 )}
             </div>
 
-            {maintenancePlan && maintenancePlan.skipped.length > 0 && (
+            {actionPlan && actionPlan.skipped.length > 0 && (
                 <div className="installer-maintenance-skips" data-testid="maintenance-skips">
                     <span className="installer-mgr-subheading">Skipped apps</span>
                     <ul>
-                        {maintenancePlan.skipped.map(({ appId, reason }) => (
+                        {actionPlan.skipped.map(({ appId, reason }) => (
                             <li key={appId}>
                                 {APPS_CATALOG.apps.find((app) => app.id === appId)?.name ?? appId}: {reason}
                             </li>
@@ -408,9 +433,7 @@ const ScriptOutput = ({
                         <div data-testid="output-per-app">
                             {selectedList.map((app) => {
                                 const script = perAppScripts[app.id];
-                                const maintenanceSkip = maintenancePlan?.skipped.find(
-                                    (skipped) => skipped.appId === app.id,
-                                );
+                                const maintenanceSkip = actionPlan?.skipped.find((skipped) => skipped.appId === app.id);
                                 return script ? (
                                     <CodeSnippet
                                         key={app.id}

@@ -143,6 +143,34 @@ use package-specific reinstall/upgrade commands for npm, uv, pipx, Cargo, Go, an
 installers. Do not add project initialization commands such as `openspec init`, `serena init`, or
 `specify init`.
 
+### How generated scripts combine commands
+
+With "Combine commands per package manager" on (the default), `buildActionPlan()` in `script-builder.ts`
+merges plain packages into one command per manager, e.g. `brew install git jq` and
+`brew install --cask firefox vlc`. A method joins a combined command only when:
+
+- it has an `id`, has no `repoSetup`, and
+- its `install` command is exactly one of the manager's `BATCH_TEMPLATES` `plain` forms with that id
+  (for example `brew install --cask {id}`, `sudo apt install -y {id}`, `npm install -g {id}@latest`).
+  A catalog test requires every such method to carry that `id`.
+
+If a combined command fails (for example one package is not installed), the script retries it package by
+package; the task fails only when a retry fails.
+
+Anything else (compound commands, extra flags such as `snap --classic` or `uv tool install -p 3.13`, scripts)
+stays one task per app. So keep simple packages in the exact canonical form, or they will not be combined.
+
+Tasks run in tiers: repo setup, OS managers, flatpak/snap/appimage, scripts/installers, then dev managers
+(npm, uv, pipx, cargo, go). Remove runs the tiers in reverse.
+
+**Update vs Upgrade.** Update is the normal, non-forced upgrade (`brew upgrade`); Upgrade is the forced or
+greedy one (`brew upgrade --greedy`, `npm install -g x@latest`, `uv tool upgrade --reinstall`). For a single
+app, Update falls back `update` -> `upgrade`, and Upgrade falls back `upgrade` -> `update`; only `script` and
+`installer` methods then fall back to re-running `install`. Package-manager methods must define `update` (a
+catalog test enforces it), otherwise the app is listed as skipped. Windows commands must not use `&&`/`||`
+(Windows PowerShell 5.1), and shell functions such as `sdk` must be loaded first
+(`source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk selfupdate`).
+
 ---
 
 ## Add a platform or manager for an existing app

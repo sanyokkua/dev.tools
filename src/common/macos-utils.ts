@@ -19,7 +19,12 @@ export const MAC_OS_CREATE_ZPROFILE = 'cd ~ && touch .zprofile';
  * This constant represents a shell command that appends the Homebrew shell environment to the user's profile.
  * The command ensures that Homebrew is initialized in new shell sessions, making its binaries available in the PATH.
  */
-export const MAC_OS_BREW_ADD_TO_PROFILE = `echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile`;
+export const MAC_OS_BREW_ADD_TO_PROFILE =
+    `# Homebrew prefix: /opt/homebrew on Apple Silicon, /usr/local on Intel\n` +
+    `if [ "$(uname -m)" = "arm64" ]; then BREW_PREFIX=/opt/homebrew; else BREW_PREFIX=/usr/local; fi\n` +
+    `echo >> ~/.zprofile\n` +
+    `echo "eval \\"\\$($BREW_PREFIX/bin/brew shellenv)\\"" >> ~/.zprofile\n` +
+    `eval "$($BREW_PREFIX/bin/brew shellenv)"`;
 /**
  * A command to verify the installation of Homebrew on macOS systems.
  * This command runs `brew doctor`, which checks for potential issues in the Homebrew installation and environment.
@@ -30,7 +35,7 @@ export const MAC_OS_BREW_VERIFY_INSTALLATION = 'brew doctor';
  * This command ensures that all installed Homebrew formulas are up to date,
  * removes outdated versions of installed formulae, and cleans up cached downloads.
  */
-export const MAC_OS_BREW_UPDATE_UPGRADE = ' brew update && brew upgrade && brew autoremove && brew cleanup\n';
+export const MAC_OS_BREW_UPDATE_UPGRADE = 'brew update && brew upgrade && brew autoremove && brew cleanup';
 
 /**
  * Sets an environment variable for the current Terminal session only via `export`.
@@ -44,7 +49,7 @@ export const MAC_OS_ENV_EXPORT_EXAMPLE = `export MY_VAR="value"`;
  * Spotlight/Dock — those never read shell profile files.
  */
 export const MAC_OS_ENV_JAVA_HOME =
-    `echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc\n` +
+    `echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 25)' >> ~/.zshrc\n` +
     `echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.zshrc`;
 
 /**
@@ -96,7 +101,9 @@ export const MAC_OS_ENV_LAUNCH_AGENT_PLIST = `<?xml version="1.0" encoding="UTF-
 export const MAC_OS_ENV_LAUNCH_AGENT_LOAD =
     `mkdir -p ~/Library/LaunchAgents\n` +
     `# save the plist above as ~/Library/LaunchAgents/setenv.MYVAR.plist, then:\n` +
-    `launchctl load ~/Library/LaunchAgents/setenv.MYVAR.plist`;
+    `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/setenv.MYVAR.plist\n` +
+    `# to unload it later:\n` +
+    `# launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/setenv.MYVAR.plist`;
 
 /**
  * Verifies a variable set via `launchctl setenv` is visible in the launchd domain.

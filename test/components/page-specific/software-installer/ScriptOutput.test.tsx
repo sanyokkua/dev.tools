@@ -145,7 +145,7 @@ describe('ScriptOutput', () => {
 
         const outputCode = screen.getByTestId('output-code');
         expect(outputCode.textContent).toContain('batch maintenance');
-        expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
+        expect(outputCode.textContent).toContain('brew update && brew upgrade\n');
         expect(screen.getByTestId('batch-maintenance-warning')).toHaveTextContent(
             'updates software outside the selected app basket',
         );
@@ -164,7 +164,7 @@ describe('ScriptOutput', () => {
 
         const outputCode = screen.getByTestId('output-code');
         expect(outputCode.textContent).toContain('batch maintenance');
-        expect(outputCode.textContent).toContain('brew update && brew upgrade --greedy');
+        expect(outputCode.textContent).toContain('brew update && brew upgrade\n');
         expect(outputCode.textContent).not.toContain('brew upgrade git');
     });
 
@@ -208,5 +208,91 @@ describe('ScriptOutput', () => {
         const text = screen.getByTestId('output-code').textContent ?? '';
         expect(text).toContain('tumbleweed');
         expect(text).toContain('zypper dup');
+    });
+});
+
+describe('ScriptOutput — combine per package manager', () => {
+    const twoFormulae = (): React.ComponentProps<typeof ScriptOutput> => ({
+        ...gitOnMacosProps(),
+        selectedApps: { git: null, jq: null },
+    });
+    const combineBox = () => screen.getByRole('checkbox', { name: 'Combine commands per package manager' });
+
+    it('shows the combine toggle on by default and merges brew formulae into one command', () => {
+        renderWithToaster(<ScriptOutput {...twoFormulae()} />);
+        expect(combineBox()).toBeChecked();
+        expect(screen.getByTestId('output-code').textContent).toContain('brew install git jq');
+    });
+
+    it('emits one command per app when the toggle is off', () => {
+        renderWithToaster(<ScriptOutput {...twoFormulae()} />);
+        fireEvent.click(combineBox());
+
+        const text = screen.getByTestId('output-code').textContent ?? '';
+        expect(text).not.toContain('brew install git jq');
+        expect(text).toContain('run_task "install Git (brew)" _task_1');
+        expect(text).toContain('run_task "install jq (brew)" _task_2');
+    });
+
+    it('offers the toggle for Install, Remove and "Selected apps only" updates, not for Batch maintenance', () => {
+        const { rerender } = renderWithToaster(<ScriptOutput {...twoFormulae()} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+        expect(combineBox()).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        expect(combineBox()).toBeInTheDocument();
+        expect(screen.getByTestId('output-code').textContent).toContain('brew update && { brew upgrade git jq || ');
+
+        rerender(
+            <ToasterProvider>
+                <ScriptOutput {...twoFormulae()} updateScope="batch" />
+            </ToasterProvider>,
+        );
+        expect(screen.queryByRole('checkbox', { name: 'Combine commands per package manager' })).toBeNull();
+    });
+
+    it('shows the cleanup checkbox for "Selected apps only" and appends cleanup when ticked', () => {
+        renderWithToaster(<ScriptOutput {...twoFormulae()} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+        const cleanup = screen.getByRole('checkbox', { name: 'Include cleanup commands' });
+        expect(screen.getByTestId('output-code').textContent).toContain('brew autoremove && brew cleanup -s');
+        fireEvent.click(cleanup);
+        expect(screen.getByTestId('output-code').textContent).not.toContain('brew autoremove');
+    });
+
+    it('keeps the batch-manager selection when switching from Update to Upgrade', () => {
+        renderWithToaster(<ScriptOutput {...gitOnMacosProps()} updateScope="batch" />);
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        const homebrew = () =>
+            within(screen.getByRole('group', { name: 'Batch maintenance managers' }))
+                .getByText('Homebrew')
+                .closest('button');
+        fireEvent.click(homebrew()!);
+        expect(homebrew()).toHaveAttribute('aria-pressed', 'false');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Upgrade' }));
+        expect(homebrew()).toHaveAttribute('aria-pressed', 'false');
+        expect(screen.getByTestId('output-code').textContent).not.toContain('brew upgrade --greedy');
+    });
+
+    it('ignores per-app method overrides in Batch maintenance, as the basket says', () => {
+        const props: React.ComponentProps<typeof ScriptOutput> = {
+            ...gitOnMacosProps(),
+            selectedManagers: ['brew', 'npm'],
+            selectedApps: { bun: 'npm' },
+        };
+        const { rerender } = renderWithToaster(<ScriptOutput {...props} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Upgrade' }));
+        expect(screen.getByTestId('output-code').textContent).toContain('npm install -g bun@latest');
+
+        rerender(
+            <ToasterProvider>
+                <ScriptOutput {...props} updateScope="batch" />
+            </ToasterProvider>,
+        );
+        // Without the override bun resolves to brew, which the Homebrew batch already covers.
+        const text = screen.getByTestId('output-code').textContent ?? '';
+        expect(text).toContain('brew update && brew upgrade --greedy');
+        expect(text).not.toContain('bun@latest');
     });
 });

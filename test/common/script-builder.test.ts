@@ -3,6 +3,7 @@ import type { CatalogApp, CatalogManager } from '@/common/apps-catalog-types';
 import { MANAGER_MAINTENANCE } from '@/common/manager-maintenance-catalog';
 import type { BuilderConfig, ScriptAction } from '@/common/script-builder';
 import {
+    buildActionPlan,
     buildBootstrapScript,
     buildCombinedScript,
     buildMaintenancePlan,
@@ -655,17 +656,23 @@ describe('buildCombinedScript', () => {
 
         it('emits try/catch block with Write-Host for install', () => {
             const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
-            expect(script).toContain('try { Write-Host "▶ install Firefox"; winget install --id Mozilla.Firefox -e;');
+            expect(script).toContain(
+                'try { Write-Host "▶ install Firefox"; $global:LASTEXITCODE = 0; winget install --id Mozilla.Firefox -e;',
+            );
         });
 
         it('emits try/catch block with Write-Host for update', () => {
             const script = buildCombinedScript([FIREFOX], 'update', windowsConfig);
-            expect(script).toContain('try { Write-Host "▶ update Firefox"; winget upgrade --id Mozilla.Firefox -e;');
+            expect(script).toContain(
+                'try { Write-Host "▶ update Firefox"; $global:LASTEXITCODE = 0; winget upgrade --id Mozilla.Firefox -e;',
+            );
         });
 
         it('emits try/catch block with Write-Host for remove', () => {
             const script = buildCombinedScript([FIREFOX], 'remove', windowsConfig);
-            expect(script).toContain('try { Write-Host "▶ remove Firefox"; winget uninstall --id Mozilla.Firefox -e;');
+            expect(script).toContain(
+                'try { Write-Host "▶ remove Firefox"; $global:LASTEXITCODE = 0; winget uninstall --id Mozilla.Firefox -e;',
+            );
         });
 
         it('increments $ok on success via try block', () => {
@@ -685,7 +692,9 @@ describe('buildCombinedScript', () => {
 
         it('throws on non-zero $LASTEXITCODE', () => {
             const script = buildCombinedScript([FIREFOX], 'install', windowsConfig);
-            expect(script).toContain('if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }');
+            expect(script).toContain(
+                'if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { throw "exit $LASTEXITCODE" }',
+            );
         });
 
         it('ends with success/failure summary', () => {
@@ -1630,20 +1639,16 @@ describe('buildMaintenancePlan', () => {
             { appId: 'snap-only', reason: 'unsupported platform' },
         ]);
 
-        const missingCommand = buildMaintenancePlan(
-            [SNAP_ONLY_APP],
-            'update',
-            {
-                platform: 'linux',
-                linuxDistro: 'debian',
-                managers: ['snap'],
-                overrides: {},
-                fallbackMode: 'preferred-only',
-                selectedVersions: {},
-            },
-            { strategy: 'one-by-one' },
-        );
-        expect(missingCommand.skipped).toEqual([{ appId: 'snap-only', reason: 'no update command' }]);
+        const snapConfig: BuilderConfig = {
+            platform: 'linux',
+            linuxDistro: 'debian',
+            managers: ['snap'],
+            overrides: {},
+            fallbackMode: 'preferred-only',
+            selectedVersions: {},
+        };
+        const missingCommand = buildActionPlan([SNAP_ONLY_APP], 'remove', snapConfig);
+        expect(missingCommand.skipped).toEqual([{ appId: 'snap-only', reason: 'no remove command' }]);
     });
 
     it('uses package-specific commands for non-batch managers', () => {
@@ -1688,7 +1693,7 @@ describe('buildMaintenancePlan', () => {
             includeCleanup: true,
         });
         const macScript = buildMaintenanceScript(macPlan, { platform: 'macos' });
-        expect(macScript).toContain('_maint_1_update() {\nbrew update && brew upgrade --greedy\n}');
+        expect(macScript).toContain('_maint_1_update() {\nbrew update && brew upgrade\n}');
         expect(macScript).toContain('run_task "update Homebrew" _maint_1_update');
         expect(macScript).toContain('run_task "cleanup Homebrew" _maint_1_cleanup');
         expect(macScript).not.toMatch(/(^|\n)\s*[^#].*&\s*$/m);
@@ -1701,7 +1706,7 @@ describe('buildMaintenancePlan', () => {
         });
         const windowsScript = buildMaintenanceScript(windowsPlan, { platform: 'windows' });
         expect(windowsScript).toContain('$ErrorActionPreference = "Stop"');
-        expect(windowsScript).toContain('winget upgrade --all --include-unknown --include-pinned');
+        expect(windowsScript).toContain('winget upgrade --all --accept-package-agreements --accept-source-agreements');
         expect(windowsScript).toContain('try { Write-Host "▶ update winget"');
     });
 });
@@ -1712,7 +1717,7 @@ describe('buildManagerWideScript', () => {
     it('macOS: emits brew and mas update-all commands wrapped in run_task, in order', () => {
         const script = buildManagerWideScript(['brew', 'mas'], 'update', { platform: 'macos' }, false);
         expect(script).toContain('#!/usr/bin/env bash');
-        expect(script).toContain('brew update && brew upgrade --greedy');
+        expect(script).toContain('brew update && brew upgrade\n');
         expect(script).toContain('mas upgrade');
         expect(script.indexOf('brew update')).toBeLessThan(script.indexOf('mas upgrade'));
         expect(script).toContain('run_task "update Homebrew" _maint_1_update');
@@ -1722,8 +1727,7 @@ describe('buildManagerWideScript', () => {
     it('Windows: emits winget/choco/scoop update-all commands via try/catch', () => {
         const script = buildManagerWideScript(['winget', 'choco', 'scoop'], 'update', { platform: 'windows' }, false);
         expect(script).toContain('$ok=0;$fail=0');
-        expect(script).toContain('winget upgrade --all --include-unknown');
-        expect(script).toContain('choco upgrade chocolatey -y;');
+        expect(script).toContain('winget upgrade --all --accept-package-agreements');
         expect(script).toContain('choco upgrade all -y;');
         expect(script).toContain('scoop update;');
         expect(script).toContain('scoop update *;');
@@ -1736,7 +1740,7 @@ describe('buildManagerWideScript', () => {
             { platform: 'linux', linuxDistro: 'debian' },
             false,
         );
-        expect(script).toContain('sudo apt update && sudo apt full-upgrade -y');
+        expect(script).toContain('sudo apt-get update && sudo apt-get upgrade -y');
         expect(script).toContain('flatpak update -y');
         expect(script).toContain('sudo snap refresh');
     });
@@ -1802,7 +1806,7 @@ describe('buildManagerWideScript', () => {
         const script = buildManagerWideScript(['apt'], 'update', { platform: 'linux', linuxDistro: 'debian' }, false);
         const fnMatch = script.match(/_maint_1_update\(\) \{\n([\s\S]*?)\n\}/);
         expect(fnMatch).not.toBeNull();
-        expect(fnMatch![1]).toBe('sudo apt update && sudo apt full-upgrade -y');
+        expect(fnMatch![1]).toBe('sudo apt-get update && sudo apt-get upgrade -y');
     });
 
     it('action=upgrade uses the manager upgrade operation', () => {
@@ -2007,5 +2011,303 @@ describe('buildBootstrapScript', () => {
         expect(script).toContain('setup brew');
         expect(script).toContain('brew install rust');
         expect(script).toContain('setup cargo (via Rust)');
+    });
+});
+
+// ─── buildActionPlan (combined per-manager plans) ──────────────────────────────
+
+describe('buildActionPlan', () => {
+    const brewApp = (id: string, kind: 'cask' | 'formula'): CatalogApp => ({
+        id,
+        name: id,
+        category: 'test',
+        description: 'test app',
+        platforms: { macos: true, windows: false, linux: false },
+        methods: {
+            macos: [
+                {
+                    manager: 'brew',
+                    id,
+                    kind,
+                    install: kind === 'cask' ? `brew install --cask ${id}` : `brew install ${id}`,
+                    update: kind === 'cask' ? `brew upgrade --cask ${id}` : `brew upgrade ${id}`,
+                    remove: kind === 'cask' ? `brew uninstall --cask ${id}` : `brew uninstall ${id}`,
+                },
+            ],
+        },
+    });
+    const devApp = (id: string, manager: CatalogManager, install: string, extra = {}): CatalogApp => ({
+        id,
+        name: id,
+        category: 'test',
+        description: 'test app',
+        platforms: { macos: true, windows: false, linux: false },
+        methods: { macos: [{ manager, id, install, ...extra }] },
+    });
+    const SCRIPT_APP: CatalogApp = {
+        id: 'script-tool',
+        name: 'Script Tool',
+        category: 'test',
+        description: 'vendor script install',
+        platforms: { macos: true, windows: false, linux: false },
+        methods: { macos: [{ manager: 'script', install: 'curl -fsSL https://example.com/install.sh | bash' }] },
+    };
+    const NPM_TOOL = devApp('npm-tool', 'npm', 'npm install -g npm-tool@latest', {
+        update: 'npm install -g npm-tool@latest',
+        remove: 'npm uninstall -g npm-tool',
+    });
+    const combined = { combine: true, includeCleanup: false };
+    const steps = (plan: ReturnType<typeof buildActionPlan>) => plan.tasks.map((task) => task.steps.join(' && '));
+
+    it('batches brew formulae and casks into one line each', () => {
+        const apps = [brewApp('git', 'formula'), brewApp('firefox', 'cask'), brewApp('jq', 'formula')];
+        apps.push(brewApp('iterm2', 'cask'));
+        const plan = buildActionPlan(apps, 'install', macosConfig, combined);
+
+        expect(steps(plan)).toEqual(['brew install git jq', 'brew install --cask firefox iterm2']);
+        expect(plan.tasks.map((task) => task.kind)).toEqual(['group', 'group']);
+        expect(plan.tasks[0].label).toBe('Homebrew formulae (git, jq)');
+    });
+
+    it('keeps compound, flagged and repoSetup methods per app', () => {
+        const flagged = devApp('serena', 'uv', 'uv tool install -p 3.13 serena-agent', {
+            update: 'uv tool upgrade serena-agent',
+        });
+        const compound = devApp('tap-tool', 'brew', 'brew tap acme/tap && brew install acme/tap/tool');
+        const classic: CatalogApp = {
+            ...SNAP_ONLY_APP,
+            id: 'classic',
+            methods: {
+                linux: { debian: [{ manager: 'snap', id: 'code', install: 'sudo snap install code --classic' }] },
+            },
+        };
+        const plain: CatalogApp = { ...SNAP_ONLY_APP, id: 'plain-snap' };
+        const repo: CatalogApp = {
+            ...CURL_APT,
+            id: 'repo-app',
+            methods: {
+                linux: {
+                    debian: [
+                        {
+                            manager: 'apt',
+                            id: 'repo-app',
+                            repoSetup: 'echo repo',
+                            install: 'sudo apt update && sudo apt install -y repo-app',
+                        },
+                    ],
+                },
+            },
+        };
+
+        const macConfig: BuilderConfig = { ...macosConfig, managers: ['brew', 'uv'] };
+        const macPlan = buildActionPlan([flagged, compound], 'install', macConfig, combined);
+        expect(macPlan.tasks.map((task) => task.kind)).toEqual(['app', 'app']);
+        expect(steps(macPlan)).toEqual([
+            'brew tap acme/tap && brew install acme/tap/tool',
+            'uv tool install -p 3.13 serena-agent',
+        ]);
+
+        const linuxConfig: BuilderConfig = { ...linuxDebianConfig, managers: ['snap', 'apt'] };
+        const linuxPlan = buildActionPlan([classic, plain, repo], 'install', linuxConfig, combined);
+        expect(steps(linuxPlan)).toEqual([
+            'echo repo',
+            'sudo apt update && sudo apt install -y repo-app',
+            'sudo snap install code --classic',
+            'sudo snap install snaponly',
+        ]);
+        expect(linuxPlan.tasks.map((task) => task.kind)).toEqual(['setup', 'app', 'app', 'group']);
+    });
+
+    it('orders tasks by manager tier and reverses the order for remove', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew', 'npm'] };
+
+        const install = buildActionPlan([NPM_TOOL, SCRIPT_APP, brewApp('git', 'formula')], 'install', config, combined);
+        expect(install.tasks.map((task) => task.manager)).toEqual(['brew', 'script', 'npm']);
+
+        const remove = buildActionPlan([brewApp('git', 'formula'), NPM_TOOL], 'remove', config, combined);
+        expect(remove.tasks.map((task) => task.manager)).toEqual(['npm', 'brew']);
+        expect(steps(remove)).toEqual(['npm uninstall -g npm-tool', 'brew uninstall git']);
+    });
+
+    it('falls back to the install command when a script app has no update command', () => {
+        const plan = buildActionPlan([SCRIPT_APP], 'update', macosConfig, combined);
+        expect(steps(plan)).toEqual(['curl -fsSL https://example.com/install.sh | bash']);
+        expect(plan.skipped).toEqual([]);
+    });
+
+    it('treats script methods as always eligible under "Preferred only"', () => {
+        expect(resolveManager(SCRIPT_APP, { ...macosConfig, managers: ['brew'] })).toBe('script');
+        const plan = buildActionPlan([SCRIPT_APP], 'install', macosConfig, combined);
+        expect(steps(plan)).toEqual(['curl -fsSL https://example.com/install.sh | bash']);
+    });
+
+    it('includes an npm-only app in update and remove under "Preferred only"', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew'], fallbackMode: 'preferred-only' };
+        expect(steps(buildActionPlan([NPM_TOOL], 'update', config, combined))).toEqual(['npm update -g npm-tool']);
+        expect(steps(buildActionPlan([NPM_TOOL], 'remove', config, combined))).toEqual(['npm uninstall -g npm-tool']);
+        // Install still honours the user's manager preference.
+        expect(buildActionPlan([NPM_TOOL], 'install', config, combined).skipped).toEqual([
+            { appId: 'npm-tool', reason: 'no preferred manager' },
+        ]);
+    });
+
+    it('produces different Update and Upgrade commands', () => {
+        const apps = [brewApp('firefox', 'cask'), NPM_TOOL];
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew', 'npm'] };
+        expect(steps(buildActionPlan(apps, 'update', config, combined))).toEqual([
+            'brew update && brew upgrade --cask firefox',
+            'npm update -g npm-tool',
+        ]);
+        expect(steps(buildActionPlan(apps, 'upgrade', config, combined))).toEqual([
+            'brew update && brew upgrade --cask --greedy firefox',
+            'npm install -g npm-tool@latest',
+        ]);
+    });
+
+    it('runs cleanup for touched managers on update only when requested', () => {
+        const git = brewApp('git', 'formula');
+        const update = buildActionPlan([git], 'update', macosConfig, { combine: true, includeCleanup: true });
+        expect(update.tasks.map((task) => task.kind)).toEqual(['group', 'cleanup']);
+        const install = buildActionPlan([git], 'install', macosConfig, { combine: true, includeCleanup: true });
+        expect(install.tasks).toHaveLength(1);
+    });
+
+    it('keeps per-app tasks for apps no global batch covers in "Batch maintenance"', () => {
+        const config: BuilderConfig = { ...macosConfig, managers: ['brew', 'npm'] };
+        const plan = buildActionPlan([brewApp('git', 'formula'), NPM_TOOL, SCRIPT_APP], 'upgrade', config, {
+            strategy: 'batch',
+            batchManagers: ['brew', 'npm'],
+            includeCleanup: false,
+        });
+        // npm has no global upgrade, so its app stays per app next to the script installer.
+        expect(plan.tasks.map((task) => [task.kind, task.manager])).toEqual([
+            ['batch', 'brew'],
+            ['app', 'npm'],
+            ['app', 'script'],
+        ]);
+        const script = buildMaintenanceScript(plan, config);
+        expect(script).toContain('run_task "upgrade Homebrew" _maint_1_upgrade');
+        expect(script).not.toContain('_maint_1_update');
+    });
+
+    it('matches the per-app plan when combine is false', () => {
+        const apps = [brewApp('git', 'formula'), brewApp('jq', 'formula'), FIREFOX];
+        const plan = buildActionPlan(apps, 'update', macosConfig, { combine: false, includeCleanup: false });
+        expect(plan).toEqual(buildMaintenancePlan(apps, 'update', macosConfig, { includeCleanup: false }));
+        expect(steps(plan)).toEqual(['brew upgrade git', 'brew upgrade jq', 'brew upgrade --cask firefox']);
+    });
+
+    it('falls back to per-package commands when a combined group fails', () => {
+        const apps = [brewApp('git', 'formula'), brewApp('jq', 'formula')];
+        const plan = buildActionPlan(apps, 'update', macosConfig, combined);
+        expect(plan.tasks[0].fallback).toEqual(['brew upgrade git', 'brew upgrade jq']);
+        expect(buildMaintenanceScript(plan, macosConfig)).toContain(
+            'brew update && { brew upgrade git jq || { local rc=0; { brew upgrade git; } || rc=1; { brew upgrade jq; } || rc=1; return "$rc"; }; }',
+        );
+
+        const choco = (id: string): CatalogApp => ({
+            ...WINGET_APP,
+            id,
+            methods: { windows: [{ manager: 'choco', id, install: `choco install ${id} -y` }] },
+        });
+        const winPlan = buildActionPlan([choco('a'), choco('b')], 'install', windowsConfig, combined);
+        expect(buildMaintenanceScript(winPlan, windowsConfig)).toContain(
+            'choco install a b -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 0; ' +
+                'choco install a -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 1 }; ' +
+                'choco install b -y; if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) { $rc = 1 }; ' +
+                'if ($rc -ne 0) { throw "per-package fallback failed" } }',
+        );
+        // A single-package group has nothing to fall back to.
+        expect(buildActionPlan([choco('a')], 'install', windowsConfig, combined).tasks[0].fallback).toBeUndefined();
+    });
+
+    it('batches every accepted plain apt install form', () => {
+        const apt = (id: string, install: string): CatalogApp => ({
+            ...CURL_APT,
+            id,
+            methods: { linux: { debian: [{ manager: 'apt', id, install }] } },
+        });
+        const apps = [apt('a', 'sudo apt update && sudo apt install -y a'), apt('b', 'sudo apt install -y b')];
+        const plan = buildActionPlan(apps, 'install', { ...linuxDebianConfig, managers: ['apt'] }, combined);
+        expect(steps(plan)).toEqual(['sudo apt-get update && sudo apt-get install -y a b']);
+    });
+
+    it('de-duplicates ids and per-app commands shared by several selected versions', () => {
+        const node: CatalogApp = {
+            ...WINGET_APP,
+            id: 'node',
+            name: 'Node',
+            parameterized: true,
+            versions: ['22', '24'],
+            methods: {
+                windows: [
+                    { manager: 'choco', id: 'nodejs-lts', install: 'choco install nodejs-lts -y' },
+                    { manager: 'winget', id: 'OpenJS.NodeJS.LTS', install: 'winget install --id OpenJS.NodeJS.LTS -e' },
+                ],
+            },
+        };
+        const config: BuilderConfig = { ...windowsConfig, selectedVersions: { node: ['22', '24'] } };
+        const grouped = buildActionPlan([node], 'install', { ...config, managers: ['choco'] }, combined);
+        expect(steps(grouped)).toEqual(['choco install nodejs-lts -y']);
+        const perApp = buildActionPlan([node], 'install', { ...config, managers: ['winget'] }, combined);
+        expect(steps(perApp)).toEqual(['winget install --id OpenJS.NodeJS.LTS -e']);
+    });
+
+    it('skips a package-manager app without an update command instead of re-running its install', () => {
+        const plan = buildActionPlan([devApp('pkg', 'mas', 'mas install 1')], 'update', macosConfig, combined);
+        expect(plan.tasks).toEqual([]);
+        expect(plan.skipped).toEqual([{ appId: 'pkg', reason: 'no update command' }]);
+        expect(buildMaintenanceScript(plan, macosConfig)).toContain('# skipped pkg: no update command');
+    });
+
+    it('resets $LASTEXITCODE before each PowerShell task and never emits ";;"', () => {
+        const plan = buildActionPlan([FIREFOX, WINGET_APP], 'install', windowsConfig, combined);
+        const script = buildMaintenanceScript(plan, { platform: 'windows' });
+        expect(script).toContain('$ErrorActionPreference = "Stop"');
+        expect(script.match(/\$global:LASTEXITCODE = 0;/g)).toHaveLength(2);
+        expect(script).not.toContain(';;');
+
+        const combinedScript = buildCombinedScript([FIREFOX], 'install', windowsConfig);
+        expect(combinedScript).toContain('$ErrorActionPreference = "Stop"');
+        expect(combinedScript).toContain('$global:LASTEXITCODE = 0; winget install');
+    });
+
+    it('escapes app names in buildCombinedScript labels', () => {
+        const odd: CatalogApp = { ...MACOS_ONLY_APP, name: 'Say "hi" $HOME `x`' };
+        expect(buildCombinedScript([odd], 'install', macosConfig)).toContain(
+            'run_task "install Say \\"hi\\" \\$HOME \\`x\\` (brew)" _task_1',
+        );
+        const oddWin: CatalogApp = { ...WINGET_APP, name: 'Say "hi" $HOME' };
+        expect(buildCombinedScript([oddWin], 'install', windowsConfig)).toContain(
+            'Write-Host "▶ install Say `"hi`" `$HOME"',
+        );
+    });
+
+    it('builds the macOS Update for brew apps, OpenSpec, Serena and Spec Kit in the expected structure', () => {
+        const ids = ['git', 'jq', 'ripgrep', 'firefox', 'visual-studio-code', 'openspec', 'serena', 'spec-kit'];
+        const apps = APPS_CATALOG.apps.filter((app) => ids.includes(app.id));
+        const plan = buildActionPlan(apps, 'update', macosConfig, { combine: true, includeCleanup: true });
+        const script = buildMaintenanceScript(plan, macosConfig, 'combined');
+        const tasks = [...script.matchAll(/\(\) \{\n(.*)\n\}\nrun_task "([^"]*)"/g)].map(([, body, label]) => [
+            label,
+            body,
+        ]);
+
+        expect(tasks).toEqual([
+            [
+                'update Homebrew casks (Firefox, Visual Studio Code)',
+                'brew update && { brew upgrade --cask firefox visual-studio-code || { local rc=0; { brew upgrade --cask firefox; } || rc=1; { brew upgrade --cask visual-studio-code; } || rc=1; return "$rc"; }; }',
+            ],
+            [
+                'update Homebrew formulae (Git, jq, ripgrep)',
+                'brew upgrade git jq ripgrep || { local rc=0; { brew upgrade git; } || rc=1; { brew upgrade jq; } || rc=1; { brew upgrade ripgrep; } || rc=1; return "$rc"; }',
+            ],
+            ['update npm globals (OpenSpec)', 'npm update -g @fission-ai/openspec'],
+            ['update Serena (uv)', 'uv tool upgrade serena-agent'],
+            ['update uv tools (Spec Kit)', 'uv tool upgrade specify-cli'],
+            ['cleanup Homebrew', 'brew autoremove && brew cleanup -s'],
+        ]);
+        expect(plan.skipped).toEqual([]);
+        expect(script.endsWith('echo "✔ $SUCCESS ok / ✖ $FAILED failed"')).toBe(true);
     });
 });
